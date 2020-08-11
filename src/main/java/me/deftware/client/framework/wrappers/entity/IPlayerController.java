@@ -27,8 +27,8 @@ public class IPlayerController {
      */
     public static int getSlot(String name) {
         InventoryPlayer in = Minecraft.getMinecraft().player.inventory;
-        for (int i = 0; i < in.mainInventory.size(); i++) {
-            ItemStack it = in.mainInventory.get(i);
+        for (int i = 0; i < in.mainInventory.length; i++) {
+            ItemStack it = in.mainInventory[i];
             if (it.getItem().getUnlocalizedName().equals(name)) {
                 return i;
             }
@@ -73,7 +73,7 @@ public class IPlayerController {
     }
 
     public static void processRightClick(boolean offhand) {
-        Minecraft.getMinecraft().playerController.processRightClick(Minecraft.getMinecraft().player, Minecraft.getMinecraft().world, offhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND);
+        Minecraft.getMinecraft().playerController.processRightClick(Minecraft.getMinecraft().player, Minecraft.getMinecraft().world, Minecraft.getMinecraft().player.getHeldItem(offhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND), offhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND);
     }
 
     public static void resetBlockRemoving() {

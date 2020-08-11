@@ -15,7 +15,7 @@ public class MixinGuiMainMenu {
     @Inject(method = "drawScreen", at = @At("RETURN"))
     public void render(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
         if ((boolean) SettingsMap.getValue(SettingsMap.MapKeys.RENDER, "MAIN_MENU_OVERLAY", true)) {
-            Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(FrameworkConstants.toDataString(), 2, 2, 0xFFFFFF);
+            Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(FrameworkConstants.toDataString(), 2, 2, 0xFFFFFF);
         }
     }
 }

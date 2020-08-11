@@ -109,7 +109,7 @@ public abstract class MixinBlock {
     }
 
     @Inject(method = "getCollisionBoundingBox", at = @At("HEAD"), cancellable = true)
-    public void getCollisionBoundingBox(IBlockState p_getShapeForCollision_1_, IBlockAccess p_getShapeForCollision_2_, BlockPos p_getShapeForCollision_3_, CallbackInfoReturnable<AxisAlignedBB> ci) {
+    public void getCollisionBoundingBox(IBlockState p_getShapeForCollision_1_, World p_getShapeForCollision_2_, BlockPos p_getShapeForCollision_3_, CallbackInfoReturnable<AxisAlignedBB> ci) {
         EventVoxelShape event = new EventVoxelShape(blocksMovement ? p_getShapeForCollision_1_.getCollisionBoundingBox(p_getShapeForCollision_2_, p_getShapeForCollision_3_) : Block.NULL_AABB, new IBlock((Block) (Object) this));
         event.broadcast();
         if (event.modified) {

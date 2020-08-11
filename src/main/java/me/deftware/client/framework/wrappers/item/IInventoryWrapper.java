@@ -54,7 +54,7 @@ public class IInventoryWrapper {
     }
 
     public static IItemStack getHeldItem(IEntity entity, boolean offhand) {
-        ItemStack finalItem = ItemStack.EMPTY;
+        ItemStack finalItem = null;
         int slotId = 0;
         if (entity != null) {
             for (ItemStack item : entity.getEntity().getHeldEquipment()) {
@@ -94,7 +94,7 @@ public class IInventoryWrapper {
         if (IEntityPlayer.isNull()) {
             return null;
         }
-        return new IItemStack(Minecraft.getMinecraft().player.inventory.armorInventory.get(id));
+        return new IItemStack(Minecraft.getMinecraft().player.inventory.armorInventory[id]);
     }
 
     public static IItemStack getArmorInSlot(int id) {

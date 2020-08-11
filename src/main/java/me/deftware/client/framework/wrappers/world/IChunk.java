@@ -11,7 +11,7 @@ public class IChunk {
 
     public IChunk(Chunk chunk) {
         this.chunk = chunk;
-        this.chunkPos = new IChunkPos(chunk.getPos());
+        this.chunkPos = new IChunkPos(chunk.getChunkCoordIntPair());
     }
 
     public IWorld getWorld() {

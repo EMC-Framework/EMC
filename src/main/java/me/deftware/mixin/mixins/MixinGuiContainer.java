@@ -15,11 +15,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MixinGuiContainer extends MixinGuiScreen implements IMixinGuiContainer {
 
     @Shadow
-    private Slot hoveredSlot;
+    private Slot theSlot;
 
     @Override
     public Slot getHoveredSlot() {
-        return hoveredSlot;
+        return theSlot;
     }
 
     @Inject(method = "<init>*", at = @At("RETURN"))

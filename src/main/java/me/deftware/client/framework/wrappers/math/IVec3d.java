@@ -39,27 +39,27 @@ public class IVec3d {
     }
 
     public double getX() {
-        return vector.x;
+        return vector.xCoord;
     }
 
     public double getFluentX() {
-        return fluentVector.x;
+        return fluentVector.xCoord;
     }
 
     public double getY() {
-        return vector.y;
+        return vector.yCoord;
     }
 
     public double getFluentY() {
-        return fluentVector.y;
+        return fluentVector.yCoord;
     }
 
     public double getZ() {
-        return vector.z;
+        return vector.zCoord;
     }
 
     public double getFluentZ() {
-        return fluentVector.z;
+        return fluentVector.zCoord;
     }
 
     public IVec3d scale(double scale) {

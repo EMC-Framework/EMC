@@ -10,12 +10,16 @@ public class IItem {
 
     private Item item;
 
+    private ItemStack stack;
+
     public IItem(String name) {
         item = getByName(name);
+        stack = new ItemStack(item);
     }
 
     public IItem(Item item) {
         this.item = item;
+        this.stack = new ItemStack(item);
     }
 
     public Item getItem() {

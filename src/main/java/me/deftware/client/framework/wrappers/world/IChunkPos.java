@@ -29,8 +29,8 @@ public class IChunkPos {
     }
 
     public IChunkPos(IVec3d vec) {
-        this.x = vec.vector.x;
-        this.z = vec.vector.z;
+        this.x = vec.vector.xCoord;
+        this.z = vec.vector.zCoord;
         updateCords(true);
     }
 
@@ -87,17 +87,17 @@ public class IChunkPos {
             boundingBox = new IAxisAlignedBB(getStartX(), 0, getStartZ(), getEndX(), 255, getEndZ());
         } else {
             boundingBox = new IAxisAlignedBB(getStartX(), 0, getStartZ(), getEndX(), 255, getEndZ());
-            x = pos.x;
-            z = pos.z;
+            x = pos.chunkXPos;
+            z = pos.chunkZPos;
             centerPos = new IBlockPos((int)x << 4, 0, (int)z << 4);
         }
     }
 
     public String toCords() {
-        return pos.x + ", " + pos.z;
+        return pos.chunkXPos + ", " + pos.chunkZPos;
     }
 
     public boolean compareTo(IChunkPos pos2) {
-        return pos.x == pos2.getX() && pos.z == pos2.getZ();
+        return pos.chunkXPos == pos2.getX() && pos.chunkZPos == pos2.getZ();
     }
 }

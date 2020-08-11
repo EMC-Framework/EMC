@@ -8,7 +8,7 @@ import org.lwjgl.input.Keyboard;
 public class IGuiTextField extends GuiTextField implements CustomIGuiEventListener {
 
     public IGuiTextField(int id, int x, int y, int width, int height) {
-        super(id,Minecraft.getMinecraft().fontRenderer, x, y, width, height);
+        super(id,Minecraft.getMinecraft().fontRendererObj, x, y, width, height);
     }
 
     public String getTextboxText() {

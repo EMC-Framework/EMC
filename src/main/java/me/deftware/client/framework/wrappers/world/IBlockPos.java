@@ -26,9 +26,9 @@ public class IBlockPos {
     }
 
     public IBlockPos(IVec3d vec) {
-        this.x = vec.vector.x;
-        this.y = vec.vector.y;
-        this.z = vec.vector.z;
+        this.x = vec.vector.xCoord;
+        this.y = vec.vector.yCoord;
+        this.z = vec.vector.zCoord;
         pos = new BlockPos(x, y, z);
         vectorPos = vec;
     }

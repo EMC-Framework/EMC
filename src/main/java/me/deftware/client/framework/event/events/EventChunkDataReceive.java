@@ -30,11 +30,11 @@ public class EventChunkDataReceive extends Event {
         this.rootPacket = rootPacket;
         this.rawPos = new ChunkPos(rootPacket.getChunkX(), rootPacket.getChunkZ());
         this.pos = new IChunkPos(rawPos);
-        isInitialFullChunk = rootPacket.isFullChunk();
+        isInitialFullChunk = rootPacket.doChunkLoad();
         updateFullChunk(rootPacket);
     }
 
     private void updateFullChunk(SPacketChunkData rootPacket) {
-        updatedIsFullChunk = rootPacket.isFullChunk();
+        updatedIsFullChunk = rootPacket.doChunkLoad();
     }
 }

@@ -3,6 +3,7 @@ package me.deftware.client.framework.wrappers.entity;
 import me.deftware.client.framework.wrappers.item.IItemStack;
 import me.deftware.client.framework.wrappers.math.IAxisAlignedBB;
 import me.deftware.client.framework.wrappers.math.IVec3d;
+import me.deftware.client.framework.wrappers.world.IBlock;
 import me.deftware.client.framework.wrappers.world.IBlockPos;
 import me.deftware.client.framework.wrappers.world.IEnumFacing;
 import me.deftware.client.framework.wrappers.world.IWorld;
@@ -15,9 +16,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.item.EntityBoat;
-import net.minecraft.entity.passive.AbstractHorse;
 import net.minecraft.entity.passive.EntityHorse;
 import net.minecraft.entity.player.EnumPlayerModelParts;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.CPacketAnimation;
@@ -62,7 +63,7 @@ public class IEntityPlayer {
 
 	public static boolean processRightClickBlock(IBlockPos pos, IEnumFacing facing, IVec3d vec) {
 		return Minecraft.getMinecraft().playerController.processRightClickBlock(Minecraft.getMinecraft().player,
-				Minecraft.getMinecraft().world, pos.getPos(), IEnumFacing.getFacing(facing), vec.getVector(),
+				Minecraft.getMinecraft().world, Minecraft.getMinecraft().player.getHeldItem(EnumHand.MAIN_HAND), pos.getPos(), IEnumFacing.getFacing(facing), vec.getVector(),
 				EnumHand.MAIN_HAND) == EnumActionResult.SUCCESS;
 	}
 
@@ -77,7 +78,7 @@ public class IEntityPlayer {
 			stack = Minecraft.getMinecraft().player.getHeldItemOffhand();
 		}
 		if (stack == null) {
-			return null;
+			return new IItemStack(new IBlock(Blocks.AIR));
 		}
 		return new IItemStack(stack);
 	}
@@ -620,7 +621,7 @@ public class IEntityPlayer {
 		if (IEntityPlayer.isNull()) {
 			return false;
 		}
-		return Minecraft.getMinecraft().player.isRidingHorse() && Minecraft.getMinecraft().player.getRidingEntity() instanceof AbstractHorse;
+		return Minecraft.getMinecraft().player.isRidingHorse() && Minecraft.getMinecraft().player.getRidingEntity() instanceof EntityHorse;
 	}
 
 	public static boolean isInLiquid() {

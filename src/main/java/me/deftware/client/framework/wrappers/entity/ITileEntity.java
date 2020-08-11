@@ -5,7 +5,6 @@ import net.minecraft.block.BlockChest;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityEnderChest;
-import net.minecraft.tileentity.TileEntityShulkerBox;
 
 import java.awt.*;
 
@@ -18,8 +17,7 @@ public class ITileEntity {
     public ITileEntity(TileEntity entity) {
         chestType = entity instanceof TileEntityChest
                 ? ((TileEntityChest)entity).getChestType() == BlockChest.Type.TRAP ? IChestType.TRAPPED_CHEST : IChestType.CHEST
-                : entity instanceof TileEntityEnderChest ? IChestType.ENDER_CHEST
-                : entity instanceof TileEntityShulkerBox ? IChestType.SHULKER_BOX : null;
+                : entity instanceof TileEntityEnderChest ? IChestType.ENDER_CHEST : null;
         if (chestType != null) {
             color = chestType.equals(IChestType.TRAPPED_CHEST) ? Color.RED
                     : chestType.equals(IChestType.CHEST) ? Color.ORANGE

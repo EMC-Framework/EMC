@@ -69,9 +69,9 @@ public class RotUtils {
 
     private static float[] getRotations(Vec3d vec) {
         Vec3d eyesPos = RotUtils.getEyesPos();
-        double diffX = vec.x - eyesPos.x;
-        double diffY = vec.y - eyesPos.y;
-        double diffZ = vec.z - eyesPos.z;
+        double diffX = vec.xCoord - eyesPos.xCoord;
+        double diffY = vec.yCoord - eyesPos.yCoord;
+        double diffZ = vec.zCoord - eyesPos.zCoord;
         double diffXZ = MathHelper.sqrt(diffX * diffX + diffZ * diffZ);
         float yaw = (float) Math.toDegrees(Math.atan2(diffZ, diffX)) - 90F;
         float pitch = (float) -Math.toDegrees(Math.atan2(diffY, diffXZ));

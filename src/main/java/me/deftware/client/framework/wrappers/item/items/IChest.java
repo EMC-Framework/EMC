@@ -29,7 +29,7 @@ public class IChest {
     }
 
     public static boolean isEmpty() {
-        return IChest.getCurrent().getLowerChestInventory().isEmpty();
+        return IChest.getCurrent().getLowerChestInventory().getFieldCount() == 0;
     }
 
 }

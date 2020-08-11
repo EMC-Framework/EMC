@@ -343,9 +343,9 @@ public class IEntity {
         } else if (e.equals(EntityType.ENTITY_VILLAGER)) {
             return entity instanceof EntityVillager;
         } else if (e.equals(EntityType.ENTITY_DONKEY)) {
-            return entity instanceof EntityDonkey;
+            return ((EntityHorse)entity).getType() == HorseType.DONKEY;
         } else if (e.equals(EntityType.ENTITY_MULE)) {
-            return entity instanceof EntityMule;
+            return ((EntityHorse)entity).getType() == HorseType.MULE;
         } else if (e.equals(EntityType.ENTITY_HORSE)) {
             return entity instanceof EntityHorse;
         }
@@ -363,23 +363,19 @@ public class IEntity {
         } else if (e.equals(EntityType.ENTITY_ENDERMAN)) {
             return entity instanceof EntityEnderman;
         } else if (e.equals(EntityType.ENTITY_WITHER_SKELETON)) {
-            return entity instanceof EntityWitherSkeleton;
+            return entity instanceof EntitySkeleton;
         } else if (e.equals(EntityType.ENTITY_WITHER)) {
             return entity instanceof EntityWither;
         } else if (e.equals(EntityType.ENTITY_DRAGON)) {
             return entity instanceof EntityDragon;
-        } else if (e.equals(EntityType.ENTITY_EVOKER)) {
-            return entity instanceof EntityEvoker;
         } else if (e.equals(EntityType.ENTITY_STRAY)) {
-            return entity instanceof EntityStray;
+            return entity instanceof EntitySkeleton;
         } else if (e.equals(EntityType.ENTITY_ELDER_GUARDIAN)) {
-            return entity instanceof EntityElderGuardian;
+            return entity instanceof EntityGuardian;
         } else if (e.equals(EntityType.ENTITY_CREEPER)) {
             return entity instanceof EntityCreeper;
-        } else if (e.equals(EntityType.ENTITY_VINDICATOR)) {
-            return entity instanceof EntityVindicator;
         } else if (e.equals(EntityType.ENTITY_HUSK)) {
-            return entity instanceof EntityHusk;
+            return entity instanceof EntityZombie;
         } else if (e.equals(EntityType.ENTITY_ZOMBIE)) {
             return entity instanceof EntityZombie;
         } else if (e.equals(EntityType.ENTITY_SKELETON)) {
@@ -388,8 +384,6 @@ public class IEntity {
             return entity instanceof EntityShulker;
         } else if (e.equals(EntityType.ENTITY_GUARDIAN)) {
             return entity instanceof EntityGuardian;
-        } else if (e.equals(EntityType.ENTITY_VEX)) {
-            return entity instanceof EntityVex;
         } else if (e.equals(EntityType.ENTITY_SILVERFISH)) {
             return entity instanceof EntitySilverfish;
         } else if (e.equals(EntityType.ENTITY_WITCH)) {
@@ -410,8 +404,6 @@ public class IEntity {
         // Neutrals
         else if (e.equals(EntityType.ENTITY_WOLF)) {
             return entity instanceof EntityWolf;
-        } else if (e.equals(EntityType.ENTITY_LLAMA)) {
-            return entity instanceof EntityLlama;
         } else if (e.equals(EntityType.ENTITY_IRON_GOLEM)) {
             return entity instanceof EntityIronGolem;
         } else if (e.equals(EntityType.ENTITY_SNOW_GOLEM)) {

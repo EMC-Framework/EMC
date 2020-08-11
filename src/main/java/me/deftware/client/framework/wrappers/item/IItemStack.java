@@ -23,7 +23,7 @@ import java.util.ArrayList;
 
 public class IItemStack {
 
-    public static final IItemStack EMPTY = new IItemStack(ItemStack.EMPTY);
+    public static final IItemStack EMPTY = null;
 
     private ItemStack stack;
 
@@ -42,6 +42,7 @@ public class IItemStack {
     public IItemStack(IItem item, int amount) {
         stack = new ItemStack(item.getItem(), amount);
     }
+
 
     public IItemStack(String name) {
         stack = new ItemStack(IItem.getByName(name));
@@ -93,11 +94,11 @@ public class IItemStack {
 
     public static IItemStack read(INBTTagCompound compound) {
 
-        return new IItemStack(new ItemStack(compound.getCompound()));
+        return new IItemStack(ItemStack.loadItemStackFromNBT(compound.getCompound()));
     }
 
     public void setStackDisplayName(String name) {
-        NBTTagCompound nbttagcompound = stack.getOrCreateSubCompound("display");
+        NBTTagCompound nbttagcompound = stack.getSubCompound("display", true);
         nbttagcompound.setString("Name", ITextComponent.Serializer.componentToJson(new TextComponentString(name)));
     }
 
@@ -110,7 +111,7 @@ public class IItemStack {
     }
 
     public int getMaxStackSize() {
-        return stack.getMaxStackSize();
+        return stack != null ? stack.getMaxStackSize() : 0;
     }
 
     public static boolean areItemStackTagsEqual(IItemStack one, IItemStack two) {
@@ -122,11 +123,11 @@ public class IItemStack {
     }
 
     public void setCount(int count) {
-        stack.setCount(count);
+        stack.stackSize = count;
     }
 
     public int getCount() {
-        return stack.getCount();
+        return stack != null ? stack.stackSize : 0;
     }
 
     public INBTTagCompound getTagCompound() {
@@ -142,7 +143,11 @@ public class IItemStack {
     }
 
     public int getItemID() {
-        return Item.getIdFromItem(stack.getItem());
+        try {
+            return Item.getIdFromItem(stack.getItem());
+        } catch (NullPointerException exception) {
+            return 0;
+        }
     }
 
     public float getStrVsBlock(IBlockPos pos) {

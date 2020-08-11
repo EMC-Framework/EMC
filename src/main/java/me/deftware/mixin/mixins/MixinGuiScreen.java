@@ -20,7 +20,7 @@ public abstract class MixinGuiScreen implements IMixinGuiScreen {
     public boolean shouldSendPostRenderEvent = true;
 
     @Shadow
-    protected FontRenderer fontRenderer;
+    protected FontRenderer fontRendererObj;
 
     @Shadow
     protected List<GuiButton> buttonList;
@@ -35,7 +35,7 @@ public abstract class MixinGuiScreen implements IMixinGuiScreen {
 
     @Override
     public FontRenderer getFontRenderer() {
-        return fontRenderer;
+        return fontRendererObj;
     }
 
     @Inject(method = "drawScreen", at = @At("HEAD"))

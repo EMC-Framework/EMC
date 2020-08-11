@@ -97,7 +97,7 @@ public abstract class IGuiScreen extends GuiScreen {
         onDraw(mouseX, mouseY, partialTicks);
         super.drawScreen(mouseX, mouseY, partialTicks);
         for (Tuple<Integer, Integer, ChatMessage> text : compiledText) {
-            fontRenderer.drawStringWithShadow(text.getRight().toString(true), text.getLeft(), text.getMiddle(), 16777215);
+            fontRendererObj.drawStringWithShadow(text.getRight().toString(true), text.getLeft(), text.getMiddle(), 16777215);
         }
         onPostDraw(mouseX, mouseY, partialTicks);
     }
@@ -201,7 +201,7 @@ public abstract class IGuiScreen extends GuiScreen {
     }
 
     protected IGuiScreen addCenteredText(int x, int y, ChatMessage text) {
-        compiledText.add(new Tuple<>(x - Minecraft.getMinecraft().fontRenderer.getStringWidth(text.toString(true)) / 2, y, text));
+        compiledText.add(new Tuple<>(x - Minecraft.getMinecraft().fontRendererObj.getStringWidth(text.toString(true)) / 2, y, text));
         return this;
     }
 

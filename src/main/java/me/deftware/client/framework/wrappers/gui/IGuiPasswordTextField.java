@@ -20,9 +20,9 @@ public class IGuiPasswordTextField extends IGuiTextField {
     public void drawTextBox() {
         if (getVisible()) {
             if (getEnableBackgroundDrawing()) {
-                Gui.drawRect(x - 1, y - 1, x + getWidth() + 1,
-                        y + ((IMixinGuiTextField) this).getHeight() + 1, -6250336);
-                Gui.drawRect(x, y, x + getWidth(), y + ((IMixinGuiTextField) this).getHeight(),
+                Gui.drawRect(xPosition - 1, yPosition - 1, xPosition + getWidth() + 1,
+                        yPosition + ((IMixinGuiTextField) this).getHeight() + 1, -6250336);
+                Gui.drawRect(xPosition, yPosition, xPosition + getWidth(), yPosition + ((IMixinGuiTextField) this).getHeight(),
                         -16777216);
             }
             int var1 = getEnableBackgroundDrawing() ? enabledColor : disabledColor;
@@ -36,8 +36,8 @@ public class IGuiPasswordTextField extends IGuiTextField {
             String var4 = ((IMixinGuiTextField) this).getFontRendererInstance().trimStringToWidth(hidden.toString(), getWidth());
             boolean var5 = (var2 >= 0) && (var2 <= var4.length());
             boolean var6 = (isFocused()) && (((IMixinGuiTextField) this).getCursorCounter() / 6 % 2 == 0) && (var5);
-            int var7 = getEnableBackgroundDrawing() ? x + 4 : x;
-            int var8 = getEnableBackgroundDrawing() ? y + (((IMixinGuiTextField) this).getHeight() - 8) / 2 : y;
+            int var7 = getEnableBackgroundDrawing() ? xPosition + 4 : xPosition;
+            int var8 = getEnableBackgroundDrawing() ? yPosition + (((IMixinGuiTextField) this).getHeight() - 8) / 2 : yPosition;
             int var9 = var7;
             if (var3 > var4.length()) {
                 var3 = var4.length();
@@ -85,12 +85,12 @@ public class IGuiPasswordTextField extends IGuiTextField {
             endY = j;
         }
 
-        if (endX > x + getWidth()) {
-            endX = x + getWidth();
+        if (endX > xPosition + getWidth()) {
+            endX = xPosition + getWidth();
         }
 
-        if (startX > x + getWidth()) {
-            startX = x + getWidth();
+        if (startX > xPosition + getWidth()) {
+            startX = xPosition + getWidth();
         }
 
         Tessellator tessellator = Tessellator.getInstance();

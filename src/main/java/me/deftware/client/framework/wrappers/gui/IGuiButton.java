@@ -27,7 +27,7 @@ public abstract class IGuiButton extends GuiButton implements CustomIGuiEventLis
     public boolean mousePressed(Minecraft minecraft, int mouseX, int mouseY) {
         if (super.mousePressed(minecraft, mouseX, mouseY)) {
             if (shouldPlaySound) this.playPressSound(Minecraft.getMinecraft().getSoundHandler());
-            onButtonClick(x, y);
+            onButtonClick(mouseX, mouseY);
             return true;
         }
         return false;
@@ -60,19 +60,19 @@ public abstract class IGuiButton extends GuiButton implements CustomIGuiEventLis
     }
 
     protected int getButtonX() {
-        return x;
+        return xPosition;
     }
 
     protected int getButtonY() {
-        return y;
+        return yPosition;
     }
 
     protected void setButtonY(int y) {
-        this.y = y;
+        this.yPosition = y;
     }
 
     protected void setButtonX(int x) {
-        this.x = x;
+        this.xPosition = x;
     }
 
     protected int getTheButtonWidth() {

@@ -743,7 +743,7 @@ public class RenderUtils {
 
         GL11.glBegin(1);
 
-        GL11.glVertex3d(eyes.x, Minecraft.getMinecraft().player.getEyeHeight() + eyes.y, eyes.z);
+        GL11.glVertex3d(eyes.xCoord, Minecraft.getMinecraft().player.getEyeHeight() + eyes.yCoord, eyes.zCoord);
         GL11.glVertex3d(x, y, z);
 
         GL11.glEnd();
@@ -776,7 +776,7 @@ public class RenderUtils {
 
         GL11.glBegin(1);
 
-        GL11.glVertex3d(eyes.x, Minecraft.getMinecraft().player.getEyeHeight() + eyes.y, eyes.z);
+        GL11.glVertex3d(eyes.xCoord, Minecraft.getMinecraft().player.getEyeHeight() + eyes.yCoord, eyes.zCoord);
         GL11.glVertex3d(x, y, z);
 
         GL11.glEnd();
@@ -808,7 +808,7 @@ public class RenderUtils {
 
         GL11.glBegin(1);
 
-        GL11.glVertex3d(eyes.x, Minecraft.getMinecraft().player.getEyeHeight() + eyes.y, eyes.z);
+        GL11.glVertex3d(eyes.xCoord, Minecraft.getMinecraft().player.getEyeHeight() + eyes.yCoord, eyes.zCoord);
         GL11.glVertex3d(x, y, z);
 
         GL11.glEnd();

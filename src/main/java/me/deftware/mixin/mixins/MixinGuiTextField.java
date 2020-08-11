@@ -32,10 +32,10 @@ public abstract class MixinGuiTextField implements IMixinGuiTextField {
     private String overlayText = "";
 
     @Shadow
-    public int x;
+    public int xPosition;
 
     @Shadow
-    public int y;
+    public int yPosition;
 
     @Mutable
     @Final
@@ -61,7 +61,7 @@ public abstract class MixinGuiTextField implements IMixinGuiTextField {
 
     @Shadow
     @Final
-    private FontRenderer fontRenderer;
+    private FontRenderer fontRendererInstance;
 
     @Shadow public abstract String getText();
 
@@ -81,7 +81,7 @@ public abstract class MixinGuiTextField implements IMixinGuiTextField {
 
     @Override
     public FontRenderer getFontRendererInstance() {
-        return fontRenderer;
+        return fontRendererInstance;
     }
 
     @Override
@@ -101,22 +101,22 @@ public abstract class MixinGuiTextField implements IMixinGuiTextField {
 
     @Override
     public int getX() {
-        return x;
+        return xPosition;
     }
 
     @Override
     public void setX(int x) {
-        this.x = x;
+        this.xPosition = x;
     }
 
     @Override
     public int getY() {
-        return y;
+        return yPosition;
     }
 
     @Override
     public void setY(int y) {
-        this.y = y;
+        this.yPosition = y;
     }
 
     @Override
@@ -176,7 +176,7 @@ public abstract class MixinGuiTextField implements IMixinGuiTextField {
             customFont.drawStringWithShadow((int) x, (int) y - 6, text, new Color(color));
             return (int) (x + customFont.getStringWidth(text) + 1f);
         } else {
-            return this.fontRenderer.drawStringWithShadow(text, x, y, color);
+            return this.fontRendererInstance.drawStringWithShadow(text, x, y, color);
         }
     }
 
