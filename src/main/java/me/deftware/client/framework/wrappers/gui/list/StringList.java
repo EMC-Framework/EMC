@@ -65,7 +65,7 @@ public class StringList extends GuiListExtended {
 		}
 
 		@Override
-		public void drawEntry(int slotIndex, int x, int y, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean p_194999_5_, float partialTicks) {
+		public void drawEntry(int slotIndex, int x, int y, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean p_194999_5_) {
 			String render = string;
 			if (IFontRenderer.getStringWidth(render) > entryWidth) {
 				render = "";
@@ -82,7 +82,7 @@ public class StringList extends GuiListExtended {
 		}
 
 		@Override
-		public void updatePosition(int slotIndex, int x, int y, float partialTicks) {
+		public void setSelected(int slotIndex, int x, int y) {
 			//
 		}
 

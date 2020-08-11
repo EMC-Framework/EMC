@@ -169,7 +169,7 @@ public class IEntityPlayer {
 	}
 
 	public static boolean isCollidedHorizontally() {
-		return Minecraft.getMinecraft().player.collidedHorizontally;
+		return Minecraft.getMinecraft().player.isCollidedHorizontally;
 	}
 
 	public static boolean isRidingEntityInWater() {

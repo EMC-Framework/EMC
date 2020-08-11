@@ -89,7 +89,7 @@ public class IBlock {
     }
 
     public String getTranslationKey() {
-        return block.getTranslationKey();
+        return block.getUnlocalizedName();
     }
 
     public boolean instanceOf(IBlockTypes type) {

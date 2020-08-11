@@ -99,7 +99,7 @@ public abstract class MixinBlock {
         }
     }
 
-    @Inject(method = "getRenderLayer", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "getBlockLayer", at = @At("HEAD"), cancellable = true)
     private void getRenderLayer(CallbackInfoReturnable<BlockRenderLayer> ci) {
         if (SettingsMap.isOverrideMode()) {
             if ((boolean) SettingsMap.getValue(Block.getIdFromBlock(blockState.getBlock()), "translucent", true)) {

@@ -42,7 +42,7 @@ public class IWorld {
         ArrayList<IBlock> blocks = new ArrayList<>();
 
         if (Minecraft.getMinecraft().player != null && Minecraft.getMinecraft().world != null) {
-            Chunk currentChunk = Minecraft.getMinecraft().world.getChunk(Minecraft.getMinecraft().player.getPosition());
+            Chunk currentChunk = Minecraft.getMinecraft().world.getChunkFromBlockCoords(Minecraft.getMinecraft().player.getPosition());
             for (BlockPos pos : currentChunk.getTileEntityMap().keySet()) {
                 blocks.add(new IBlock(currentChunk.getBlockState(pos).getBlock(), pos));
             }
@@ -115,7 +115,7 @@ public class IWorld {
     }
 
     public IChunk getChunk(IBlockPos pos) {
-        return new IChunk(world.getChunk(pos.getPos()));
+        return new IChunk(world.getChunkFromBlockCoords(pos.getPos()));
     }
 
     public World getWorld() {

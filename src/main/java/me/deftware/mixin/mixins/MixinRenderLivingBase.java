@@ -2,26 +2,36 @@ package me.deftware.mixin.mixins;
 
 import me.deftware.client.framework.event.events.EventRenderPlayerModel;
 import me.deftware.client.framework.maps.SettingsMap;
+import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderLivingBase;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(RenderLivingBase.class)
-public abstract class MixinRenderLivingBase<T extends EntityLivingBase> {
+public abstract class MixinRenderLivingBase<T extends EntityLivingBase> extends Render<T> {
 
-    @Inject(method = "isVisible", at = @At("HEAD"), cancellable = true)
-    private void isVisible(T entity, CallbackInfoReturnable<Boolean> ci) {
+    @Shadow
+    protected ModelBase mainModel;
+
+    protected MixinRenderLivingBase(RenderManager renderManager) {
+        super(renderManager);
+    }
+
+    private boolean isVisible(T entity) {
         EventRenderPlayerModel event = new EventRenderPlayerModel(entity);
         event.broadcast();
         if (event.isShouldRender()) {
-            ci.setReturnValue(true);
+            return true;
         }
+        return !entity.isInvisible() || this.renderOutlines;
     }
 
     @Inject(method = "renderLivingAt", at = @At("RETURN"))

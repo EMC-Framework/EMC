@@ -17,9 +17,9 @@ public abstract class IGuiButton extends GuiButton implements CustomIGuiEventLis
     }
 
     @Override
-    public void drawButton(Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
+    public void drawButton(Minecraft minecraft, int mouseX, int mouseY) {
         if (onDraw(mouseX, mouseY) == 0) {
-            super.drawButton(minecraft, mouseX, mouseY, partialTicks);
+            super.drawButton(minecraft, mouseX, mouseY);
         }
     }
 

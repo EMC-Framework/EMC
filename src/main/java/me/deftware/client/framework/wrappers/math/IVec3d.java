@@ -73,7 +73,7 @@ public class IVec3d {
     }
 
     public IVec3d add(double x, double y, double z, boolean permanent) {
-        Vec3d adjusted = vector.add(x, y, z);
+        Vec3d adjusted = vector.addVector(x, y, z);
 
         if (permanent) {
             vector = adjusted;

@@ -32,7 +32,7 @@ public abstract class IGuiSlot extends GuiSlot implements CustomIGuiEventListene
     }
 
     @Override
-    protected void drawSlot(int slotIndex, int xPos, int yPos, int heightIn, int mouseXIn, int mouseYIn, float partialTicks) {
+    protected void drawSlot(int slotIndex, int xPos, int yPos, int heightIn, int mouseXIn, int mouseYIn) {
         drawISlot(slotIndex, xPos, yPos);
     }
 

@@ -29,7 +29,7 @@ public class IPlayerController {
         InventoryPlayer in = Minecraft.getMinecraft().player.inventory;
         for (int i = 0; i < in.mainInventory.size(); i++) {
             ItemStack it = in.mainInventory.get(i);
-            if (it.getItem().getTranslationKey().equals(name)) {
+            if (it.getItem().getUnlocalizedName().equals(name)) {
                 return i;
             }
         }

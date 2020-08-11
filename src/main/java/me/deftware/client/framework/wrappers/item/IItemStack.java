@@ -146,7 +146,7 @@ public class IItemStack {
     }
 
     public float getStrVsBlock(IBlockPos pos) {
-        return stack.getDestroySpeed(Minecraft.getMinecraft().world.getBlockState(pos.getPos()));
+        return stack.getStrVsBlock(Minecraft.getMinecraft().world.getBlockState(pos.getPos()));
     }
 
     public boolean isEmpty() {

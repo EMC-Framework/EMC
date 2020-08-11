@@ -11,7 +11,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.entity.EntityFlying;
 import net.minecraft.entity.*;
 import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.entity.boss.EntityWither;
@@ -70,11 +69,11 @@ public class IEntity {
     }
 
     public float getDistanceToPlayer() {
-        return entity.getDistance(Minecraft.getMinecraft().player);
+        return entity.getDistanceToEntity(Minecraft.getMinecraft().player);
     }
 
     public float getDistanceToEntity() {
-        return Minecraft.getMinecraft().player.getDistance(entity);
+        return Minecraft.getMinecraft().player.getDistanceToEntity(entity);
     }
 
     public String getName() {
@@ -349,8 +348,6 @@ public class IEntity {
             return entity instanceof EntityMule;
         } else if (e.equals(EntityType.ENTITY_HORSE)) {
             return entity instanceof EntityHorse;
-        } else if (e.equals(EntityType.ENTITY_PARROT)) {
-            return entity instanceof EntityParrot;
         }
         // Hostiles
         else if (e.equals(EntityType.EntitySlime) || e.equals(EntityType.ENTITY_SLIME)) {
@@ -381,8 +378,6 @@ public class IEntity {
             return entity instanceof EntityCreeper;
         } else if (e.equals(EntityType.ENTITY_VINDICATOR)) {
             return entity instanceof EntityVindicator;
-        } else if (e.equals(EntityType.ENTITY_ILLUSIONER)) {
-            return entity instanceof EntityIllusionIllager;
         } else if (e.equals(EntityType.ENTITY_HUSK)) {
             return entity instanceof EntityHusk;
         } else if (e.equals(EntityType.ENTITY_ZOMBIE)) {

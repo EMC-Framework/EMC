@@ -2,9 +2,9 @@ package me.deftware.client.framework.wrappers.gui;
 
 import me.deftware.mixin.imp.IMixinGuiTextField;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 
 public class IGuiPasswordTextField extends IGuiTextField {
@@ -94,16 +94,16 @@ public class IGuiPasswordTextField extends IGuiTextField {
         }
 
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferbuilder = tessellator.getBuffer();
+        VertexBuffer VertexBuffer = tessellator.getBuffer();
         GlStateManager.color(0.0F, 0.0F, 255.0F, 255.0F);
         GlStateManager.disableTexture2D();
         GlStateManager.enableColorLogic();
         GlStateManager.colorLogicOp(GlStateManager.LogicOp.OR_REVERSE);
-        bufferbuilder.begin(7, DefaultVertexFormats.POSITION);
-        bufferbuilder.pos(startX, endY, 0.0D).endVertex();
-        bufferbuilder.pos(endX, endY, 0.0D).endVertex();
-        bufferbuilder.pos(endX, startY, 0.0D).endVertex();
-        bufferbuilder.pos(startX, startY, 0.0D).endVertex();
+        VertexBuffer.begin(7, DefaultVertexFormats.POSITION);
+        VertexBuffer.pos(startX, endY, 0.0D).endVertex();
+        VertexBuffer.pos(endX, endY, 0.0D).endVertex();
+        VertexBuffer.pos(endX, startY, 0.0D).endVertex();
+        VertexBuffer.pos(startX, startY, 0.0D).endVertex();
         tessellator.draw();
         GlStateManager.disableColorLogic();
         GlStateManager.enableTexture2D();

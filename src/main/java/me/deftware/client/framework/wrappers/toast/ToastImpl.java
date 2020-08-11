@@ -2,8 +2,6 @@ package me.deftware.client.framework.wrappers.toast;
 
 import me.deftware.client.framework.utils.render.Texture;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.toasts.GuiToast;
-import net.minecraft.client.gui.toasts.IToast;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -11,7 +9,7 @@ import org.lwjgl.opengl.GL11;
  *
  * @author Deftware
  */
-public class ToastImpl implements IToast {
+public class ToastImpl {
 
 	public Texture icon;
 	public String title;
@@ -33,7 +31,8 @@ public class ToastImpl implements IToast {
 		}
 	}
 
-	@Override
+	// TODO: Fix in <1.12
+	/*@Override
 	public Visibility draw(GuiToast manager, long startTime) {
 		// Texture
 		manager.getMinecraft().getTextureManager().bindTexture(TEXTURE_TOASTS);
@@ -62,6 +61,6 @@ public class ToastImpl implements IToast {
 			GL11.glPopMatrix();
 		}
 		return startTime >= visibilityTime ? Visibility.HIDE : Visibility.SHOW;
-	}
+	}*/
 
 }

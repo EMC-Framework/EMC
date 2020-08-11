@@ -1,16 +1,16 @@
 package me.deftware.client.framework.wrappers.render;
 
-import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.VertexBuffer;
 
 public class IVertexBuffer {
 
-    private BufferBuilder vertexbuffer;
+    private VertexBuffer vertexbuffer;
 
     public IVertexBuffer(ITessellator tessellator) {
         vertexbuffer = tessellator.getTessellator().getBuffer();
     }
 
-    public IVertexBuffer(BufferBuilder buffer) {
+    public IVertexBuffer(VertexBuffer buffer) {
         vertexbuffer = buffer;
     }
 

@@ -23,11 +23,11 @@ public class IItem {
     }
 
     public ChatMessage getName() {
-        return new ChatMessage().fromString(item.getTranslationKey());
+        return new ChatMessage().fromString(item.getUnlocalizedName());
     }
 
     public String getTranslationKey() {
-        return item.getTranslationKey();
+        return item.getUnlocalizedName();
     }
 
     public String getItemKey() {
@@ -49,7 +49,7 @@ public class IItem {
     }
 
     public float getAttackDamage() {
-        return ((ItemSword) item).getAttackDamage() + 3.0F;
+        return ((ItemSword) item).getDamageVsEntity() + 3.0F;
     }
 
     public float getDamageVsEntity() {
@@ -86,7 +86,7 @@ public class IItem {
         } else if (type.equals(IItemType.ItemHoe)) {
             return item instanceof ItemHoe;
         } else if (type.equals(IItemType.ItemShulkerBox)) {
-            return item instanceof ItemBlock && item.getTranslationKey().contains("shulker_box");
+            return item instanceof ItemBlock && item.getUnlocalizedName().contains("shulker_box");
         }
         return false;
     }

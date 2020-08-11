@@ -32,7 +32,7 @@ public class IEntityOtherPlayerMP extends EntityOtherPlayerMP {
             experience = oldPlayer.experience;
             setScore(oldPlayer.getScore());
         }
-        xpSeed = oldPlayer.getXPSeed();
+        //xpSeed = oldPlayer.getXPSeed();
         if (getDataManager() != null) {
             getDataManager().set(EntityPlayer.PLAYER_MODEL_FLAG, oldPlayer.getDataManager().get(EntityPlayer.PLAYER_MODEL_FLAG));
         }

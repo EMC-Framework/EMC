@@ -11,7 +11,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 @Mixin(ServerListEntryNormal.class)
@@ -24,7 +23,7 @@ public class MixinServerListEntryNormal {
     private ServerData server;
 
     @Inject(method = "drawEntry", at = @At("HEAD"))
-    private void drawEntry(int p_drawEntry_1_, int p_drawEntry_2_, int p_drawEntry_3_, int p_drawEntry_4_, int p_drawEntry_5_, int p_drawEntry_6_, int p_drawEntry_7_, boolean p_drawEntry_8_, float p_drawEntry_9_, CallbackInfo ci) {
+    private void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected, CallbackInfo ci) {
         if (server.pingToServer > 1 && !sentEvent) {
             sentEvent = true;
             EventServerPinged event = new EventServerPinged(

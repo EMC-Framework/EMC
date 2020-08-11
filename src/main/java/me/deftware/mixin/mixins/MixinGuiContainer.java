@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GuiContainer.class)
-public class MixinGuiContainer extends MixinGuiScreen implements IMixinGuiContainer {
+public abstract class MixinGuiContainer extends MixinGuiScreen implements IMixinGuiContainer {
 
     @Shadow
     private Slot hoveredSlot;

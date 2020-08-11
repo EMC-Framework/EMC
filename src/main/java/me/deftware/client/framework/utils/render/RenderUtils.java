@@ -13,10 +13,10 @@ import me.deftware.mixin.imp.IMixinEntityRenderer;
 import me.deftware.mixin.imp.IMixinRenderManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.entity.Entity;
@@ -120,7 +120,7 @@ public class RenderUtils {
 
     public static void renderChunks(List<IChunkPos> positions, Color color) {
         final Tessellator tessellator = Tessellator.getInstance();
-        final BufferBuilder worldRenderer = tessellator.getBuffer();
+        final VertexBuffer worldRenderer = tessellator.getBuffer();
 
         final float red = color.getRed();
         final float green = color.getGreen();
@@ -165,7 +165,7 @@ public class RenderUtils {
 
     public static void drawSelectionBoundingBox(AxisAlignedBB boundingBox) {
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder vertexbuffer = tessellator.getBuffer();
+        VertexBuffer vertexbuffer = tessellator.getBuffer();
         vertexbuffer.begin(3, DefaultVertexFormats.POSITION);
         vertexbuffer.pos(boundingBox.minX, boundingBox.minY, boundingBox.minZ).endVertex();
         vertexbuffer.pos(boundingBox.maxX, boundingBox.minY, boundingBox.minZ).endVertex();
@@ -630,7 +630,7 @@ public class RenderUtils {
 
     public static void drawColorBox(AxisAlignedBB BoundingBox, float red, float green, float blue, float alpha) {
         Tessellator ts = Tessellator.getInstance();
-        BufferBuilder vb = ts.getBuffer();
+        VertexBuffer vb = ts.getBuffer();
         vb.begin(7, DefaultVertexFormats.POSITION_TEX);
         vb.pos(BoundingBox.minX, BoundingBox.minY, BoundingBox.minZ).color(red, green, blue, alpha).endVertex();
         vb.pos(BoundingBox.minX, BoundingBox.maxY, BoundingBox.minZ).color(red, green, blue, alpha).endVertex();
@@ -726,8 +726,8 @@ public class RenderUtils {
         GL11.glDisable(2929);
         GL11.glDepthMask(false);
         if (mode == 0) {
-            GL11.glColor4d(1.0F - Minecraft.getMinecraft().player.getDistance(entity) / 40.0F,
-                    Minecraft.getMinecraft().player.getDistance(entity) / 40.0F, 0.0D, 0.5D);
+            GL11.glColor4d(1.0F - Minecraft.getMinecraft().player.getDistanceToEntity(entity) / 40.0F,
+                    Minecraft.getMinecraft().player.getDistanceToEntity(entity) / 40.0F, 0.0D, 0.5D);
         } else if (mode == 1) {
             GL11.glColor4d(0.0D, 0.0D, 1.0D, 0.5D);
         } else if (mode == 2) {
