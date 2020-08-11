@@ -1,6 +1,5 @@
 package me.deftware.mixin.mixins;
 
-import me.deftware.client.framework.event.Event;
 import me.deftware.client.framework.event.events.EventBlockhardness;
 import me.deftware.client.framework.event.events.EventCollideCheck;
 import me.deftware.client.framework.event.events.EventSlowdown;
@@ -26,10 +25,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Block.class)
 public abstract class MixinBlock {
-
-    @Final
-    @Shadow
-    private float velocityMultiplier;
 
     @Final
     @Shadow
@@ -70,25 +65,6 @@ public abstract class MixinBlock {
             EventSlowdown event = null;
             if (block instanceof IceBlock) {
                 event = new EventSlowdown(EventSlowdown.SlowdownType.Slipperiness, 0.6f);
-            }
-            if (event != null) {
-                event.broadcast();
-                if (event.isCanceled()) {
-                    cir.setReturnValue(event.getMultiplier());
-                }
-            }
-        }
-    }
-
-    @Inject(method = "getVelocityMultiplier", at = @At(value = "TAIL"), cancellable = true)
-    private void onGetVelocityMultiplier(CallbackInfoReturnable<Float> cir) {
-        if (velocityMultiplier != 1.0f) {
-            Block block = Block.getBlockFromItem(this.asItem());
-            EventSlowdown event = null;
-            if (block instanceof HoneyBlock) {
-                event = new EventSlowdown(EventSlowdown.SlowdownType.Honey);
-            } else if (block instanceof SoulSandBlock) {
-                event = new EventSlowdown(EventSlowdown.SlowdownType.Soulsand);
             }
             if (event != null) {
                 event.broadcast();

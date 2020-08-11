@@ -99,6 +99,16 @@ public abstract class MixinEntity implements IMixinEntity {
         return getFlag(1);
     }
 
+    @Redirect(method = "clipSneakingMovement", at = @At(value = "INVOKE", target = "net/minecraft/entity/Entity.isSneaking()Z", opcode = 180, ordinal = 0))
+    private boolean clipSneakingMovement(Entity self) {
+        EventSneakingCheck event = new EventSneakingCheck(isSneaking());
+        event.broadcast();
+        if (event.isSneaking()) {
+            return true;
+        }
+        return getFlag(1);
+    }
+
     @Inject(method = "setVelocityClient", at = @At("HEAD"), cancellable = true)
     private void onSetVelocityClient(double double_1, double double_2, double double_3, CallbackInfo ci) {
         EventKnockback event = new EventKnockback(double_1, double_2, double_3);

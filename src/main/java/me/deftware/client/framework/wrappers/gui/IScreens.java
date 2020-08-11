@@ -27,7 +27,7 @@ public class IScreens {
             screen = new SettingsScreen(parent, MinecraftClient.getInstance().options);
         } else if (type.equals(ScreenType.Mods)) {
             if (ResourceUtils.hasSpecificMod("modmenu")) {
-                screen = Objects.requireNonNull(IMinecraft.createScreenInstance("io.github.prospector.modmenu.gui.ModsScreen", new Pair<>(Screen.class, parent)));
+                screen = Objects.requireNonNull(IMinecraft.createScreenInstance("io.github.prospector.modmenu.gui.ModListScreen", new Pair<>(Screen.class, parent)));
             }
         }
         return screen;

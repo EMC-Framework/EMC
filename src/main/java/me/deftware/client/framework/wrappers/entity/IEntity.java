@@ -11,10 +11,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.OtherClientPlayerEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.*;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.mob.*;
@@ -159,15 +156,15 @@ public class IEntity {
     }
 
     public double getLastTickPosX() {
-        return entity.lastRenderX;
+        return entity.prevRenderX;
     }
 
     public double getLastTickPosY() {
-        return entity.lastRenderY;
+        return entity.prevRenderY;
     }
 
     public double getLastTickPosZ() {
-        return entity.lastRenderZ;
+        return entity.prevRenderZ;
     }
 
     public float getNametagSize() {
@@ -185,7 +182,7 @@ public class IEntity {
 
     public float getMaxHealth() {
         if (entity instanceof LivingEntity) {
-            return ((LivingEntity) entity).getMaximumHealth();
+            return ((LivingEntity) entity).getHealthMaximum();
         }
         return 0;
     }
@@ -251,15 +248,15 @@ public class IEntity {
     }
 
     public double getPosX() {
-        return entity.getX();
+        return entity.x;
     }
 
     public double getPosY() {
-        return entity.getY();
+        return entity.y;
     }
 
     public double getPosZ() {
-        return entity.getZ();
+        return entity.z;
     }
 
     public double getPrevPosX() {

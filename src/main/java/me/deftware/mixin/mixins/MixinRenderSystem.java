@@ -1,13 +1,13 @@
 package me.deftware.mixin.mixins;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.deftware.client.framework.maps.SettingsMap;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(RenderSystem.class)
+@Mixin(GlStateManager.class)
 public class MixinRenderSystem {
 
 	@Inject(method = "enableDepthTest", at = @At(value = "HEAD"), cancellable = true)

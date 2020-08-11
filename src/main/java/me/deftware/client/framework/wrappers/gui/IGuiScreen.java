@@ -1,7 +1,7 @@
 package me.deftware.client.framework.wrappers.gui;
 
 import com.google.common.collect.Iterables;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.platform.GlStateManager;
 import lombok.Getter;
 import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.main.EMCMod;
@@ -16,7 +16,7 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.text.LiteralText;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
@@ -61,7 +61,7 @@ public abstract class IGuiScreen extends Screen {
     }
 
     public static void openLink(String url) {
-        Util.getOperatingSystem().open(url);
+        SystemUtil.getOperatingSystem().open(url);
     }
 
     public static boolean isCtrlPressed() {
@@ -73,19 +73,19 @@ public abstract class IGuiScreen extends Screen {
     }
 
     public static int getScaledHeight() {
-        return MinecraftClient.getInstance().getWindow().getScaledHeight();
+        return MinecraftClient.getInstance().window.getScaledHeight();
     }
 
     public static int getScaledWidth() {
-        return MinecraftClient.getInstance().getWindow().getScaledWidth();
+        return MinecraftClient.getInstance().window.getScaledWidth();
     }
 
     public static int getDisplayHeight() {
-        return MinecraftClient.getInstance().getWindow().getHeight();
+        return MinecraftClient.getInstance().window.getHeight();
     }
 
     public static int getDisplayWidth() {
-        return MinecraftClient.getInstance().getWindow().getWidth();
+        return MinecraftClient.getInstance().window.getWidth();
     }
 
     @Override
@@ -240,7 +240,7 @@ public abstract class IGuiScreen extends Screen {
 
     protected void drawTexture(IResourceLocation texture, int x, int y, int width, int height) {
         MinecraftClient.getInstance().getTextureManager().bindTexture(texture);
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         Screen.blit(x, y, 0, 0, width, height, width, height);
     }
 

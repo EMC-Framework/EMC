@@ -65,7 +65,7 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
 
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
     private void tick(CallbackInfo ci) {
-        EventUpdate event = new EventUpdate(((ClientPlayerEntity) (Object) this).getX(), ((ClientPlayerEntity) (Object) this).getY(), ((ClientPlayerEntity) (Object) this).getZ(), yaw, pitch, onGround);
+        EventUpdate event = new EventUpdate(((ClientPlayerEntity) (Object) this).x, ((ClientPlayerEntity) (Object) this).y, ((ClientPlayerEntity) (Object) this).z, yaw, pitch, onGround);
         event.broadcast();
         if (event.isCanceled()) {
             ci.cancel();
@@ -99,7 +99,7 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
     @Inject(method = "sendMovementPackets", at = @At(value = "HEAD"), cancellable = true)
     private void onSendMovementPackets(CallbackInfo ci) {
         ClientPlayerEntity entity = (ClientPlayerEntity) (Object) this;
-        EventPlayerWalking event = new EventPlayerWalking(entity.getX(), entity.getY(), entity.getZ(), yaw, pitch, onGround);
+        EventPlayerWalking event = new EventPlayerWalking(entity.x, entity.y, entity.z, yaw, pitch, onGround);
         event.broadcast();
         if (event.isCanceled()) {
             ci.cancel();

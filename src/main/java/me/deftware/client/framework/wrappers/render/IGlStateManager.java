@@ -1,6 +1,6 @@
 package me.deftware.client.framework.wrappers.render;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.platform.GlStateManager;
 import org.lwjgl.opengl.GL11;
 
 import java.nio.FloatBuffer;
@@ -32,98 +32,98 @@ public class IGlStateManager {
     }
 
     public static void color(float colorRed, float colorGreen, float colorBlue) {
-        RenderSystem.color4f(colorRed, colorGreen, colorBlue, 1.0F);
+        GlStateManager.color4f(colorRed, colorGreen, colorBlue, 1.0F);
     }
 
     public static void color(float colorRed, float colorGreen, float colorBlue, float colorAlpha) {
-        RenderSystem.color4f(colorRed, colorGreen, colorBlue, colorAlpha);
+        GlStateManager.color4f(colorRed, colorGreen, colorBlue, colorAlpha);
     }
 
     public static void resetColor() {
-        RenderSystem.clearCurrentColor();
+        GlStateManager.clearCurrentColor();
     }
 
     public static void pushMatrix() {
-        RenderSystem.pushMatrix();
+        GlStateManager.pushMatrix();
     }
 
     public static void popMatrix() {
-        RenderSystem.popMatrix();
+        GlStateManager.popMatrix();
     }
 
     public static void enableDepth() {
-        RenderSystem.enableDepthTest();
+        GlStateManager.enableDepthTest();
     }
 
     public static void disableDepth() {
-        RenderSystem.disableDepthTest();
+        GlStateManager.disableDepthTest();
     }
 
     public static void disableLighting() {
-        RenderSystem.disableLighting();
+        GlStateManager.disableLighting();
     }
 
     public static void enableBlend() {
-        RenderSystem.enableBlend();
+        GlStateManager.enableBlend();
     }
 
     public static void disableTexture2D() {
-        RenderSystem.disableTexture();
+        GlStateManager.disableTexture();
     }
 
     public static void tryBlendFuncSeparate(int srcFactor, int dstFactor, int srcFactorAlpha, int dstFactorAlpha) {
-        RenderSystem.blendFuncSeparate(srcFactor, dstFactor, srcFactorAlpha, dstFactorAlpha);
+        GlStateManager.blendFuncSeparate(srcFactor, dstFactor, srcFactorAlpha, dstFactorAlpha);
     }
 
     public static void blendFunc(int srcFactor, int dstFactor) {
-        RenderSystem.blendFunc(srcFactor, dstFactor);
+        GlStateManager.blendFunc(srcFactor, dstFactor);
     }
 
     public static void depthFunc(int func) {
-        RenderSystem.depthFunc(func);
+        GlStateManager.depthFunc(func);
     }
 
     public static void enableTexture2D() {
-        RenderSystem.enableTexture();
+        GlStateManager.enableTexture();
     }
 
     public static void enableLighting() {
-        RenderSystem.enableLighting();
+        GlStateManager.enableLighting();
     }
 
     public static void disableBlend() {
-        RenderSystem.disableBlend();
+        GlStateManager.disableBlend();
     }
 
     public static void enableRescaleNormal() {
-        RenderSystem.enableRescaleNormal();
+        GlStateManager.enableRescaleNormal();
     }
 
     public static void disableRescaleNormal() {
-        RenderSystem.disableRescaleNormal();
+        GlStateManager.disableRescaleNormal();
     }
 
     public static void disablePolygonOffset() {
-        RenderSystem.disablePolygonOffset();
+        GlStateManager.disablePolygonOffset();
     }
 
     public static void doPolygonOffset(float f, float g) {
-        RenderSystem.polygonOffset(f, g);
+        GlStateManager.polygonOffset(f, g);
     }
 
     public static void disableAlpha() {
-        RenderSystem.disableAlphaTest();
+        GlStateManager.disableAlphaTest();
     }
 
     public static void enableAlpha() {
-        RenderSystem.enableAlphaTest();
+        GlStateManager.enableAlphaTest();
     }
 
     public static void enablePolygonOffset() {
-        RenderSystem.enablePolygonOffset();
+        GlStateManager.enablePolygonOffset();
     }
     public static void lineWidth(float f) {
-         RenderSystem.lineWidth(f);
+         GlStateManager.lineWidth(f);
     }
 
 }

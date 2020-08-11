@@ -12,27 +12,27 @@ public class IMob {
     }
 
     public double getPosX() {
-        return mob.getX();
+        return mob.x;
     }
 
     public double getPosY() {
-        return mob.getY();
+        return mob.y;
     }
 
     public double getPosZ() {
-        return mob.getZ();
+        return mob.z;
     }
 
     public double getLastTickPosX() {
-        return mob.lastRenderX;
+        return mob.prevRenderX;
     }
 
     public double getLastTickPosY() {
-        return mob.lastRenderY;
+        return mob.prevRenderY;
     }
 
     public double getLastTickPosZ() {
-        return mob.lastRenderZ;
+        return mob.prevRenderZ;
     }
 
     public float getHeight() {

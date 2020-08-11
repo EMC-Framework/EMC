@@ -7,7 +7,7 @@ public class IVertexBuffer {
     private BufferBuilder vertexbuffer;
 
     public IVertexBuffer(ITessellator tessellator) {
-        vertexbuffer = tessellator.getTessellator().getBuffer();
+        vertexbuffer = tessellator.getTessellator().getBufferBuilder();
     }
 
     public IVertexBuffer(BufferBuilder buffer) {

@@ -13,7 +13,6 @@
     "MixinBlockModelRenderer",
     "MixinBlockSoulSand",
     "MixinBlockState",
-    "MixinChatSuggestion",
     "MixinClientBrandRetriever",
     "MixinCPacketPlayer",
     "MixinEnderEyeEntity",
@@ -49,7 +48,6 @@
     "MixinNetworkManager",
     "MixinNetworkPlayerInfo",
     "MixinPlayerControllerMP",
-    "MixinPlayerEntity",
     "MixinPlayerListEntry",
     "MixinRender",
     "MixinRenderLivingBase",
@@ -64,7 +62,6 @@
     "MixinTimer",
     "MixinVisGraph",
     "MixinWorldClient",
-    "MixinWorldRenderer",
     "MixinDebugHud",
     "MixinWindow",
     "MixinWorld"

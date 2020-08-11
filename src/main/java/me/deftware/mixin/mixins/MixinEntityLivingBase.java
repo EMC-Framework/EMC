@@ -1,5 +1,6 @@
 package me.deftware.mixin.mixins;
 
+import me.deftware.client.framework.event.events.EventAnimation;
 import me.deftware.client.framework.event.events.EventIsPotionActive;
 import me.deftware.client.framework.maps.SettingsMap;
 import me.deftware.mixin.imp.IMixinEntityLivingBase;
@@ -25,6 +26,15 @@ public class MixinEntityLivingBase implements IMixinEntityLivingBase {
 
     @Shadow
     protected int itemUseTimeLeft;
+
+    @Inject(method = "isInsideWall", at = @At(value = "HEAD"), cancellable = true)
+    public void isInWall(CallbackInfoReturnable<Boolean> cir) {
+        EventAnimation event = new EventAnimation(EventAnimation.AnimationType.Wall);
+        event.broadcast();
+        if (event.isCanceled()) {
+            cir.setReturnValue(false);
+        }
+    }
 
     @SuppressWarnings("ConstantConditions")
     @Inject(method = "hasStatusEffect", at = @At(value = "TAIL"), cancellable = true)

@@ -95,15 +95,15 @@ public class RotUtils {
     }
 
     private static Vec3d getEyesPos() {
-        return new Vec3d(MinecraftClient.getInstance().player.getX(),
-                MinecraftClient.getInstance().player.getY() + MinecraftClient.getInstance().player.getEyeHeight(MinecraftClient.getInstance().player.getPose()),
-                MinecraftClient.getInstance().player.getZ());
+        return new Vec3d(MinecraftClient.getInstance().player.x,
+                MinecraftClient.getInstance().player.y + MinecraftClient.getInstance().player.getEyeHeight(MinecraftClient.getInstance().player.getPose()),
+                MinecraftClient.getInstance().player.z);
     }
 
     public static IVec3d getEyesPosIVec() {
-        return new IVec3d(MinecraftClient.getInstance().player.getX(),
-                MinecraftClient.getInstance().player.getY() + MinecraftClient.getInstance().player.getEyeHeight(MinecraftClient.getInstance().player.getPose()),
-                MinecraftClient.getInstance().player.getZ());
+        return new IVec3d(MinecraftClient.getInstance().player.x,
+                MinecraftClient.getInstance().player.y + MinecraftClient.getInstance().player.getEyeHeight(MinecraftClient.getInstance().player.getPose()),
+                MinecraftClient.getInstance().player.z);
     }
 
     public static float rad2deg(float rad) {

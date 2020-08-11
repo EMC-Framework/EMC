@@ -130,7 +130,7 @@ public class Texture {
         int rgb = ((red & 0xFF) << 16) |
                 ((green & 0xFF) << 8) |
                 ((blue & 0xFF));
-        this.nativeImage.setPixelRgba(x, y, rgb);
+        this.nativeImage.setPixelRGBA(x, y, rgb);
     }
 
     public void setPixel(int x, int y, int red, int green, int blue, int alpha) {
@@ -138,15 +138,15 @@ public class Texture {
                 ((red & 0xFF) << 16) |
                 ((green & 0xFF) << 8) |
                 ((blue & 0xFF));
-        this.nativeImage.setPixelRgba(x, y, rgba);
+        this.nativeImage.setPixelRGBA(x, y, rgba);
     }
 
     public void setPixel(int x, int y, int rgba) {
-        this.nativeImage.setPixelRgba(x, y, rgba);
+        this.nativeImage.setPixelRGBA(x, y, rgba);
     }
 
     public int getPixel(int x, int y) {
-        return this.nativeImage.getPixelRgba(x, y);
+        return this.nativeImage.getPixelRGBA(x, y);
     }
 
     public byte getAlpha(int x, int y) {

@@ -1,6 +1,6 @@
 package me.deftware.client.framework.wrappers;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.deftware.client.framework.maps.SettingsMap;
 import me.deftware.client.framework.wrappers.entity.IEntity;
 import me.deftware.client.framework.wrappers.entity.IEntity.EntityType;
@@ -19,8 +19,8 @@ import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.main.Main;
-import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.options.AoOption;
+import net.minecraft.client.options.ServerEntry;
 import net.minecraft.container.GenericContainer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -60,7 +60,7 @@ public class IMinecraft {
                 return iServerCache;
             }
         }
-        ServerInfo sd = MinecraftClient.getInstance().getCurrentServerEntry();
+        ServerEntry sd = MinecraftClient.getInstance().getCurrentServerEntry();
         iServerCache = new IServerData(sd.name, sd.address, sd.isLocal());
         iServerCache.version = sd.version;
         return iServerCache;
@@ -72,11 +72,11 @@ public class IMinecraft {
     }
 
     public static long getWindowHandle() {
-        return MinecraftClient.getInstance().getWindow().getHandle();
+        return MinecraftClient.getInstance().window.getHandle();
     }
 
     public static double getScaleFactor() {
-        return MinecraftClient.getInstance().getWindow().getScaleFactor();
+        return MinecraftClient.getInstance().window.getScaleFactor();
     }
 
     public static void setScaleFactor(int factor) {
@@ -109,8 +109,8 @@ public class IMinecraft {
         if (!IMinecraft.isMouseOver()) {
             return null;
         }
-        if (MinecraftClient.getInstance().crosshairTarget != null && MinecraftClient.getInstance().crosshairTarget instanceof BlockHitResult && ((BlockHitResult) MinecraftClient.getInstance().crosshairTarget).getBlockPos() != null) {
-            return new IBlockPos(((BlockHitResult) MinecraftClient.getInstance().crosshairTarget).getBlockPos());
+        if (MinecraftClient.getInstance().hitResult != null && MinecraftClient.getInstance().hitResult instanceof BlockHitResult && ((BlockHitResult) MinecraftClient.getInstance().hitResult).getBlockPos() != null) {
+            return new IBlockPos(((BlockHitResult) MinecraftClient.getInstance().hitResult).getBlockPos());
         }
         return null;
     }
@@ -124,7 +124,7 @@ public class IMinecraft {
     }
 
     public static boolean isEntityHit() {
-        return MinecraftClient.getInstance().crosshairTarget != null && MinecraftClient.getInstance().crosshairTarget instanceof EntityHitResult && ((EntityHitResult) MinecraftClient.getInstance().crosshairTarget).getEntity() != null;
+        return MinecraftClient.getInstance().hitResult != null && MinecraftClient.getInstance().hitResult instanceof EntityHitResult && ((EntityHitResult) MinecraftClient.getInstance().hitResult).getEntity() != null;
     }
 
     public static int getFPS() {
@@ -149,7 +149,7 @@ public class IMinecraft {
     }
 
     public static void triggerGuiRenderer() {
-        RenderSystem.clear(256, MinecraftClient.IS_SYSTEM_MAC);
+        GlStateManager.clear(256, MinecraftClient.IS_SYSTEM_MAC);
     }
 
     public static void addEntityToWorld(int id, IEntity entity) {
@@ -173,7 +173,7 @@ public class IMinecraft {
     }
 
     public static int getGuiScale() {
-        int factor = MinecraftClient.getInstance().getWindow().calculateScaleFactor(MinecraftClient.getInstance().options.guiScale, MinecraftClient.getInstance().forcesUnicodeFont());
+        int factor = MinecraftClient.getInstance().window.calculateScaleFactor(MinecraftClient.getInstance().options.guiScale, MinecraftClient.getInstance().forcesUnicodeFont());
         if (factor == 0) {
             factor = 4;
         }
@@ -297,7 +297,7 @@ public class IMinecraft {
     }
 
     public static boolean isMouseOver() {
-        if (MinecraftClient.getInstance().crosshairTarget != null) {
+        if (MinecraftClient.getInstance().hitResult != null) {
             return true;
         }
         return false;
@@ -307,7 +307,7 @@ public class IMinecraft {
         if (!isEntityHit()) {
             return null;
         }
-        return IEntity.fromEntity(((EntityHitResult) MinecraftClient.getInstance().crosshairTarget).getEntity());
+        return IEntity.fromEntity(((EntityHitResult) MinecraftClient.getInstance().hitResult).getEntity());
     }
 
     public static boolean entityHitInstanceOf(EntityType type) {
@@ -315,7 +315,7 @@ public class IMinecraft {
             return false;
         }
         if (type.equals(EntityType.ENTITY_LIVING_BASE)) {
-            return ((EntityHitResult) MinecraftClient.getInstance().crosshairTarget).getEntity() instanceof LivingEntity;
+            return ((EntityHitResult) MinecraftClient.getInstance().hitResult).getEntity() instanceof LivingEntity;
         }
         return false;
     }

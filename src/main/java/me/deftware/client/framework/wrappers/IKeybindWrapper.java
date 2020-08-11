@@ -16,7 +16,7 @@ public class IKeybindWrapper {
     }
 
     public static boolean isKeyDown(IKeybind bind) {
-        return InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), ((IMixinKeyBinding) bind.bind).getInput().getKeyCode());
+        return InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), ((IMixinKeyBinding) bind.bind).getInput().getKeyCode());
     }
 
     public static String getKeyName(int key) {
@@ -27,7 +27,7 @@ public class IKeybindWrapper {
     }
 
     public static boolean isKeyDown(int key) {
-        return InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), key);
+        return InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), key);
     }
 
     public enum IKeybind {

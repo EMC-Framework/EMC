@@ -60,7 +60,7 @@ public class IEntityPlayer {
 	}
 
 	public static boolean isAtEdge() {
-		return MinecraftClient.getInstance().world.getCollisions(MinecraftClient.getInstance().player, MinecraftClient.getInstance().player.getBoundingBox().offset(0, -0.5, 0).expand(-0.001, 0, -0.001), Collections.emptySet()).count() == 0;
+		return MinecraftClient.getInstance().world.getCollisionShapes(MinecraftClient.getInstance().player, MinecraftClient.getInstance().player.getBoundingBox().offset(0, -0.5, 0).expand(-0.001, 0, -0.001), Collections.emptySet()).count() == 0;
 	}
 
 	public static boolean processRightClickBlock(IBlockPos pos, IEnumFacing facing, IVec3d vec) {
@@ -259,24 +259,24 @@ public class IEntityPlayer {
 		if (IEntityPlayer.isNull()) {
 			return;
 		}
-		MinecraftClient.getInstance().player.setPosition(MinecraftClient.getInstance().player.getX() + x,
-				MinecraftClient.getInstance().player.getY(), MinecraftClient.getInstance().player.getZ());
+		MinecraftClient.getInstance().player.setPosition(MinecraftClient.getInstance().player.x + x,
+				MinecraftClient.getInstance().player.y, MinecraftClient.getInstance().player.z);
 	}
 
 	public static void setPositionY(int y) {
 		if (IEntityPlayer.isNull()) {
 			return;
 		}
-		MinecraftClient.getInstance().player.setPosition(MinecraftClient.getInstance().player.getX(),
-				MinecraftClient.getInstance().player.getY() + y, MinecraftClient.getInstance().player.getZ());
+		MinecraftClient.getInstance().player.setPosition(MinecraftClient.getInstance().player.x,
+				MinecraftClient.getInstance().player.y + y, MinecraftClient.getInstance().player.z);
 	}
 
 	public static void setPositionZ(int z) {
 		if (IEntityPlayer.isNull()) {
 			return;
 		}
-		MinecraftClient.getInstance().player.setPosition(MinecraftClient.getInstance().player.getX(),
-				MinecraftClient.getInstance().player.getY(), MinecraftClient.getInstance().player.getZ() + z);
+		MinecraftClient.getInstance().player.setPosition(MinecraftClient.getInstance().player.x,
+				MinecraftClient.getInstance().player.y, MinecraftClient.getInstance().player.z + z);
 	}
 
 	public static void setPosition(double x, double y, double z) {
@@ -297,14 +297,14 @@ public class IEntityPlayer {
 		if (IEntityPlayer.isNull()) {
 			return;
 		}
-		MinecraftClient.getInstance().player.flyingSpeed = speed;
+		MinecraftClient.getInstance().player.field_6281 = speed;
 	}
 
 	public static void setJumpMovementFactorTimes(float speed) {
 		if (IEntityPlayer.isNull()) {
 			return;
 		}
-		MinecraftClient.getInstance().player.flyingSpeed *= speed;
+		MinecraftClient.getInstance().player.field_6281 *= speed;
 	}
 
 	public static void setNoClip(boolean state) {
@@ -545,21 +545,21 @@ public class IEntityPlayer {
 		if (IEntityPlayer.isNull()) {
 			return 0;
 		}
-		return MinecraftClient.getInstance().player.getX();
+		return MinecraftClient.getInstance().player.x;
 	}
 
 	public static double getPosY() {
 		if (IEntityPlayer.isNull()) {
 			return 0;
 		}
-		return MinecraftClient.getInstance().player.getY();
+		return MinecraftClient.getInstance().player.y;
 	}
 
 	public static double getPosZ() {
 		if (IEntityPlayer.isNull()) {
 			return 0;
 		}
-		return MinecraftClient.getInstance().player.getZ();
+		return MinecraftClient.getInstance().player.z;
 	}
 
 	public static double getEyeHeight() {
@@ -625,7 +625,7 @@ public class IEntityPlayer {
 			return "0";
 		}
 		return String.format("%.3f",
-				MinecraftClient.getInstance().getCameraEntity().getX());
+				MinecraftClient.getInstance().getCameraEntity().x);
 	}
 
 	public static String getDisplayY() {
@@ -633,7 +633,7 @@ public class IEntityPlayer {
 			return "0";
 		}
 		return String.format("%.5f",
-				MinecraftClient.getInstance().getCameraEntity().getY());
+				MinecraftClient.getInstance().getCameraEntity().y);
 	}
 
 	public static String getDisplayZ() {
@@ -641,7 +641,7 @@ public class IEntityPlayer {
 			return "0";
 		}
 		return String.format("%.3f",
-				MinecraftClient.getInstance().getCameraEntity().getZ());
+				MinecraftClient.getInstance().getCameraEntity().z);
 	}
 
 	/**
@@ -780,9 +780,9 @@ public class IEntityPlayer {
 	public static boolean isTouchingLiquid() {
 		MinecraftClient mc = MinecraftClient.getInstance();
 		boolean inLiquid = false;
-		int y = (int) mc.player.getBoundingBox().y1;
-		for (int x = IEntityPlayer.floor_double(mc.player.getBoundingBox().x1); x < IEntityPlayer.floor_double(mc.player.getBoundingBox().x2) + 1; x++) {
-			for (int z = IEntityPlayer.floor_double(mc.player.getBoundingBox().z1); z < IEntityPlayer.floor_double(mc.player.getBoundingBox().z2)
+		int y = (int) mc.player.getBoundingBox().minY;
+		for (int x = IEntityPlayer.floor_double(mc.player.getBoundingBox().minX); x < IEntityPlayer.floor_double(mc.player.getBoundingBox().maxX) + 1; x++) {
+			for (int z = IEntityPlayer.floor_double(mc.player.getBoundingBox().minZ); z < IEntityPlayer.floor_double(mc.player.getBoundingBox().maxZ)
 					+ 1; z++) {
 				net.minecraft.block.Block block = mc.world.getBlockState(new BlockPos(x, y, z)).getBlock();
 				if ((block != null) && (!(block instanceof AirBlock))) {

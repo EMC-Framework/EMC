@@ -1,10 +1,9 @@
 package me.deftware.mixin.mixins;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.deftware.client.framework.event.events.EventRenderPlayerModel;
 import me.deftware.client.framework.maps.SettingsMap;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MixinRenderLivingBase<T extends LivingEntity> {
 
     @Inject(method = "method_4056", at = @At("HEAD"), cancellable = true)
-    private void isVisible(T entity, boolean bl, CallbackInfoReturnable<Boolean> ci) {
+    private void isVisible(T entity, CallbackInfoReturnable<Boolean> ci) {
         EventRenderPlayerModel event = new EventRenderPlayerModel(entity);
         event.broadcast();
         if (event.isShouldRender()) {
@@ -26,7 +25,7 @@ public abstract class MixinRenderLivingBase<T extends LivingEntity> {
     }
 
     @Inject(method = "setupTransforms", at = @At("RETURN"))
-    protected void setupTransforms(T entity, MatrixStack matrices, float x, float y, float z, CallbackInfo ci) {
+    protected void setupTransforms(T entity, float x, float y, float z, CallbackInfo ci) {
         if (!(entity instanceof PlayerEntity)) {
             return;
         }
@@ -45,10 +44,11 @@ public abstract class MixinRenderLivingBase<T extends LivingEntity> {
                 flip = names.equals(s);
             }
             if (flip) {
-                matrices.translate(0.0D, entity.getHeight() + 0.1F, 0.0D);
-                matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
+                GlStateManager.translatef(0.0F, entity.getHeight() + 0.1F, 0.0F);
+                GlStateManager.rotatef(180.0F, 0.0F, 0.0F, 1.0F);
             }
         }
     }
+
 
 }
