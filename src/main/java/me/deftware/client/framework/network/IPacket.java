@@ -48,7 +48,7 @@ public class IPacket {
      * Bypasses this event, and can be used to prevent an infinite loop
      */
     public void sendImmediately() {
-        ((IMixinNetworkManager) MinecraftClient.getInstance().player.networkHandler.getConnection()).sendPacketImmediately(packet);
+        ((IMixinNetworkManager) MinecraftClient.getInstance().player.networkHandler.getClientConnection()).sendPacketImmediately(packet);
     }
 
     /**

@@ -24,7 +24,7 @@ public class OAuthNetHandlerPlayClient extends ClientPlayNetworkHandler {
         String code = data[0].split("\"")[1].replace("\"", "");
         String time = data[2].substring("Your code will expire in ".length() + 1);
         callback.callback(true, code, time);
-        getConnection().disconnect(packetIn.getReason());
+        getClientConnection().disconnect(packetIn.getReason());
     }
 
 }

@@ -1,6 +1,6 @@
 {
-    "inheritsFrom": "1.14.4",
-    "id": "1.14.4-EMC",
+    "inheritsFrom": "1.14.3",
+    "id": "1.14.3-EMC",
     "time": "2025-04-10T20:37:13+02:00",
     "releaseTime": "2025-04-10T20:37:13+02:00",
     "type": "release",
@@ -10,15 +10,15 @@
     },
     "libraries": [
         {
-            "name": "net.fabricmc:tiny-mappings-parser:0.2.0.11",
+            "name": "net.fabricmc:tiny-mappings-parser:0.1.1.8",
             "url": "https://maven.fabricmc.net/"
         },
         {
-            "name": "net.fabricmc:sponge-mixin:0.8+build.16",
+            "name": "net.fabricmc:sponge-mixin:0.7.11.27",
             "url": "https://maven.fabricmc.net/"
         },
         {
-            "name": "net.fabricmc:tiny-remapper:0.2.0.52",
+            "name": "net.fabricmc:tiny-remapper:0.1.0.33",
             "url": "https://maven.fabricmc.net/"
         },
         {
@@ -30,35 +30,35 @@
             "url": "https://maven.fabricmc.net/"
         },
         {
-            "name": "org.ow2.asm:asm:7.2",
+            "name": "org.ow2.asm:asm:7.0",
             "url": "https://maven.fabricmc.net/"
         },
         {
-            "name": "org.ow2.asm:asm-analysis:7.2",
+            "name": "org.ow2.asm:asm-analysis:7.0",
             "url": "https://maven.fabricmc.net/"
         },
         {
-            "name": "org.ow2.asm:asm-commons:7.2",
+            "name": "org.ow2.asm:asm-commons:7.0",
             "url": "https://maven.fabricmc.net/"
         },
         {
-            "name": "org.ow2.asm:asm-tree:7.2",
+            "name": "org.ow2.asm:asm-tree:7.0",
             "url": "https://maven.fabricmc.net/"
         },
         {
-            "name": "org.ow2.asm:asm-util:7.2",
+            "name": "org.ow2.asm:asm-util:7.0",
             "url": "https://maven.fabricmc.net/"
         },
         {
-            "name": "net.fabricmc:yarn:1.14.4+build.15",
+            "name": "net.fabricmc:yarn:1.14.3+build.13",
             "url": "https://maven.fabricmc.net/"
         },
         {
-            "name": "me.deftware:subsystem:0.7.1",
+            "name": "me.deftware:subsystem:latest-separate",
             "url": "https://gitlab.com/EMC-Framework/maven/raw/master/"
         },
         {
-            "name": "me.deftware:EMC-F-v2:latest-1.14.4",
+            "name": "me.deftware:EMC-F:latest-1.14.3",
             "url": "https://gitlab.com/EMC-Framework/maven/raw/master/"
         }
     ],
