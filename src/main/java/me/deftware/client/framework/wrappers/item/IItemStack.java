@@ -56,7 +56,7 @@ public class IItemStack {
     }
 
     public static IItemStack cloneWithoutEffects(IItemStack stack) {
-        return new IItemStack(new ItemStack(Item.byRawId(Item.getRawId(stack.getStack().getItem())),
+        return new IItemStack(new ItemStack(Item.byRawId(Item.getRawIdByItem(stack.getStack().getItem())),
                 Integer.parseInt(stack.getStack().toString().split("x")[0])));
     }
 
@@ -100,7 +100,7 @@ public class IItemStack {
     }
 
     public void setStackDisplayName(String name) {
-        CompoundTag nbttagcompound = stack.getOrCreateSubTag("display");
+        CompoundTag nbttagcompound = stack.getOrCreateSubCompoundTag("display");
         nbttagcompound.putString("Name", TextComponent.Serializer.toJson(new TextComponent(name)).toString());
     }
 
@@ -109,27 +109,27 @@ public class IItemStack {
     }
 
     public void setTagInfo(String key, INBTTagList compound) {
-        stack.putSubTag(key, compound.list);
+        stack.setChildTag(key, compound.list);
     }
 
     public int getMaxStackSize() {
-        return stack.getMaxCount();
+        return stack.getMaxAmount();
     }
 
     public static boolean areItemStackTagsEqual(IItemStack one, IItemStack two) {
-        return ItemStack.areEqualIgnoreDamage(one.getStack(), two.getStack());
+        return ItemStack.areEqualIgnoreTags(one.getStack(), two.getStack());
     }
 
     public boolean isItemEqual(IItemStack stack) {
-        return this.stack.isItemEqualIgnoreDamage(stack.getStack());
+        return this.stack.isEqualIgnoreTags(stack.getStack());
     }
 
     public void setCount(int count) {
-        stack.setCount(count);
+        stack.setAmount(count);
     }
 
     public int getCount() {
-        return stack.getCount();
+        return stack.getAmount();
     }
 
     public INBTTagCompound getTagCompound() {
@@ -141,15 +141,15 @@ public class IItemStack {
     }
 
     public ChatMessage getDisplayName() {
-        return new ChatMessage().fromText(stack.getCustomName());
+        return new ChatMessage().fromText(stack.getDisplayName());
     }
 
     public int getItemID() {
-        return Item.getRawId(stack.getItem());
+        return Item.getRawIdByItem(stack.getItem());
     }
 
     public float getStrVsBlock(IBlockPos pos) {
-        return stack.getMiningSpeed(MinecraftClient.getInstance().world.getBlockState(pos.getPos()));
+        return stack.getBlockBreakingSpeed(MinecraftClient.getInstance().world.getBlockState(pos.getPos()));
     }
 
     public boolean isEmpty() {
@@ -218,7 +218,7 @@ public class IItemStack {
     }
 
     public int getRawMaxDamage() {
-        return stack.getMaxDamage();
+        return stack.getDurability();
     }
 
     public enum IEffects {
