@@ -1,7 +1,6 @@
 package me.deftware.client.framework.wrappers.gui.imp;
 
-
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.Screen;
 
 public class ScreenInstance {
 

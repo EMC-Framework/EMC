@@ -2,7 +2,7 @@ package me.deftware.mixin.mixins;
 
 import me.deftware.client.framework.main.EMCMod;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
-import net.minecraft.client.gui.screen.SplashScreen;
+import net.minecraft.client.gui.SplashScreen;
 import net.minecraft.util.SystemUtil;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

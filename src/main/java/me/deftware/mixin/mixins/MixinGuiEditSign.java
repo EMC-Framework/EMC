@@ -2,12 +2,12 @@ package me.deftware.mixin.mixins;
 
 import me.deftware.mixin.imp.IMixinGuiEditSign;
 import net.minecraft.block.entity.SignBlockEntity;
-import net.minecraft.client.gui.screen.ingame.SignEditScreen;
+import net.minecraft.client.gui.ingame.EditSignScreen;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(SignEditScreen.class)
+@Mixin(EditSignScreen.class)
 public class MixinGuiEditSign implements IMixinGuiEditSign {
 
     @Final

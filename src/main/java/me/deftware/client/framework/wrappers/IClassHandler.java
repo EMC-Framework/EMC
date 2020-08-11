@@ -3,8 +3,8 @@ package me.deftware.client.framework.wrappers;
 import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.mixin.imp.IMixinGuiEditSign;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.SignEditScreen;
+import net.minecraft.client.gui.Screen;
+import net.minecraft.client.gui.ingame.EditSignScreen;
 import net.minecraft.network.chat.TextComponent;
 
 /**
@@ -44,7 +44,7 @@ public class IClassHandler {
     public static class IGuiEditSign extends IClass {
 
         public IGuiEditSign() {
-            super(SignEditScreen.class);
+            super(EditSignScreen.class);
         }
 
         public int getCurrentLine() {

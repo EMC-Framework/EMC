@@ -7,7 +7,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import me.deftware.client.framework.command.CommandRegister;
 import me.deftware.mixin.imp.IMixinGuiTextField;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.gui.ingame.ChatScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.server.command.ServerCommandSource;
 import org.spongepowered.asm.mixin.Mixin;

@@ -13,7 +13,7 @@ import me.deftware.client.framework.wrappers.IResourceLocation;
 import me.deftware.client.framework.wrappers.gui.imp.ScreenInstance;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.SystemUtil;

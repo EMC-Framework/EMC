@@ -3,13 +3,13 @@ package me.deftware.mixin.mixins;
 import me.deftware.client.framework.FrameworkConstants;
 import me.deftware.client.framework.maps.SettingsMap;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.TitleScreen;
+import net.minecraft.client.gui.MainMenuScreen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(TitleScreen.class)
+@Mixin(MainMenuScreen.class)
 public class MixinGuiMainMenu {
 
     @Inject(method = "render", at = @At("RETURN"))

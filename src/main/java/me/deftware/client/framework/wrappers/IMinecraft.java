@@ -11,13 +11,13 @@ import me.deftware.client.framework.wrappers.world.IBlockPos;
 import me.deftware.mixin.imp.IMixinMinecraft;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ChatScreen;
-import net.minecraft.client.gui.screen.ConnectScreen;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
-import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
-import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
+import net.minecraft.client.gui.ContainerScreen;
+import net.minecraft.client.gui.Screen;
+import net.minecraft.client.gui.ingame.ChatScreen;
+import net.minecraft.client.gui.ingame.CreativePlayerInventoryScreen;
+import net.minecraft.client.gui.ingame.PlayerInventoryScreen;
+import net.minecraft.client.gui.menu.MultiplayerScreen;
+import net.minecraft.client.gui.menu.ServerConnectingScreen;
 import net.minecraft.client.main.Main;
 import net.minecraft.client.options.AoOption;
 import net.minecraft.client.options.ServerEntry;
@@ -161,7 +161,7 @@ public class IMinecraft {
     }
 
     public static void connectToServer(IServerData server) {
-        MinecraftClient.getInstance().openScreen(new ConnectScreen(new MultiplayerScreen(null), MinecraftClient.getInstance(), server));
+        MinecraftClient.getInstance().openScreen(new ServerConnectingScreen(new MultiplayerScreen(null), MinecraftClient.getInstance(), server));
     }
 
     public static int thridPersonView() {
@@ -253,8 +253,8 @@ public class IMinecraft {
 
     public static boolean isContainerOpen() {
         if (MinecraftClient.getInstance().currentScreen != null) {
-            if (MinecraftClient.getInstance().currentScreen instanceof AbstractContainerScreen
-                    && !(MinecraftClient.getInstance().currentScreen instanceof InventoryScreen)) {
+            if (MinecraftClient.getInstance().currentScreen instanceof ContainerScreen
+                    && !(MinecraftClient.getInstance().currentScreen instanceof PlayerInventoryScreen)) {
                 return true;
             }
         }
@@ -270,9 +270,9 @@ public class IMinecraft {
 
     public static boolean isInventoryOpen() {
         if (MinecraftClient.getInstance().currentScreen != null) {
-            if (MinecraftClient.getInstance().currentScreen instanceof AbstractContainerScreen
-                    && (MinecraftClient.getInstance().currentScreen instanceof InventoryScreen
-                    || MinecraftClient.getInstance().currentScreen instanceof CreativeInventoryScreen)) {
+            if (MinecraftClient.getInstance().currentScreen instanceof ContainerScreen
+                    && (MinecraftClient.getInstance().currentScreen instanceof PlayerInventoryScreen
+                    || MinecraftClient.getInstance().currentScreen instanceof CreativePlayerInventoryScreen)) {
                 return true;
             }
         }

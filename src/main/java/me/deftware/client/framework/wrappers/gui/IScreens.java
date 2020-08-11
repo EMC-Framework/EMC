@@ -3,11 +3,11 @@ package me.deftware.client.framework.wrappers.gui;
 import me.deftware.client.framework.utils.ResourceUtils;
 import me.deftware.client.framework.wrappers.IMinecraft;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.SettingsScreen;
-import net.minecraft.client.gui.screen.TitleScreen;
-import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
-import net.minecraft.client.gui.screen.world.SelectWorldScreen;
+import net.minecraft.client.gui.MainMenuScreen;
+import net.minecraft.client.gui.Screen;
+import net.minecraft.client.gui.menu.LevelSelectScreen;
+import net.minecraft.client.gui.menu.MultiplayerScreen;
+import net.minecraft.client.gui.menu.SettingsScreen;
 import net.minecraft.realms.RealmsBridge;
 import net.minecraft.util.Pair;
 
@@ -20,9 +20,9 @@ public class IScreens {
         if (type.equals(ScreenType.Multiplayer)) {
             screen = new MultiplayerScreen(parent);
         } else if (type.equals(ScreenType.MainMenu)) {
-            screen = new TitleScreen();
+            screen = new MainMenuScreen();
         } else if (type.equals(ScreenType.WorldSelection)) {
-            screen = new SelectWorldScreen(parent);
+            screen = new LevelSelectScreen(parent);
         } else if (type.equals(ScreenType.Options)) {
             screen = new SettingsScreen(parent, MinecraftClient.getInstance().options);
         } else if (type.equals(ScreenType.Mods)) {

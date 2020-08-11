@@ -8,7 +8,7 @@ import me.deftware.client.framework.wrappers.item.IItem;
 import me.deftware.mixin.imp.IMixinGuiScreen;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Final;

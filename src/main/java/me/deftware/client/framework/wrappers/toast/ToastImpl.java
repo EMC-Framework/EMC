@@ -1,7 +1,7 @@
 package me.deftware.client.framework.wrappers.toast;
 
 import me.deftware.client.framework.utils.render.Texture;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.Screen;
 import net.minecraft.client.toast.Toast;
 import net.minecraft.client.toast.ToastManager;
 import org.lwjgl.opengl.GL11;
