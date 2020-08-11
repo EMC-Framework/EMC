@@ -24,8 +24,8 @@ public class IEntityOtherPlayerMP extends OtherClientPlayerEntity {
             experienceProgress = oldPlayer.experienceProgress;
             totalExperience = oldPlayer.totalExperience;
             setScore(oldPlayer.getScore());
-            lastNetherPortalDirectionVector = oldPlayer.getLastNetherPortalDirectionVector();
-            lastNetherPortalDirection = oldPlayer.getLastNetherPortalDirection();
+            lastPortalDirectionVector = oldPlayer.getLastPortalDirectionVector();
+            lastPortalDirection = oldPlayer.getLastPortalDirection();
         } else if (world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY) || oldPlayer.isSpectator()) {
             inventory.clone(oldPlayer.inventory);
             experienceLevel = oldPlayer.experienceLevel;
