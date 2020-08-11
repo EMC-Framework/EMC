@@ -8,7 +8,7 @@ import net.minecraft.container.Slot;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
+import net.minecraft.server.network.packet.CreativeInventoryActionC2SPacket;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -84,7 +84,7 @@ public class IInventoryWrapper {
             return new ArrayList<>();
         }
         ArrayList<ISlot> slots = new ArrayList<>();
-        for (Slot d : MinecraftClient.getInstance().player.container.slots) {
+        for (Slot d : MinecraftClient.getInstance().player.container.slotList) {
             slots.add(new ISlot(d));
         }
         return slots;

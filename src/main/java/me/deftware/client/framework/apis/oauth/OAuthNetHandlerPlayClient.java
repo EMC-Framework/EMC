@@ -5,8 +5,8 @@ import me.deftware.client.framework.chat.ChatMessage;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.network.packet.DisconnectS2CPacket;
 import net.minecraft.network.ClientConnection;
-import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
 
 public class OAuthNetHandlerPlayClient extends ClientPlayNetworkHandler {
 

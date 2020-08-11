@@ -14,7 +14,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.ConnectScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.ContainerScreen;
+import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
@@ -24,7 +24,7 @@ import net.minecraft.client.options.AoOption;
 import net.minecraft.container.GenericContainer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
+import net.minecraft.server.network.packet.ChatMessageC2SPacket;
 import net.minecraft.util.Pair;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -253,7 +253,7 @@ public class IMinecraft {
 
     public static boolean isContainerOpen() {
         if (MinecraftClient.getInstance().currentScreen != null) {
-            if (MinecraftClient.getInstance().currentScreen instanceof ContainerScreen
+            if (MinecraftClient.getInstance().currentScreen instanceof AbstractContainerScreen
                     && !(MinecraftClient.getInstance().currentScreen instanceof InventoryScreen)) {
                 return true;
             }
@@ -270,7 +270,7 @@ public class IMinecraft {
 
     public static boolean isInventoryOpen() {
         if (MinecraftClient.getInstance().currentScreen != null) {
-            if (MinecraftClient.getInstance().currentScreen instanceof ContainerScreen
+            if (MinecraftClient.getInstance().currentScreen instanceof AbstractContainerScreen
                     && (MinecraftClient.getInstance().currentScreen instanceof InventoryScreen
                     || MinecraftClient.getInstance().currentScreen instanceof CreativeInventoryScreen)) {
                 return true;

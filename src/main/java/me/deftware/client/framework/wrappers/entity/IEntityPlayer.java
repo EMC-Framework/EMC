@@ -19,7 +19,7 @@ import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
+import net.minecraft.server.network.packet.HandSwingC2SPacket;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -259,7 +259,7 @@ public class IEntityPlayer {
 		if (IEntityPlayer.isNull()) {
 			return;
 		}
-		MinecraftClient.getInstance().player.updatePosition(MinecraftClient.getInstance().player.getX() + x,
+		MinecraftClient.getInstance().player.setPosition(MinecraftClient.getInstance().player.getX() + x,
 				MinecraftClient.getInstance().player.getY(), MinecraftClient.getInstance().player.getZ());
 	}
 
@@ -267,7 +267,7 @@ public class IEntityPlayer {
 		if (IEntityPlayer.isNull()) {
 			return;
 		}
-		MinecraftClient.getInstance().player.updatePosition(MinecraftClient.getInstance().player.getX(),
+		MinecraftClient.getInstance().player.setPosition(MinecraftClient.getInstance().player.getX(),
 				MinecraftClient.getInstance().player.getY() + y, MinecraftClient.getInstance().player.getZ());
 	}
 
@@ -275,7 +275,7 @@ public class IEntityPlayer {
 		if (IEntityPlayer.isNull()) {
 			return;
 		}
-		MinecraftClient.getInstance().player.updatePosition(MinecraftClient.getInstance().player.getX(),
+		MinecraftClient.getInstance().player.setPosition(MinecraftClient.getInstance().player.getX(),
 				MinecraftClient.getInstance().player.getY(), MinecraftClient.getInstance().player.getZ() + z);
 	}
 
@@ -283,14 +283,14 @@ public class IEntityPlayer {
 		if (IEntityPlayer.isNull()) {
 			return;
 		}
-		MinecraftClient.getInstance().player.updatePosition(x, y, z);
+		MinecraftClient.getInstance().player.setPosition(x, y, z);
 	}
 
 	public static void setPositionAndRotation(double x, double y, double z, float yaw, float pitch) {
 		if (IEntityPlayer.isNull()) {
 			return;
 		}
-		MinecraftClient.getInstance().player.refreshPositionAndAngles(x, y, z, yaw, pitch);
+		MinecraftClient.getInstance().player.setPositionAndAngles(x, y, z, yaw, pitch);
 	}
 
 	public static void setJumpMovementFactor(float speed) {
@@ -913,7 +913,7 @@ public class IEntityPlayer {
 	public static void setAlive(boolean flag) {
 		MinecraftClient.getInstance().player.removed = false;
 		MinecraftClient.getInstance().player.setHealth(20f);
-		MinecraftClient.getInstance().player.updatePosition(getPosX(), getPosY(), getPosZ());
+		MinecraftClient.getInstance().player.setPosition(getPosX(), getPosY(), getPosZ());
 	}
 
 	public enum HandItem {
