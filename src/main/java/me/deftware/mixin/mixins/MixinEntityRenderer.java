@@ -8,7 +8,7 @@ import me.deftware.client.framework.event.events.EventWeather;
 import me.deftware.client.framework.maps.SettingsMap;
 import me.deftware.client.framework.wrappers.IResourceLocation;
 import me.deftware.mixin.imp.IMixinEntityRenderer;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.util.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(GameRenderer.class)
+@Mixin(EntityRenderer.class)
 public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
 
     @Shadow
@@ -57,8 +57,8 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
         }
     }
 
-    @Redirect(method = "updateCameraAndRender(FJ)V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/GameRenderer;renderHand:Z", opcode = 180))
-    private boolean updateCameraAndRender_renderHand(GameRenderer self) {
+    @Redirect(method = "updateCameraAndRender(FJ)V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/EntityRenderer;renderHand:Z", opcode = 180))
+    private boolean updateCameraAndRender_renderHand(EntityRenderer self) {
         new EventRender3D(partialTicks).broadcast();
         return renderHand;
     }

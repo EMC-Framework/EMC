@@ -58,7 +58,7 @@ public class IEntityPlayer {
 	}
 
 	public static boolean isAtEdge() {
-		return Minecraft.getInstance().world.getCollisionBoxes(Minecraft.getInstance().player, Minecraft.getInstance().player.getBoundingBox().offset(0, -0.5, 0).expand(-0.001, 0, -0.001)).count() == 0;
+		return Minecraft.getInstance().world.getCollisionBoxes(Minecraft.getInstance().player, Minecraft.getInstance().player.getBoundingBox().offset(0, -0.5, 0).expand(-0.001, 0, -0.001)).isEmpty();
 	}
 
 	public static boolean processRightClickBlock(IBlockPos pos, IEnumFacing facing, IVec3d vec) {
@@ -604,7 +604,7 @@ public class IEntityPlayer {
 		if (IEntityPlayer.isNull()) {
 			return 0;
 		}
-		return Minecraft.getInstance().player.dimension.getId();
+		return Minecraft.getInstance().player.dimension;
 	}
 
 	public static boolean isRowingBoat() {

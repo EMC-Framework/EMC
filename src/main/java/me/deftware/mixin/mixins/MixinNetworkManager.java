@@ -21,7 +21,7 @@ public abstract class MixinNetworkManager implements IMixinNetworkManager {
     @Shadow
     protected abstract void dispatchPacket(Packet<?> p_dispatchPacket_1_, GenericFutureListener<? extends Future<? super Void>> p_dispatchPacket_2_);
 
-    @Redirect(method = "channelRead0", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/NetworkManager;processPacket(Lnet/minecraft/network/Packet;Lnet/minecraft/network/INetHandler;)V"))
+    @Redirect(method = "channelRead0", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/NetworkManager;func_197664_a(Lnet/minecraft/network/Packet;Lnet/minecraft/network/INetHandler;)V"))
     private void channelRead0(Packet<INetHandler> packet, INetHandler listener) {
         EventPacketReceive event = new EventPacketReceive(packet);
         event.broadcast();

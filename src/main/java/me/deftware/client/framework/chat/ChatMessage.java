@@ -76,10 +76,10 @@ public class ChatMessage {
 		return this;
 	}
 
-	public ChatMessage fromText(ITextComponent text) {
+	public ChatMessage fromText(ITextComponent text, boolean chat) {
 		// This function is highly dependant on which Minecraft version this is implemented on
-		for (ITextComponent component : text) {
-			ChatSection section = new ChatSection(component.getString());
+		for (ITextComponent component : chat ? text.getSiblings() : text) {
+			ChatSection section = new ChatSection(component.getUnformattedComponentText());
 			section.getStyle().fromStyle(component.getStyle());
 			sectionList.add(section);
 		}

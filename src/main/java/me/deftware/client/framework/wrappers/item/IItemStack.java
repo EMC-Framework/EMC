@@ -16,7 +16,6 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.IRegistry;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 
@@ -66,7 +65,7 @@ public class IItemStack {
     }
 
     public void enchantAll(int level) {
-        for (Object enchantment : IRegistry.ENCHANTMENT) {
+        for (Object enchantment : Enchantment.REGISTRY) {
             stack.addEnchantment((Enchantment)enchantment, level);
         }
     }
@@ -74,7 +73,7 @@ public class IItemStack {
     public static ArrayList<String> getEnchantmentNames() {
         ArrayList<String> enchantNames = new ArrayList<>();
 
-        for (Object enchantment : IRegistry.ENCHANTMENT) {
+        for (Object enchantment : Enchantment.REGISTRY) {
             IEnchantment enchantmentObj = new IEnchantment((Enchantment)enchantment);
             enchantNames.add(enchantmentObj.getEnchantmentKey());
         }
@@ -83,7 +82,7 @@ public class IItemStack {
     }
 
     public void enchant(String name, int level) {
-        for (Object enchantment : IRegistry.ENCHANTMENT) {
+        for (Object enchantment : Enchantment.REGISTRY) {
             IEnchantment enchantmentData = new IEnchantment((Enchantment)enchantment);
             if (enchantmentData.getEnchantmentKey().equalsIgnoreCase(name)) {
                 stack.addEnchantment((Enchantment)enchantment, level);
@@ -138,7 +137,7 @@ public class IItemStack {
     }
 
     public ChatMessage getDisplayName() {
-        return new ChatMessage().fromText(stack.getDisplayName());
+        return new ChatMessage().fromText(stack.getDisplayName(), false);
     }
 
     public int getItemID() {

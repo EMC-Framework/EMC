@@ -10,9 +10,8 @@ import net.minecraft.block.BlockFlowingFluid;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.ShapeUtils;
 import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.util.registry.IRegistry;
 import net.minecraft.world.IBlockReader;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -35,13 +34,13 @@ public abstract class MixinBlockState {
         event.broadcast();
         if (event.updated) {
             if (event.canCollide) {
-                ci.setReturnValue(VoxelShapes.empty());
+                ci.setReturnValue(ShapeUtils.empty());
             }
         } else {
-            if (SettingsMap.isOverrideMode() || (SettingsMap.isOverwriteMode() && SettingsMap.hasValue(IRegistry.BLOCK.getId(this.getBlock()), "outline"))) {
-                boolean doOutline = (boolean) SettingsMap.getValue(IRegistry.BLOCK.getId(this.getBlock()), "outline", true);
+            if (SettingsMap.isOverrideMode() || (SettingsMap.isOverwriteMode() && SettingsMap.hasValue(Block.REGISTRY.getId(this.getBlock()), "outline"))) {
+                boolean doOutline = (boolean) SettingsMap.getValue(Block.REGISTRY.getId(this.getBlock()), "outline", true);
                 if (!doOutline) {
-                    ci.setReturnValue(VoxelShapes.empty());
+                    ci.setReturnValue(ShapeUtils.empty());
                 }
             }
         }
@@ -49,16 +48,16 @@ public abstract class MixinBlockState {
 
     @Inject(method = "isOpaqueCube", at = @At("HEAD"), cancellable = true)
     public void getIsTranslucent(IBlockReader view, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
-        if (SettingsMap.isOverrideMode() || (SettingsMap.isOverwriteMode() && SettingsMap.hasValue(IRegistry.BLOCK.getId(this.getBlock()), "translucent"))) {
+        if (SettingsMap.isOverrideMode() || (SettingsMap.isOverwriteMode() && SettingsMap.hasValue(Block.REGISTRY.getId(this.getBlock()), "translucent"))) {
             cir.setReturnValue(
-                    (boolean) SettingsMap.getValue(IRegistry.BLOCK.getId(this.getBlock()), "translucent", false));
+                    (boolean) SettingsMap.getValue(Block.REGISTRY.getId(this.getBlock()), "translucent", false));
         }
     }
 
     @Inject(method = "getLightValue", at = @At("HEAD"), cancellable = true)
     public void getLuminance(CallbackInfoReturnable<Integer> callback) {
         callback.setReturnValue(
-                (int) SettingsMap.getValue(IRegistry.BLOCK.getId(this.getBlock()), "lightValue", this.getBlock().getLightValue(this.getBlock().getDefaultState())));
+                (int) SettingsMap.getValue(Block.REGISTRY.getId(this.getBlock()), "lightValue", this.getBlock().getLightValue(this.getBlock().getDefaultState())));
     }
 
     @Inject(method = "getPlayerRelativeBlockHardness", at = @At("HEAD"), cancellable = true)
@@ -83,8 +82,8 @@ public abstract class MixinBlockState {
         } else {
             if (this.getBlock() instanceof BlockFlowingFluid) {
                 ci.setReturnValue((boolean) SettingsMap.getValue(SettingsMap.MapKeys.BLOCKS, "LIQUID_VOXEL_FULL", false)
-                        ? VoxelShapes.fullCube()
-                        : VoxelShapes.empty());
+                        ? ShapeUtils.fullCube()
+                        : ShapeUtils.empty());
             }
         }
     }

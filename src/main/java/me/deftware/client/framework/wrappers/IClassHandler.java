@@ -52,7 +52,7 @@ public class IClassHandler {
         }
 
         public ChatMessage getText(int line) {
-            return new ChatMessage().fromText(((IMixinGuiEditSign) screen).getTileSign().signText[line]);
+            return new ChatMessage().fromText(((IMixinGuiEditSign) screen).getTileSign().signText[line], false);
         }
 
         public void setText(String text, int line) {

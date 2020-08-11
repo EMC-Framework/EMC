@@ -48,7 +48,7 @@ public class RenderUtils {
     public static int team = 4;
 
     public static void loadShader(IResourceLocation location) {
-        ((IMixinEntityRenderer) Minecraft.getInstance().gameRenderer).loadCustomShader(location);
+        ((IMixinEntityRenderer) Minecraft.getInstance().entityRenderer).loadCustomShader(location);
     }
 
     public static IMixinRenderManager getRenderManager() {
@@ -56,7 +56,7 @@ public class RenderUtils {
     }
 
     public static void disableShader() {
-        Minecraft.getInstance().addScheduledTask(() -> Minecraft.getInstance().gameRenderer.stopUseShader());
+        Minecraft.getInstance().addScheduledTask(() -> Minecraft.getInstance().entityRenderer.stopUseShader());
     }
 
     public static void glColor(Color color) {

@@ -60,7 +60,6 @@ repositories {
     maven { url = 'https://repo.spongepowered.org/maven/' }
     maven { url 'https://libraries.minecraft.net/' }
     maven { url 'https://gitlab.com/EMC-Framework/maven/raw/master/' }
-    maven { url "$rootDir/MCPConfig/build/distributions/maven/" }
 }
 
 configurations {

@@ -27,11 +27,11 @@ public class IRenderManager {
     }
 
     public static float getPlayerFovMultiplier() {
-        return ((IMixinEntityRenderer) Minecraft.getInstance().gameRenderer).getFovMultiplier();
+        return ((IMixinEntityRenderer) Minecraft.getInstance().entityRenderer).getFovMultiplier();
     }
 
     public static void updatePlayerFovMultiplier(float newValue) {
-        ((IMixinEntityRenderer) Minecraft.getInstance().gameRenderer).updateFovMultiplier(newValue);
+        ((IMixinEntityRenderer) Minecraft.getInstance().entityRenderer).updateFovMultiplier(newValue);
     }
 
 }

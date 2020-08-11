@@ -5,7 +5,8 @@ import me.deftware.client.framework.event.Event;
 import net.minecraft.entity.Entity;
 
 /**
- * Triggered when player model is being rendered.
+ * Triggered when player model is being rendered.
+
  * It does not include the model drawn in players' inventory
  */
 public class EventRenderPlayerModel extends Event {
@@ -13,7 +14,7 @@ public class EventRenderPlayerModel extends Event {
 	private final ChatMessage name;
 
 	public EventRenderPlayerModel(Entity entity) {
-		this.name = new ChatMessage().fromText(entity.getName());
+		this.name = new ChatMessage().fromText(entity.getName(), false);
 	}
 
 	public boolean isShouldRender() {

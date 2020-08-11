@@ -5,7 +5,6 @@ import me.deftware.mixin.imp.IMixinItemTool;
 import net.minecraft.init.Items;
 import net.minecraft.item.*;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.IRegistry;
 
 public class IItem {
 
@@ -24,7 +23,7 @@ public class IItem {
     }
 
     public ChatMessage getName() {
-        return new ChatMessage().fromText(item.getName());
+        return new ChatMessage().fromText(item.getName(), false);
     }
 
     public String getTranslationKey() {
@@ -99,8 +98,8 @@ public class IItem {
 
     protected static Item getByName(String id) {
         ResourceLocation resourceLocation = new ResourceLocation(id);
-        if (IRegistry.ITEM.containsKey(resourceLocation)) {
-            return IRegistry.ITEM.get(resourceLocation);
+        if (Item.REGISTRY.containsKey(resourceLocation)) {
+            return Item.REGISTRY.get(resourceLocation);
         }
         return null;
     }

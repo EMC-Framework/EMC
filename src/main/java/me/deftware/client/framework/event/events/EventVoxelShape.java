@@ -3,8 +3,8 @@ package me.deftware.client.framework.event.events;
 import me.deftware.client.framework.event.Event;
 import me.deftware.client.framework.wrappers.math.IAxisAlignedBB;
 import me.deftware.client.framework.wrappers.world.IBlock;
+import net.minecraft.util.math.shapes.ShapeUtils;
 import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
 
 public class EventVoxelShape extends Event {
 
@@ -22,16 +22,16 @@ public class EventVoxelShape extends Event {
 	}
 
 	public void setFullCube() {
-		shape = VoxelShapes.fullCube();
+		shape = ShapeUtils.fullCube();
 	}
 
 	public void setEmpty() {
-		shape = VoxelShapes.empty();
+		shape = ShapeUtils.empty();
 	}
 
 	public void setShape(IAxisAlignedBB bb) {
 		modified = true;
-		shape = VoxelShapes.create(bb.getAABB());
+		shape = ShapeUtils.create(bb.getAABB());
 	}
 
 }

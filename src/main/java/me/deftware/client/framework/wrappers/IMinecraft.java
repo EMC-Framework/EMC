@@ -125,7 +125,7 @@ public class IMinecraft {
     }
 
     public static void reloadRenderers() {
-        Minecraft.getInstance().worldRenderer.loadRenderers();
+        Minecraft.getInstance().renderGlobal.loadRenderers();
     }
 
     public static void triggerGuiRenderer() {

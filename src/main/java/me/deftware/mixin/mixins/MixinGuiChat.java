@@ -28,7 +28,7 @@ public abstract class MixinGuiChat {
     private ParseResults<ISuggestionProvider> currentParse;
 
     @Shadow
-    private boolean field_212338_z;
+    private boolean hasEdits;
 
     @Shadow
     private CompletableFuture<Suggestions> pendingSuggestions;
@@ -51,14 +51,14 @@ public abstract class MixinGuiChat {
                 stringReader_1.skip();
             }
             CommandDispatcher<ISuggestionProvider> commandDispatcher_1 = CommandRegister.getDispatcher();
-            this.currentParse = commandDispatcher_1.parse(stringReader_1, Minecraft.getInstance().player.connection.getSuggestionProvider());
-            if (!this.field_212338_z) {
+            this.currentParse = commandDispatcher_1.parse(stringReader_1.getString(), Minecraft.getInstance().player.connection.getSuggestionProvider());
+            if (!this.hasEdits) {
                 StringReader stringReader_2 = new StringReader(string_1.substring(0, Math.min(string_1.length(), this.inputField.getCursorPosition())));
                 if (stringReader_2.canRead()) {
                     for (int triggerLength = 0; triggerLength < CommandRegister.getCommandTrigger().length(); triggerLength++) {
                         stringReader_2.skip();
                     }
-                    ParseResults<ISuggestionProvider> parseResults_1 = commandDispatcher_1.parse(stringReader_2, Minecraft.getInstance().player.connection.getSuggestionProvider());
+                    ParseResults<ISuggestionProvider> parseResults_1 = commandDispatcher_1.parse(stringReader_2.getString(), Minecraft.getInstance().player.connection.getSuggestionProvider());
                     this.pendingSuggestions = commandDispatcher_1.getCompletionSuggestions(parseResults_1);
                     this.pendingSuggestions.thenRun(() -> {
                         if (this.pendingSuggestions.isDone()) {

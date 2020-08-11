@@ -61,7 +61,7 @@ public abstract class MixinGuiNewChat implements IMixinGuiNewChat {
         for (int i = 0; i < chatLines.size(); i++) {
             ChatLine line = chatLines.get(i);
             if (line.getChatComponent() instanceof TextComponentString) {
-                list.add(new ChatHudLine(new ChatMessage().fromText(line.getChatComponent()),  i));
+                list.add(new ChatHudLine(new ChatMessage().fromText(line.getChatComponent(), false), i));
             }
         }
         return list;
@@ -69,7 +69,7 @@ public abstract class MixinGuiNewChat implements IMixinGuiNewChat {
 
     @ModifyVariable(method = "printChatMessageWithOptionalDeletion", at = @At("HEAD"))
     public ITextComponent addMessage(ITextComponent chatComponent) {
-        event = new EventChatReceive(new ChatMessage().fromText(chatComponent)).broadcast();
+        event = new EventChatReceive(new ChatMessage().fromText(chatComponent, false)).broadcast();
         return event.getMessage().build();
     }
 

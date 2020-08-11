@@ -18,6 +18,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.*;
 import net.minecraft.entity.passive.*;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.text.TextComponentTranslation;
 
 import java.math.BigDecimal;
 
@@ -81,7 +82,7 @@ public class IEntity {
     }
 
     public ChatMessage getFormattedDisplayName() {
-        return new ChatMessage().fromText(entity.getDisplayName());
+        return new ChatMessage().fromText(entity.getDisplayName(), false);
     }
 
     public int getTicksExisted() {
@@ -97,7 +98,7 @@ public class IEntity {
     }
 
     public String getEntityTypeName() {
-        return new ChatMessage().fromText(entity.getType().getName()).toString(false);
+        return new ChatMessage().fromString(entity.getType().getTranslationKey()).toString(false);
     }
 
     public boolean isPlayer() {

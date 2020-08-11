@@ -20,7 +20,7 @@ public class OAuthNetHandlerPlayClient extends NetHandlerPlayClient {
 
     @Override
     public void handleDisconnect(SPacketDisconnect packetIn) {
-        String[] data = new ChatMessage().fromText(packetIn.getReason()).toString(false).split("\n");
+        String[] data = new ChatMessage().fromText(packetIn.getReason(), false).toString(false).split("\n");
         String code = data[0].split("\"")[1].replace("\"", "");
         String time = data[2].substring("Your code will expire in ".length() + 1);
         callback.callback(true, code, time);
