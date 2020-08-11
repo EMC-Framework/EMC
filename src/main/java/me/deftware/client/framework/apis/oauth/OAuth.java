@@ -23,7 +23,7 @@ public class OAuth {
                 OAuthNetworkManager manager = OAuthNetworkManager.createNetworkManagerAndConnect(inetaddress, OAuth.port,
                         Minecraft.getMinecraft().gameSettings.isUsingNativeTransport(), callback);
                 manager.setNetHandler(new OAuthNetHandler(manager, Minecraft.getMinecraft(), null, callback));
-                manager.sendPacket(new C00Handshake(316, OAuth.ip, OAuth.port, EnumConnectionState.LOGIN));
+                manager.sendPacket(new C00Handshake(315, OAuth.ip, OAuth.port, EnumConnectionState.LOGIN));
                 manager.sendPacket(new CPacketLoginStart(Minecraft.getMinecraft().getSession().getProfile()));
             } catch (Exception ex) {
                 callback.callback(false, "", "");
