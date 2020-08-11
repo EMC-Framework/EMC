@@ -49,14 +49,14 @@ public class IPacket {
     }
 
     public void sendPacket() {
-        Minecraft.getMinecraft().player.connection.sendPacket(packet);
+        Minecraft.getMinecraft().thePlayer.connection.sendPacket(packet);
     }
 
     /**
      * Bypasses this event, and can be used to prevent an infinite loop
      */
     public void sendImmediately() {
-        ((IMixinNetworkManager) Minecraft.getMinecraft().player.connection.getNetworkManager()).sendPacketImmediately(packet);
+        ((IMixinNetworkManager) Minecraft.getMinecraft().thePlayer.connection.getNetworkManager()).sendPacketImmediately(packet);
     }
 
     /**

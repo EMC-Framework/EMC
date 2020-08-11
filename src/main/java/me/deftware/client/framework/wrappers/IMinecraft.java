@@ -92,7 +92,7 @@ public class IMinecraft {
     }
 
     public static void leaveServer() {
-        Minecraft.getMinecraft().player.connection.sendPacket(new CPacketChatMessage(new String(new char[]{167})));
+        Minecraft.getMinecraft().thePlayer.connection.sendPacket(new CPacketChatMessage(new String(new char[]{167})));
     }
 
     public static IBlockPos getBlockOver() {
@@ -134,11 +134,11 @@ public class IMinecraft {
     }
 
     public static void addEntityToWorld(int id, IEntity entity) {
-        Minecraft.getMinecraft().world.addEntityToWorld(id, entity.getEntity());
+        Minecraft.getMinecraft().theWorld.addEntityToWorld(id, entity.getEntity());
     }
 
     public static void removeEntityFromWorld(int id) {
-        Minecraft.getMinecraft().world.removeEntityFromWorld(id);
+        Minecraft.getMinecraft().theWorld.removeEntityFromWorld(id);
     }
 
     public static void connectToServer(IServerData server) {
@@ -259,8 +259,8 @@ public class IMinecraft {
     }
 
     public static boolean isChestOpen() {
-        if (Minecraft.getMinecraft().player.openContainer != null) {
-            if (Minecraft.getMinecraft().player.openContainer instanceof ContainerChest) {
+        if (Minecraft.getMinecraft().thePlayer.openContainer != null) {
+            if (Minecraft.getMinecraft().thePlayer.openContainer instanceof ContainerChest) {
                 return true;
             }
         }

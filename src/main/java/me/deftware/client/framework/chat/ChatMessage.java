@@ -125,8 +125,8 @@ public class ChatMessage {
 	 * Sends this message to the server, without any formatting
 	 */
 	public void sendMessage() {
-		if (Minecraft.getMinecraft().player != null) {
-			ChatHud.getChatMessageQueue().add(() -> Minecraft.getMinecraft().player.sendChatMessage(toString(false)));
+		if (Minecraft.getMinecraft().thePlayer != null) {
+			ChatHud.getChatMessageQueue().add(() -> Minecraft.getMinecraft().thePlayer.sendChatMessage(toString(false)));
 		}
 	}
 

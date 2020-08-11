@@ -14,23 +14,23 @@ public class IInventory {
     private static IEntity entity;
 
     public static int getFirstEmptyStack() {
-        return Minecraft.getMinecraft().player.inventory.getFirstEmptyStack();
+        return Minecraft.getMinecraft().thePlayer.inventory.getFirstEmptyStack();
     }
 
     public static int getCurrentItem() {
-        return Minecraft.getMinecraft().player.inventory.currentItem;
+        return Minecraft.getMinecraft().thePlayer.inventory.currentItem;
     }
 
     public static void setCurrentItem(int id) {
-        Minecraft.getMinecraft().player.inventory.currentItem = id;
+        Minecraft.getMinecraft().thePlayer.inventory.currentItem = id;
     }
 
     public static int getItemInUseCount() {
-        return ((IMixinEntityLivingBase) Minecraft.getMinecraft().player).getActiveItemStackUseCount();
+        return ((IMixinEntityLivingBase) Minecraft.getMinecraft().thePlayer).getActiveItemStackUseCount();
     }
 
     public static void swapHands() {
-        Minecraft.getMinecraft().player.connection.sendPacket(new CPacketPlayerDigging(
+        Minecraft.getMinecraft().thePlayer.connection.sendPacket(new CPacketPlayerDigging(
                 CPacketPlayerDigging.Action.SWAP_HELD_ITEMS, BlockPos.ORIGIN, EnumFacing.DOWN));
     }
 

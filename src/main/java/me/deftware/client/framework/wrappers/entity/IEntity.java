@@ -69,11 +69,11 @@ public class IEntity {
     }
 
     public float getDistanceToPlayer() {
-        return entity.getDistanceToEntity(Minecraft.getMinecraft().player);
+        return entity.getDistanceToEntity(Minecraft.getMinecraft().thePlayer);
     }
 
     public float getDistanceToEntity() {
-        return Minecraft.getMinecraft().player.getDistanceToEntity(entity);
+        return Minecraft.getMinecraft().thePlayer.getDistanceToEntity(entity);
     }
 
     public String getName() {
@@ -222,7 +222,7 @@ public class IEntity {
 
     public boolean isPlayerOwned() {
         if (entity instanceof EntityWolf) {
-            return ((EntityWolf) entity).isOwner(Minecraft.getMinecraft().player);
+            return ((EntityWolf) entity).isOwner(Minecraft.getMinecraft().thePlayer);
         }
         return false;
     }
@@ -236,15 +236,15 @@ public class IEntity {
     }
 
     public boolean isInvisibleToPlayer() {
-        return entity.isInvisibleToPlayer(Minecraft.getMinecraft().player);
+        return entity.isInvisibleToPlayer(Minecraft.getMinecraft().thePlayer);
     }
 
     public boolean canBeSeen() {
-        return Minecraft.getMinecraft().player.canEntityBeSeen(entity);
+        return Minecraft.getMinecraft().thePlayer.canEntityBeSeen(entity);
     }
 
     public boolean isSelf() {
-        return entity == Minecraft.getMinecraft().player;
+        return entity == Minecraft.getMinecraft().thePlayer;
     }
 
     public double getPosX() {
@@ -332,8 +332,6 @@ public class IEntity {
             return entity instanceof EntityOcelot;
         } else if (e.equals(EntityType.ENTITY_PIG)) {
             return entity instanceof EntityPig;
-        } else if (e.equals(EntityType.ENTITY_POLAR_BEAR)) {
-            return entity instanceof EntityPolarBear;
         } else if (e.equals(EntityType.ENTITY_RABBIT)) {
             return entity instanceof EntityRabbit;
         } else if (e.equals(EntityType.ENTITY_SHEEP)) {

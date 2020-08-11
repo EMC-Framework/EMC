@@ -3,6 +3,9 @@ package me.deftware.client.framework.network;
 import io.netty.buffer.Unpooled;
 import me.deftware.client.framework.wrappers.item.IItemStack;
 import me.deftware.client.framework.wrappers.world.IBlockPos;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 
 import java.io.IOException;
@@ -19,8 +22,38 @@ public class IPacketBuffer {
         this.buffer = buffer;
     }
 
+    public static PacketBuffer writeItemStack(PacketBuffer targetBuf, ItemStack p_writeItemStack_1_) {
+        if (p_writeItemStack_1_ == null) {
+            targetBuf.writeShort(-1);
+        } else {
+            targetBuf.writeShort(Item.getIdFromItem(p_writeItemStack_1_.getItem()));
+            targetBuf.writeByte(p_writeItemStack_1_.stackSize);
+            targetBuf.writeShort(p_writeItemStack_1_.getMetadata());
+            NBTTagCompound lvt_2_1_ = null;
+            if (p_writeItemStack_1_.getItem().isDamageable() || p_writeItemStack_1_.getItem().getShareTag()) {
+                lvt_2_1_ = p_writeItemStack_1_.getTagCompound();
+            }
+
+            targetBuf.writeNBTTagCompoundToBuffer(lvt_2_1_);
+        }
+
+        return targetBuf;
+    }
+
+    public static ItemStack readItemStack(PacketBuffer targetBuf) throws IOException {
+        if (!targetBuf.readBoolean()) {
+            return new ItemStack((Item) null);
+        } else {
+            int i = targetBuf.readVarIntFromBuffer();
+            int j = targetBuf.readByte();
+            ItemStack itemStack = new ItemStack(Item.getItemById(i), j);
+            itemStack.setTagCompound(targetBuf.readNBTTagCompoundFromBuffer());
+            return itemStack;
+        }
+    }
+
     public void writeItemStack(IItemStack stack) {
-        buffer.writeItemStack(stack.getStack());
+        writeItemStack(buffer, stack.getStack());
     }
 
     public void writeBlockPos(IBlockPos pos) {
@@ -56,11 +89,11 @@ public class IPacketBuffer {
     }
 
     public String readString() {
-        return buffer.readString(0);
+        return buffer.readStringFromBuffer(0);
     }
 
     public IItemStack readItemStack() throws IOException {
-        return new IItemStack(buffer.readItemStack());
+        return new IItemStack(readItemStack(buffer));
     }
 
     public IBlockPos readBlockPos() {

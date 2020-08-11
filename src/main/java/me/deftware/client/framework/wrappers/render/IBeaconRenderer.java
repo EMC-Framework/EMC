@@ -15,7 +15,7 @@ public class IBeaconRenderer {
         x -= (IEntityPlayer.getPrevPosX() + (IEntityPlayer.getPosX() - IEntityPlayer.getPrevPosX()) * (double) partialTicks);
         y -= (IEntityPlayer.getPrevPosY() + (IEntityPlayer.getPosY() - IEntityPlayer.getPrevPosY()) * (double) partialTicks);
         z -= (IEntityPlayer.getPrevPosZ() + (IEntityPlayer.getPosZ() - IEntityPlayer.getPrevPosZ()) * (double) partialTicks);
-        BeaconBlockEntityRenderer.renderLightBeam(x, y, z, partialTicks, 1.0, Minecraft.getMinecraft().world.getTimeOfDay(), 0, height, new float[]{r, g, b}, 0.2D, 0.25D);
+        BeaconBlockEntityRenderer.renderLightBeam(x, y, z, partialTicks, 1.0, Minecraft.getMinecraft().theWorld.getTimeOfDay(), 0, height, new float[]{r, g, b}, 0.2D, 0.25D);
     }
 
     public static void renderBeamAt(double x, double y, double z, int height, float partialTicks) {

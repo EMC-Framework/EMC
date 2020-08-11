@@ -15,7 +15,7 @@ public class IChunk {
     }
 
     public IWorld getWorld() {
-        return new IWorld(Minecraft.getMinecraft().world);
+        return new IWorld(Minecraft.getMinecraft().theWorld);
     }
 
     public int getLightFor(IEnumLightType lightType, IBlockPos pos) {

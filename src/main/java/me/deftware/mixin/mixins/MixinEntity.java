@@ -44,7 +44,7 @@ public abstract class MixinEntity implements IMixinEntity {
 
     @Shadow public abstract AxisAlignedBB getEntityBoundingBox();
 
-    @Redirect(method = "move", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;noClip:Z", opcode = 180))
+    @Redirect(method = "moveEntity", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;noClip:Z", opcode = 180))
     private boolean noClipCheck(Entity self) {
         boolean noClipCheck = (boolean) SettingsMap.getValue(SettingsMap.MapKeys.ENTITY_SETTINGS, "NOCLIP", false);
         return noClip || noClipCheck && self instanceof EntityPlayerSP;
@@ -60,7 +60,7 @@ public abstract class MixinEntity implements IMixinEntity {
     }
 
 
-    @Redirect(method = "move", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;isInWeb:Z", opcode = 180))
+    @Redirect(method = "moveEntity", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;isInWeb:Z", opcode = 180))
     private boolean webCheck(Entity self) {
         EventSlowdown event = new EventSlowdown(EventSlowdown.SlowdownType.Web);
         event.broadcast();
@@ -70,7 +70,7 @@ public abstract class MixinEntity implements IMixinEntity {
         return isInWeb;
     }
 
-    @Redirect(method = "move", at = @At(value = "INVOKE", target = "net/minecraft/entity/Entity.isSneaking()Z", opcode = 180, ordinal = 0))
+    @Redirect(method = "moveEntity", at = @At(value = "INVOKE", target = "net/minecraft/entity/Entity.isSneaking()Z", opcode = 180, ordinal = 0))
     private boolean sneakingCheck(Entity self) {
         EventSneakingCheck event = new EventSneakingCheck(isSneaking());
         event.broadcast();

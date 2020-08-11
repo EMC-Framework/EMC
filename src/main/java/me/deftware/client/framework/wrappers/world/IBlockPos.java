@@ -116,7 +116,7 @@ public class IBlockPos {
 	}
 
 	public static boolean isCollidable(IBlockPos pos) {
-		return Minecraft.getMinecraft().world.getBlockState(pos.getPos()).getBlock().isCollidable(Minecraft.getMinecraft().world.getBlockState(pos.getPos()));
+		return Minecraft.getMinecraft().theWorld.getBlockState(pos.getPos()).getBlock().isCollidable(Minecraft.getMinecraft().theWorld.getBlockState(pos.getPos()));
 	}
 	*/
 

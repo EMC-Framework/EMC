@@ -7,10 +7,10 @@ import net.minecraft.inventory.ContainerChest;
 public class IChest {
 
     private static ContainerChest getCurrent() {
-        if (Minecraft.getMinecraft().player.openContainer == null) {
+        if (Minecraft.getMinecraft().thePlayer.openContainer == null) {
             return null;
         }
-        return (ContainerChest) Minecraft.getMinecraft().player.openContainer;
+        return (ContainerChest) Minecraft.getMinecraft().thePlayer.openContainer;
     }
 
     public static int getInventorySize() {

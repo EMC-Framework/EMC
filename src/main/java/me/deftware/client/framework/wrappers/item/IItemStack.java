@@ -151,7 +151,7 @@ public class IItemStack {
     }
 
     public float getStrVsBlock(IBlockPos pos) {
-        return stack.getStrVsBlock(Minecraft.getMinecraft().world.getBlockState(pos.getPos()));
+        return stack.getStrVsBlock(Minecraft.getMinecraft().theWorld.getBlockState(pos.getPos()));
     }
 
     public boolean isEmpty() {
@@ -208,7 +208,7 @@ public class IItemStack {
     }
 
     public int getDamage() {
-        return MathHelper.clamp(getRawDamage(), 0, getMaxDamage());
+        return MathHelper.clamp_int(getRawDamage(), 0, getMaxDamage());
     }
 
     public int getRawDamage() {

@@ -26,7 +26,7 @@ public class IPlayer extends IEntity {
     }
 
     public boolean isSelf() {
-        return player == Minecraft.getMinecraft().player
+        return player == Minecraft.getMinecraft().thePlayer
                 || player.getName().equals(Minecraft.getMinecraft().getSession().getUsername());
     }
 

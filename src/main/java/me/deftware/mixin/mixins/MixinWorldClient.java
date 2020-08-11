@@ -29,7 +29,7 @@ public class MixinWorldClient implements IMixinWorldClient {
         return holdingBarrier;
     }
 
-    @Inject(method = "spawnEntity", at = @At("TAIL"))
+    @Inject(method = "spawnEntityInWorld", at = @At("TAIL"))
     public void spawnEntity(Entity entity, CallbackInfoReturnable<Boolean> ci) {
         entities.put(entity.getEntityId(), IEntity.fromEntity(entity));
     }

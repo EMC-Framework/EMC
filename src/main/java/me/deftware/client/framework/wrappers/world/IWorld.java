@@ -31,18 +31,18 @@ public class IWorld {
     }
 
     public static HashMap<Integer, IEntity> getLoadedEntities() {
-        return ((IMixinWorldClient) Minecraft.getMinecraft().world).getIEntities();
+        return ((IMixinWorldClient) Minecraft.getMinecraft().theWorld).getIEntities();
     }
 
     public static Collection<ITileEntity> getLoadedTileEntities() {
-        return ((IMixinWorld) Minecraft.getMinecraft().world).getEmcTileEntities();
+        return ((IMixinWorld) Minecraft.getMinecraft().theWorld).getEmcTileEntities();
     }
 
     public static ArrayList<IBlock> getLoadedBlocks() {
         ArrayList<IBlock> blocks = new ArrayList<>();
 
-        if (Minecraft.getMinecraft().player != null && Minecraft.getMinecraft().world != null) {
-            Chunk currentChunk = Minecraft.getMinecraft().world.getChunkFromBlockCoords(Minecraft.getMinecraft().player.getPosition());
+        if (Minecraft.getMinecraft().thePlayer != null && Minecraft.getMinecraft().theWorld != null) {
+            Chunk currentChunk = Minecraft.getMinecraft().theWorld.getChunkFromBlockCoords(Minecraft.getMinecraft().thePlayer.getPosition());
             for (BlockPos pos : currentChunk.getTileEntityMap().keySet()) {
                 blocks.add(new IBlock(currentChunk.getBlockState(pos).getBlock(), pos));
             }
@@ -54,12 +54,12 @@ public class IWorld {
     public static ArrayList<IBlock> getLoadedBlocks(int rangeFromPlayer) {
         ArrayList<IBlock> blocks = new ArrayList<>();
 
-        if (Minecraft.getMinecraft().player != null && Minecraft.getMinecraft().world != null) {
+        if (Minecraft.getMinecraft().thePlayer != null && Minecraft.getMinecraft().theWorld != null) {
             for (int xRange = -rangeFromPlayer; xRange <= rangeFromPlayer; xRange++) {
                 for (int yRange = -rangeFromPlayer; yRange <= rangeFromPlayer; yRange++) {
                     for (int zRange = -rangeFromPlayer; zRange <= rangeFromPlayer; zRange++) {
                         int posX = (int) (IEntityPlayer.getPosX() + xRange);
-                        int posY = (int) MathHelper.clamp(IEntityPlayer.getPosY() + yRange, 0, 256);
+                        int posY = (int) MathHelper.clamp_double(IEntityPlayer.getPosY() + yRange, 0, 256);
                         int posZ = (int) (IEntityPlayer.getPosZ() + zRange);
 
                         IBlockPos pos = new IBlockPos(posX, posY, posZ);
@@ -75,15 +75,15 @@ public class IWorld {
     }
 
     public static long getWorldTime() {
-        if (Minecraft.getMinecraft().world == null) {
+        if (Minecraft.getMinecraft().theWorld == null) {
             return 0L;
         }
-        return Minecraft.getMinecraft().world.getWorldTime();
+        return Minecraft.getMinecraft().theWorld.getWorldTime();
     }
 
     public static void sendQuittingPacket() {
-        if (Minecraft.getMinecraft().world != null) {
-            Minecraft.getMinecraft().world.sendQuittingDisconnectingPacket();
+        if (Minecraft.getMinecraft().theWorld != null) {
+            Minecraft.getMinecraft().theWorld.sendQuittingDisconnectingPacket();
         }
     }
 
@@ -92,7 +92,7 @@ public class IWorld {
     }
 
     public static IBlock getBlockFromPos(IBlockPos pos) {
-        Block mBlock = Minecraft.getMinecraft().world.getBlockState(pos.getPos()).getBlock();
+        Block mBlock = Minecraft.getMinecraft().theWorld.getBlockState(pos.getPos()).getBlock();
         IBlock block = new IBlock(mBlock, pos.getPos());
         if (block.instanceOf(IBlock.IBlockTypes.BlockCrops)) {
             block = new IBlockCrops(mBlock, pos.getPos());
@@ -103,11 +103,11 @@ public class IWorld {
     }
 
     public static IBlockState getStateFromPos(IBlockPos pos) {
-        return Minecraft.getMinecraft().world.getBlockState(pos.getPos());
+        return Minecraft.getMinecraft().theWorld.getBlockState(pos.getPos());
     }
 
     public static boolean isNull() {
-        return Minecraft.getMinecraft().world == null;
+        return Minecraft.getMinecraft().theWorld == null;
     }
 
     public int getActualHeight() {

@@ -34,7 +34,7 @@ public class IInventoryWrapper {
         if (IEntityPlayer.isNull()) {
             return false;
         }
-        ItemStack chest = Minecraft.getMinecraft().player.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
+        ItemStack chest = Minecraft.getMinecraft().thePlayer.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
         if (chest != null) {
             return chest.getItem() == Items.ELYTRA;
         }
@@ -44,7 +44,7 @@ public class IInventoryWrapper {
     public static boolean placeStackInHotbar(IItemStack stack) {
         for (int i = 0; i < 9; i++) {
             if (IInventoryWrapper.getStackInSlot(i).isEmpty()) {
-                Minecraft.getMinecraft().player.connection
+                Minecraft.getMinecraft().thePlayer.connection
                         .sendPacket(new CPacketCreativeInventoryAction(36 + i, stack.getStack()));
                 return true;
             }
@@ -72,7 +72,7 @@ public class IInventoryWrapper {
     }
 
     public static IItemStack getHeldInventoryItem() {
-        return new IItemStack(Minecraft.getMinecraft().player.inventory.getCurrentItem());
+        return new IItemStack(Minecraft.getMinecraft().thePlayer.inventory.getCurrentItem());
     }
 
     public static IItemStack getHeldItem(boolean offhand) {
@@ -84,7 +84,7 @@ public class IInventoryWrapper {
             return new ArrayList<>();
         }
         ArrayList<ISlot> slots = new ArrayList<>();
-        for (Slot d : Minecraft.getMinecraft().player.inventoryContainer.inventorySlots) {
+        for (Slot d : Minecraft.getMinecraft().thePlayer.inventoryContainer.inventorySlots) {
             slots.add(new ISlot(d));
         }
         return slots;
@@ -94,28 +94,28 @@ public class IInventoryWrapper {
         if (IEntityPlayer.isNull()) {
             return null;
         }
-        return new IItemStack(Minecraft.getMinecraft().player.inventory.armorInventory[id]);
+        return new IItemStack(Minecraft.getMinecraft().thePlayer.inventory.armorInventory[id]);
     }
 
     public static IItemStack getArmorInSlot(int id) {
         if (IEntityPlayer.isNull()) {
             return null;
         }
-        return new IItemStack(Minecraft.getMinecraft().player.inventory.armorItemInSlot(id));
+        return new IItemStack(Minecraft.getMinecraft().thePlayer.inventory.armorItemInSlot(id));
     }
 
     public static IItemStack getStackInSlot(int id) {
         if (IEntityPlayer.isNull()) {
             return null;
         }
-        return new IItemStack(Minecraft.getMinecraft().player.inventory.getStackInSlot(id));
+        return new IItemStack(Minecraft.getMinecraft().thePlayer.inventory.getStackInSlot(id));
     }
 
     public static int getFirstEmptyStack() {
         if (IEntityPlayer.isNull()) {
             return 0;
         }
-        return Minecraft.getMinecraft().player.inventory.getFirstEmptyStack();
+        return Minecraft.getMinecraft().thePlayer.inventory.getFirstEmptyStack();
     }
 
 }

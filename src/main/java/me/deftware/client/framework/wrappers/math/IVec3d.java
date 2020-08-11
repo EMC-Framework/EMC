@@ -94,7 +94,7 @@ public class IVec3d {
     }
 
 	public static boolean rayTraceBlocks(IVec3d vec1, IVec3d vec2) {
-        RayTraceResult hitResult_1 = Minecraft.getMinecraft().world.rayTraceBlocks(vec1.getVector(),vec2.getVector());
+        RayTraceResult hitResult_1 = Minecraft.getMinecraft().theWorld.rayTraceBlocks(vec1.getVector(),vec2.getVector());
         return hitResult_1 != null && hitResult_1.typeOfHit != RayTraceResult.Type.MISS;
 	}
 

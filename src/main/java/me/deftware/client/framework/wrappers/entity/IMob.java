@@ -48,7 +48,7 @@ public class IMob {
     }
 
     public IWorld getWorld() {
-        return new IWorld(mob.world);
+        return new IWorld(mob.worldObj);
     }
 
     public String getName() {

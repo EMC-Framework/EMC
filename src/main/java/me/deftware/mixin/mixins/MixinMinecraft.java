@@ -55,7 +55,7 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
 	public abstract void middleClickMouse();
 
 	@Shadow
-	public WorldClient world;
+	public WorldClient theWorld;
 
 	@Shadow
 	public boolean inGameHasFocus;
@@ -133,7 +133,7 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
         return fpsCounter;
     }
 
-    @Inject(method = "init()V", at = @At("TAIL"))
+    @Inject(method = "startGame", at = @At("TAIL"))
     private void init(CallbackInfo ci) {
         if (!Bootstrap.initialized) {
             Bootstrap.initialized = true;
@@ -196,7 +196,7 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
 	@Inject(method = "getLimitFramerate", at = @At("HEAD"), cancellable = true)
 	public void adjustLimitFramerate(CallbackInfoReturnable<Integer> cir) {
 		// Update menu fps to 60 to match > 1.13.2 mc versions
-		if (this.world == null && this.currentScreen != null) {
+		if (this.theWorld == null && this.currentScreen != null) {
 			cir.setReturnValue(60);
 		}
 	}

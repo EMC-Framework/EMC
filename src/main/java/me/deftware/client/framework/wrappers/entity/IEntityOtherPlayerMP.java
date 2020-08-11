@@ -8,10 +8,10 @@ import net.minecraft.entity.player.EntityPlayer;
 public class IEntityOtherPlayerMP extends EntityOtherPlayerMP {
 
     public IEntityOtherPlayerMP() {
-        super(Minecraft.getMinecraft().world, Minecraft.getMinecraft().player.getGameProfile());
-        clonePlayer(Minecraft.getMinecraft().player, true);
-        copyLocationAndAnglesFrom(Minecraft.getMinecraft().player);
-        rotationYawHead = Minecraft.getMinecraft().player.rotationYawHead;
+        super(Minecraft.getMinecraft().theWorld, Minecraft.getMinecraft().thePlayer.getGameProfile());
+        clonePlayer(Minecraft.getMinecraft().thePlayer, true);
+        copyLocationAndAnglesFrom(Minecraft.getMinecraft().thePlayer);
+        rotationYawHead = Minecraft.getMinecraft().thePlayer.rotationYawHead;
     }
 
     public void clonePlayer(EntityPlayer oldPlayer, boolean respawnFromEnd) {
@@ -25,7 +25,7 @@ public class IEntityOtherPlayerMP extends EntityOtherPlayerMP {
             setScore(oldPlayer.getScore());
             lastPortalVec = oldPlayer.getLastPortalVec();
             teleportDirection = oldPlayer.getTeleportDirection();
-        } else if (world.getGameRules().getBoolean("keepInventory") || oldPlayer.isSpectator()) {
+        } else if (worldObj.getGameRules().getBoolean("keepInventory") || oldPlayer.isSpectator()) {
             inventory.copyInventory(oldPlayer.inventory);
             experienceLevel = oldPlayer.experienceLevel;
             experienceTotal = oldPlayer.experienceTotal;

@@ -726,8 +726,8 @@ public class RenderUtils {
         GL11.glDisable(2929);
         GL11.glDepthMask(false);
         if (mode == 0) {
-            GL11.glColor4d(1.0F - Minecraft.getMinecraft().player.getDistanceToEntity(entity) / 40.0F,
-                    Minecraft.getMinecraft().player.getDistanceToEntity(entity) / 40.0F, 0.0D, 0.5D);
+            GL11.glColor4d(1.0F - Minecraft.getMinecraft().thePlayer.getDistanceToEntity(entity) / 40.0F,
+                    Minecraft.getMinecraft().thePlayer.getDistanceToEntity(entity) / 40.0F, 0.0D, 0.5D);
         } else if (mode == 1) {
             GL11.glColor4d(0.0D, 0.0D, 1.0D, 0.5D);
         } else if (mode == 2) {
@@ -738,12 +738,12 @@ public class RenderUtils {
             GL11.glColor4d(0.0D, 1.0D, 0.0D, 0.5D);
         }
         Vec3d eyes = new Vec3d(0.0D, 0.0D, 1.0D)
-                .rotatePitch(-(float) Math.toRadians(Minecraft.getMinecraft().player.rotationPitch))
-                .rotateYaw(-(float) Math.toRadians(Minecraft.getMinecraft().player.rotationYaw));
+                .rotatePitch(-(float) Math.toRadians(Minecraft.getMinecraft().thePlayer.rotationPitch))
+                .rotateYaw(-(float) Math.toRadians(Minecraft.getMinecraft().thePlayer.rotationYaw));
 
         GL11.glBegin(1);
 
-        GL11.glVertex3d(eyes.xCoord, Minecraft.getMinecraft().player.getEyeHeight() + eyes.yCoord, eyes.zCoord);
+        GL11.glVertex3d(eyes.xCoord, Minecraft.getMinecraft().thePlayer.getEyeHeight() + eyes.yCoord, eyes.zCoord);
         GL11.glVertex3d(x, y, z);
 
         GL11.glEnd();
@@ -771,12 +771,12 @@ public class RenderUtils {
         RenderUtils.glColor(color);
 
         Vec3d eyes = new Vec3d(0.0D, 0.0D, 1.0D)
-                .rotatePitch(-(float) Math.toRadians(Minecraft.getMinecraft().player.rotationPitch))
-                .rotateYaw(-(float) Math.toRadians(Minecraft.getMinecraft().player.rotationYaw));
+                .rotatePitch(-(float) Math.toRadians(Minecraft.getMinecraft().thePlayer.rotationPitch))
+                .rotateYaw(-(float) Math.toRadians(Minecraft.getMinecraft().thePlayer.rotationYaw));
 
         GL11.glBegin(1);
 
-        GL11.glVertex3d(eyes.xCoord, Minecraft.getMinecraft().player.getEyeHeight() + eyes.yCoord, eyes.zCoord);
+        GL11.glVertex3d(eyes.xCoord, Minecraft.getMinecraft().thePlayer.getEyeHeight() + eyes.yCoord, eyes.zCoord);
         GL11.glVertex3d(x, y, z);
 
         GL11.glEnd();
@@ -803,12 +803,12 @@ public class RenderUtils {
         GL11.glColor4f(color.getRed(), color.getGreen(), color.getBlue(), alpha);
 
         Vec3d eyes = new Vec3d(0.0D, 0.0D, 1.0D)
-                .rotatePitch(-(float) Math.toRadians(Minecraft.getMinecraft().player.rotationPitch))
-                .rotateYaw(-(float) Math.toRadians(Minecraft.getMinecraft().player.rotationYaw));
+                .rotatePitch(-(float) Math.toRadians(Minecraft.getMinecraft().thePlayer.rotationPitch))
+                .rotateYaw(-(float) Math.toRadians(Minecraft.getMinecraft().thePlayer.rotationYaw));
 
         GL11.glBegin(1);
 
-        GL11.glVertex3d(eyes.xCoord, Minecraft.getMinecraft().player.getEyeHeight() + eyes.yCoord, eyes.zCoord);
+        GL11.glVertex3d(eyes.xCoord, Minecraft.getMinecraft().thePlayer.getEyeHeight() + eyes.yCoord, eyes.zCoord);
         GL11.glVertex3d(x, y, z);
 
         GL11.glEnd();
@@ -914,7 +914,7 @@ public class RenderUtils {
         RenderUtils.glColor(color);
         GL11.glBegin(1);
 
-        GL11.glVertex3d(0.0D, Minecraft.getMinecraft().player.getEyeHeight(), 0.0D);
+        GL11.glVertex3d(0.0D, Minecraft.getMinecraft().thePlayer.getEyeHeight(), 0.0D);
         GL11.glVertex3d(x, y, z);
 
         GL11.glEnd();

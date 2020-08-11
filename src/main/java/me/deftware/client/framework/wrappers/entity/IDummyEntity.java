@@ -15,7 +15,7 @@ public class IDummyEntity extends IEntity {
     public static class dummyEntity extends Entity {
 
         public dummyEntity(IBlockPos pos) {
-            super(Minecraft.getMinecraft().player.getEntityWorld());
+            super(Minecraft.getMinecraft().thePlayer.getEntityWorld());
             posX = pos.getX();
             posY = pos.getY();
             posZ = pos.getZ();
