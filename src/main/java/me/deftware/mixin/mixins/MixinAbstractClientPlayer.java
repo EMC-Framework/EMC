@@ -51,7 +51,7 @@ public abstract class MixinAbstractClientPlayer implements IMixinAbstractClientP
 	@Inject(method = "getLocationCape", at = @At("TAIL"), cancellable = true)
 	public void onGetCapeTexture(CallbackInfoReturnable<ResourceLocation> ci) {
 		try {
-			String uuid = ((AbstractClientPlayer) (Object) this).getCachedUniqueIdString();
+			String uuid = ((AbstractClientPlayer) (Object) this).getUniqueID().toString();
 			String uidHash = HashUtils.getSHA(uuid.replace("-", "")).toLowerCase();
             String id = SettingsMap.hasValue(SettingsMap.MapKeys.CAPES_TEXTURE, ((AbstractClientPlayer) (Object) this).getGameProfile().getName())
 		            ? ((AbstractClientPlayer) (Object) this).getGameProfile().getName() : SettingsMap.hasValue(SettingsMap.MapKeys.CAPES_TEXTURE, uuid.replace("-", ""))

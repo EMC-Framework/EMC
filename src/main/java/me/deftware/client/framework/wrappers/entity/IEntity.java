@@ -341,9 +341,9 @@ public class IEntity {
         } else if (e.equals(EntityType.ENTITY_VILLAGER)) {
             return entity instanceof EntityVillager;
         } else if (e.equals(EntityType.ENTITY_DONKEY)) {
-            return ((EntityHorse)entity).getType() == HorseType.DONKEY;
+            return ((EntityHorse)entity).getType() == HorseArmorType.DONKEY;
         } else if (e.equals(EntityType.ENTITY_MULE)) {
-            return ((EntityHorse)entity).getType() == HorseType.MULE;
+            return ((EntityHorse)entity).getType() == HorseArmorType.MULE;
         } else if (e.equals(EntityType.ENTITY_HORSE)) {
             return entity instanceof EntityHorse;
         }

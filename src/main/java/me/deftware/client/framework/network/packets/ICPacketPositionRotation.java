@@ -12,7 +12,7 @@ public class ICPacketPositionRotation extends IPacket {
 	}
 
 	public ICPacketPositionRotation(double x, double y, double z, float yaw, float pitch, boolean isOnGround) {
-		super(new CPacketPlayer.PositionRotation(x,y,z,yaw,pitch,isOnGround));
+		super(new CPacketPlayer.C06PacketPlayerPosLook(x,y,z,yaw,pitch,isOnGround));
 	}
 
 }

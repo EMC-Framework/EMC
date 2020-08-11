@@ -67,11 +67,11 @@ public class IPacket {
         // Client to server packets
         if (packet instanceof CPacketPlayer) {
             return new ICPacketPlayer(packet);
-        } else if (packet instanceof CPacketPlayer.PositionRotation) {
+        } else if (packet instanceof CPacketPlayer.C06PacketPlayerPosLook) {
             return new ICPacketPositionRotation(packet);
-        } else if (packet instanceof CPacketPlayer.Rotation) {
+        } else if (packet instanceof CPacketPlayer.C05PacketPlayerLook) {
             return new ICPacketRotation(packet);
-        } else if (packet instanceof CPacketPlayer.Position) {
+        } else if (packet instanceof CPacketPlayer.C04PacketPlayerPosition) {
             return new ICPacketPosition(packet);
         } else if (packet instanceof CPacketCloseWindow) {
             return new ICPacketCloseWindow(packet);

@@ -11,7 +11,7 @@ public class ICPacketPosition extends IPacket {
 	}
 
 	public ICPacketPosition(double xIn, double yIn, double zIn, boolean onGroundIn) {
-		super(new CPacketPlayer.Position(xIn, yIn, zIn, onGroundIn));
+		super(new CPacketPlayer.C04PacketPlayerPosition(xIn, yIn, zIn, onGroundIn));
 	}
 
 }
