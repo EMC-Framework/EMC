@@ -20,14 +20,18 @@ import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
+import net.minecraft.tag.FluidTags;
+import net.minecraft.tag.GlobalTagAccessor;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
@@ -772,10 +776,8 @@ public class IEntityPlayer {
 		return MinecraftClient.getInstance().player.isSneaking();
 	}
 
-	@Deprecated
 	public static boolean isInAir() {
-		return false;
-		//return MinecraftClient.getInstance().player.isSubmergedIn(class_5413.method_30201(new Identifier("block"), class_5415::method_30215).get("air"));
+		return MinecraftClient.getInstance().player.isSubmergedIn(new GlobalTagAccessor().get("air"));
 	}
 
 	public static IAxisAlignedBB getBoundingBox() {

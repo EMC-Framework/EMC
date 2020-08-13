@@ -9,7 +9,6 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Final;
@@ -64,7 +63,7 @@ public abstract class MixinGuiTextField extends AbstractButtonWidget implements 
     private TextRenderer textRenderer;
 
     @Shadow
-    private BiFunction<String, Integer, OrderedText> renderTextProvider;
+    private BiFunction<String, Integer, String> renderTextProvider;
 
     @Shadow
     private boolean editable;
@@ -196,7 +195,7 @@ public abstract class MixinGuiTextField extends AbstractButtonWidget implements 
     }
 
     @Override
-    public BiFunction<String, Integer, OrderedText> getRenderTextProvider() {
+    public BiFunction<String, Integer, String> getRenderTextProvider() {
         return renderTextProvider;
     }
 

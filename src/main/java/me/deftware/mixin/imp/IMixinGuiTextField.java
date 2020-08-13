@@ -2,7 +2,6 @@ package me.deftware.mixin.imp;
 
 import me.deftware.client.framework.fonts.EMCFont;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.text.OrderedText;
 
 import java.util.function.BiFunction;
 
@@ -44,7 +43,7 @@ public interface IMixinGuiTextField {
 
     boolean getIsEditble();
 
-    BiFunction<String, Integer, OrderedText> getRenderTextProvider();
+    BiFunction<String, Integer, String> getRenderTextProvider();
 
     String getSuggestion();
 
