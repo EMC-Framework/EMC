@@ -7,5 +7,5 @@ import java.util.Collection;
 public interface IMixinWorld {
 
 	Collection<ITileEntity> getEmcTileEntities();
-	
+
 }

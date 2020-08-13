@@ -20,7 +20,8 @@ import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.mob.*;
 import net.minecraft.entity.passive.*;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.Projectile;
+
 import java.math.BigDecimal;
 
 @SuppressWarnings("All")
@@ -59,7 +60,7 @@ public class IEntity {
     }
 
     public boolean isOnGround() {
-        return entity.isOnGround();
+        return entity.onGround;
     }
 
     public float getStepHeight() {
@@ -184,7 +185,7 @@ public class IEntity {
 
     public float getMaxHealth() {
         if (entity instanceof LivingEntity) {
-            return ((LivingEntity) entity).getMaxHealth();
+            return ((LivingEntity) entity).getMaximumHealth();
         }
         return 0;
     }
@@ -309,7 +310,7 @@ public class IEntity {
         } else if (e.equals(EntityType.ENTITY_ITEM)) {
             return entity instanceof ItemEntity;
         } else if (e.equals(EntityType.ENTITY_PROJECTILE)) {
-            return entity instanceof ProjectileEntity;
+            return entity instanceof Projectile;
         } else if (e.equals(EntityType.Entity_Ageable)) {
             return entity instanceof PassiveEntity;
         } else if (e.equals(EntityType.EntityAmbientCreature)) {
@@ -369,7 +370,7 @@ public class IEntity {
         } else if (e.equals(EntityType.ENTITY_SPIDER)) {
             return entity instanceof SpiderEntity;
         } else if (e.equals(EntityType.ENTITY_ZOMBIE_PIGMAN)) {
-            return entity instanceof ZombifiedPiglinEntity;
+            return entity instanceof ZombiePigmanEntity;
         } else if (e.equals(EntityType.ENTITY_ENDERMAN)) {
             return entity instanceof EndermanEntity;
         } else if (e.equals(EntityType.ENTITY_WITHER_SKELETON)) {
@@ -438,7 +439,7 @@ public class IEntity {
         return false;
     }
 
-	public enum EntityType {
+    public enum EntityType {
         ENTITY_PLAYER_SP, EntityOtherPlayerMP, ENTITY_PLAYER, EntityAnimal, EntitySlime, EntityGolem, EntityFlying, EntityMob, EntityWaterMob,
         ENTITY_LIVING_BASE, ENTITY_LIVING, Entity_Ageable, EntityAmbientCreature, ENTITY_ITEM, ENTITY_PROJECTILE,
         /*

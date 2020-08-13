@@ -21,13 +21,11 @@ import net.minecraft.item.BowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.tag.FluidTags;
-import net.minecraft.tag.GlobalTagAccessor;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -62,9 +60,7 @@ public class IEntityPlayer {
 	}
 
 	public static boolean isAtEdge() {
-		return MinecraftClient.getInstance().world.getCollisions(MinecraftClient.getInstance().player, MinecraftClient.getInstance().player.getBoundingBox().offset(0, -0.5, 0).expand(-0.001, 0, -0.001), (foundEntity) -> {
-			return true;
-		}).count() == 0;
+		return MinecraftClient.getInstance().world.getCollisions(MinecraftClient.getInstance().player, MinecraftClient.getInstance().player.getBoundingBox().offset(0, -0.5, 0).expand(-0.001, 0, -0.001), Collections.emptySet()).count() == 0;
 	}
 
 	public static boolean processRightClickBlock(IBlockPos pos, IEnumFacing facing, IVec3d vec) {
@@ -241,7 +237,7 @@ public class IEntityPlayer {
 	}
 
 	public static boolean isRidingOnGround() {
-		return MinecraftClient.getInstance().player.getVehicle().isOnGround();
+		return MinecraftClient.getInstance().player.getVehicle().onGround;
 	}
 
 	public static void attackEntity(IEntity entity) {
@@ -657,10 +653,7 @@ public class IEntityPlayer {
 		if (IEntityPlayer.isNull()) {
 			return 0;
 		}
-		final World dimension = MinecraftClient.getInstance().player.world;
-		return dimension.getRegistryKey() == World.OVERWORLD ? 0 :
-				dimension.getRegistryKey() == World.END ? 1 :
-						dimension.getRegistryKey() == World.NETHER ? -1 : dimension.getDimension().hashCode();
+		return MinecraftClient.getInstance().player.dimension.getRawId();
 	}
 
 	public static boolean isRowingBoat() {
@@ -740,14 +733,14 @@ public class IEntityPlayer {
 		if (IEntityPlayer.isNull()) {
 			return false;
 		}
-		return MinecraftClient.getInstance().player.isOnGround();
+		return MinecraftClient.getInstance().player.onGround;
 	}
 
 	public static void setOnGround(boolean state) {
 		if (IEntityPlayer.isNull()) {
 			return;
 		}
-		MinecraftClient.getInstance().player.setOnGround(state);
+		MinecraftClient.getInstance().player.onGround = state;
 	}
 
 	public static boolean isOnLadder() {
@@ -777,7 +770,7 @@ public class IEntityPlayer {
 	}
 
 	public static boolean isInAir() {
-		return MinecraftClient.getInstance().player.isSubmergedIn(new GlobalTagAccessor().get("air"));
+		return MinecraftClient.getInstance().player.isInFluid(new FluidTags.CachingTag(new Identifier("air")));
 	}
 
 	public static IAxisAlignedBB getBoundingBox() {
@@ -787,9 +780,9 @@ public class IEntityPlayer {
 	public static boolean isTouchingLiquid() {
 		MinecraftClient mc = MinecraftClient.getInstance();
 		boolean inLiquid = false;
-		int y = (int) mc.player.getBoundingBox().minY;
-		for (int x = IEntityPlayer.floor_double(mc.player.getBoundingBox().minX); x < IEntityPlayer.floor_double(mc.player.getBoundingBox().maxX) + 1; x++) {
-			for (int z = IEntityPlayer.floor_double(mc.player.getBoundingBox().minZ); z < IEntityPlayer.floor_double(mc.player.getBoundingBox().maxZ)
+		int y = (int) mc.player.getBoundingBox().y1;
+		for (int x = IEntityPlayer.floor_double(mc.player.getBoundingBox().x1); x < IEntityPlayer.floor_double(mc.player.getBoundingBox().x2) + 1; x++) {
+			for (int z = IEntityPlayer.floor_double(mc.player.getBoundingBox().z1); z < IEntityPlayer.floor_double(mc.player.getBoundingBox().z2)
 					+ 1; z++) {
 				net.minecraft.block.Block block = mc.world.getBlockState(new BlockPos(x, y, z)).getBlock();
 				if ((block != null) && (!(block instanceof AirBlock))) {

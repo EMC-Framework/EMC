@@ -11,7 +11,7 @@ public class IServerData extends ServerInfo {
     }
 
     public ChatMessage getIMotd() {
-        return new ChatMessage().fromText(label);
+        return new ChatMessage().fromString(label);
     }
 
     public boolean isIPinged() {
@@ -31,7 +31,7 @@ public class IServerData extends ServerInfo {
     }
 
     public ChatMessage getIGameVersion() {
-        return new ChatMessage().fromText(version);
+        return new ChatMessage().fromString(version);
     }
 
     public int getIVersion() {
@@ -39,7 +39,7 @@ public class IServerData extends ServerInfo {
     }
 
     public ChatMessage getIPopulationInfo() {
-        return new ChatMessage().fromText(playerCountLabel);
+        return new ChatMessage().fromString(playerCountLabel);
     }
 
     public long getIPingToServer() {

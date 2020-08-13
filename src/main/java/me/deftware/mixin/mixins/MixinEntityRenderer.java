@@ -5,27 +5,21 @@ import me.deftware.client.framework.chat.hud.ChatHud;
 import me.deftware.client.framework.event.events.EventHurtcam;
 import me.deftware.client.framework.event.events.EventRender2D;
 import me.deftware.client.framework.event.events.EventRender3D;
-import me.deftware.client.framework.event.events.EventRender3DNoBobbing;
 import me.deftware.client.framework.maps.SettingsMap;
 import me.deftware.client.framework.wrappers.IResourceLocation;
 import me.deftware.mixin.imp.IMixinEntityRenderer;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.projectile.ProjectileUtil;
+import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -37,6 +31,8 @@ import java.util.function.Predicate;
 @Mixin(GameRenderer.class)
 public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
 
+    private float partialTicks = 0;
+
     @Shadow
     private float movementFovMultiplier;
 
@@ -46,44 +42,18 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     @Shadow
     protected abstract void loadShader(Identifier p_loadShader_1_);
 
-    @Shadow
-    public abstract Matrix4f getBasicProjectionMatrix(Camera camera, float f, boolean bl);
-
-    @Shadow
-    @Final
-    private Camera camera;
-
-    @Unique
-    private final Consumer<Float> renderEvent = partialTicks -> new EventRender3D(partialTicks).broadcast();
-
-    @Unique
-    private final Consumer<Float> renderEventNoBobbing = partialTicks -> new EventRender3DNoBobbing(partialTicks).broadcast();
-
     @Inject(method = "renderHand", at = @At("HEAD"))
-    private void renderHand(MatrixStack matrixStack_1, Camera camera_1, float partialTicks, CallbackInfo ci) {
-        // Normal 3d event
-        loadPushPop(renderEvent, matrixStack_1, partialTicks);
-        // Camera model stack without bobbing applied
-        MatrixStack matrix = new MatrixStack();
-        matrix.push();
-        matrix.peek().getModel().multiply(this.getBasicProjectionMatrix(camera, partialTicks, true));
-        MinecraftClient.getInstance().gameRenderer.loadProjectionMatrix(matrix.peek().getModel());
-        // Camera transformation stack
-        matrix.pop();
-        matrix.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(camera.getPitch()));
-        matrix.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(camera.getYaw() + 180f));
-        loadPushPop(renderEventNoBobbing, matrix, partialTicks);
-        // Reset projection
-        MinecraftClient.getInstance().gameRenderer.loadProjectionMatrix(matrixStack_1.peek().getModel());
-    }
-
-    @Unique
-    private void loadPushPop(Consumer<Float> action, MatrixStack stack, float partialTicks) {
+    private void renderHand(MatrixStack matrixStack_1, Camera camera_1, float float_1, CallbackInfo ci) {
         RenderSystem.pushMatrix();
         RenderSystem.loadIdentity();
-        RenderSystem.multMatrix(stack.peek().getModel());
-        action.accept(partialTicks);
+        RenderSystem.multMatrix(matrixStack_1.peek().getModel());
+        new EventRender3D(partialTicks).broadcast();
         RenderSystem.popMatrix();
+    }
+
+    @Inject(method = "renderWorld", at = @At("HEAD"))
+    private void updateCameraAndRender(float partialTicks, long finishTimeNano, MatrixStack stack, CallbackInfo ci) {
+        this.partialTicks = partialTicks;
     }
 
     @Inject(method = "bobViewWhenHurt", at = @At("HEAD"), cancellable = true)
@@ -95,7 +65,7 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
         }
     }
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;render(Lnet/minecraft/client/util/math/MatrixStack;F)V"))
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "net/minecraft/client/gui/hud/InGameHud.render(F)V"))
     private void onRender2D(CallbackInfo cb) {
         Runnable operation = ChatHud.getChatMessageQueue().poll();
         if (operation != null) {
@@ -109,7 +79,7 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
         loadShader(location);
     }
 
-    @Redirect(method = "updateTargetedEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/projectile/ProjectileUtil;rayTrace(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Box;Ljava/util/function/Predicate;D)Lnet/minecraft/util/hit/EntityHitResult;"))
+    @Redirect(method = "updateTargetedEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ProjectileUtil;rayTrace(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Box;Ljava/util/function/Predicate;D)Lnet/minecraft/util/hit/EntityHitResult;"))
     private EntityHitResult onRayTraceDistance(Entity entity, Vec3d vec3d, Vec3d vec3d2, Box box, Predicate<Entity> predicate, double d) {
         return ProjectileUtil.rayTrace(entity, vec3d, vec3d2, box, predicate, (boolean) SettingsMap.getValue(SettingsMap.MapKeys.ENTITY_SETTINGS, "BYPASS_REACH_LIMIT", false) ? 0d : d);
     }

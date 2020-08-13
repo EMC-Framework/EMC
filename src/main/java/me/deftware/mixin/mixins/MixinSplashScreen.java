@@ -4,7 +4,6 @@ import me.deftware.client.framework.main.EMCMod;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.SplashScreen;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Util;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,7 +22,7 @@ public class MixinSplashScreen {
     }
 
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Util;getMeasuringTimeMs()J", ordinal = 1))
-    private long render(MatrixStack matrixStack, int int_1, int int_2, float float_1) {
+    private long render(int int_1, int int_2, float float_1) {
         if (!Bootstrap.initialized) {
             Bootstrap.initialized = true;
             Bootstrap.getMods().values().forEach(EMCMod::postInit);

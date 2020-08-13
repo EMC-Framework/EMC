@@ -1,11 +1,9 @@
 package me.deftware.client.framework.utils.session;
 
 import com.mojang.authlib.Agent;
-import com.mojang.authlib.Environment;
 import com.mojang.authlib.UserAuthentication;
 import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
-import com.mojang.authlib.yggdrasil.YggdrasilEnvironment;
 import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication;
 import me.deftware.mixin.imp.IMixinMinecraft;
 import net.minecraft.client.MinecraftClient;
@@ -23,18 +21,13 @@ public class AuthLibSession {
 	private final UserAuthentication userAuthentication;
 	private final YggdrasilAuthenticationService authenticationService;
 
-	private AuthLibSession(Environment yggdrasil) {
-		// Custom yggdrasil as an argument below is only applicable for Minecraft 1.16 and above. Prior version of Minecraft do not need it.
-		authenticationService = new YggdrasilAuthenticationService(Proxy.NO_PROXY, UUID.randomUUID().toString(), yggdrasil);
-		userAuthentication = new YggdrasilUserAuthentication(authenticationService, Agent.MINECRAFT, yggdrasil);
-	}
-
 	public AuthLibSession(CustomYggdrasil yggdrasil) {
-		this(yggdrasil.build());
+        authenticationService = new YggdrasilAuthenticationService(Proxy.NO_PROXY, UUID.randomUUID().toString());
+		userAuthentication = new YggdrasilUserAuthentication(authenticationService, Agent.MINECRAFT);
 	}
 
 	public AuthLibSession() {
-		this(YggdrasilEnvironment.PROD);
+		this(null);
 	}
 
 	public void setCredentials(String username, String password) {

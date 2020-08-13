@@ -3,7 +3,7 @@ package me.deftware.client.framework.network;
 import io.netty.buffer.Unpooled;
 import me.deftware.client.framework.wrappers.item.IItemStack;
 import me.deftware.client.framework.wrappers.world.IBlockPos;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.PacketByteBuf;
 
 public class IPacketBuffer {
 

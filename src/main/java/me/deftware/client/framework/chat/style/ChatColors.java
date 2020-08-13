@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.text.Style;
-import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
 
 /**
@@ -39,7 +38,7 @@ public enum ChatColors {
 		this.code = code;
 		this.index = index;
 		this.rgb = rgb;
-		this.chatColor = new ChatColor(null, Formatting.byCode(code));
+		this.chatColor = new ChatColor(Formatting.byCode(code));
 	}
 
 	@Override
@@ -51,34 +50,24 @@ public enum ChatColors {
 	public static @AllArgsConstructor class ChatColor {
 
 		/**
-		 * Only available in Minecraft >= 1.16
-		 */
-		private @Setter TextColor textColor;
-
-		/**
 		 * Old style legacy color system
 		 */
 		private @Setter Formatting formatting;
 
 		public Style applyToStyle(Style style) {
-			if (textColor != null) {
-				style = style.withColor(textColor);
-			} else if (formatting != null) {
-				style = style.withFormatting(formatting);
+			 if (formatting != null) {
+				style = style.setColor(formatting);
 			}
 			return style;
 		}
 
 		@Override
 		public String toString() {
-			if (textColor != null) {
-				return textColor.toString(); // TODO
-			}
 			return formatting != null ? formatting.toString() : "";
 		}
 
 		public ChatColor deepCopy() {
-			return new ChatColor(textColor, formatting);
+			return new ChatColor(formatting);
 		}
 
 	}

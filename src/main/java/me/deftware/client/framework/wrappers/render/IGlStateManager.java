@@ -1,6 +1,5 @@
 package me.deftware.client.framework.wrappers.render;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import org.lwjgl.opengl.GL11;
 
@@ -125,10 +124,6 @@ public class IGlStateManager {
     }
     public static void lineWidth(float f) {
          RenderSystem.lineWidth(f);
-    }
-
-    public static boolean supportsGl30() {
-        return GlStateManager.supportsGl30();
     }
 
 }

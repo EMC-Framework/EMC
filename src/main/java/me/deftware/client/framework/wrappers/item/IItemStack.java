@@ -117,7 +117,7 @@ public class IItemStack {
     }
 
     public static boolean areItemStackTagsEqual(IItemStack one, IItemStack two) {
-        return ItemStack.areEqual(one.getStack(), two.getStack());
+        return ItemStack.areEqualIgnoreDamage(one.getStack(), two.getStack());
     }
 
     public boolean isItemEqual(IItemStack stack) {
@@ -149,7 +149,7 @@ public class IItemStack {
     }
 
     public float getStrVsBlock(IBlockPos pos) {
-        return stack.getMiningSpeedMultiplier(MinecraftClient.getInstance().world.getBlockState(pos.getPos()));
+        return stack.getMiningSpeed(MinecraftClient.getInstance().world.getBlockState(pos.getPos()));
     }
 
     public boolean isEmpty() {

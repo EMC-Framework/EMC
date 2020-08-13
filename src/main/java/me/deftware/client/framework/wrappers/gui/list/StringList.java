@@ -4,12 +4,9 @@ import me.deftware.client.framework.wrappers.gui.IGuiScreen;
 import me.deftware.client.framework.wrappers.render.IFontRenderer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.EntryListWidget;
-import net.minecraft.client.util.math.MatrixStack;
 
 @SuppressWarnings("ALL")
 public class StringList extends EntryListWidget {
-
-	private final MatrixStack stack = new MatrixStack();
 
 	public StringList(int width, int height, int top, int bottom, int itemHeight) {
 		super(MinecraftClient.getInstance(), width, height, top, bottom, itemHeight);
@@ -24,7 +21,7 @@ public class StringList extends EntryListWidget {
 	}
 
 	public void doDraw(int mouseX, int mouseY, float delta) {
-		this.render(stack, mouseX, mouseY, delta);
+		this.render(mouseX, mouseY, delta);
 	}
 
 	public void addToEventListener(IGuiScreen screen) {
@@ -37,7 +34,7 @@ public class StringList extends EntryListWidget {
 	}
 
 	@Override
-	protected int getScrollbarPositionX() {
+	protected int getScrollbarPosition() {
 		return width - 6;
 	}
 
@@ -49,7 +46,7 @@ public class StringList extends EntryListWidget {
 			this.string = string;
 		}
 
-		public void render(MatrixStack matrixStack, int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovering, float delta) {
+		public void render(int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovering, float delta) {
 			String render = string;
 			if (IFontRenderer.getStringWidth(render) > width) {
 				render = "";

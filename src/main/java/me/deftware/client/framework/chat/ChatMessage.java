@@ -46,6 +46,7 @@ public class ChatMessage {
 	 * Converts an old style formatted string to a {@link ChatMessage} object
 	 */
 	public ChatMessage fromString(String text, char formattingChar) {
+		if (text == null) return this;
 		if (!text.contains(String.valueOf(formattingChar))) {
 			// No need to parse if the string doesnt have any formatting
 			sectionList.add(new ChatSection(text));
@@ -80,12 +81,11 @@ public class ChatMessage {
 
 	public ChatMessage fromText(Text text) {
 		// This function is highly dependant on which Minecraft version this is implemented on
-		text.visit((style, string) -> {
-			ChatSection section = new ChatSection(string);
-			section.getStyle().fromStyle(style);
+		for (Text component : text) {
+			ChatSection section = new ChatSection(component.asString());
+			section.getStyle().fromStyle(component.getStyle());
 			sectionList.add(section);
-			return Optional.empty();
-		}, text.getStyle());
+		}
 		return this;
 	}
 

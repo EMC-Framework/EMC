@@ -13,7 +13,7 @@ public class MixinKeyBinding implements IMixinKeyBinding {
     private boolean pressed;
 
     @Shadow
-    private InputUtil.Key boundKey;
+    private InputUtil.KeyCode keyCode;
 
     @Override
     public void setPressed(boolean state) {
@@ -21,8 +21,8 @@ public class MixinKeyBinding implements IMixinKeyBinding {
     }
 
     @Override
-    public InputUtil.Key getInput() {
-        return boundKey;
+    public InputUtil.KeyCode getInput() {
+        return keyCode;
     }
 
 

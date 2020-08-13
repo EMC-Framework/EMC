@@ -6,6 +6,6 @@ public interface IMixinKeyBinding {
 
     void setPressed(boolean state);
 
-    InputUtil.Key getInput();
+    InputUtil.KeyCode getInput();
 
 }

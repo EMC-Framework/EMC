@@ -2,20 +2,17 @@ package me.deftware.client.framework.wrappers.gui;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
-import net.minecraft.client.util.math.MatrixStack;
 
 @SuppressWarnings("all")
 public abstract class IGuiSlot extends AlwaysSelectedEntryListWidget implements CustomIGuiEventListener {
-
-    private static final MatrixStack stack = new MatrixStack();
 
     public IGuiSlot(int width, int height, int topIn, int bottomIn, int slotHeightIn) {
         super(MinecraftClient.getInstance(), width, height, topIn, bottomIn, slotHeightIn);
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int int_1, int int_2, float float_1) {
-        super.render(matrixStack, int_1, int_2, float_1);
+    public void render(int int_1, int int_2, float float_1) {
+        super.render(int_1, int_2, float_1);
         if (children().size() != getISize()) {
             buildItems();
         }
@@ -29,7 +26,7 @@ public abstract class IGuiSlot extends AlwaysSelectedEntryListWidget implements 
     }
 
     public void doDraw(int mouseX, int mouseY, float partialTicks) {
-        render(stack, mouseX, mouseY, partialTicks);
+        render(mouseX, mouseY, partialTicks);
     }
 
     public void clickElement(int slotIndex, boolean isDoubleClick, int mouseX, int mouseY) {
@@ -44,7 +41,7 @@ public abstract class IGuiSlot extends AlwaysSelectedEntryListWidget implements 
         for (int i = 0; i < getISize(); i++) {
             addEntry(new CustomItem(i) {
                 @Override
-                public void render(MatrixStack matrixStack, int x, int y, int io, int i3, int i4, int i5, int i6, boolean b, float v) {
+                public void render(int x, int y, int io, int i3, int i4, int i5, int i6, boolean b, float v) {
                     if (getISize() == 0) {
                         return;
                     }

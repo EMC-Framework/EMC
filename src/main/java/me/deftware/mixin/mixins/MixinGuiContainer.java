@@ -3,16 +3,15 @@ package me.deftware.mixin.mixins;
 import me.deftware.client.framework.event.events.EventGuiScreenPostDraw;
 import me.deftware.mixin.imp.IMixinGuiContainer;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.screen.slot.Slot;
+import net.minecraft.client.gui.screen.ingame.ContainerScreen;
+import net.minecraft.container.Slot;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(HandledScreen.class)
+@Mixin(ContainerScreen.class)
 public class MixinGuiContainer extends MixinGuiScreen implements IMixinGuiContainer {
 
     @Shadow
@@ -28,8 +27,8 @@ public class MixinGuiContainer extends MixinGuiScreen implements IMixinGuiContai
         this.shouldSendPostRenderEvent = false;
     }
 
-    @Inject(method = "drawMouseoverTooltip", at = @At("RETURN"))
-    private void drawMouseoverTooltip(MatrixStack matrices, int x, int y, CallbackInfo ci) {
+    @Inject(method = "render", at = @At("RETURN"))
+    public void render_return(int x, int y, float p_render_3_, CallbackInfo ci) {
         new EventGuiScreenPostDraw((Screen) (Object) this, x, y).broadcast();
     }
 

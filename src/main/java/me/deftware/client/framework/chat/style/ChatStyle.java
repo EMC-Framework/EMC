@@ -36,7 +36,7 @@ public class ChatStyle {
 				else if (formatting == Formatting.OBFUSCATED) obfuscated = true;
 				else if (formatting == Formatting.STRIKETHROUGH) strikethrough = true;
 				// Color
-				else color = new ChatColors.ChatColor(null, formatting);
+				else color = new ChatColors.ChatColor(formatting);
 				break;
 			}
 		}
@@ -44,7 +44,7 @@ public class ChatStyle {
 
 	public void fromStyle(Style style) {
 		// Color
-		color = new ChatColors.ChatColor(style.getColor(), null);
+		color = new ChatColors.ChatColor(style.getColor());
 		// Formatting
 		bold = style.isBold();
 		underline = style.isUnderlined();
@@ -57,17 +57,18 @@ public class ChatStyle {
 	}
 
 	public Style getStyle() {
-		Style style = Style.EMPTY;
+		Style style = new Style();
 		// Formatting
-		style = style.withBold(bold);
-		style = style.withItalic(italic);
-		if (underline) style = style.withFormatting(Formatting.UNDERLINE);
-		if (obfuscated) style = style.withFormatting(Formatting.OBFUSCATED);
-		if (strikethrough) style = style.withFormatting(Formatting.STRIKETHROUGH);
+		style = style
+				.setBold(bold)
+				.setItalic(italic)
+				.setUnderline(underline)
+				.setObfuscated(obfuscated)
+				.setStrikethrough(strikethrough);
 		// Color
 		if (color != null) style = color.applyToStyle(style);
 		// Other
-		if (clickEvent != null) style = style.withClickEvent(clickEvent.toEvent());
+		if (clickEvent != null) style = style.setClickEvent(clickEvent.toEvent());
 		if (hoverEvent != null) style = style.setHoverEvent(hoverEvent.toEvent());
 		return style;
 	}
@@ -88,7 +89,7 @@ public class ChatStyle {
 
 	public ChatStyle deepCopy() {
 		ChatStyle copy = new ChatStyle();
-		copy.color = color.deepCopy();
+		if (color != null) copy.color = color.deepCopy();
 		copy.bold = bold;
 		copy.italic = italic;
 		copy.obfuscated = obfuscated;

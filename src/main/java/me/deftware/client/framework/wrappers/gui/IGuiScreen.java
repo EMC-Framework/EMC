@@ -15,7 +15,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Util;
 import org.lwjgl.glfw.GLFW;
@@ -37,8 +36,7 @@ public abstract class IGuiScreen extends Screen {
     protected boolean escGoesBack = true;
     protected ScreenInstance parentInstance;
     protected HashMap<String, Texture> textureHashMap = new HashMap<>();
-    protected @Getter List<Tuple<Integer, Integer, LiteralText>> compiledText = new ArrayList<>();
-    private final MatrixStack stack = new MatrixStack();
+    protected @Getter List<Tuple<Integer, Integer, ChatMessage>> compiledText = new ArrayList<>();
 
     public IGuiScreen() {
         super(new LiteralText(""));
@@ -105,11 +103,11 @@ public abstract class IGuiScreen extends Screen {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(int mouseX, int mouseY, float partialTicks) {
         onDraw(mouseX, mouseY, partialTicks);
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
-        for (Tuple<Integer, Integer, LiteralText> text : compiledText) {
-            textRenderer.drawWithShadow(stack, text.getRight(), text.getLeft(), text.getMiddle(), 0xFFFFFF);
+        super.render(mouseX, mouseY, partialTicks);
+        for (Tuple<Integer, Integer, ChatMessage> text : compiledText) {
+            font.drawWithShadow(text.getRight().toString(true), text.getLeft(), text.getMiddle(), 0xFFFFFF);
         }
         onPostDraw(mouseX, mouseY, partialTicks);
     }
@@ -176,11 +174,11 @@ public abstract class IGuiScreen extends Screen {
      * @param tint Default value is 0
      */
     protected void renderBackgroundWrap(int offset) {
-        renderBackground(stack, offset);
+        renderBackground(offset);
     }
 
     protected void renderBackgroundTextureWrap(int offset) {
-        this.renderBackgroundTexture(offset);
+        this.renderDirtBackground(offset);
     }
 
     protected IGuiScreen addButton(IGuiButton button) {
@@ -190,12 +188,12 @@ public abstract class IGuiScreen extends Screen {
     }
 
     protected IGuiScreen addText(int x, int y, ChatMessage text) {
-        compiledText.add(new Tuple<>(x, y, text.build()));
+        compiledText.add(new Tuple<>(x, y, text));
         return this;
     }
 
     protected IGuiScreen addCenteredText(int x, int y, ChatMessage text) {
-        compiledText.add(new Tuple<>(x - MinecraftClient.getInstance().textRenderer.getWidth(text.build()) / 2, y, text.build()));
+        compiledText.add(new Tuple<>(x - MinecraftClient.getInstance().textRenderer.getStringWidth(text.toString(true)) / 2, y, text));
         return this;
     }
 
@@ -236,14 +234,14 @@ public abstract class IGuiScreen extends Screen {
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             textureHashMap.get(texture).updateTexture();
         }
-        Screen.drawTexture(stack, x, y, 0, 0, width, height, width, height);
+        Screen.blit(x, y, 0, 0, width, height, width, height);
         GL11.glPopMatrix();
     }
 
     protected void drawTexture(IResourceLocation texture, int x, int y, int width, int height) {
         MinecraftClient.getInstance().getTextureManager().bindTexture(texture);
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        Screen.drawTexture(stack, x, y, 0, 0, width, height, width, height);
+        Screen.blit(x, y, 0, 0, width, height, width, height);
     }
 
     protected void goBack() {

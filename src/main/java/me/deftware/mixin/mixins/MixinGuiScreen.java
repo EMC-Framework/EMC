@@ -10,7 +10,6 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Final;
@@ -30,7 +29,7 @@ public class MixinGuiScreen implements IMixinGuiScreen {
     public boolean shouldSendPostRenderEvent = true;
 
     @Shadow
-    protected TextRenderer textRenderer;
+    protected TextRenderer font;
 
     @Shadow
     @Final
@@ -47,7 +46,7 @@ public class MixinGuiScreen implements IMixinGuiScreen {
 
     @Override
     public TextRenderer getFont() {
-        return textRenderer;
+        return font;
     }
 
     @Override
@@ -56,28 +55,28 @@ public class MixinGuiScreen implements IMixinGuiScreen {
     }
 
     @Inject(method = "render", at = @At("HEAD"))
-    public void render(MatrixStack matrixStack, int x, int y, float p_render_3_, CallbackInfo ci) {
+    public void render(int x, int y, float p_render_3_, CallbackInfo ci) {
         new EventGuiScreenDraw((Screen) (Object) this, x, y).broadcast();
     }
 
     @Inject(method = "render", at = @At("RETURN"))
-    public void render_return(MatrixStack matrixStack, int x, int y, float p_render_3_, CallbackInfo ci) {
+    public void render_return(int x, int y, float p_render_3_, CallbackInfo ci) {
         if (shouldSendPostRenderEvent) {
             new EventGuiScreenPostDraw((Screen) (Object) this, x, y).broadcast();
         }
     }
 
     @Inject(method = "getTooltipFromItem", at = @At(value = "TAIL"), cancellable = true)
-    private void onGetTooltipFromItem(ItemStack stack, CallbackInfoReturnable<List<Text>> cir) {
+    private void onGetTooltipFromItem(ItemStack stack, CallbackInfoReturnable<List<String>> cir) {
         List<ChatMessage> list = new ArrayList<>();
-        for (Text text : cir.getReturnValue()) {
-            list.add(new ChatMessage().fromText(text));
+        for (String text : cir.getReturnValue()) {
+            list.add(new ChatMessage().fromString(text));
         }
         EventGetItemToolTip event = new EventGetItemToolTip(list, new IItem(stack.getItem()));
         event.broadcast();
-        List<Text> modifiedTextList = new ArrayList<>();
+        List<String> modifiedTextList = new ArrayList<>();
         for (ChatMessage text : event.getList()) {
-            modifiedTextList.add(text.build());
+            modifiedTextList.add(text.toString(true));
         }
         cir.setReturnValue(modifiedTextList);
     }
