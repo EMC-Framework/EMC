@@ -1,6 +1,6 @@
 package me.deftware.client.framework.wrappers.render;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.opengl.GL11;
 
 import java.nio.FloatBuffer;
@@ -40,7 +40,7 @@ public class IGlStateManager {
     }
 
     public static void resetColor() {
-        GlStateManager.clearCurrentColor();
+        GlStateManager.resetColor();
     }
 
     public static void pushMatrix() {
@@ -68,7 +68,7 @@ public class IGlStateManager {
     }
 
     public static void disableTexture2D() {
-        GlStateManager.disableTexture();
+        GlStateManager.disableTexture2D();
     }
 
     public static void tryBlendFuncSeparate(int srcFactor, int dstFactor, int srcFactorAlpha, int dstFactorAlpha) {
@@ -84,7 +84,7 @@ public class IGlStateManager {
     }
 
     public static void enableTexture2D() {
-        GlStateManager.enableTexture();
+        GlStateManager.enableTexture2D();
     }
 
     public static void enableLighting() {

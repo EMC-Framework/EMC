@@ -6,8 +6,8 @@ import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication;
 import me.deftware.mixin.imp.IMixinMinecraft;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.util.Session;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.Session;
 
 import java.net.Proxy;
 import java.util.UUID;
@@ -68,12 +68,12 @@ public class AuthLibSession {
 	}
 
 	public void setSession(Session session) {
-		((IMixinMinecraft) MinecraftClient.getInstance()).setSession(buildSession());
-		((IMixinMinecraft) MinecraftClient.getInstance()).setSessionService(authenticationService.createMinecraftSessionService());
+		((IMixinMinecraft) Minecraft.getInstance()).setSession(buildSession());
+		((IMixinMinecraft) Minecraft.getInstance()).setSessionService(authenticationService.createMinecraftSessionService());
 	}
 
 	public void setOfflineSession(String username) {
-		((IMixinMinecraft) MinecraftClient.getInstance()).setSession(new Session(username, "", "0", "legacy"));
+		((IMixinMinecraft) Minecraft.getInstance()).setSession(new Session(username, "", "0", "legacy"));
 	}
 
 }

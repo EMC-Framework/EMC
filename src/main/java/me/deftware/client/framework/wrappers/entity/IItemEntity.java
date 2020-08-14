@@ -11,31 +11,31 @@ public class IItemEntity {
     }
 
     public double getPosX() {
-        return item.x;
+        return item.posX;
     }
 
     public double getPosY() {
-        return item.y;
+        return item.posY;
     }
 
     public double getPosZ() {
-        return item.z;
+        return item.posZ;
     }
 
     public double getLastTickPosX() {
-        return item.prevRenderX;
+        return item.lastTickPosX;
     }
 
     public double getLastTickPosY() {
-        return item.prevRenderY;
+        return item.lastTickPosY;
     }
 
     public double getLastTickPosZ() {
-        return item.prevRenderZ;
+        return item.lastTickPosZ;
     }
 
     public float getHeight() {
-        return item.getHeight();
+        return item.height;
     }
 
     public Entity getItem() {

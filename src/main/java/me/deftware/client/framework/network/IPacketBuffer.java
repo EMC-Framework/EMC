@@ -3,17 +3,17 @@ package me.deftware.client.framework.network;
 import io.netty.buffer.Unpooled;
 import me.deftware.client.framework.wrappers.item.IItemStack;
 import me.deftware.client.framework.wrappers.world.IBlockPos;
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.network.PacketBuffer;
 
 public class IPacketBuffer {
 
-    public PacketByteBuf buffer;
+    public PacketBuffer buffer;
 
     public IPacketBuffer() {
-        this.buffer = new PacketByteBuf(Unpooled.buffer());
+        this.buffer = new PacketBuffer(Unpooled.buffer());
     }
 
-    public IPacketBuffer(PacketByteBuf buffer) {
+    public IPacketBuffer(PacketBuffer buffer) {
         this.buffer = buffer;
     }
 
@@ -54,7 +54,7 @@ public class IPacketBuffer {
     }
 
     public String readString() {
-        return buffer.readString();
+        return buffer.readString(0);
     }
 
     public IItemStack readItemStack() {

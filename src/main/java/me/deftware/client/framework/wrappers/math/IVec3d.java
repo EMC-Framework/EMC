@@ -1,12 +1,10 @@
 package me.deftware.client.framework.wrappers.math;
 
 import me.deftware.client.framework.wrappers.world.IBlockPos;
-import me.deftware.client.framework.wrappers.world.ICamera;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.util.hit.HitResult;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.world.RayTraceContext;
 
 public class IVec3d {
 
@@ -65,7 +63,7 @@ public class IVec3d {
     }
 
     public IVec3d scale(double scale) {
-        vector = vector.multiply(scale);
+        vector = vector.scale(scale);
         return this;
     }
 
@@ -96,8 +94,8 @@ public class IVec3d {
     }
 
 	public static boolean rayTraceBlocks(IVec3d vec1, IVec3d vec2) {
-        HitResult hitResult_1 = MinecraftClient.getInstance().world.rayTrace(new RayTraceContext(vec1.getVector(), vec2.getVector(), RayTraceContext.ShapeType.OUTLINE, RayTraceContext.FluidHandling.NONE, ICamera.getRenderViewEntity()));
-        return hitResult_1.getType() != HitResult.Type.MISS;
+        RayTraceResult hitResult_1 = Minecraft.getInstance().world.rayTraceBlocks(vec1.getVector(),vec2.getVector());
+        return hitResult_1 != null && hitResult_1.type != RayTraceResult.Type.MISS;
 	}
 
     public double squareDistanceTo(IVec3d vec) {

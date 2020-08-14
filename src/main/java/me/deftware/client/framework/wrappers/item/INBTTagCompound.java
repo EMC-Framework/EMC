@@ -1,12 +1,12 @@
 package me.deftware.client.framework.wrappers.item;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NBTTagCompound;
 
 public class INBTTagCompound {
 
-    private CompoundTag compound;
+    private NBTTagCompound compound;
 
-    public INBTTagCompound(CompoundTag compound) {
+    public INBTTagCompound(NBTTagCompound compound) {
         this.compound = compound;
     }
 
@@ -15,18 +15,18 @@ public class INBTTagCompound {
     }
 
     public boolean contains(String key) {
-        return compound.containsKey(key);
+        return compound.contains(key);
     }
 
     public boolean contains(String key, int i) {
-        return compound.containsKey(key, i);
+        return compound.contains(key, i);
     }
 
     public INBTTagCompound get(String key) {
         return new INBTTagCompound(compound.getCompound(key));
     }
 
-    public CompoundTag getCompound() {
+    public NBTTagCompound getCompound() {
         return compound;
     }
 

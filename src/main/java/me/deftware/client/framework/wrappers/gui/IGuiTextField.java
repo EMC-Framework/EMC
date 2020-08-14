@@ -1,14 +1,14 @@
 package me.deftware.client.framework.wrappers.gui;
 
 import me.deftware.mixin.imp.IMixinGuiTextField;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiTextField;
 import org.lwjgl.glfw.GLFW;
 
-public class IGuiTextField extends TextFieldWidget implements CustomIGuiEventListener {
+public class IGuiTextField extends GuiTextField implements CustomIGuiEventListener {
 
     public IGuiTextField(int id, int x, int y, int width, int height) {
-        super(MinecraftClient.getInstance().textRenderer, x, y, width, height, "");
+        super(id,Minecraft.getInstance().fontRenderer, x, y, width, height);
     }
 
     public String getTextboxText() {
@@ -20,7 +20,7 @@ public class IGuiTextField extends TextFieldWidget implements CustomIGuiEventLis
     }
 
     public void setMaxTextboxLenght(int lenght) {
-        setMaxLength(lenght);
+        setMaxStringLength(lenght);
     }
 
     public boolean isTextboxFocused() {
@@ -46,7 +46,7 @@ public class IGuiTextField extends TextFieldWidget implements CustomIGuiEventLis
     }
 
     public void onDraw(int mouseX, int mouseY, float partialTicks) {
-        renderButton(mouseX, mouseY, partialTicks);
+        drawTextField(mouseX, mouseY, partialTicks);
     }
 
     public void doCursorTick() {
@@ -54,7 +54,7 @@ public class IGuiTextField extends TextFieldWidget implements CustomIGuiEventLis
     }
 
     public void setTextboxEnabled(boolean state) {
-        setIsEditable(state);
+        setEnabled(state);
     }
 
     public int getPosX() {

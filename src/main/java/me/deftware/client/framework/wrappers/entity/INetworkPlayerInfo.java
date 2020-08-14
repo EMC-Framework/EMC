@@ -1,12 +1,12 @@
 package me.deftware.client.framework.wrappers.entity;
 
-import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.client.network.NetworkPlayerInfo;
 
 public class INetworkPlayerInfo {
 
-    private PlayerListEntry data;
+    private NetworkPlayerInfo data;
 
-    public INetworkPlayerInfo(PlayerListEntry data) {
+    public INetworkPlayerInfo(NetworkPlayerInfo data) {
         this.data = data;
     }
 
@@ -15,11 +15,11 @@ public class INetworkPlayerInfo {
     }
 
     public boolean isSurvivalOrAdventure() {
-        return data.getGameMode().isSurvivalLike();
+        return data.getGameType().isSurvivalOrAdventure();
     }
 
     public boolean isCreative() {
-        return data.getGameMode().isCreative();
+        return data.getGameType().isCreative();
     }
 
 }

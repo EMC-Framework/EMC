@@ -1,6 +1,6 @@
 package me.deftware.client.framework.wrappers.toast;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
 /**
  * A wrapper for sending toasts using the minecraft toast system
@@ -10,7 +10,7 @@ import net.minecraft.client.MinecraftClient;
 public class ToastAPI {
 
 	public static void addToast(ToastImpl toast) {
-		MinecraftClient.getInstance().getToastManager().add(toast);
+		Minecraft.getInstance().getToastGui().add(toast);
 	}
 
 }

@@ -2,8 +2,8 @@ package me.deftware.client.framework.wrappers.render;
 
 public class IBeaconRenderer {
 
-    /*
-    public static final IResourceLocation TEXTURE_BEACON_BEAM = new IResourceLocation("textures/entity/beacon_beam.png");
+
+    /*public static final IResourceLocation TEXTURE_BEACON_BEAM = new IResourceLocation("textures/entity/beacon_beam.png");
 
     public static void renderBeamAt(double x, double y, double z, float r, float g, float b, int height, float partialTicks) {
         if (height < 1) {
@@ -15,7 +15,7 @@ public class IBeaconRenderer {
         x -= (IEntityPlayer.getPrevPosX() + (IEntityPlayer.getPosX() - IEntityPlayer.getPrevPosX()) * (double) partialTicks);
         y -= (IEntityPlayer.getPrevPosY() + (IEntityPlayer.getPosY() - IEntityPlayer.getPrevPosY()) * (double) partialTicks);
         z -= (IEntityPlayer.getPrevPosZ() + (IEntityPlayer.getPosZ() - IEntityPlayer.getPrevPosZ()) * (double) partialTicks);
-        BeaconBlockEntityRenderer.renderLightBeam(x, y, z, partialTicks, 1.0, MinecraftClient.getInstance().world.getTimeOfDay(), 0, height, new float[]{r, g, b}, 0.2D, 0.25D);
+        BeaconBlockEntityRenderer.renderLightBeam(x, y, z, partialTicks, 1.0, Minecraft.getInstance().world.getTimeOfDay(), 0, height, new float[]{r, g, b}, 0.2D, 0.25D);
     }
 
     public static void renderBeamAt(double x, double y, double z, int height, float partialTicks) {

@@ -4,7 +4,7 @@ import me.deftware.client.framework.wrappers.world.IBlock;
 import me.deftware.client.framework.wrappers.world.IBlockPos;
 import me.deftware.client.framework.wrappers.world.IWorld;
 import net.minecraft.block.Block;
-import net.minecraft.block.NetherWartBlock;
+import net.minecraft.block.BlockNetherWart;
 import net.minecraft.util.math.BlockPos;
 
 public class IBlockNetherWart extends IBlock {
@@ -22,7 +22,7 @@ public class IBlockNetherWart extends IBlock {
     }
 
     public int getAge(IBlockPos pos) {
-        return IWorld.getStateFromPos(pos).get(NetherWartBlock.AGE);
+        return IWorld.getStateFromPos(pos).get(BlockNetherWart.AGE);
     }
 
 }

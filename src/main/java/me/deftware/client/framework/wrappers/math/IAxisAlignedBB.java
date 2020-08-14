@@ -1,6 +1,6 @@
 package me.deftware.client.framework.wrappers.math;
 
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.AxisAlignedBB;
 
 public class IAxisAlignedBB {
 
@@ -11,9 +11,9 @@ public class IAxisAlignedBB {
     public final double y2;
     public final double z2;
 
-    private BoundingBox bb;
+    private AxisAlignedBB bb;
 
-    public IAxisAlignedBB(BoundingBox aabb) {
+    public IAxisAlignedBB(AxisAlignedBB aabb) {
         bb = aabb;
         x1 = bb.minX;
         y1 = bb.minY;
@@ -24,7 +24,7 @@ public class IAxisAlignedBB {
     }
 
     public IAxisAlignedBB(double x, double y, double z, double x1, double y1, double z1) {
-        bb = new BoundingBox(x, y, z, x1, y1, z1);
+        bb = new AxisAlignedBB(x, y, z, x1, y1, z1);
         this.x1 = bb.minX;
         this.y1 = bb.minY;
         this.z1 = bb.minZ;
@@ -33,7 +33,7 @@ public class IAxisAlignedBB {
         z2 = bb.maxZ;
     }
 
-    public BoundingBox getAABB() {
+    public AxisAlignedBB getAABB() {
         return bb;
     }
 

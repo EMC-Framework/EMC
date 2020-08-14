@@ -7,15 +7,17 @@ import me.deftware.client.framework.event.events.EventVoxelShape;
 import me.deftware.client.framework.maps.SettingsMap;
 import me.deftware.client.framework.wrappers.world.IBlock;
 import net.minecraft.block.*;
-import net.minecraft.entity.EntityContext;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.block.state.BlockState;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.util.EnumBlockRenderType;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.BlockView;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.util.registry.IRegistry;
+import net.minecraft.world.IBlockReader;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -32,16 +34,16 @@ public abstract class MixinBlock {
 
     @Shadow
     @Final
-    protected int lightLevel;
+    protected int lightValue;
 
     @Shadow
     @Final
-    protected boolean collidable;
+    protected boolean blocksMovement;
 
     @Shadow public abstract Item asItem();
 
-    @Inject(method = "getOutlineShape", at = @At("HEAD"), cancellable = true)
-    public void getOutlineShape(BlockState blockState_1, BlockView blockView_1, BlockPos blockPos_1, EntityContext entityContext_1, CallbackInfoReturnable<VoxelShape> ci) {
+    @Inject(method = "getShape", at = @At("HEAD"), cancellable = true)
+    public void getOutlineShape(IBlockState blockState_1, IBlockReader blockView_1, BlockPos blockPos_1, CallbackInfoReturnable<VoxelShape> ci) {
         EventCollideCheck event = new EventCollideCheck(new IBlock(blockState_1.getBlock()));
         event.broadcast();
         if (event.updated) {
@@ -49,8 +51,8 @@ public abstract class MixinBlock {
                 ci.setReturnValue(VoxelShapes.empty());
             }
         } else {
-            if (SettingsMap.isOverrideMode() || (SettingsMap.isOverwriteMode() && SettingsMap.hasValue(Registry.BLOCK.getRawId(blockState_1.getBlock()), "outline"))) {
-                boolean doOutline = (boolean) SettingsMap.getValue(Registry.BLOCK.getRawId(blockState_1.getBlock()), "outline", true);
+            if (SettingsMap.isOverrideMode() || (SettingsMap.isOverwriteMode() && SettingsMap.hasValue(IRegistry.BLOCK.getId(blockState_1.getBlock()), "outline"))) {
+                boolean doOutline = (boolean) SettingsMap.getValue(IRegistry.BLOCK.getId(blockState_1.getBlock()), "outline", true);
                 if (!doOutline) {
                     ci.setReturnValue(VoxelShapes.empty());
                 }
@@ -58,12 +60,12 @@ public abstract class MixinBlock {
         }
     }
 
-    @Inject(method = "getSlipperiness", at = @At("TAIL"), cancellable = true)
+    @Inject(method = "getSlipperiness()F", at = @At("TAIL"), cancellable = true)
     public void getSlipperiness(CallbackInfoReturnable<Float> cir) {
         if (slipperiness != 0.6f) {
             Block block = Block.getBlockFromItem(this.asItem());
             EventSlowdown event = null;
-            if (block instanceof IceBlock) {
+            if (block instanceof BlockIce) {
                 event = new EventSlowdown(EventSlowdown.SlowdownType.Slipperiness, 0.6f);
             }
             if (event != null) {
@@ -75,68 +77,66 @@ public abstract class MixinBlock {
         }
     }
 
-    @Inject(method = "shouldDrawSide", at = @At("HEAD"), cancellable = true)
-    private static void shouldDrawSide(BlockState blockState_1, BlockView blockView_1, BlockPos blockPos_1, Direction direction_1, CallbackInfoReturnable<Boolean> callback) {
-        if (SettingsMap.isOverrideMode() || (SettingsMap.isOverwriteMode() && SettingsMap.hasValue(Registry.BLOCK.getRawId(blockState_1.getBlock()), "render"))) {
+    @Inject(method = "shouldSideBeRendered", at = @At("HEAD"), cancellable = true)
+    private static void shouldDrawSide(IBlockState blockState_1, IBlockReader blockView_1, BlockPos blockPos_1, EnumFacing direction_1, CallbackInfoReturnable<Boolean> callback) {
+        if (SettingsMap.isOverrideMode() || (SettingsMap.isOverwriteMode() && SettingsMap.hasValue(IRegistry.BLOCK.getId(blockState_1.getBlock()), "render"))) {
             callback.setReturnValue(
-                    (boolean) SettingsMap.getValue(Registry.BLOCK.getRawId(blockState_1.getBlock()), "render", false));
+                    (boolean) SettingsMap.getValue(IRegistry.BLOCK.getId(blockState_1.getBlock()), "render", false));
         }
     }
 
     @Inject(method = "getRenderType", at = @At("HEAD"), cancellable = true)
-    public void renderTypeSet(BlockState state, CallbackInfoReturnable<BlockRenderType> cir) {
-        if (SettingsMap.isOverrideMode() || (SettingsMap.isOverwriteMode() && SettingsMap.hasValue(Registry.BLOCK.getRawId(state.getBlock()), "render"))) {
-            boolean doRender = (boolean) SettingsMap.getValue(Registry.BLOCK.getRawId(state.getBlock()), "render", false);
+    public void renderTypeSet(IBlockState state, CallbackInfoReturnable<EnumBlockRenderType> cir) {
+        if (SettingsMap.isOverrideMode() || (SettingsMap.isOverwriteMode() && SettingsMap.hasValue(IRegistry.BLOCK.getId(state.getBlock()), "render"))) {
+            boolean doRender = (boolean) SettingsMap.getValue(IRegistry.BLOCK.getId(state.getBlock()), "render", false);
             if (!doRender) {
-                cir.setReturnValue(BlockRenderType.INVISIBLE);
+                cir.setReturnValue(EnumBlockRenderType.INVISIBLE);
             }
         }
     }
 
-    @Inject(method = "isTranslucent", at = @At("HEAD"), cancellable = true)
-    public void getIsTranslucent(BlockState state, BlockView view, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
-        if (SettingsMap.isOverrideMode() || (SettingsMap.isOverwriteMode() && SettingsMap.hasValue(Registry.BLOCK.getRawId(state.getBlock()), "translucent"))) {
+    @Inject(method = "isOpaqueCube", at = @At("HEAD"), cancellable = true)
+    public void getIsTranslucent(IBlockState state, IBlockReader view, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
+        if (SettingsMap.isOverrideMode() || (SettingsMap.isOverwriteMode() && SettingsMap.hasValue(IRegistry.BLOCK.getId(state.getBlock()), "translucent"))) {
             cir.setReturnValue(
-                    (boolean) SettingsMap.getValue(Registry.BLOCK.getRawId(state.getBlock()), "translucent", false));
+                    (boolean) SettingsMap.getValue(IRegistry.BLOCK.getId(state.getBlock()), "translucent", false));
         }
     }
 
-    @Inject(method = "getLuminance", at = @At("HEAD"), cancellable = true)
-    public void getLuminance(BlockState blockState_1, CallbackInfoReturnable<Integer> callback) {
+    @Inject(method = "getLightValue", at = @At("HEAD"), cancellable = true)
+    public void getLuminance(IBlockState blockState_1, CallbackInfoReturnable<Integer> callback) {
         callback.setReturnValue(
-                (int) SettingsMap.getValue(Registry.BLOCK.getRawId(blockState_1.getBlock()), "lightValue", lightLevel));
+                (int) SettingsMap.getValue(IRegistry.BLOCK.getId(blockState_1.getBlock()), "lightValue", lightValue));
     }
 
-    @Inject(method = "calcBlockBreakingDelta", at = @At("HEAD"), cancellable = true)
-    public void calcBlockBreakingDelta(BlockState blockState_1, PlayerEntity playerEntity_1, BlockView blockView_1, BlockPos blockPos_1, CallbackInfoReturnable<Float> ci) {
-        float float_1 = blockState_1.getHardness(blockView_1, blockPos_1);
+    @Inject(method = "getPlayerRelativeBlockHardness", at = @At("HEAD"), cancellable = true)
+    public void calcBlockBreakingDelta(IBlockState state, EntityPlayer player, IBlockReader reader, BlockPos pos, CallbackInfoReturnable<Float> ci) {
+        float f = state.getBlockHardness(reader, pos);
         EventBlockhardness event = new EventBlockhardness();
         event.broadcast();
-        if (float_1 < 0.0F) {
+        if (f < 0.0F) {
             ci.setReturnValue(0.0F);
         } else {
-            ci.setReturnValue(!playerEntity_1.isUsingEffectiveTool(blockState_1) ? playerEntity_1.getBlockBreakingSpeed(blockState_1) / float_1 / 100.0F
-                    : playerEntity_1.getBlockBreakingSpeed(blockState_1) / float_1 / 30.0F * event.getMultiplier());
+            ci.setReturnValue(!player.canHarvestBlock(state) ? player.getDigSpeed(state) / f / 100.0F
+                    : player.getDigSpeed(state) / f / 30.0F * event.getMultiplier());
         }
     }
 
+
     @Inject(method = "getCollisionShape", at = @At("HEAD"), cancellable = true)
-    public void getCollisionShape(BlockState blockState_1, BlockView blockView_1, BlockPos blockPos_1, EntityContext context, CallbackInfoReturnable<VoxelShape> ci) {
-        EventVoxelShape event = new EventVoxelShape(collidable ? blockState_1.getOutlineShape(blockView_1, blockPos_1) : VoxelShapes.empty(), new IBlock((Block) (Object) this));
+    public void getShapeForCollision(IBlockState p_getShapeForCollision_1_, IBlockReader p_getShapeForCollision_2_, BlockPos p_getShapeForCollision_3_, CallbackInfoReturnable<VoxelShape> ci) {
+        EventVoxelShape event = new EventVoxelShape(blocksMovement ? p_getShapeForCollision_1_.getShape(p_getShapeForCollision_2_, p_getShapeForCollision_3_) : VoxelShapes.empty(), new IBlock((Block) (Object) this));
         event.broadcast();
         if (event.modified) {
             ci.setReturnValue(event.shape);
         } else {
-            if (Block.getBlockFromItem(this.asItem()) instanceof FluidBlock) {
+            if (Block.getBlockFromItem(this.asItem()) instanceof BlockFlowingFluid) {
                 ci.setReturnValue((boolean) SettingsMap.getValue(SettingsMap.MapKeys.BLOCKS, "LIQUID_VOXEL_FULL", false)
                         ? VoxelShapes.fullCube()
                         : VoxelShapes.empty());
-            } else if (Block.getBlockFromItem(this.asItem()) instanceof SweetBerryBushBlock) {
-                if ((boolean) SettingsMap.getValue(SettingsMap.MapKeys.BLOCKS, "custom_berry_voxel", false)) {
-                    ci.setReturnValue(VoxelShapes.fullCube());
-                }
             }
         }
     }
+
 
 }

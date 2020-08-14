@@ -3,7 +3,7 @@ package me.deftware.client.framework.network.packets;
 
 import me.deftware.client.framework.network.IPacket;
 import net.minecraft.network.Packet;
-import net.minecraft.server.network.packet.PlayerMoveC2SPacket;
+import net.minecraft.network.play.client.CPacketPlayer;
 
 public class ICPacketPositionRotation extends IPacket {
 
@@ -12,7 +12,7 @@ public class ICPacketPositionRotation extends IPacket {
 	}
 
 	public ICPacketPositionRotation(double x, double y, double z, float yaw, float pitch, boolean isOnGround) {
-		super(new PlayerMoveC2SPacket.Both(x,y,z,yaw,pitch,isOnGround));
+		super(new CPacketPlayer.PositionRotation(x,y,z,yaw,pitch,isOnGround));
 	}
 
 }

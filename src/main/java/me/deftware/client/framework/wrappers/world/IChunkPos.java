@@ -51,19 +51,19 @@ public class IChunkPos {
     }
 
     public double getStartX() {
-        return pos.getStartX();
+        return pos.getXStart();
     }
 
     public double getEndX() {
-        return pos.getEndX();
+        return pos.getXEnd();
     }
 
     public double getStartZ() {
-        return pos.getStartZ();
+        return pos.getZStart();
     }
 
     public double getEndZ() {
-        return pos.getEndZ();
+        return pos.getZEnd();
     }
 
     public void setX(double x) {
@@ -82,14 +82,14 @@ public class IChunkPos {
 
     private void updateCords(boolean blockPos) {
         if (blockPos) {
-            centerPos = new IBlockPos(x, 0, z);
+            centerPos = new IBlockPos((int)x << 4, 0, (int)z << 4);
             pos = new ChunkPos(centerPos.getPos());
             boundingBox = new IAxisAlignedBB(getStartX(), 0, getStartZ(), getEndX(), 255, getEndZ());
         } else {
-            centerPos = new IBlockPos(pos.getCenterBlockPos());
             boundingBox = new IAxisAlignedBB(getStartX(), 0, getStartZ(), getEndX(), 255, getEndZ());
             x = pos.x;
             z = pos.z;
+            centerPos = new IBlockPos((int)x << 4, 0, (int)z << 4);
         }
     }
 

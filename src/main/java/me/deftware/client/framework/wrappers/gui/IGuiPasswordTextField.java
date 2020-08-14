@@ -1,136 +1,112 @@
 package me.deftware.client.framework.wrappers.gui;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import me.deftware.mixin.imp.IMixinGuiTextField;
-import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 
-@SuppressWarnings("All")
 public class IGuiPasswordTextField extends IGuiTextField {
 
     private int enabledColor = 14737632;
     private int disabledColor = 7368816;
 
-    public IGuiPasswordTextField(int id, int x, int y, int width, int height) {
-        super(0, x, y, width, height);
+    public IGuiPasswordTextField(int componentId, int x, int y, int width, int height) {
+        super(componentId, x, y, width, height);
     }
 
     @Override
-    public void renderButton(int int_1, int int_2, float float_1) {
-        if (this.isVisible()) {
-            if (((IMixinGuiTextField) this).getHasBorder()) {
-                fill(this.x - 1, this.y - 1, this.x + this.width + 1, this.y + this.height + 1, -6250336);
-                fill(this.x, this.y, this.x + this.width, this.y + this.height, -16777216);
+    public void drawTextField(int p_195608_1_, int p_195608_2_, float p_195608_3_) {
+        if (getVisible()) {
+            if (getEnableBackgroundDrawing()) {
+                Gui.drawRect(x - 1, y - 1, x + getWidth() + 1,
+                        y + ((IMixinGuiTextField) this).getHeight() + 1, -6250336);
+                Gui.drawRect(x, y, x + getWidth(), y + ((IMixinGuiTextField) this).getHeight(),
+                        -16777216);
             }
-
-            int int_3 = ((IMixinGuiTextField) this).getIsEditble() ? this.enabledColor : this.disabledColor;
-            int int_4 = ((IMixinGuiTextField) this).getCursorMax() - ((IMixinGuiTextField) this).getLineScrollOffset();
-            int int_5 = ((IMixinGuiTextField) this).getSelectionEnd() - ((IMixinGuiTextField) this).getLineScrollOffset();
-
-            // Replace chars
-            String text = this.getText();
+            int var1 = getEnableBackgroundDrawing() ? enabledColor : disabledColor;
+            int var2 = getCursorPosition() - ((IMixinGuiTextField) this).getLineScrollOffset();
+            int var3 = getSelectionEnd() - ((IMixinGuiTextField) this).getLineScrollOffset();
+            String text = getText().substring(((IMixinGuiTextField) this).getLineScrollOffset());
             StringBuilder hidden = new StringBuilder();
             for (int i = 0; i < text.length(); i++) {
                 hidden.append("*");
             }
-            text = hidden.toString();
-
-            String string_1 = ((IMixinGuiTextField) this).getFontRendererInstance().trimToWidth(text.substring(((IMixinGuiTextField) this).getLineScrollOffset()), this.method_1859());
-            boolean boolean_1 = int_4 >= 0 && int_4 <= string_1.length();
-            boolean boolean_2 = this.isFocused() && ((IMixinGuiTextField) this).getCursorCounter() / 6 % 2 == 0 && boolean_1;
-            int int_6 = ((IMixinGuiTextField) this).getHasBorder() ? this.x + 4 : this.x;
-            int int_7 = ((IMixinGuiTextField) this).getHasBorder() ? this.y + (this.height - 8) / 2 : this.y;
-            int int_8 = int_6;
-            if (int_5 > string_1.length()) {
-                int_5 = string_1.length();
+            String var4 = ((IMixinGuiTextField) this).getFontRendererInstance().trimStringToWidth(hidden.toString(), getWidth());
+            boolean var5 = (var2 >= 0) && (var2 <= var4.length());
+            boolean var6 = (isFocused()) && (((IMixinGuiTextField) this).getCursorCounter() / 6 % 2 == 0) && (var5);
+            int var7 = getEnableBackgroundDrawing() ? x + 4 : x;
+            int var8 = getEnableBackgroundDrawing() ? y + (((IMixinGuiTextField) this).getHeight() - 8) / 2 : y;
+            int var9 = var7;
+            if (var3 > var4.length()) {
+                var3 = var4.length();
             }
-
-            if (!string_1.isEmpty()) {
-                String string_2 = boolean_1 ? string_1.substring(0, int_4) : string_1;
-                int_8 = ((IMixinGuiTextField) this).getFontRendererInstance().drawWithShadow(((IMixinGuiTextField) this).getRenderTextProvider().apply(string_2, ((IMixinGuiTextField) this).getLineScrollOffset()), (float)int_6, (float)int_7, int_3);
+            if (var4.length() > 0) {
+                String var10 = var5 ? var4.substring(0, var2) : var4;
+                var9 = ((IMixinGuiTextField) this).getFontRendererInstance().drawStringWithShadow(var10, var7, var8, var1);
             }
-
-            boolean boolean_3 = ((IMixinGuiTextField) this).getCursorMax() < this.getText().length() || this.getText().length() >= ((IMixinGuiTextField) this).getMaxTextLength();
-            int int_9 = int_8;
-            if (!boolean_1) {
-                int_9 = int_4 > 0 ? int_6 + this.width : int_6;
-            } else if (boolean_3) {
-                int_9 = int_8 - 1;
-                --int_8;
+            boolean var13 = (getCursorPosition() < getText().length()) || (getText().length() >= getMaxStringLength());
+            int var11 = var9;
+            if (!var5) {
+                var11 = var2 > 0 ? var7 + getWidth() : var7;
+            } else if (var13) {
+                var11 = var9 - 1;
+                var9--;
             }
-
-            if (!string_1.isEmpty() && boolean_1 && int_4 < string_1.length()) {
-                ((IMixinGuiTextField) this).getFontRendererInstance().drawWithShadow(((IMixinGuiTextField) this).getRenderTextProvider().apply(string_1.substring(int_4), ((IMixinGuiTextField) this).getCursorMax()), (float)int_8, (float)int_7, int_3);
+            if ((var4.length() > 0) && (var5) && (var2 < var4.length())) {
+                var9 = ((IMixinGuiTextField) this).getFontRendererInstance().drawStringWithShadow(var4.substring(var2), var9, var8, var1);
             }
-
-            if (!boolean_3 && ((IMixinGuiTextField) this).getSuggestion() != null) {
-                ((IMixinGuiTextField) this).getFontRendererInstance().drawWithShadow(((IMixinGuiTextField) this).getSuggestion(), (float)(int_9 - 1), (float)int_7, -8355712);
-            }
-
-            int var10002;
-            int var10003;
-            if (boolean_2) {
-                if (boolean_3) {
-                    int var10001 = int_7 - 1;
-                    var10002 = int_9 + 1;
-                    var10003 = int_7 + 1;
-                    ((IMixinGuiTextField) this).getFontRendererInstance().getClass();
-                    DrawableHelper.fill(int_9, var10001, var10002, var10003 + 9, -3092272);
+            if (var6) {
+                if (var13) {
+                    Gui.drawRect(var11, var8 - 1, var11 + 1, var8 + 1 + ((IMixinGuiTextField) this).getFontRendererInstance().FONT_HEIGHT,
+                            -3092272);
                 } else {
-                    ((IMixinGuiTextField) this).getFontRendererInstance().drawWithShadow("_", (float)int_9, (float)int_7, int_3);
+                    ((IMixinGuiTextField) this).getFontRendererInstance().drawStringWithShadow("_", var11, var8, var1);
                 }
             }
-
-            if (int_5 != int_4) {
-                int int_10 = int_6 + ((IMixinGuiTextField) this).getFontRendererInstance().getStringWidth(string_1.substring(0, int_5));
-                var10002 = int_7 - 1;
-                var10003 = int_10 - 1;
-                int var10004 = int_7 + 1;
-                ((IMixinGuiTextField) this).getFontRendererInstance().getClass();
-                this.method_1886(int_9, var10002, var10003, var10004 + 9);
+            if (var3 != var2) {
+                int var12 = var7 + ((IMixinGuiTextField) this).getFontRendererInstance().getStringWidth(var4.substring(0, var3));
+                drawCursorVertical(var11, var8 - 1, var12 - 1, var8 + 1 + ((IMixinGuiTextField) this).getFontRendererInstance().FONT_HEIGHT);
             }
-
         }
     }
 
-    private void method_1886(int int_1, int int_2, int int_3, int int_4) {
-        int int_6;
-        if (int_1 < int_3) {
-            int_6 = int_1;
-            int_1 = int_3;
-            int_3 = int_6;
+    protected void drawCursorVertical(int startX, int startY, int endX, int endY) {
+        if (startX < endX) {
+            int i = startX;
+            startX = endX;
+            endX = i;
         }
 
-        if (int_2 < int_4) {
-            int_6 = int_2;
-            int_2 = int_4;
-            int_4 = int_6;
+        if (startY < endY) {
+            int j = startY;
+            startY = endY;
+            endY = j;
         }
 
-        if (int_3 > this.x + this.width) {
-            int_3 = this.x + this.width;
+        if (endX > x + getWidth()) {
+            endX = x + getWidth();
         }
 
-        if (int_1 > this.x + this.width) {
-            int_1 = this.x + this.width;
+        if (startX > x + getWidth()) {
+            startX = x + getWidth();
         }
 
-        Tessellator tessellator_1 = Tessellator.getInstance();
-        BufferBuilder bufferBuilder_1 = tessellator_1.getBufferBuilder();
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferbuilder = tessellator.getBuffer();
         GlStateManager.color4f(0.0F, 0.0F, 255.0F, 255.0F);
-        GlStateManager.disableTexture();
-        GlStateManager.enableColorLogicOp();
+        GlStateManager.disableTexture2D();
+        GlStateManager.enableColorLogic();
         GlStateManager.logicOp(GlStateManager.LogicOp.OR_REVERSE);
-        bufferBuilder_1.begin(7, VertexFormats.POSITION);
-        bufferBuilder_1.vertex(int_1, int_4, 0.0D).next();
-        bufferBuilder_1.vertex(int_3, int_4, 0.0D).next();
-        bufferBuilder_1.vertex(int_3, int_2, 0.0D).next();
-        bufferBuilder_1.vertex(int_1, int_2, 0.0D).next();
-        tessellator_1.draw();
-        GlStateManager.disableColorLogicOp();
-        GlStateManager.enableTexture();
+        bufferbuilder.begin(7, DefaultVertexFormats.POSITION);
+        bufferbuilder.pos(startX, endY, 0.0D).endVertex();
+        bufferbuilder.pos(endX, endY, 0.0D).endVertex();
+        bufferbuilder.pos(endX, startY, 0.0D).endVertex();
+        bufferbuilder.pos(startX, startY, 0.0D).endVertex();
+        tessellator.draw();
+        GlStateManager.disableColorLogic();
+        GlStateManager.enableTexture2D();
     }
 
 }

@@ -1,7 +1,7 @@
 package me.deftware.mixin.imp;
 
 import me.deftware.client.framework.fonts.EMCFont;
-import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.FontRenderer;
 
 import java.util.function.BiFunction;
 
@@ -11,7 +11,7 @@ public interface IMixinGuiTextField {
 
     void setHeight(int height);
 
-    TextRenderer getFontRendererInstance();
+    FontRenderer getFontRendererInstance();
 
     int getCursorCounter();
 

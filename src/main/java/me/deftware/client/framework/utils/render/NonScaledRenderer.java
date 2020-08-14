@@ -1,11 +1,11 @@
 package me.deftware.client.framework.utils.render;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import me.deftware.client.framework.event.events.EventScaleChange;
 import me.deftware.client.framework.maps.SettingsMap;
 import me.deftware.client.framework.wrappers.IMinecraft;
 import me.deftware.client.framework.wrappers.gui.IGuiScreen;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
@@ -113,10 +113,10 @@ public class NonScaledRenderer {
     }
 
     public static void resetScale() {
-        GlStateManager.clear(256, false);
+        GlStateManager.clear(256);
         GlStateManager.matrixMode(5889);
         GlStateManager.loadIdentity();
-        GlStateManager.ortho(0.0D, MinecraftClient.getInstance().window.getFramebufferWidth() / MinecraftClient.getInstance().window.getScaleFactor(), MinecraftClient.getInstance().window.getFramebufferHeight() / MinecraftClient.getInstance().window.getScaleFactor(), 0.0D, 1000.0D, 3000.0D);
+        GlStateManager.ortho(0.0D, Minecraft.getInstance().mainWindow.getFramebufferWidth() / Minecraft.getInstance().mainWindow.getGuiScaleFactor(), Minecraft.getInstance().mainWindow.getFramebufferHeight() / Minecraft.getInstance().mainWindow.getGuiScaleFactor(), 0.0D, 1000.0D, 3000.0D);
         GlStateManager.matrixMode(5888);
         GlStateManager.loadIdentity();
         GlStateManager.translatef(0.0F, 0.0F, -2000.0F);
@@ -166,7 +166,7 @@ public class NonScaledRenderer {
         double[] pos = new double[2];
         DoubleBuffer posX = BufferUtils.createDoubleBuffer(1),
                 posY = BufferUtils.createDoubleBuffer(1);
-        GLFW.glfwGetCursorPos(MinecraftClient.getInstance().window.getHandle(), posX, posY);
+        GLFW.glfwGetCursorPos(Minecraft.getInstance().mainWindow.getHandle(), posX, posY);
         pos[0] = posX.get(0);
         pos[1] = posY.get(0);
         return pos;

@@ -1,19 +1,19 @@
 package me.deftware.mixin.mixins;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import me.deftware.client.framework.event.events.EventRenderHotbar;
 import me.deftware.client.framework.maps.SettingsMap;
-import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.gui.GuiIngame;
+import net.minecraft.client.renderer.GlStateManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(InGameHud.class)
+@Mixin(GuiIngame.class)
 public class MixinGuiIngame {
 
-    @Inject(method = "renderCrosshair", at = @At(value = "INVOKE", target = "com/mojang/blaze3d/platform/GlStateManager.blendFuncSeparate(Lcom/mojang/blaze3d/platform/GlStateManager$SourceFactor;Lcom/mojang/blaze3d/platform/GlStateManager$DestFactor;Lcom/mojang/blaze3d/platform/GlStateManager$SourceFactor;Lcom/mojang/blaze3d/platform/GlStateManager$DestFactor;)V"), cancellable = true)
-    private void crosshairEvent(CallbackInfo ci) {
+    @Inject(method = "renderAttackIndicator", at = @At(value = "INVOKE", target = "net/minecraft/client/renderer/GlStateManager.blendFuncSeparate(Lnet/minecraft/client/renderer/GlStateManager$SourceFactor;Lnet/minecraft/client/renderer/GlStateManager$DestFactor;Lnet/minecraft/client/renderer/GlStateManager$SourceFactor;Lnet/minecraft/client/renderer/GlStateManager$DestFactor;)V"), cancellable = true)
+    private void crosshairEvent(float partialTicks, CallbackInfo ci) {
         if (!((boolean) SettingsMap.getValue(SettingsMap.MapKeys.RENDER, "CROSSHAIR", true))) {
             GlStateManager.enableAlphaTest();
             ci.cancel();

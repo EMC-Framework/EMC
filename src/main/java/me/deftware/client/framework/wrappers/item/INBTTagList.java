@@ -1,18 +1,18 @@
 package me.deftware.client.framework.wrappers.item;
 
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
 
 public class INBTTagList {
 
-    public ListTag list;
+    public NBTTagList list;
 
     public INBTTagList() {
-        list = new ListTag();
+        list = new NBTTagList();
     }
 
     public void appendTag(String tag) {
-        list.add(new StringTag(tag));
+        list.add(new NBTTagString(tag));
     }
 
 }

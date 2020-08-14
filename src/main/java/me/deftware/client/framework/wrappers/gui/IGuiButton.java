@@ -1,22 +1,19 @@
 package me.deftware.client.framework.wrappers.gui;
 
-import lombok.Getter;
-import lombok.Setter;
 import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.mixin.imp.IMixinGuiButton;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
 
-public abstract class IGuiButton extends AbstractButtonWidget implements CustomIGuiEventListener {
-
-    private @Getter @Setter boolean shouldPlaySound = true;
+public abstract class IGuiButton extends GuiButton implements CustomIGuiEventListener {
+    private boolean shouldPlaySound = true;
 
     public IGuiButton(int id, int x, int y, ChatMessage buttonText) {
-        super(x, y, 200, 20, buttonText.toString(true));
+        super(id, x, y, 200, 20, buttonText.toString(true));
     }
 
     public IGuiButton(int id, int x, int y, int widthIn, int heightIn, ChatMessage buttonText) {
-        super(x, y, widthIn, heightIn, buttonText.toString(true));
+        super(id, x, y, widthIn, heightIn, buttonText.toString(true));
     }
 
     @Override
@@ -28,8 +25,8 @@ public abstract class IGuiButton extends AbstractButtonWidget implements CustomI
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == 0 && this.clicked(mouseX, mouseY)) {
-            if (shouldPlaySound) this.playDownSound(MinecraftClient.getInstance().getSoundManager());
+        if (button == 0 && this.isPressable(mouseX, mouseY)) {
+            if (shouldPlaySound) this.playPressSound(Minecraft.getInstance().getSoundHandler());
             onButtonClick(x, y);
             return true;
         }
@@ -47,7 +44,7 @@ public abstract class IGuiButton extends AbstractButtonWidget implements CustomI
     }
 
     public void setEnabled(boolean state) {
-        active = state;
+        enabled = state;
     }
 
     public void setVisible(boolean state) {
@@ -55,7 +52,7 @@ public abstract class IGuiButton extends AbstractButtonWidget implements CustomI
     }
 
     public boolean isEnabled() {
-        return active;
+        return enabled;
     }
 
     protected int getButtonX() {
@@ -91,7 +88,7 @@ public abstract class IGuiButton extends AbstractButtonWidget implements CustomI
     }
 
     protected boolean isButtonHovered() {
-        return isHovered();
+        return hovered;
     }
 
     protected void setButtonHovered(boolean state) {
@@ -99,11 +96,11 @@ public abstract class IGuiButton extends AbstractButtonWidget implements CustomI
     }
 
     public ChatMessage getButtonText() {
-        return new ChatMessage().fromString(getMessage());
+        return new ChatMessage().fromString(displayString);
     }
 
     public IGuiButton setButtonText(ChatMessage text) {
-        setMessage(text.toString(true));
+        displayString = text.toString(true);
         return this;
     }
 
@@ -112,9 +109,17 @@ public abstract class IGuiButton extends AbstractButtonWidget implements CustomI
             Thread.currentThread().setName("Button reset thread");
             try {
                 Thread.sleep(ms);
-            } catch (InterruptedException ignored) { }
+            } catch (InterruptedException ignored) {
+            }
             setButtonText(text);
         }).start();
     }
 
+    public boolean isShouldPlaySound() {
+        return this.shouldPlaySound;
+    }
+
+    public void setShouldPlaySound(final boolean shouldPlaySound) {
+        this.shouldPlaySound = shouldPlaySound;
+    }
 }

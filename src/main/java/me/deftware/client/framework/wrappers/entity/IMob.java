@@ -12,31 +12,31 @@ public class IMob {
     }
 
     public double getPosX() {
-        return mob.x;
+        return mob.posX;
     }
 
     public double getPosY() {
-        return mob.y;
+        return mob.posY;
     }
 
     public double getPosZ() {
-        return mob.z;
+        return mob.posZ;
     }
 
     public double getLastTickPosX() {
-        return mob.prevRenderX;
+        return mob.lastTickPosX;
     }
 
     public double getLastTickPosY() {
-        return mob.prevRenderY;
+        return mob.lastTickPosY;
     }
 
     public double getLastTickPosZ() {
-        return mob.prevRenderZ;
+        return mob.lastTickPosZ;
     }
 
     public float getHeight() {
-        return mob.getHeight();
+        return mob.height;
     }
 
     public Entity getMob() {
@@ -52,7 +52,7 @@ public class IMob {
     }
 
     public String getName() {
-        return mob.getEntityName();
+        return mob.getName().getFormattedText();
     }
 
 }

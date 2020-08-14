@@ -1,6 +1,7 @@
 package me.deftware.client.framework.wrappers.math;
 
-import net.minecraft.util.shape.VoxelShape;
+
+import net.minecraft.util.math.shapes.VoxelShape;
 
 public class IVoxelShape {
 

@@ -2,7 +2,7 @@ package me.deftware.client.framework.wrappers.render;
 
 import me.deftware.client.framework.utils.render.RenderUtils;
 import me.deftware.mixin.imp.IMixinEntityRenderer;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
 public class IRenderManager {
 
@@ -19,19 +19,19 @@ public class IRenderManager {
     }
 
     public static float getPlayerViewY() {
-        return MinecraftClient.getInstance().getEntityRenderManager().camera.getYaw();
+        return Minecraft.getInstance().getRenderManager().playerViewY;
     }
 
     public static float getPlayerViewX() {
-        return MinecraftClient.getInstance().getEntityRenderManager().camera.getPitch();
+        return Minecraft.getInstance().getRenderManager().playerViewX;
     }
 
     public static float getPlayerFovMultiplier() {
-        return ((IMixinEntityRenderer) MinecraftClient.getInstance().gameRenderer).getFovMultiplier();
+        return ((IMixinEntityRenderer) Minecraft.getInstance().gameRenderer).getFovMultiplier();
     }
 
     public static void updatePlayerFovMultiplier(float newValue) {
-        ((IMixinEntityRenderer) MinecraftClient.getInstance().gameRenderer).updateFovMultiplier(newValue);
+        ((IMixinEntityRenderer) Minecraft.getInstance().gameRenderer).updateFovMultiplier(newValue);
     }
 
 }

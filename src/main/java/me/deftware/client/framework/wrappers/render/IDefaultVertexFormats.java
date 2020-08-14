@@ -1,14 +1,14 @@
 package me.deftware.client.framework.wrappers.render;
 
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.vertex.VertexFormat;
 
 public class IDefaultVertexFormats {
 
     public static IVertexFormat get(Types type) {
         return type.equals(Types.POSITION_COLOR) ?
-                new IVertexFormat(VertexFormats.POSITION_COLOR) :
-                new IVertexFormat(VertexFormats.POSITION_UV_COLOR);
+                new IVertexFormat(DefaultVertexFormats.POSITION_COLOR) :
+                new IVertexFormat(DefaultVertexFormats.POSITION_TEX_COLOR);
     }
 
     public enum Types {

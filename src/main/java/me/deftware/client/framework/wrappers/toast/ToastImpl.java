@@ -1,9 +1,9 @@
 package me.deftware.client.framework.wrappers.toast;
 
 import me.deftware.client.framework.utils.render.Texture;
-import net.minecraft.client.gui.Screen;
-import net.minecraft.client.toast.Toast;
-import net.minecraft.client.toast.ToastManager;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.toasts.GuiToast;
+import net.minecraft.client.gui.toasts.IToast;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -11,7 +11,7 @@ import org.lwjgl.opengl.GL11;
  *
  * @author Deftware
  */
-public class ToastImpl implements Toast {
+public class ToastImpl implements IToast {
 
 	public Texture icon;
 	public String title;
@@ -34,14 +34,14 @@ public class ToastImpl implements Toast {
 	}
 
 	@Override
-	public Visibility draw(ToastManager manager, long startTime) {
+	public Visibility draw(GuiToast manager, long startTime) {
 		// Texture
-		manager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
+		manager.getMinecraft().getTextureManager().bindTexture(TEXTURE_TOASTS);
 		GL11.glColor3f(1.0F, 1.0F, 1.0F);
-		manager.blit(0, 0, 0, 0, width, height);
+		manager.drawTexturedModalRect(0, 0, 0, 0, width, height);
 
 		// Title
-		manager.getGame().textRenderer.draw(title, 30.0F, 7.0F, -1);
+		manager.getMinecraft().fontRenderer.drawString(title, 30.0F, 7.0F, -1);
 
 		// Draw text
 		if (text != null && text.length != 0) {
@@ -50,7 +50,7 @@ public class ToastImpl implements Toast {
 					index++;
 				}
 			}
-			manager.getGame().textRenderer.draw(text[index], 30.0F, 18f, -1);
+			manager.getMinecraft().fontRenderer.drawString(text[index], 30.0F, 18f, -1);
 		}
 
 		// Icon
@@ -58,7 +58,7 @@ public class ToastImpl implements Toast {
 			GL11.glPushMatrix();
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 			icon.updateTexture();
-			Screen.blit(4, 4, 0, 0, iconWidth, iconHeight, iconWidth, iconHeight);
+			GuiScreen.drawModalRectWithCustomSizedTexture(4, 4, 0, 0, iconWidth, iconHeight, iconWidth, iconHeight);
 			GL11.glPopMatrix();
 		}
 		return startTime >= visibilityTime ? Visibility.HIDE : Visibility.SHOW;

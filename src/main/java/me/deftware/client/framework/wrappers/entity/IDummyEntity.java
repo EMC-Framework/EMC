@@ -1,10 +1,10 @@
 package me.deftware.client.framework.wrappers.entity;
 
+
 import me.deftware.client.framework.wrappers.world.IBlockPos;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.Packet;
+import net.minecraft.nbt.NBTTagCompound;
 
 public class IDummyEntity extends IEntity {
 
@@ -15,28 +15,26 @@ public class IDummyEntity extends IEntity {
     public static class dummyEntity extends Entity {
 
         public dummyEntity(IBlockPos pos) {
-            super(net.minecraft.entity.EntityType.PLAYER, MinecraftClient.getInstance().player.getEntityWorld());
-            setPosition(pos.getX(), pos.getY(), pos.getZ());
+            super(net.minecraft.entity.EntityType.PLAYER, Minecraft.getInstance().player.getEntityWorld());
+            posX = pos.getX();
+            posY = pos.getY();
+            posZ = pos.getZ();
         }
 
-        @Override
-        protected void initDataTracker() {
-
-        }
 
         @Override
-        protected void readCustomDataFromTag(CompoundTag compoundTag) {
-
-        }
-
-        @Override
-        protected void writeCustomDataToTag(CompoundTag compoundTag) {
+        protected void registerData() {
 
         }
 
         @Override
-        public Packet<?> createSpawnPacket() {
-            return null;
+        protected void readAdditional(NBTTagCompound nbtTagCompound) {
+
+        }
+
+        @Override
+        protected void writeAdditional(NBTTagCompound nbtTagCompound) {
+
         }
     }
 

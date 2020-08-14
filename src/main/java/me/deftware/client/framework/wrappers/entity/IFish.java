@@ -1,12 +1,12 @@
 package me.deftware.client.framework.wrappers.entity;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.projectile.FishHookEntity;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.projectile.EntityFishHook;
 
 public class IFish {
 
-    private static FishHookEntity getEntity() {
-        return MinecraftClient.getInstance().player.fishHook;
+    private static EntityFishHook getEntity() {
+        return Minecraft.getInstance().player.fishEntity;
     }
 
     public static boolean isNull() {
@@ -14,7 +14,7 @@ public class IFish {
     }
 
     public static int getPosY() {
-        return (int) IFish.getEntity().y;
+        return (int) IFish.getEntity().posY;
     }
 
 }

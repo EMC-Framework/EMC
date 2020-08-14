@@ -1,6 +1,6 @@
 package me.deftware.client.framework.wrappers.item;
 
-import net.minecraft.container.Slot;
+import net.minecraft.inventory.Slot;
 
 public class ISlot {
 
@@ -11,7 +11,7 @@ public class ISlot {
     }
 
     public int getIID() {
-        return slot.id;
+        return slot.slotNumber;
     }
 
     public IItemStack getIItemStack() {

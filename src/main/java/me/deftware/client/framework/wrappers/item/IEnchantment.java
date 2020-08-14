@@ -2,9 +2,9 @@ package me.deftware.client.framework.wrappers.item;
 
 import me.deftware.client.framework.chat.ChatMessage;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.IRegistry;
+import net.minecraft.util.text.TextComponentTranslation;
 
 public class IEnchantment {
 
@@ -23,11 +23,11 @@ public class IEnchantment {
     }
 
     public ChatMessage getName() {
-        return new ChatMessage().fromText(new TranslatableComponent(item.getTranslationKey()));
+        return new ChatMessage().fromText(new TextComponentTranslation(item.getName()));
     }
 
     public String getTranslationKey() {
-        return item.getTranslationKey();
+        return item.getName();
     }
 
     public String getEnchantmentKey() {
@@ -43,12 +43,12 @@ public class IEnchantment {
     }
 
     public static IEnchantment getByName(String id) {
-        Identifier resourceLocation = new Identifier(id);
-        if (Registry.ENCHANTMENT.containsId(resourceLocation)) {
-            return new IEnchantment(Registry.ENCHANTMENT.get(resourceLocation));
+        ResourceLocation resourceLocation = new ResourceLocation(id);
+        if (IRegistry.ENCHANTMENT.containsKey(resourceLocation)) {
+            return new IEnchantment(IRegistry.ENCHANTMENT.get(resourceLocation));
         } else {
-            for (Enchantment enchantment : Registry.ENCHANTMENT) {
-                IEnchantment enchantmentObj = new IEnchantment(enchantment);
+            for (Object enchantment : IRegistry.ENCHANTMENT) {
+                IEnchantment enchantmentObj = new IEnchantment((Enchantment)enchantment);
                 if (enchantmentObj.getEnchantmentKey().equalsIgnoreCase(id)) {
                     return enchantmentObj;
                 }

@@ -1,18 +1,15 @@
 package me.deftware.mixin.mixins;
 
+import me.deftware.client.framework.event.events.EventAnimation;
 import me.deftware.client.framework.event.events.EventKnockback;
 import me.deftware.client.framework.event.events.EventSlowdown;
 import me.deftware.client.framework.event.events.EventSneakingCheck;
 import me.deftware.client.framework.maps.SettingsMap;
 import me.deftware.mixin.imp.IMixinEntity;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.util.math.BoundingBox;
-import net.minecraft.util.math.Vec3d;
-import org.spongepowered.asm.mixin.Final;
+import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.util.math.AxisAlignedBB;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -28,20 +25,10 @@ public abstract class MixinEntity implements IMixinEntity {
     public boolean noClip;
 
     @Shadow
-    public boolean onGround;
-
-    @Shadow
-    public float pitch;
-
-    @Shadow
-    public float yaw;
+    public boolean isInWeb;
 
     @Shadow
     protected boolean inPortal;
-
-    @Shadow
-    @Final
-    protected static TrackedData<EntityPose> POSE;
 
     @Shadow
     public abstract boolean isSneaking();
@@ -50,43 +37,38 @@ public abstract class MixinEntity implements IMixinEntity {
     public abstract boolean isSprinting();
 
     @Shadow
-    public abstract boolean hasVehicle();
+    public abstract boolean isPassenger();
 
     @Shadow
-    public abstract BoundingBox getBoundingBox();
+    public abstract AxisAlignedBB getBoundingBox();
 
     @Shadow
     protected abstract boolean getFlag(int int_1);
 
-    @Shadow
-    protected Vec3d movementMultiplier;
-
-
-    @Inject(method = "getPose", at = @At(value = "TAIL"), cancellable = true)
-    private void onGetPose(CallbackInfoReturnable<EntityPose> cir) {
-        if ((boolean) SettingsMap.getValue(SettingsMap.MapKeys.ENTITY_SETTINGS, "SWIMMING_MODE_OVERRIDE", false)) {
-            cir.setReturnValue(EntityPose.SWIMMING);
-        }
-    }
-
     @Redirect(method = "move", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;noClip:Z", opcode = 180))
     private boolean noClipCheck(Entity self) {
         boolean noClipCheck = (boolean) SettingsMap.getValue(SettingsMap.MapKeys.ENTITY_SETTINGS, "NOCLIP", false);
-        return noClip || noClipCheck && self instanceof ClientPlayerEntity;
+        return noClip || noClipCheck && self instanceof EntityPlayerSP;
+    }
+
+    @Inject(method = "isEntityInsideOpaqueBlock", at = @At(value = "HEAD"), cancellable = true)
+    public void isInWall(CallbackInfoReturnable<Boolean> cir) {
+        EventAnimation event = new EventAnimation(EventAnimation.AnimationType.Wall);
+        event.broadcast();
+        if (event.isCanceled()) {
+            cir.setReturnValue(false);
+        }
     }
 
 
-    @Inject(method = "slowMovement", at = @At(value = "TAIL"), cancellable = true)
-    private void onSlowMovement(BlockState state, Vec3d multiplier, CallbackInfo ci) {
+    @Redirect(method = "move", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;isInWeb:Z", opcode = 180))
+    private boolean webCheck(Entity self) {
         EventSlowdown event = new EventSlowdown(EventSlowdown.SlowdownType.Web);
         event.broadcast();
         if (event.isCanceled()) {
-            Vec3d cobSlowness = new Vec3d(0.25D, 0.05000000074505806D, 0.25D);
-            if (multiplier.x == cobSlowness.x && multiplier.y == cobSlowness.y && multiplier.z == cobSlowness.z) {
-                this.movementMultiplier = Vec3d.ZERO;
-                ci.cancel();
-            }
+            isInWeb = false;
         }
+        return isInWeb;
     }
 
     @Redirect(method = "move", at = @At(value = "INVOKE", target = "net/minecraft/entity/Entity.isSneaking()Z", opcode = 180, ordinal = 0))
@@ -99,18 +81,8 @@ public abstract class MixinEntity implements IMixinEntity {
         return getFlag(1);
     }
 
-    @Redirect(method = "clipSneakingMovement", at = @At(value = "INVOKE", target = "net/minecraft/entity/Entity.isSneaking()Z", opcode = 180, ordinal = 0))
-    private boolean clipSneakingMovement(Entity self) {
-        EventSneakingCheck event = new EventSneakingCheck(isSneaking());
-        event.broadcast();
-        if (event.isSneaking()) {
-            return true;
-        }
-        return getFlag(1);
-    }
-
-    @Inject(method = "setVelocityClient", at = @At("HEAD"), cancellable = true)
-    private void onSetVelocityClient(double double_1, double double_2, double double_3, CallbackInfo ci) {
+    @Inject(method = "setVelocity", at = @At("HEAD"), cancellable = true)
+    public void setVelocityClient(double double_1, double double_2, double double_3, CallbackInfo ci) {
         EventKnockback event = new EventKnockback(double_1, double_2, double_3);
         event.broadcast();
         if (event.isCanceled()) {

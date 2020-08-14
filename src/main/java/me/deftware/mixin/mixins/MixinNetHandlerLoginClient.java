@@ -2,35 +2,36 @@ package me.deftware.mixin.mixins;
 
 import com.mojang.authlib.GameProfile;
 import me.deftware.mixin.imp.IMixinNetHandlerLoginClient;
-import net.minecraft.client.network.ClientLoginNetworkHandler;
-import net.minecraft.network.ClientConnection;
+import net.minecraft.client.network.NetHandlerLoginClient;
+import net.minecraft.network.NetworkManager;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(ClientLoginNetworkHandler.class)
+@Mixin(NetHandlerLoginClient.class)
 public class MixinNetHandlerLoginClient implements IMixinNetHandlerLoginClient {
 
     @Final
     @Shadow
-    private ClientConnection connection;
+    protected NetworkManager networkManager;
 
     @Shadow
-    private GameProfile profile;
+    private GameProfile gameProfile;
 
     @Override
-    public ClientConnection getNetworkManager() {
-        return connection;
+    public NetworkManager getNetworkManager() {
+        return networkManager;
     }
 
     @Override
     public GameProfile getGameProfile() {
-        return profile;
+        return gameProfile;
     }
 
     @Override
     public void setGameProfile(GameProfile profile) {
-        this.profile = profile;
+        gameProfile = profile;
     }
+
 
 }

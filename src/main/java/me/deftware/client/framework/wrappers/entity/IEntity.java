@@ -7,17 +7,17 @@ import me.deftware.client.framework.wrappers.world.IChunkPos;
 import me.deftware.client.framework.wrappers.world.IWorld;
 import me.deftware.mixin.imp.IMixinAbstractClientPlayer;
 import me.deftware.mixin.imp.IMixinNetworkPlayerInfo;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.network.OtherClientPlayerEntity;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.client.entity.EntityOtherPlayerMP;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.*;
-import net.minecraft.entity.boss.WitherEntity;
-import net.minecraft.entity.boss.dragon.EnderDragonEntity;
-import net.minecraft.entity.mob.*;
+import net.minecraft.entity.boss.EntityDragon;
+import net.minecraft.entity.boss.EntityWither;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.monster.*;
 import net.minecraft.entity.passive.*;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.Projectile;
+import net.minecraft.entity.player.EntityPlayer;
 
 import java.math.BigDecimal;
 
@@ -38,8 +38,8 @@ public class IEntity {
     }
 
     public static IEntity fromEntity(Entity entity) {
-        if (entity instanceof PlayerEntity) {
-            return new IPlayer((PlayerEntity) entity);
+        if (entity instanceof EntityPlayer) {
+            return new IPlayer((EntityPlayer) entity);
         }
         return new IEntity(entity);
     }
@@ -53,7 +53,7 @@ public class IEntity {
     }
 
     public IBlockPos getBlockPos() {
-        return new IBlockPos(entity.getBlockPos());
+        return new IBlockPos(entity.getPosition());
     }
 
     public boolean isOnGround() {
@@ -69,15 +69,15 @@ public class IEntity {
     }
 
     public float getDistanceToPlayer() {
-        return entity.distanceTo(MinecraftClient.getInstance().player);
+        return entity.getDistance(Minecraft.getInstance().player);
     }
 
     public float getDistanceToEntity() {
-        return MinecraftClient.getInstance().player.distanceTo(entity);
+        return Minecraft.getInstance().player.getDistance(entity);
     }
 
     public String getName() {
-        return entity instanceof PlayerEntity ? ((PlayerEntity) entity).getGameProfile().getName() : null;
+        return entity instanceof EntityPlayer ? ((EntityPlayer) entity).getGameProfile().getName() : null;
     }
 
     public ChatMessage getFormattedDisplayName() {
@@ -85,7 +85,7 @@ public class IEntity {
     }
 
     public int getTicksExisted() {
-        return entity.age;
+        return entity.ticksExisted;
     }
 
     public boolean isDead() {
@@ -93,19 +93,19 @@ public class IEntity {
     }
 
     public boolean isMob() {
-        return entity instanceof MobEntity || entity instanceof LivingEntity;
+        return entity instanceof EntityMob || entity instanceof EntityLiving;
     }
 
     public String getEntityTypeName() {
-        return new ChatMessage().fromText(entity.getType().getTextComponent()).toString(false);
+        return new ChatMessage().fromText(entity.getType().getName()).toString(false);
     }
 
     public boolean isPlayer() {
-        return entity instanceof PlayerEntity;
+        return entity instanceof EntityPlayer;
     }
 
     public boolean isItem() {
-        return entity instanceof ItemEntity;
+        return entity instanceof EntityItem;
     }
 
     public IItemEntity getIItemEntity() {
@@ -121,18 +121,18 @@ public class IEntity {
     }
 
     public float getHealth() {
-        if (entity instanceof LivingEntity) {
-            return ((LivingEntity) entity).getHealth();
+        if (entity instanceof EntityLivingBase) {
+            return ((EntityLivingBase) entity).getHealth();
         }
         return 0;
     }
 
     public int getResponseTime() {
-        return MinecraftClient.getInstance().getNetworkHandler().getPlayerListEntry(entity.getUuid()).getLatency();
+        return Minecraft.getInstance().getConnection().getPlayerInfo(entity.getUniqueID()).getResponseTime();
     }
 
     public float getRotationYaw(boolean fullCircleCalc) {
-        float currentYaw = entity.yaw % 360;
+        float currentYaw = entity.rotationYaw % 360;
 
         if (fullCircleCalc) {
             currentYaw = (currentYaw + 360) % 360;
@@ -148,23 +148,23 @@ public class IEntity {
     }
 
     public float getRotationPitch() {
-        return entity.pitch;
+        return entity.rotationPitch;
     }
 
     public IDirection getDirection() {
-        return IDirection.getFrom(entity.yaw);
+        return IDirection.getFrom(entity.rotationYaw);
     }
 
     public double getLastTickPosX() {
-        return entity.prevRenderX;
+        return entity.lastTickPosX;
     }
 
     public double getLastTickPosY() {
-        return entity.prevRenderY;
+        return entity.lastTickPosY;
     }
 
     public double getLastTickPosZ() {
-        return entity.prevRenderZ;
+        return entity.lastTickPosZ;
     }
 
     public float getNametagSize() {
@@ -173,16 +173,16 @@ public class IEntity {
     }
 
     public float getHeight() {
-        return entity.getHeight();
+        return entity.height;
     }
 
     public boolean isOnFire() {
-        return entity.isOnFire();
+        return entity.isBurning();
     }
 
     public float getMaxHealth() {
-        if (entity instanceof LivingEntity) {
-            return ((LivingEntity) entity).getHealthMaximum();
+        if (entity instanceof EntityLivingBase) {
+            return ((EntityLivingBase) entity).getMaxHealth();
         }
         return 0;
     }
@@ -205,30 +205,30 @@ public class IEntity {
     }
 
     public INetworkPlayerInfo getPlayerNetworkInfo() {
-        if (entity instanceof AbstractClientPlayerEntity) {
-            return new INetworkPlayerInfo(((IMixinAbstractClientPlayer) (AbstractClientPlayerEntity) entity).getPlayerNetworkInfo());
+        if (entity instanceof AbstractClientPlayer) {
+            return new INetworkPlayerInfo(((IMixinAbstractClientPlayer) (AbstractClientPlayer) entity).getPlayerNetworkInfo());
         }
         return null;
     }
 
     public void reloadSkin() {
-        if (entity instanceof AbstractClientPlayerEntity) {
-            AbstractClientPlayerEntity abstractEntity = (AbstractClientPlayerEntity) entity;
-            if (abstractEntity.canRenderCapeTexture()) {
+        if (entity instanceof AbstractClientPlayer) {
+            AbstractClientPlayer abstractEntity = (AbstractClientPlayer) entity;
+            if (abstractEntity.hasPlayerInfo()) {
                 ((IMixinNetworkPlayerInfo) ((IMixinAbstractClientPlayer) abstractEntity).getPlayerNetworkInfo()).reloadTextures();
             }
         }
     }
 
     public boolean isPlayerOwned() {
-        if (entity instanceof WolfEntity) {
-            return ((WolfEntity) entity).isOwner(MinecraftClient.getInstance().player);
+        if (entity instanceof EntityWolf) {
+            return ((EntityWolf) entity).isOwner(Minecraft.getInstance().player);
         }
         return false;
     }
 
     public boolean isSleeping() {
-        return entity instanceof PlayerEntity && ((LivingEntity) entity).isSleeping();
+        return entity instanceof EntityPlayer && ((EntityLivingBase) entity).isPlayerSleeping();
     }
 
     public boolean isInvisible() {
@@ -236,47 +236,47 @@ public class IEntity {
     }
 
     public boolean isInvisibleToPlayer() {
-        return entity.canSeePlayer(MinecraftClient.getInstance().player);
+        return entity.isInvisibleToPlayer(Minecraft.getInstance().player);
     }
 
     public boolean canBeSeen() {
-        return MinecraftClient.getInstance().player.canSee(entity);
+        return Minecraft.getInstance().player.canEntityBeSeen(entity);
     }
 
     public boolean isSelf() {
-        return entity == MinecraftClient.getInstance().player;
+        return entity == Minecraft.getInstance().player;
     }
 
     public double getPosX() {
-        return entity.x;
+        return entity.posX;
     }
 
     public double getPosY() {
-        return entity.y;
+        return entity.posY;
     }
 
     public double getPosZ() {
-        return entity.z;
+        return entity.posZ;
     }
 
     public double getPrevPosX() {
-        return entity.prevX;
+        return entity.prevPosX;
     }
 
     public double getPrevPosY() {
-        return entity.prevY;
+        return entity.prevPosY;
     }
 
     public double getPrevPosZ() {
-        return entity.prevZ;
+        return entity.prevPosZ;
     }
 
     public double getEyeHeight() {
-        return entity.getEyeHeight(entity.getPose());
+        return entity.getEyeHeight();
     }
 
-    public double getEyeHeight(EntityPose pose) {
-        return entity.getEyeHeight(pose);
+    public double getEyeHeight(Object pose) {
+        return entity.getEyeHeight();
     }
 
     public boolean isWithinChunk(IChunkPos chunkPos) {
@@ -284,10 +284,10 @@ public class IEntity {
     }
 
     public boolean isHostile() {
-        if (entity instanceof HostileEntity) {
+        if (entity instanceof net.minecraft.entity.monster.IMob) {
             return true;
-        } else if (entity instanceof ChickenEntity) {
-            return ((ChickenEntity) entity).jockey;
+        } else if (entity instanceof EntityChicken) {
+            return ((EntityChicken) entity).chickenJockey;
         }
         return false;
     }
@@ -295,143 +295,143 @@ public class IEntity {
     public boolean instanceOf(EntityType e) {
         // Generic types and players
         if (e.equals(EntityType.ENTITY_PLAYER_SP)) {
-            return entity instanceof ClientPlayerEntity;
+            return entity instanceof EntityPlayerSP;
         } else if (e.equals(EntityType.EntityOtherPlayerMP)) {
-            return entity instanceof OtherClientPlayerEntity;
+            return entity instanceof EntityOtherPlayerMP;
         } else if (e.equals(EntityType.ENTITY_PLAYER)) {
-            return entity instanceof PlayerEntity;
+            return entity instanceof EntityPlayer;
         } else if (e.equals(EntityType.ENTITY_LIVING_BASE)) {
-            return entity instanceof LivingEntity;
+            return entity instanceof EntityLivingBase;
         } else if (e.equals(EntityType.ENTITY_LIVING)) {
-            return entity instanceof LivingEntity;
+            return entity instanceof EntityLiving;
         } else if (e.equals(EntityType.ENTITY_ITEM)) {
-            return entity instanceof ItemEntity;
+            return entity instanceof EntityItem;
         } else if (e.equals(EntityType.ENTITY_PROJECTILE)) {
-            return entity instanceof Projectile;
+            return entity instanceof IProjectile;
         } else if (e.equals(EntityType.Entity_Ageable)) {
-            return entity instanceof PassiveEntity;
+            return entity instanceof EntityAgeable;
         } else if (e.equals(EntityType.EntityAmbientCreature)) {
-            return entity instanceof AmbientEntity;
+            return entity instanceof EntityAmbientCreature;
         } else if (e.equals(EntityType.EntityWaterMob)) {
-            return entity instanceof WaterCreatureEntity;
+            return entity instanceof EntityWaterMob;
         } else if (e.equals(EntityType.EntityMob)) {
-            return entity instanceof MobEntity;
+            return entity instanceof EntityMob;
         } else if (e.equals(EntityType.EntityAnimal)) {
-            return entity instanceof AnimalEntity;
+            return entity instanceof EntityAnimal;
         }
         // Passives
         else if (e.equals(EntityType.ENTITY_BAT)) {
-            return entity instanceof BatEntity;
+            return entity instanceof EntityBat;
         } else if (e.equals(EntityType.ENTITY_CHICKEN)) {
-            return entity instanceof ChickenEntity;
+            return entity instanceof EntityChicken;
         } else if (e.equals(EntityType.ENTITY_COW)) {
-            return entity instanceof CowEntity;
+            return entity instanceof EntityCow;
         } else if (e.equals(EntityType.ENTITY_FISH)) {
-            return entity instanceof FishEntity;
+            return entity instanceof AbstractFish;
         } else if (e.equals(EntityType.ENTITY_MOOSHROOM)) {
-            return entity instanceof MooshroomEntity;
+            return entity instanceof EntityMooshroom;
         } else if (e.equals(EntityType.ENTITY_OCELOT)) {
-            return entity instanceof OcelotEntity;
+            return entity instanceof EntityOcelot;
         } else if (e.equals(EntityType.ENTITY_PIG)) {
-            return entity instanceof PigEntity;
+            return entity instanceof EntityPig;
         } else if (e.equals(EntityType.ENTITY_POLAR_BEAR)) {
-            return entity instanceof PolarBearEntity;
+            return entity instanceof EntityPolarBear;
         } else if (e.equals(EntityType.ENTITY_RABBIT)) {
-            return entity instanceof RabbitEntity;
+            return entity instanceof EntityRabbit;
         } else if (e.equals(EntityType.ENTITY_SHEEP)) {
-            return entity instanceof SheepEntity;
+            return entity instanceof EntitySheep;
         } else if (e.equals(EntityType.ENTITY_SQUID)) {
-            return entity instanceof SquidEntity;
+            return entity instanceof EntitySquid;
         } else if (e.equals(EntityType.ENTITY_TURTLE)) {
-            return entity instanceof TurtleEntity;
+            return entity instanceof EntityTurtle;
         } else if (e.equals(EntityType.ENTITY_VILLAGER)) {
-            return entity instanceof VillagerEntity;
+            return entity instanceof EntityVillager;
         } else if (e.equals(EntityType.ENTITY_DOLPHIN)) {
-            return entity instanceof DolphinEntity;
+            return entity instanceof EntityDolphin;
         } else if (e.equals(EntityType.ENTITY_DONKEY)) {
-            return entity instanceof DonkeyEntity;
+            return entity instanceof EntityDonkey;
         } else if (e.equals(EntityType.ENTITY_MULE)) {
-            return entity instanceof MuleEntity;
+            return entity instanceof EntityMule;
         } else if (e.equals(EntityType.ENTITY_HORSE)) {
-            return entity instanceof HorseEntity;
+            return entity instanceof EntityHorse;
         } else if (e.equals(EntityType.ENTITY_PARROT)) {
-            return entity instanceof ParrotEntity;
+            return entity instanceof EntityParrot;
         }
         // Hostiles
         else if (e.equals(EntityType.EntitySlime) || e.equals(EntityType.ENTITY_SLIME)) {
-            return entity instanceof SlimeEntity;
+            return entity instanceof EntitySlime;
         } else if (e.equals(EntityType.EntityFlying)) {
-            return entity instanceof FlyingEntity;
+            return entity instanceof EntityFlying;
         } else if (e.equals(EntityType.EntityGolem)) {
-            return entity instanceof GolemEntity;
+            return entity instanceof EntityGolem;
         } else if (e.equals(EntityType.ENTITY_SPIDER)) {
-            return entity instanceof SpiderEntity;
+            return entity instanceof EntitySpider;
         } else if (e.equals(EntityType.ENTITY_ZOMBIE_PIGMAN)) {
-            return entity instanceof ZombiePigmanEntity;
+            return entity instanceof EntityPigZombie;
         } else if (e.equals(EntityType.ENTITY_ENDERMAN)) {
-            return entity instanceof EndermanEntity;
+            return entity instanceof EntityEnderman;
         } else if (e.equals(EntityType.ENTITY_WITHER_SKELETON)) {
-            return entity instanceof WitherSkeletonEntity;
+            return entity instanceof EntityWitherSkeleton;
         } else if (e.equals(EntityType.ENTITY_WITHER)) {
-            return entity instanceof WitherEntity;
+            return entity instanceof EntityWither;
         } else if (e.equals(EntityType.ENTITY_DRAGON)) {
-            return entity instanceof EnderDragonEntity;
+            return entity instanceof EntityDragon;
         } else if (e.equals(EntityType.ENTITY_PHANTOM)) {
-            return entity instanceof PhantomEntity;
+            return entity instanceof EntityPhantom;
         } else if (e.equals(EntityType.ENTITY_DROWNED)) {
-            return entity instanceof DrownedEntity;
+            return entity instanceof EntityDrowned;
         } else if (e.equals(EntityType.ENTITY_EVOKER)) {
-            return entity instanceof EvokerEntity;
+            return entity instanceof EntityEvoker;
         } else if (e.equals(EntityType.ENTITY_STRAY)) {
-            return entity instanceof StrayEntity;
+            return entity instanceof EntityStray;
         } else if (e.equals(EntityType.ENTITY_ELDER_GUARDIAN)) {
-            return entity instanceof ElderGuardianEntity;
+            return entity instanceof EntityElderGuardian;
         } else if (e.equals(EntityType.ENTITY_CREEPER)) {
-            return entity instanceof CreeperEntity;
+            return entity instanceof EntityCreeper;
         } else if (e.equals(EntityType.ENTITY_VINDICATOR)) {
-            return entity instanceof VindicatorEntity;
+            return entity instanceof EntityVindicator;
         } else if (e.equals(EntityType.ENTITY_ILLUSIONER)) {
-            return entity instanceof IllusionerEntity;
+            return entity instanceof EntityIllusionIllager;
         } else if (e.equals(EntityType.ENTITY_HUSK)) {
-            return entity instanceof HuskEntity;
+            return entity instanceof EntityHusk;
         } else if (e.equals(EntityType.ENTITY_ZOMBIE)) {
-            return entity instanceof ZombieEntity;
+            return entity instanceof EntityZombie;
         } else if (e.equals(EntityType.ENTITY_SKELETON)) {
-            return entity instanceof SkeletonEntity;
+            return entity instanceof EntitySkeleton;
         } else if (e.equals(EntityType.ENTITY_SHULKER)) {
-            return entity instanceof ShulkerEntity;
+            return entity instanceof EntityShulker;
         } else if (e.equals(EntityType.ENTITY_GUARDIAN)) {
-            return entity instanceof GuardianEntity;
+            return entity instanceof EntityGuardian;
         } else if (e.equals(EntityType.ENTITY_VEX)) {
-            return entity instanceof VexEntity;
+            return entity instanceof EntityVex;
         } else if (e.equals(EntityType.ENTITY_SILVERFISH)) {
-            return entity instanceof SilverfishEntity;
+            return entity instanceof EntitySilverfish;
         } else if (e.equals(EntityType.ENTITY_WITCH)) {
-            return entity instanceof WitchEntity;
+            return entity instanceof EntityWitch;
         } else if (e.equals(EntityType.ENTITY_GIANT)) {
-            return entity instanceof GiantEntity;
+            return entity instanceof EntityGiantZombie;
         } else if (e.equals(EntityType.ENTITY_BLAZE)) {
-            return entity instanceof BlazeEntity;
+            return entity instanceof EntityBlaze;
         } else if (e.equals(EntityType.ENTITY_ENDERMITE)) {
-            return entity instanceof EndermiteEntity;
+            return entity instanceof EntityEndermite;
         } else if (e.equals(EntityType.ENTITY_GHAST)) {
-            return entity instanceof GhastEntity;
+            return entity instanceof EntityGhast;
         } else if (e.equals(EntityType.ENTITY_MAGMA_CUBE)) {
-            return entity instanceof MagmaCubeEntity;
+            return entity instanceof EntityMagmaCube;
         } else if (e.equals(EntityType.ENTITY_CAVE_SPIDER)) {
-            return entity instanceof CaveSpiderEntity;
+            return entity instanceof EntityCaveSpider;
         }
         // Neutrals
         else if (e.equals(EntityType.ENTITY_WOLF)) {
-            return entity instanceof WolfEntity;
+            return entity instanceof EntityWolf;
         } else if (e.equals(EntityType.ENTITY_LLAMA)) {
-            return entity instanceof LlamaEntity;
+            return entity instanceof EntityLlama;
         } else if (e.equals(EntityType.ENTITY_IRON_GOLEM)) {
-            return entity instanceof IronGolemEntity;
+            return entity instanceof EntityIronGolem;
         } else if (e.equals(EntityType.ENTITY_SNOW_GOLEM)) {
-            return entity instanceof SnowGolemEntity;
+            return entity instanceof EntitySnowman;
         } else if (e.equals(EntityType.ENTITY_PUFFERFISH)) {
-            return entity instanceof PufferfishEntity;
+            return entity instanceof EntityPufferFish;
         }
         return false;
     }

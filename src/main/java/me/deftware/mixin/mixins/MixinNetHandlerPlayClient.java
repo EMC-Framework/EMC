@@ -1,24 +1,40 @@
 package me.deftware.mixin.mixins;
 
+import io.netty.buffer.Unpooled;
 import me.deftware.client.framework.event.events.EventAnimation;
 import me.deftware.client.framework.event.events.EventChunkDataReceive;
 import me.deftware.client.framework.event.events.EventKnockback;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.network.packet.ChunkDataS2CPacket;
-import net.minecraft.client.network.packet.EntityStatusS2CPacket;
-import net.minecraft.client.network.packet.EntityVelocityUpdateS2CPacket;
-import net.minecraft.client.network.packet.ExplosionS2CPacket;
+import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.play.client.CPacketCustomPayload;
+import net.minecraft.network.play.server.SPacketChunkData;
+import net.minecraft.network.play.server.SPacketEntityStatus;
+import net.minecraft.network.play.server.SPacketEntityVelocity;
+import net.minecraft.network.play.server.SPacketExplosion;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(ClientPlayNetworkHandler.class)
+@Mixin(NetHandlerPlayClient.class)
 public class MixinNetHandlerPlayClient {
 
-    @Inject(method = "onEntityStatus", at = @At("HEAD"), cancellable = true)
-    public void onEntityStatus(EntityStatusS2CPacket packetIn, CallbackInfo ci) {
-        if (packetIn.getStatus() == 35) {
+    @Redirect(method = "handleJoinGame", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/NetworkManager;sendPacket(Lnet/minecraft/network/Packet;)V"))
+    private void handleJoinGame(NetworkManager connection, Packet<?> packet) {
+        if (!(packet instanceof CPacketCustomPayload)) {
+            connection.sendPacket(packet);
+            return;
+        }
+        // Overwrite the brand packet to send vanilla, because Rift modifies it and some server do not like it
+        connection.sendPacket(new CPacketCustomPayload(CPacketCustomPayload.BRAND, (new PacketBuffer(Unpooled.buffer())).writeString("vanilla")));
+    }
+
+    @Inject(method = "handleEntityStatus", at = @At("HEAD"), cancellable = true)
+    public void onEntityStatus(SPacketEntityStatus packetIn, CallbackInfo ci) {
+        if (packetIn.getOpCode() == 35) {
             EventAnimation event = new EventAnimation(EventAnimation.AnimationType.Totem);
             event.broadcast();
             if (event.isCanceled()) {
@@ -27,26 +43,26 @@ public class MixinNetHandlerPlayClient {
         }
     }
 
-    @Inject(method = "onExplosion", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;setVelocity(Lnet/minecraft/util/math/Vec3d;)V"), cancellable = true)
-    private void onExplosion(ExplosionS2CPacket packet, CallbackInfo ci) {
-        EventKnockback event = new EventKnockback(packet.getPlayerVelocityX(), packet.getPlayerVelocityY(), packet.getPlayerVelocityZ());
+    @Inject(method = "handleExplosion", at = @At(value = "HEAD"), cancellable = true)
+    private void onExplosion(SPacketExplosion packet, CallbackInfo ci) {
+        EventKnockback event = new EventKnockback(packet.getMotionX(), packet.getMotionY(), packet.getMotionZ());
         event.broadcast();
         if (event.isCanceled()) {
             ci.cancel();
         }
     }
 
-    @Inject(method = "onVelocityUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;setVelocityClient(DDD)V"), cancellable = true)
-    public void onVelocityUpdate(EntityVelocityUpdateS2CPacket packet, CallbackInfo ci) {
-        EventKnockback event = new EventKnockback(packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityZ());
+    @Inject(method = "handleEntityVelocity", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;setVelocity(DDD)V"), cancellable = true)
+    public void onVelocityUpdate(SPacketEntityVelocity packet, CallbackInfo ci) {
+        EventKnockback event = new EventKnockback(packet.getMotionX(), packet.getMotionY(), packet.getMotionZ());
         event.broadcast();
         if (event.isCanceled()) {
             ci.cancel();
         }
     }
 
-    @Inject(method = "onChunkData", at = @At("HEAD"), cancellable = true)
-    public void onReceiveChunkData(ChunkDataS2CPacket packet, CallbackInfo ci) {
+    @Inject(method = "handleChunkData", at = @At("HEAD"), cancellable = true)
+    public void onReceiveChunkData(SPacketChunkData packet, CallbackInfo ci) {
         EventChunkDataReceive event = new EventChunkDataReceive(packet);
         event.broadcast();
         if (event.isCanceled()) {

@@ -3,9 +3,10 @@ package me.deftware.client.framework.wrappers.world;
 import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.wrappers.math.IVoxelShape;
 import net.minecraft.block.*;
-import net.minecraft.util.Identifier;
+import net.minecraft.init.Blocks;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.IRegistry;
 
 public class IBlock {
 
@@ -44,15 +45,15 @@ public class IBlock {
     }
 
     private static Block getBlockFromName(String p_getBlockFromName_0_) {
-        Identifier lvt_1_1_ = new Identifier(p_getBlockFromName_0_);
-        if (Registry.BLOCK.containsId(lvt_1_1_)) {
-            return Registry.BLOCK.get(lvt_1_1_);
+        ResourceLocation lvt_1_1_ = new ResourceLocation(p_getBlockFromName_0_);
+        if (IRegistry.BLOCK.containsKey(lvt_1_1_)) {
+            return IRegistry.BLOCK.get(lvt_1_1_);
         }
         return null;
     }
 
     public static IVoxelShape makeCuboidShape(double x1, double y1, double z1, double x2, double y2, double z2) {
-        return new IVoxelShape(Block.createCuboidShape(x1, y1, z1, x2, y2, z2));
+        return new IVoxelShape(Block.makeCuboidShape(x1, y1, z1, x2, y2, z2));
     }
 
     public boolean isValidBlock() {
@@ -64,7 +65,7 @@ public class IBlock {
     }
 
     public boolean isLiquid() {
-        return block == Blocks.WATER || block == Blocks.LAVA || block instanceof FluidBlock;
+        return block == Blocks.WATER || block == Blocks.LAVA || block instanceof BlockFlowingFluid;
     }
 
     public boolean isCaveAir() {
@@ -76,11 +77,11 @@ public class IBlock {
     }
 
     public int getID() {
-        return Registry.BLOCK.getRawId(block);
+        return IRegistry.BLOCK.getId(block);
     }
 
     public ChatMessage getLocalizedName() {
-        return new ChatMessage().fromText(block.getTextComponent());
+        return new ChatMessage().fromText(block.getNameTextComponent());
     }
 
     public String getBlockKey() {
@@ -93,25 +94,25 @@ public class IBlock {
 
     public boolean instanceOf(IBlockTypes type) {
         if (type.equals(IBlockTypes.BlockContainer)) {
-            return block instanceof BlockWithEntity;
+            return block instanceof BlockContainer;
         } else if (type.equals(IBlockTypes.BlockCrops)) {
-            return block instanceof CropBlock;
+            return block instanceof BlockCrops;
         } else if (type.equals(IBlockTypes.BlockPumpkin)) {
-            return block instanceof PumpkinBlock;
+            return block instanceof BlockPumpkin;
         } else if (type.equals(IBlockTypes.BlockMelon)) {
-            return block instanceof MelonBlock;
+            return block instanceof BlockMelon;
         } else if (type.equals(IBlockTypes.BlockReed)) {
-            return block instanceof SugarCaneBlock;
+            return block instanceof BlockReed;
         } else if (type.equals(IBlockTypes.BlockCactus)) {
-            return block instanceof CactusBlock;
+            return block instanceof BlockCactus;
         } else if (type.equals(IBlockTypes.BlockNetherWart)) {
-            return block instanceof NetherWartBlock;
+            return block instanceof BlockNetherWart;
         } else if (type.equals(IBlockTypes.BlockFarmland)) {
-            return block instanceof FarmlandBlock;
+            return block instanceof BlockFarmland;
         } else if (type.equals(IBlockTypes.BlockSoulSand)) {
-            return block instanceof SoulSandBlock;
+            return block instanceof BlockSoulSand;
         } else if (type.equals(IBlockTypes.FluidBlock)) {
-            return block instanceof FluidBlock;
+            return block instanceof BlockFlowingFluid;
         }
         return false;
     }

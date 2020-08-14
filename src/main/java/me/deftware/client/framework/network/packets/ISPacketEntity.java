@@ -2,9 +2,9 @@ package me.deftware.client.framework.network.packets;
 
 import me.deftware.client.framework.network.IPacket;
 import me.deftware.client.framework.wrappers.entity.IEntity;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.packet.EntityS2CPacket;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.SPacketEntity;
 
 public class ISPacketEntity extends IPacket {
 
@@ -13,11 +13,11 @@ public class ISPacketEntity extends IPacket {
 	}
 
 	public boolean isOnGround() {
-		return ((EntityS2CPacket) packet).isOnGround();
+		return ((SPacketEntity) packet).getOnGround();
 	}
 
 	public IEntity getEntity() {
-		return IEntity.fromEntity(((EntityS2CPacket) packet).getEntity(MinecraftClient.getInstance().world));
+		return IEntity.fromEntity(((SPacketEntity) packet).getEntity(Minecraft.getInstance().world));
 	}
 
 }

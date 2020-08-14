@@ -3,8 +3,6 @@ package me.deftware.client.framework.command;
 import com.mojang.brigadier.arguments.*;
 import com.mojang.brigadier.context.CommandContext;
 import me.deftware.client.framework.wrappers.entity.IEntity;
-import net.minecraft.command.arguments.EntityArgumentType;
-import net.minecraft.server.command.ServerCommandSource;
 
 @SuppressWarnings("ALL")
 public class CommandResult {
@@ -20,12 +18,8 @@ public class CommandResult {
 	}
 
 	public IEntity getEntity(String node) throws Exception {
-		try {
-			return IEntity.fromEntity(EntityArgumentType.getEntity((CommandContext<ServerCommandSource>) context, node));
-		} catch (Exception ex) {
-			// Will throw most likely if not in a Server
-			return null;
-		}
+		// Note: Unavailable in 1.13.2 and below
+		return null;
 	}
 
 	public String getEntityName(String node) throws Exception {

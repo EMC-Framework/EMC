@@ -2,7 +2,7 @@ package me.deftware.client.framework.wrappers;
 
 
 import me.deftware.mixin.imp.IMixinMinecraft;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -18,17 +18,17 @@ public class IMouse {
      */
     public static void clickMouse(int button) {
         if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
-            ((IMixinMinecraft) MinecraftClient.getInstance()).doClickMouse();
+            ((IMixinMinecraft) Minecraft.getInstance()).doClickMouse();
         } else if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
-            ((IMixinMinecraft) MinecraftClient.getInstance()).doRightClickMouse();
+            ((IMixinMinecraft) Minecraft.getInstance()).doRightClickMouse();
         } else if (button == GLFW.GLFW_MOUSE_BUTTON_MIDDLE) {
-            ((IMixinMinecraft) MinecraftClient.getInstance()).doMiddleClickMouse();
+            ((IMixinMinecraft) Minecraft.getInstance()).doMiddleClickMouse();
         }
     }
 
     public static boolean isButtonDown(int button) {
         if (button == 0 || button == 1) {
-            return GLFW.glfwGetMouseButton(MinecraftClient.getInstance().window.getHandle(), (button == 0 ? GLFW.GLFW_MOUSE_BUTTON_1 : GLFW.GLFW_MOUSE_BUTTON_2)) == 1;
+            return GLFW.glfwGetMouseButton(Minecraft.getInstance().mainWindow.getHandle(), (button == 0 ? GLFW.GLFW_MOUSE_BUTTON_1 : GLFW.GLFW_MOUSE_BUTTON_2)) == 1;
         }
         return false;
     }

@@ -1,6 +1,7 @@
 package me.deftware.client.framework.wrappers.world;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.EnumLightType;
 import net.minecraft.world.chunk.Chunk;
 
 public class IChunk {
@@ -14,11 +15,11 @@ public class IChunk {
     }
 
     public IWorld getWorld() {
-        return new IWorld(MinecraftClient.getInstance().world);
+        return new IWorld(Minecraft.getInstance().world);
     }
 
     public int getLightFor(IEnumLightType lightType, IBlockPos pos) {
-        return chunk.getLuminance(pos.getPos());
+        return chunk.getLightFor(EnumLightType.valueOf(lightType.name()), pos.getPos());
     }
 
     public IChunkPos getPos() {

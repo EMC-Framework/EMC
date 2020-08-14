@@ -2,14 +2,14 @@ package me.deftware.client.framework.network;
 
 import me.deftware.client.framework.network.packets.*;
 import me.deftware.mixin.imp.IMixinNetworkManager;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.packet.EntityAnimationS2CPacket;
-import net.minecraft.client.network.packet.EntityS2CPacket;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.Packet;
-import net.minecraft.server.network.packet.ClientStatusC2SPacket;
-import net.minecraft.server.network.packet.GuiCloseC2SPacket;
-import net.minecraft.server.network.packet.KeepAliveC2SPacket;
-import net.minecraft.server.network.packet.PlayerMoveC2SPacket;
+import net.minecraft.network.play.client.CPacketClientStatus;
+import net.minecraft.network.play.client.CPacketCloseWindow;
+import net.minecraft.network.play.client.CPacketKeepAlive;
+import net.minecraft.network.play.client.CPacketPlayer;
+import net.minecraft.network.play.server.SPacketAnimation;
+import net.minecraft.network.play.server.SPacketEntity;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -37,18 +37,18 @@ public class IPacket {
     }
 
     public void setPacketBuffer(IPacketBuffer buffer) throws IOException {
-        packet.write(buffer.buffer);
+        packet.writePacketData(buffer.buffer);
     }
 
     public void sendPacket() {
-        MinecraftClient.getInstance().player.networkHandler.sendPacket(packet);
+        Minecraft.getInstance().player.connection.sendPacket(packet);
     }
 
     /**
      * Bypasses this event, and can be used to prevent an infinite loop
      */
     public void sendImmediately() {
-        ((IMixinNetworkManager) MinecraftClient.getInstance().player.networkHandler.getClientConnection()).sendPacketImmediately(packet);
+        ((IMixinNetworkManager) Minecraft.getInstance().player.connection.getNetworkManager()).sendPacketImmediately(packet);
     }
 
     /**
@@ -57,25 +57,25 @@ public class IPacket {
     @Nullable
     public static IPacket translatePacket(Packet<?> packet) {
         // Client to server packets
-        if (packet instanceof PlayerMoveC2SPacket) {
+        if (packet instanceof CPacketPlayer) {
             return new ICPacketPlayer(packet);
-        } else if (packet instanceof PlayerMoveC2SPacket.Both) {
+        } else if (packet instanceof CPacketPlayer.PositionRotation) {
             return new ICPacketPositionRotation(packet);
-        } else if (packet instanceof PlayerMoveC2SPacket.LookOnly) {
+        } else if (packet instanceof CPacketPlayer.Rotation) {
             return new ICPacketRotation(packet);
-        } else if (packet instanceof PlayerMoveC2SPacket.PositionOnly) {
+        } else if (packet instanceof CPacketPlayer.Position) {
             return new ICPacketPosition(packet);
-        } else if (packet instanceof GuiCloseC2SPacket) {
+        } else if (packet instanceof CPacketCloseWindow) {
             return new ICPacketCloseWindow(packet);
-        } else if (packet instanceof KeepAliveC2SPacket) {
+        } else if (packet instanceof CPacketKeepAlive) {
             return new ICPacketKeepAlive(packet);
-        } else if (packet instanceof ClientStatusC2SPacket) {
+        } else if (packet instanceof CPacketClientStatus) {
             return new ICPacketClientStatus(packet);
         }
         // Server to client packets
-        if (packet instanceof EntityS2CPacket) {
+        if (packet instanceof SPacketEntity) {
             return new ISPacketEntity(packet);
-        } else if (packet instanceof EntityAnimationS2CPacket) {
+        } else if (packet instanceof SPacketAnimation) {
             return new ISPacketAnimation(packet);
         }
         return new IPacket(packet);

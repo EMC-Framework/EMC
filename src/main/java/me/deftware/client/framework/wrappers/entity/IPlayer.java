@@ -1,14 +1,14 @@
 package me.deftware.client.framework.wrappers.entity;
 
 import me.deftware.client.framework.wrappers.item.IItemStack;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
 
 public class IPlayer extends IEntity {
 
-    private PlayerEntity player;
+    private EntityPlayer player;
 
-    public IPlayer(PlayerEntity player) {
+    public IPlayer(EntityPlayer player) {
         super(player);
         this.player = player;
     }
@@ -17,7 +17,7 @@ public class IPlayer extends IEntity {
         return player.getGameProfile().getId().toString();
     }
 
-    public PlayerEntity getPlayer() {
+    public EntityPlayer getPlayer() {
         return player;
     }
 
@@ -26,13 +26,13 @@ public class IPlayer extends IEntity {
     }
 
     public boolean isSelf() {
-        return player == MinecraftClient.getInstance().player
-                || player.getName().equals(MinecraftClient.getInstance().getSession().getUsername());
+        return player == Minecraft.getInstance().player
+                || player.getName().equals(Minecraft.getInstance().getSession().getUsername());
     }
 
     public IItemStack getHeldItem() {
-        if (player.inventory.getMainHandStack() != null) {
-            return new IItemStack(player.inventory.getMainHandStack());
+        if (player.inventory.getCurrentItem() != null) {
+            return new IItemStack(player.inventory.getCurrentItem());
         }
         return null;
     }

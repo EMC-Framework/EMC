@@ -1,11 +1,11 @@
 package me.deftware.mixin.mixins;
 
 import me.deftware.mixin.imp.IMixinRenderManager;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.RenderManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(EntityRenderDispatcher.class)
+@Mixin(RenderManager.class)
 public class MixinRenderManager implements IMixinRenderManager {
 
     @Shadow

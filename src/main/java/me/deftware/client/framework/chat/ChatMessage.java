@@ -1,13 +1,11 @@
 package me.deftware.client.framework.chat;
 
-import lombok.Getter;
 import me.deftware.client.framework.chat.hud.ChatHud;
 import me.deftware.client.framework.chat.style.ChatStyle;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.ChatFormat;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,14 +13,13 @@ import java.util.List;
  * @author Deftware
  */
 public class ChatMessage {
-
-	private TextComponent compiledText; /* Cache */
-	protected @Getter final List<ChatSection> sectionList = new ArrayList<>();
+	private TextComponentString compiledText; /* Cache */
+	protected final List<ChatSection> sectionList = new ArrayList<>();
 
 	public String toString(boolean withFormatting) {
 		StringBuilder builder = new StringBuilder();
 		for (ChatSection section : sectionList) {
-			builder.append(withFormatting ? ChatFormat.RESET.toString() + section.getStyle().toString() : "").append(section.getText());
+			builder.append(withFormatting ? TextFormatting.RESET.toString() + section.getStyle().toString() : "").append(section.getText());
 		}
 		return builder.toString();
 	}
@@ -55,7 +52,8 @@ public class ChatMessage {
 			ChatSection currentSection = new ChatSection("");
 			for (String section : sections) {
 				if (section.length() == 0) continue; // Start of string
-				if (section.length() == 1) { // Only formatting, no text
+				if (section.length() == 1) {
+					// Only formatting, no text
 					currentSection.getStyle().fromCode(section);
 				} else {
 					currentSection.getStyle().fromCode(section.substring(0, 1)); // The first char is always the formatting char
@@ -78,9 +76,9 @@ public class ChatMessage {
 		return this;
 	}
 
-	public ChatMessage fromText(Component text) {
+	public ChatMessage fromText(ITextComponent text) {
 		// This function is highly dependant on which Minecraft version this is implemented on
-		for (Component component : text) {
+		for (ITextComponent component : text) {
 			ChatSection section = new ChatSection(component.getString());
 			section.getStyle().fromStyle(component.getStyle());
 			sectionList.add(section);
@@ -101,17 +99,16 @@ public class ChatMessage {
 		compiledText = null;
 	}
 
-	public synchronized TextComponent build() {
+	public synchronized TextComponentString build() {
 		if (compiledText == null) {
-			compiledText = new TextComponent("");
+			compiledText = new TextComponentString("");
 			for (ChatSection section : sectionList) {
-				compiledText.append(new TextComponent(section.getText())
-						.setStyle(section.getStyle().getStyle()));
+				compiledText.appendSibling(new TextComponentString(section.getText()).setStyle(section.getStyle().getStyle()));
 			}
 		}
 		return compiledText;
 	}
-	
+
 	public ChatMessage reset() {
 		sectionList.clear();
 		return this;
@@ -121,20 +118,19 @@ public class ChatMessage {
 	 * Prints this message client-side only, must be called in the render thread
 	 */
 	public void print() {
-		ChatHud.getChatMessageQueue().add(() ->
-			ChatHud.addMessage(this)
-		);
+		ChatHud.getChatMessageQueue().add(() -> ChatHud.addMessage(this));
 	}
 
 	/**
 	 * Sends this message to the server, without any formatting
 	 */
 	public void sendMessage() {
-		if (MinecraftClient.getInstance().player != null) {
-			ChatHud.getChatMessageQueue().add(() ->
-					MinecraftClient.getInstance().player.sendChatMessage(toString(false))
-			);
+		if (Minecraft.getInstance().player != null) {
+			ChatHud.getChatMessageQueue().add(() -> Minecraft.getInstance().player.sendChatMessage(toString(false)));
 		}
 	}
-	
+
+	public List<ChatSection> getSectionList() {
+		return this.sectionList;
+	}
 }

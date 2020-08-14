@@ -2,9 +2,10 @@ package me.deftware.client.framework.wrappers.item;
 
 import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.mixin.imp.IMixinItemTool;
+import net.minecraft.init.Items;
 import net.minecraft.item.*;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.IRegistry;
 
 public class IItem {
 
@@ -23,7 +24,7 @@ public class IItem {
     }
 
     public ChatMessage getName() {
-        return new ChatMessage().fromText(item.getTextComponent());
+        return new ChatMessage().fromText(item.getName());
     }
 
     public String getTranslationKey() {
@@ -41,7 +42,7 @@ public class IItem {
     }
 
     public int getID() {
-        return Item.getRawIdByItem(item);
+        return Item.getIdFromItem(item);
     }
 
     public boolean isValidItem() {
@@ -49,7 +50,7 @@ public class IItem {
     }
 
     public float getAttackDamage() {
-        return ((SwordItem) item).getWeaponDamage() + 3.0F;
+        return ((ItemSword) item).getAttackDamage() + 3.0F;
     }
 
     public float getDamageVsEntity() {
@@ -57,36 +58,36 @@ public class IItem {
     }
 
     public boolean isThrowable() {
-        return item instanceof BowItem || item instanceof SnowballItem || item instanceof EggItem
-                || item instanceof EnderPearlItem || item instanceof SplashPotionItem
-                || item instanceof LingeringPotionItem || item instanceof FishingRodItem;
+        return item instanceof ItemBow || item instanceof ItemSnowball || item instanceof ItemEgg
+                || item instanceof ItemEnderPearl || item instanceof ItemSplashPotion
+                || item instanceof ItemLingeringPotion || item instanceof ItemFishingRod;
     }
 
     public boolean instanceOf(IItemType type) {
         if (type.equals(IItemType.ItemFishingRod)) {
-            return item instanceof FishingRodItem;
+            return item instanceof ItemFishingRod;
         } else if (type.equals(IItemType.ItemPotion)) {
-            return item instanceof PotionItem;
+            return item instanceof ItemPotion;
         } else if (type.equals(IItemType.SplashPotion)) {
             return item == Items.SPLASH_POTION;
         } else if (type.equals(IItemType.ItemFood)) {
-            return item.getItemGroup() == ItemGroup.FOOD;
+            return item.getGroup() == ItemGroup.FOOD;
         } else if (type.equals(IItemType.ItemSword)) {
-            return item instanceof SwordItem;
+            return item instanceof ItemSword;
         } else if (type.equals(IItemType.ItemTool)) {
-            return item instanceof ToolItem;
+            return item instanceof ItemTool;
         } else if (type.equals(IItemType.ItemNameTag)) {
-            return item instanceof NameTagItem;
+            return item instanceof ItemNameTag;
         } else if (type.equals(IItemType.ItemBlock)) {
-            return item instanceof BlockItem;
+            return item instanceof ItemBlock;
         } else if (type.equals(IItemType.ItemSoup)) {
-            return item instanceof MushroomStewItem;
+            return item instanceof ItemSoup;
         } else if (type.equals(IItemType.WritableBook)) {
-            return item instanceof WritableBookItem;
+            return item instanceof ItemWritableBook;
         } else if (type.equals(IItemType.ItemHoe)) {
-            return item instanceof HoeItem;
+            return item instanceof ItemHoe;
         } else if (type.equals(IItemType.ItemShulkerBox)) {
-            return item instanceof BlockItem && item.getTranslationKey().contains("shulker_box");
+            return item instanceof ItemBlock && item.getTranslationKey().contains("shulker_box");
         }
         return false;
     }
@@ -97,9 +98,9 @@ public class IItem {
     }
 
     protected static Item getByName(String id) {
-        Identifier resourceLocation = new Identifier(id);
-        if (Registry.ITEM.containsId(resourceLocation)) {
-            return Registry.ITEM.get(resourceLocation);
+        ResourceLocation resourceLocation = new ResourceLocation(id);
+        if (IRegistry.ITEM.containsKey(resourceLocation)) {
+            return IRegistry.ITEM.get(resourceLocation);
         }
         return null;
     }

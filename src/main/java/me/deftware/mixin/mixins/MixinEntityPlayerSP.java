@@ -6,12 +6,13 @@ import me.deftware.client.framework.command.CommandRegister;
 import me.deftware.client.framework.event.events.*;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
 import me.deftware.mixin.imp.IMixinEntityPlayerSP;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.player.HungerManager;
-import net.minecraft.server.network.packet.ChatMessageC2SPacket;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.init.MobEffects;
+import net.minecraft.network.play.client.CPacketChatMessage;
+import net.minecraft.potion.Potion;
+import net.minecraft.util.FoodStats;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -20,31 +21,34 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(ClientPlayerEntity.class)
+@Mixin(EntityPlayerSP.class)
 public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinEntityPlayerSP {
 
     @Shadow
+    private boolean prevOnGround;
+
+    @Shadow
+    private float horseJumpPower;
+
+    @Shadow
+    public abstract boolean isHandActive();
+
+    @Shadow
     @Final
-    public ClientPlayNetworkHandler networkHandler;
+    public NetHandlerPlayClient connection;
 
-    @Shadow
-    private float field_3922;
-
-    @Shadow
-    public abstract boolean isUsingItem();
-
-    @Redirect(method = "tickMovement", at = @At(value = "INVOKE", target = "net/minecraft/client/network/ClientPlayerEntity.isUsingItem()Z", ordinal = 0))
-    private boolean itemUseSlowdownEvent(ClientPlayerEntity self) {
+    @Redirect(method = "livingTick", at = @At(value = "INVOKE", target = "net/minecraft/client/entity/EntityPlayerSP.isHandActive()Z", ordinal = 0))
+    private boolean itemUseSlowdownEvent(EntityPlayerSP self) {
         EventSlowdown event = new EventSlowdown(EventSlowdown.SlowdownType.Item_Use);
         event.broadcast();
         if (event.isCanceled()) {
             return false;
         }
-        return isUsingItem();
+        return isHandActive();
     }
 
-    @Redirect(method = "tickMovement", at = @At(value = "INVOKE", target = "net/minecraft/entity/player/HungerManager.getFoodLevel()I"))
-    private int hungerSlowdownEvent(HungerManager self) {
+    @Redirect(method = "livingTick", at = @At(value = "INVOKE", target = "net/minecraft/util/FoodStats.getFoodLevel()I"))
+    private int hungerSlowdownEvent(FoodStats self) {
         EventSlowdown event = new EventSlowdown(EventSlowdown.SlowdownType.Hunger);
         event.broadcast();
         if (event.isCanceled()) {
@@ -53,19 +57,20 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
         return self.getFoodLevel();
     }
 
-    @Redirect(method = "tickMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;hasStatusEffect(Lnet/minecraft/entity/effect/StatusEffect;)Z"))
-    private boolean onBlindnessSlowdown(ClientPlayerEntity self, StatusEffect effect) {
+    @Redirect(method = "livingTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;isPotionActive(Lnet/minecraft/potion/Potion;)Z"))
+    private boolean blindlessSlowdownEvent(EntityPlayerSP self, Potion potion) {
         EventSlowdown event = new EventSlowdown(EventSlowdown.SlowdownType.Blindness);
         event.broadcast();
         if (event.isCanceled()) {
             return false;
         }
-        return self.hasStatusEffect(effect);
+        return self.isPotionActive(MobEffects.BLINDNESS);
     }
 
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
     private void tick(CallbackInfo ci) {
-        EventUpdate event = new EventUpdate(((ClientPlayerEntity) (Object) this).x, ((ClientPlayerEntity) (Object) this).y, ((ClientPlayerEntity) (Object) this).z, yaw, pitch, onGround);
+        EntityPlayerSP entity = (EntityPlayerSP) (Object) this;
+        EventUpdate event = new EventUpdate(entity.posX, entity.posY, entity.posZ, entity.rotationYaw, entity.rotationPitch, entity.onGround);
         event.broadcast();
         if (event.isCanceled()) {
             ci.cancel();
@@ -78,10 +83,10 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
         EventChatSend event = new EventChatSend(message).broadcast();
         if (!event.isCanceled()) {
             if (event.isDispatch() || !message.startsWith(trigger)) {
-                networkHandler.sendPacket(new ChatMessageC2SPacket(event.getMessage()));
+                connection.sendPacket(new CPacketChatMessage(event.getMessage()));
             } else {
                 try {
-                    CommandRegister.getDispatcher().execute(message.substring(CommandRegister.getCommandTrigger().length()), MinecraftClient.getInstance().player.getCommandSource());
+                    CommandRegister.getDispatcher().execute(message.substring(CommandRegister.getCommandTrigger().length()), Minecraft.getInstance().player.getCommandSource());
                 } catch (Exception ex) {
                     Bootstrap.logger.error("Failed to execute command", ex);
                     new ChatBuilder().withText(ex.getMessage()).withColor(ChatColors.RED).build().print();
@@ -93,13 +98,13 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
 
     @Override
     public void setHorseJumpPower(float height) {
-        field_3922 = height;
+        horseJumpPower = height;
     }
 
-    @Inject(method = "sendMovementPackets", at = @At(value = "HEAD"), cancellable = true)
+    @Inject(method = "onUpdateWalkingPlayer", at = @At(value = "HEAD"), cancellable = true)
     private void onSendMovementPackets(CallbackInfo ci) {
-        ClientPlayerEntity entity = (ClientPlayerEntity) (Object) this;
-        EventPlayerWalking event = new EventPlayerWalking(entity.x, entity.y, entity.z, yaw, pitch, onGround);
+        EntityPlayerSP entity = (EntityPlayerSP) (Object) this;
+        EventPlayerWalking event = new EventPlayerWalking(entity.posX, entity.posY, entity.posZ, entity.rotationYaw, entity.rotationPitch, entity.onGround);
         event.broadcast();
         if (event.isCanceled()) {
             ci.cancel();

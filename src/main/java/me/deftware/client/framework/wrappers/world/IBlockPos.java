@@ -35,7 +35,7 @@ public class IBlockPos {
 
     public static Iterable<IBlockPos> getAllInBox(IBlockPos pos1, IBlockPos pos2) {
         List<IBlockPos> newPos = new ArrayList<>();
-        Iterable<BlockPos> list = BlockPos.iterate(pos1.getPos(), pos2.getPos());
+        Iterable<BlockPos> list = BlockPos.getAllInBox(pos1.getPos(), pos2.getPos());
         list.forEach(blockPos -> newPos.add(new IBlockPos(blockPos)));
         return newPos;
     }
@@ -116,7 +116,7 @@ public class IBlockPos {
 	}
 
 	public static boolean isCollidable(IBlockPos pos) {
-		return MinecraftClient.getInstance().world.getBlockState(pos.getPos()).getBlock().isCollidable(MinecraftClient.getInstance().world.getBlockState(pos.getPos()));
+		return Minecraft.getInstance().world.getBlockState(pos.getPos()).getBlock().isCollidable(Minecraft.getInstance().world.getBlockState(pos.getPos()));
 	}
 	*/
 

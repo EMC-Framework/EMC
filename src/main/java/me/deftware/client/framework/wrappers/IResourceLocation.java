@@ -1,8 +1,8 @@
 package me.deftware.client.framework.wrappers;
 
-import net.minecraft.util.Identifier;
+import net.minecraft.util.ResourceLocation;
 
-public class IResourceLocation extends Identifier {
+public class IResourceLocation extends ResourceLocation {
 
     public IResourceLocation(String resourceName) {
         super(resourceName);

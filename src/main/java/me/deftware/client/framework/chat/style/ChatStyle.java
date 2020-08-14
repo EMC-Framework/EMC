@@ -1,42 +1,43 @@
 package me.deftware.client.framework.chat.style;
 
-import lombok.Getter;
-import lombok.Setter;
 import me.deftware.client.framework.chat.event.ChatClickEvent;
 import me.deftware.client.framework.chat.event.ChatHoverEvent;
-import net.minecraft.ChatFormat;
-import net.minecraft.network.chat.Style;
-
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextFormatting;
 import java.util.regex.Pattern;
 
 /**
  * @author Deftware
  */
 public class ChatStyle {
-
-	private static @Getter final char formattingChar = 167;
-
-	private @Getter @Setter ChatColors.ChatColor color;
-	private @Getter @Setter boolean bold, underline, italic, obfuscated, strikethrough;
-	private @Getter @Setter ChatClickEvent clickEvent;
-	private @Getter @Setter ChatHoverEvent hoverEvent;
+	private static final char formattingChar = 167;
+	private ChatColors.ChatColor color;
+	private boolean bold;
+	private boolean underline;
+	private boolean italic;
+	private boolean obfuscated;
+	private boolean strikethrough;
+	private ChatClickEvent clickEvent;
+	private ChatHoverEvent hoverEvent;
 
 	public void fromCode(String code) {
-		if (code.equalsIgnoreCase("r")) { // Reset
+		if (code.equalsIgnoreCase("r")) {
+			// Reset
 			color = null;
 			bold = underline = italic = obfuscated = strikethrough = false;
 			return;
 		}
-		for (ChatFormat formatting : ChatFormat.values()) {
+		for (TextFormatting formatting : TextFormatting.values()) {
 			if (formatting.toString().substring(1).equalsIgnoreCase(code)) {
 				// Formatting
-				if (formatting == ChatFormat.BOLD) bold = true;
-				else if (formatting == ChatFormat.UNDERLINE) underline = true;
-				else if (formatting == ChatFormat.ITALIC) italic = true;
-				else if (formatting == ChatFormat.OBFUSCATED) obfuscated = true;
-				else if (formatting == ChatFormat.STRIKETHROUGH) strikethrough = true;
+				if (formatting == TextFormatting.BOLD) bold = true;
+				 else if (formatting == TextFormatting.UNDERLINE) underline = true;
+				 else if (formatting == TextFormatting.ITALIC) italic = true;
+				 else if (formatting == TextFormatting.OBFUSCATED) obfuscated = true;
+				 else if (formatting == TextFormatting.STRIKETHROUGH) strikethrough = true;
+				 else 
 				// Color
-				else color = new ChatColors.ChatColor(formatting);
+				color = new ChatColors.ChatColor(formatting);
 				break;
 			}
 		}
@@ -46,11 +47,11 @@ public class ChatStyle {
 		// Color
 		color = new ChatColors.ChatColor(style.getColor());
 		// Formatting
-		bold = style.isBold();
-		underline = style.isUnderlined();
-		italic = style.isItalic();
-		obfuscated = style.isObfuscated();
-		strikethrough = style.isStrikethrough();
+		bold = style.getBold();
+		underline = style.getUnderlined();
+		italic = style.getItalic();
+		obfuscated = style.getObfuscated();
+		strikethrough = style.getStrikethrough();
 		// Other
 		if (style.getClickEvent() != null) clickEvent = ChatClickEvent.fromEvent(style.getClickEvent());
 		if (style.getHoverEvent() != null) hoverEvent = ChatHoverEvent.fromEvent(style.getHoverEvent());
@@ -59,12 +60,7 @@ public class ChatStyle {
 	public Style getStyle() {
 		Style style = new Style();
 		// Formatting
-		style = style
-				.setBold(bold)
-				.setItalic(italic)
-				.setUnderline(underline)
-				.setObfuscated(obfuscated)
-				.setStrikethrough(strikethrough);
+		style = style.setBold(bold).setItalic(italic).setUnderlined(underline).setObfuscated(obfuscated).setStrikethrough(strikethrough);
 		// Color
 		if (color != null) style = color.applyToStyle(style);
 		// Other
@@ -79,11 +75,11 @@ public class ChatStyle {
 		// Color
 		if (color != null) builder.append(color.toString());
 		// Formatting
-		if (bold) builder.append(ChatFormat.BOLD.toString());
-		if (underline) builder.append(ChatFormat.UNDERLINE.toString());
-		if (italic) builder.append(ChatFormat.ITALIC.toString());
-		if (obfuscated) builder.append(ChatFormat.OBFUSCATED.toString());
-		if (strikethrough) builder.append(ChatFormat.STRIKETHROUGH.toString());
+		if (bold) builder.append(TextFormatting.BOLD.toString());
+		if (underline) builder.append(TextFormatting.UNDERLINE.toString());
+		if (italic) builder.append(TextFormatting.ITALIC.toString());
+		if (obfuscated) builder.append(TextFormatting.OBFUSCATED.toString());
+		if (strikethrough) builder.append(TextFormatting.STRIKETHROUGH.toString());
 		return builder.toString();
 	}
 
@@ -107,4 +103,71 @@ public class ChatStyle {
 		return Pattern.compile("(?i)" + formattingChar + "[0-9A-FK-OR]").matcher(input).replaceAll("");
 	}
 
+	public static char getFormattingChar() {
+		return ChatStyle.formattingChar;
+	}
+
+	public ChatColors.ChatColor getColor() {
+		return this.color;
+	}
+
+	public void setColor(final ChatColors.ChatColor color) {
+		this.color = color;
+	}
+
+	public boolean isBold() {
+		return this.bold;
+	}
+
+	public boolean isUnderline() {
+		return this.underline;
+	}
+
+	public boolean isItalic() {
+		return this.italic;
+	}
+
+	public boolean isObfuscated() {
+		return this.obfuscated;
+	}
+
+	public boolean isStrikethrough() {
+		return this.strikethrough;
+	}
+
+	public void setBold(final boolean bold) {
+		this.bold = bold;
+	}
+
+	public void setUnderline(final boolean underline) {
+		this.underline = underline;
+	}
+
+	public void setItalic(final boolean italic) {
+		this.italic = italic;
+	}
+
+	public void setObfuscated(final boolean obfuscated) {
+		this.obfuscated = obfuscated;
+	}
+
+	public void setStrikethrough(final boolean strikethrough) {
+		this.strikethrough = strikethrough;
+	}
+
+	public ChatClickEvent getClickEvent() {
+		return this.clickEvent;
+	}
+
+	public void setClickEvent(final ChatClickEvent clickEvent) {
+		this.clickEvent = clickEvent;
+	}
+
+	public ChatHoverEvent getHoverEvent() {
+		return this.hoverEvent;
+	}
+
+	public void setHoverEvent(final ChatHoverEvent hoverEvent) {
+		this.hoverEvent = hoverEvent;
+	}
 }

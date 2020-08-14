@@ -5,12 +5,12 @@ import me.deftware.client.framework.fonts.EMCFont;
 import me.deftware.client.framework.utils.render.GraphicsUtil;
 import me.deftware.client.framework.wrappers.gui.IGuiScreen;
 import me.deftware.mixin.imp.IMixinGuiTextField;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
-import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiTextField;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -21,12 +21,8 @@ import java.awt.*;
 import java.lang.ref.WeakReference;
 import java.util.function.BiFunction;
 
-@Mixin(TextFieldWidget.class)
-public abstract class MixinGuiTextField extends AbstractButtonWidget implements IMixinGuiTextField {
-
-    public MixinGuiTextField(int int_1, int int_2, String string_1) {
-        super(int_1, int_2, string_1);
-    }
+@Mixin(GuiTextField.class)
+public abstract class MixinGuiTextField implements IMixinGuiTextField {
 
     private boolean useMinecraftScaling = true;
     private boolean useCustomFont = false;
@@ -36,41 +32,52 @@ public abstract class MixinGuiTextField extends AbstractButtonWidget implements 
     private String overlayText = "";
 
     @Shadow
-    private int maxLength;
+    public int x;
 
     @Shadow
-    private int focusedTicks;
+    public int y;
+
+    @Mutable
+    @Final
+    @Shadow
+    private int height;
+
+    @Mutable
+    @Final
+    @Shadow
+    private int width;
+
+    @Shadow
+    private int cursorCounter;
+
+    @Shadow
+    private int selectionEnd;
+
+    @Shadow
+    private int lineScrollOffset;
+
+    @Shadow
+    private int maxStringLength;
 
     @Shadow
     private String suggestion;
 
     @Shadow
-    private boolean focused;
-
-    @Shadow
-    private int cursorMin;
-
-    @Shadow
-    private int cursorMax;
-
-    @Shadow
-    private int field_2103;
-
-    @Shadow
     @Final
-    private TextRenderer textRenderer;
+    private FontRenderer fontRenderer;
 
     @Shadow
-    private BiFunction<String, Integer, String> renderTextProvider;
-
-    @Shadow
-    private boolean editable;
+    private BiFunction<String, Integer, String> textFormatter;
 
     @Shadow public abstract String getText();
 
+    @Shadow public abstract boolean isFocused();
+
+    @Shadow private int cursorPosition;
+
     @Override
     public int getHeight() {
-        return this.height;
+        return height;
     }
 
     @Override
@@ -79,23 +86,23 @@ public abstract class MixinGuiTextField extends AbstractButtonWidget implements 
     }
 
     @Override
-    public TextRenderer getFontRendererInstance() {
-        return textRenderer;
+    public FontRenderer getFontRendererInstance() {
+        return fontRenderer;
     }
 
     @Override
     public int getCursorCounter() {
-        return focusedTicks;
+        return cursorCounter;
     }
 
     @Override
     public int getSelectionEnd() {
-        return cursorMin;
+        return selectionEnd;
     }
 
     @Override
     public int getLineScrollOffset() {
-        return field_2103;
+        return lineScrollOffset;
     }
 
     @Override
@@ -143,7 +150,7 @@ public abstract class MixinGuiTextField extends AbstractButtonWidget implements 
         customFont = font;
     }
 
-    @Inject(method = "renderButton", at = @At("HEAD"))
+    @Inject(method = "drawTextField", at = @At("HEAD"))
     public void drawTextField(int p_drawTextField_1_, int p_drawTextField_2_, float p_drawTextField_3_, CallbackInfo ci) {
         if (!useMinecraftScaling) {
             GL11.glPushMatrix();
@@ -151,7 +158,7 @@ public abstract class MixinGuiTextField extends AbstractButtonWidget implements 
         }
     }
 
-    @Inject(method = "renderButton", at = @At("RETURN"))
+    @Inject(method = "drawTextField", at = @At("RETURN"))
     public void drawTextFieldReturn(int p_drawTextField_1_, int p_drawTextField_2_, float p_drawTextField_3_, CallbackInfo ci) {
         if (!useMinecraftScaling) {
             GL11.glPopMatrix();
@@ -161,40 +168,30 @@ public abstract class MixinGuiTextField extends AbstractButtonWidget implements 
             int currentWidth = ((IMixinGuiTextField) this).getFontRendererInstance().getStringWidth(currentText);
             int x = isFocused() ? ((IMixinGuiTextField) this).getX() + 4 : ((IMixinGuiTextField) this).getX();
             int y = isFocused() ? ((IMixinGuiTextField) this).getY() + (((IMixinGuiTextField) this).getHeight() - 8) / 2 : ((IMixinGuiTextField) this).getY();
-            ((IMixinGuiTextField) this).getFontRendererInstance().drawWithShadow(overlayText, x + currentWidth - 3, y - 2, Color.GRAY.getRGB());
+            ((IMixinGuiTextField) this).getFontRendererInstance().drawStringWithShadow(overlayText, x + currentWidth - 3, y - 2, Color.GRAY.getRGB());
             WeakReference<EventChatboxType> event = new WeakReference<>(new EventChatboxType(getText(), overlayText));
             event.get().broadcast();
             overlayText = event.get().getOverlay();
         }
     }
 
-    @Redirect(method = "renderButton", at = @At(value = "INVOKE", target = "net/minecraft/client/font/TextRenderer.drawWithShadow(Ljava/lang/String;FFI)I"))
-    public int render(TextRenderer self, String text, float x, float y, int color) {
+    @Redirect(method = "drawTextField", at = @At(value = "INVOKE", target = "net/minecraft/client/gui/FontRenderer.drawStringWithShadow(Ljava/lang/String;FFI)I"))
+    public int onDrawText(FontRenderer self, String text, float x, float y, int color) {
         if (useCustomFont) {
-            customFont.drawString((int) x, (int) y - 6, text, new Color(color), true);
+            customFont.drawStringWithShadow((int) x, (int) y - 6, text, new Color(color));
             return (int) (x + customFont.getStringWidth(text) + 1f);
         } else {
-            return this.textRenderer.drawWithShadow(text, x, y, color);
+            return this.fontRenderer.drawStringWithShadow(text, x, y, color);
         }
     }
 
     public int getMaxTextLength() {
-        return maxLength;
-    }
-
-    @Override
-    public boolean getHasBorder() {
-        return focused;
-    }
-
-    @Override
-    public boolean getIsEditble() {
-        return editable;
+        return maxStringLength;
     }
 
     @Override
     public BiFunction<String, Integer, String> getRenderTextProvider() {
-        return renderTextProvider;
+        return textFormatter;
     }
 
     @Override
@@ -204,7 +201,7 @@ public abstract class MixinGuiTextField extends AbstractButtonWidget implements 
 
     @Override
     public int getCursorMax() {
-        return cursorMax;
+        return cursorPosition;
     }
 
     @Override

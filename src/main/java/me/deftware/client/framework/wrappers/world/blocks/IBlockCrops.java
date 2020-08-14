@@ -4,7 +4,7 @@ import me.deftware.client.framework.wrappers.world.IBlock;
 import me.deftware.client.framework.wrappers.world.IBlockPos;
 import me.deftware.client.framework.wrappers.world.IWorld;
 import net.minecraft.block.Block;
-import net.minecraft.block.CropBlock;
+import net.minecraft.block.BlockCrops;
 import net.minecraft.util.math.BlockPos;
 
 public class IBlockCrops extends IBlock {
@@ -22,7 +22,7 @@ public class IBlockCrops extends IBlock {
     }
 
     public boolean isMaxAge(IBlockPos pos) {
-        return ((CropBlock) block).isMature(IWorld.getStateFromPos(pos));
+        return ((BlockCrops) block).isMaxAge(IWorld.getStateFromPos(pos));
     }
 
 }

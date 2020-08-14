@@ -1,10 +1,10 @@
 package me.deftware.mixin.imp;
 
 import com.mojang.authlib.minecraft.MinecraftSessionService;
-import net.minecraft.client.gui.Screen;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.client.util.Session;
-import net.minecraft.client.util.Window;
+import net.minecraft.client.MainWindow;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.util.Session;
+import net.minecraft.util.Timer;
 
 public interface IMixinMinecraft {
 
@@ -12,11 +12,11 @@ public interface IMixinMinecraft {
 
     void setSession(Session session);
 
-    RenderTickCounter getTimer();
+    Timer getTimer();
 
-    Window getMainWindow();
+    MainWindow getMainWindow();
 
-    void displayGuiScreen(Screen guiScreenIn);
+    void displayGuiScreen(GuiScreen guiScreenIn);
 
     void doRightClickMouse();
 

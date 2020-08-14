@@ -5,11 +5,11 @@ import me.deftware.client.framework.wrappers.gui.IGuiButton;
 import me.deftware.client.framework.wrappers.gui.imp.GuiContainerInstance;
 import me.deftware.client.framework.wrappers.gui.imp.ScreenInstance;
 import me.deftware.mixin.imp.IMixinGuiScreen;
-import net.minecraft.client.gui.ContainerScreen;
-import net.minecraft.client.gui.Screen;
-import net.minecraft.client.gui.menu.DisconnectedScreen;
-import net.minecraft.client.gui.menu.PauseMenuScreen;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiDisconnected;
+import net.minecraft.client.gui.GuiIngameMenu;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainer;
 
 import java.util.ArrayList;
 
@@ -19,10 +19,10 @@ import java.util.ArrayList;
  */
 public class EventGuiScreenDraw extends Event {
 
-    private Screen screen;
+    private GuiScreen screen;
     private int x, y;
 
-    public EventGuiScreenDraw(Screen screen, int x, int y) {
+    public EventGuiScreenDraw(GuiScreen screen, int x, int y) {
         this.screen = screen;
         this.x = x;
         this.y = y;
@@ -30,17 +30,17 @@ public class EventGuiScreenDraw extends Event {
 
     public boolean instanceOf(CommonScreenTypes type) {
         if (type.equals(CommonScreenTypes.GuiDisconnected)) {
-            return screen instanceof DisconnectedScreen;
+            return screen instanceof GuiDisconnected;
         } else if (type.equals(CommonScreenTypes.GuiIngameMenu)) {
-            return screen instanceof PauseMenuScreen;
+            return screen instanceof GuiIngameMenu;
         } else if (type.equals(CommonScreenTypes.GuiContainer)) {
-            return screen instanceof ContainerScreen;
+            return screen instanceof GuiContainer;
         }
         return false;
     }
 
     public ScreenInstance getInstance() {
-        if (screen instanceof ContainerScreen) {
+        if (screen instanceof GuiContainer) {
             return new GuiContainerInstance(screen);
         }
         return new ScreenInstance(screen);
@@ -54,7 +54,7 @@ public class EventGuiScreenDraw extends Event {
 
     public ArrayList<IGuiButton> getIButtonList() {
         ArrayList<IGuiButton> list = new ArrayList<>();
-        for (AbstractButtonWidget b : ((IMixinGuiScreen) screen).getButtonList()) {
+        for (GuiButton b : ((IMixinGuiScreen) screen).getButtonList()) {
             if (b instanceof IGuiButton) {
                 list.add((IGuiButton) b);
             }

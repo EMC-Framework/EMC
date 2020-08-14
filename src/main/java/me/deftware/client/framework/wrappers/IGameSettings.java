@@ -1,17 +1,17 @@
 package me.deftware.client.framework.wrappers;
 
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
 public class IGameSettings {
 
     public static int getLimitFramerate() {
-        return MinecraftClient.getInstance().options.maxFps;
+        return Minecraft.getInstance().gameSettings.limitFramerate;
     }
 
     public static void setLimitFramerate(int framerate) {
-        MinecraftClient.getInstance().options.maxFps = framerate;
-        MinecraftClient.getInstance().window.setFramerateLimit(framerate);
+        Minecraft.getInstance().gameSettings.limitFramerate = framerate;
+        //Minecraft.getInstance().mainWindow.setFramerateLimit(framerate);
     }
 
 }

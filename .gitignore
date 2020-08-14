@@ -4,6 +4,7 @@
 !/gradlew.bat
 !/.gitignore
 !/src
+!/mcpconfig.sh
 !/deps
 !/gradle
 !/README.md

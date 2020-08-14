@@ -1,19 +1,19 @@
 package me.deftware.client.framework.wrappers.render;
 
-import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.renderer.RenderHelper;
 
 public class IRenderHelper {
 
     public static void disableStandardItemLighting() {
-        GuiLighting.disable();
+        RenderHelper.disableStandardItemLighting();
     }
 
     public static void enableStandardItemLighting() {
-        GuiLighting.enable();
+        RenderHelper.enableStandardItemLighting();
     }
 
     public static void enableGUIStandardItemLighting() {
-        GuiLighting.enableForItems();
+        RenderHelper.enableGUIStandardItemLighting();
     }
 
 }

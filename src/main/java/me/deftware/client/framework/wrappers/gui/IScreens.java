@@ -2,39 +2,34 @@ package me.deftware.client.framework.wrappers.gui;
 
 import me.deftware.client.framework.utils.ResourceUtils;
 import me.deftware.client.framework.wrappers.IMinecraft;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.MainMenuScreen;
-import net.minecraft.client.gui.Screen;
-import net.minecraft.client.gui.menu.LevelSelectScreen;
-import net.minecraft.client.gui.menu.MultiplayerScreen;
-import net.minecraft.client.gui.menu.SettingsScreen;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.*;
 import net.minecraft.realms.RealmsBridge;
-import net.minecraft.util.Pair;
 
 import java.util.Objects;
 
 public class IScreens {
 
-    public static Screen translate(ScreenType type, IGuiScreen parent) {
-        Screen screen = null;
+    public static GuiScreen translate(ScreenType type, IGuiScreen parent) {
+        GuiScreen screen = null;
         if (type.equals(ScreenType.Multiplayer)) {
-            screen = new MultiplayerScreen(parent);
+            screen = new GuiMultiplayer(parent);
         } else if (type.equals(ScreenType.MainMenu)) {
-            screen = new MainMenuScreen();
+            screen = new GuiMainMenu();
         } else if (type.equals(ScreenType.WorldSelection)) {
-            screen = new LevelSelectScreen(parent);
+            screen = new GuiWorldSelection(parent);
         } else if (type.equals(ScreenType.Options)) {
-            screen = new SettingsScreen(parent, MinecraftClient.getInstance().options);
+            screen = new GuiOptions(parent, Minecraft.getInstance().gameSettings);
         } else if (type.equals(ScreenType.Mods)) {
-            if (ResourceUtils.hasSpecificMod("modmenu")) {
-                screen = Objects.requireNonNull(IMinecraft.createScreenInstance("io.github.prospector.modmenu.gui.ModListScreen", new Pair<>(Screen.class, parent)));
+            if (ResourceUtils.hasSpecificMod("riftmodlist")) {
+                screen = Objects.requireNonNull(IMinecraft.createScreenInstance("me.shedaniel.gui.GuiModList"));
             }
         }
         return screen;
     }
 
     public static void displayGuiScreen(ScreenType type, IGuiScreen parent) {
-        MinecraftClient.getInstance().openScreen(IScreens.translate(type, parent));
+        Minecraft.getInstance().displayGuiScreen(IScreens.translate(type, parent));
     }
 
     public static void switchToRealms(IGuiScreen parent) {

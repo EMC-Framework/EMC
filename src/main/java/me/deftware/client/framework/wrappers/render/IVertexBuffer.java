@@ -1,13 +1,13 @@
 package me.deftware.client.framework.wrappers.render;
 
-import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.renderer.BufferBuilder;
 
 public class IVertexBuffer {
 
     private BufferBuilder vertexbuffer;
 
     public IVertexBuffer(ITessellator tessellator) {
-        vertexbuffer = tessellator.getTessellator().getBufferBuilder();
+        vertexbuffer = tessellator.getTessellator().getBuffer();
     }
 
     public IVertexBuffer(BufferBuilder buffer) {
@@ -19,13 +19,13 @@ public class IVertexBuffer {
     }
 
     public IVertexBuffer pos(double x, double y, double z) {
-        vertexbuffer.vertex(x, y, z);
+        vertexbuffer.pos(x, y, z);
         return this;
     }
 
     @Deprecated
     public IVertexBuffer tex(float u, float v) {
-        vertexbuffer.texture(u, v);
+        vertexbuffer.tex(u, v);
         return this;
     }
 
@@ -35,7 +35,7 @@ public class IVertexBuffer {
     }
 
     public void endVertex() {
-        vertexbuffer.next();
+        vertexbuffer.endVertex();
     }
 
 }

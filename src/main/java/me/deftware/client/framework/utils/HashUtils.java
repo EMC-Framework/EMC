@@ -1,6 +1,6 @@
 package me.deftware.client.framework.utils;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -54,7 +54,7 @@ public class HashUtils {
 
     public static String getClientHash() {
         try {
-            File f = new File(MinecraftClient.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+            File f = new File(Minecraft.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
             return HashUtils.calcSHA(f);
         } catch (Exception ex) {
             return "";

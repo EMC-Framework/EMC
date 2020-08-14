@@ -1,17 +1,17 @@
 package me.deftware.client.framework.wrappers.gui.imp;
 
-import net.minecraft.client.gui.Screen;
+import net.minecraft.client.gui.GuiScreen;
 
 public class ScreenInstance {
 
-    public Screen screen;
+    public GuiScreen screen;
 
-    public ScreenInstance(Screen screen) {
+    public ScreenInstance(GuiScreen screen) {
         this.screen = screen;
     }
 
     public void doDrawTexturedModalRect(int x, int y, int u, int v, int width, int height) {
-        screen.blit(x, y, u, v, width, height);
+        screen.drawTexturedModalRect(x, y, u, v, width, height);
     }
 
 }

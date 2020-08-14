@@ -2,29 +2,29 @@ package me.deftware.client.framework.apis.oauth;
 
 import com.mojang.authlib.GameProfile;
 import me.deftware.client.framework.chat.ChatMessage;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Screen;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.network.packet.DisconnectS2CPacket;
-import net.minecraft.network.ClientConnection;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SPacketDisconnect;
 
-public class OAuthNetHandlerPlayClient extends ClientPlayNetworkHandler {
+public class OAuthNetHandlerPlayClient extends NetHandlerPlayClient {
 
     private final OAuth.OAuthCallback callback;
 
-    public OAuthNetHandlerPlayClient(MinecraftClient mcIn, Screen p_i46300_2_, ClientConnection networkManagerIn,
+    public OAuthNetHandlerPlayClient(Minecraft mcIn, GuiScreen p_i46300_2_, NetworkManager networkManagerIn,
                                      GameProfile profileIn, OAuth.OAuthCallback callback) {
         super(mcIn, p_i46300_2_, networkManagerIn, profileIn);
         this.callback = callback;
     }
 
     @Override
-    public void onDisconnect(DisconnectS2CPacket packetIn) {
+    public void handleDisconnect(SPacketDisconnect packetIn) {
         String[] data = new ChatMessage().fromText(packetIn.getReason()).toString(false).split("\n");
         String code = data[0].split("\"")[1].replace("\"", "");
         String time = data[2].substring("Your code will expire in ".length() + 1);
         callback.callback(true, code, time);
-        getClientConnection().disconnect(packetIn.getReason());
+        getNetworkManager().closeChannel(packetIn.getReason());
     }
 
 }

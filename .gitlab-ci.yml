@@ -10,7 +10,12 @@ build:
     # suppress error for moving self in subdirectory
     - mv * emc || true
     - cd emc
-  script: ./gradlew build --stacktrace
+    - apt update
+    - apt install -y git
+  script:
+    - chmod +x mcpconfig.sh
+    - ./mcpconfig.sh
+    - ./gradlew build --stacktrace
   artifacts:
     paths:
       - emc/maven
@@ -44,4 +49,4 @@ deploy:
     - git commit -m "EMC snapshot $CI_COMMIT_SHORT_SHA"
     - git push
   only:
-    - "1.14"
+    - "1.13.2"

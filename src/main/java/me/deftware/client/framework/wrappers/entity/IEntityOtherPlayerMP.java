@@ -1,40 +1,40 @@
 package me.deftware.client.framework.wrappers.entity;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.OtherClientPlayerEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityOtherPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
 
 @SuppressWarnings("ALL")
-public class IEntityOtherPlayerMP extends OtherClientPlayerEntity {
+public class IEntityOtherPlayerMP extends EntityOtherPlayerMP {
 
     public IEntityOtherPlayerMP() {
-        super(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getGameProfile());
-        clonePlayer(MinecraftClient.getInstance().player, true);
-        setPositionAndAngles(MinecraftClient.getInstance().player.x, MinecraftClient.getInstance().player.y, MinecraftClient.getInstance().player.z, MinecraftClient.getInstance().player.yaw, MinecraftClient.getInstance().player.pitch);
-        headYaw = MinecraftClient.getInstance().player.headYaw;
+        super(Minecraft.getInstance().world, Minecraft.getInstance().player.getGameProfile());
+        clonePlayer(Minecraft.getInstance().player, true);
+        copyLocationAndAnglesFrom(Minecraft.getInstance().player);
+        rotationYawHead = Minecraft.getInstance().player.rotationYawHead;
     }
 
-    public void clonePlayer(PlayerEntity oldPlayer, boolean respawnFromEnd) {
+    public void clonePlayer(EntityPlayer oldPlayer, boolean respawnFromEnd) {
         if (respawnFromEnd) {
-            inventory.clone(oldPlayer.inventory);
+            inventory.copyInventory(oldPlayer.inventory);
             setHealth(oldPlayer.getHealth());
-            hungerManager = oldPlayer.getHungerManager();
+            foodStats = oldPlayer.getFoodStats();
             experienceLevel = oldPlayer.experienceLevel;
-            experienceProgress = oldPlayer.experienceProgress;
-            totalExperience = oldPlayer.totalExperience;
+            experienceTotal = oldPlayer.experienceTotal;
+            experience = oldPlayer.experience;
             setScore(oldPlayer.getScore());
-            field_6020 = oldPlayer.method_5656();
-            field_6028 = oldPlayer.method_5843();
+            lastPortalVec = oldPlayer.getLastPortalVec();
+            teleportDirection = oldPlayer.getTeleportDirection();
         } else if (world.getGameRules().getBoolean("keepInventory") || oldPlayer.isSpectator()) {
-            inventory.clone(oldPlayer.inventory);
+            inventory.copyInventory(oldPlayer.inventory);
             experienceLevel = oldPlayer.experienceLevel;
-            experienceProgress = oldPlayer.experienceProgress;
-            totalExperience = oldPlayer.totalExperience;
+            experienceTotal = oldPlayer.experienceTotal;
+            experience = oldPlayer.experience;
             setScore(oldPlayer.getScore());
         }
-        enchantmentTableSeed = oldPlayer.getEnchantmentTableSeed();
-        if (getDataTracker() != null) {
-            getDataTracker().set(PlayerEntity.PLAYER_MODEL_BIT_MASK, oldPlayer.getDataTracker().get(PlayerEntity.PLAYER_MODEL_BIT_MASK));
+        xpSeed = oldPlayer.getXPSeed();
+        if (getDataManager() != null) {
+            getDataManager().set(EntityPlayer.PLAYER_MODEL_FLAG, oldPlayer.getDataManager().get(EntityPlayer.PLAYER_MODEL_FLAG));
         }
     }
 

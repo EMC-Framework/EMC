@@ -2,9 +2,9 @@ package me.deftware.client.framework.command;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import net.minecraft.command.arguments.EntityArgumentType;
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.command.Commands;
+import net.minecraft.command.ISuggestionProvider;
+import net.minecraft.command.arguments.EntityArgument;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,7 @@ import java.util.function.Consumer;
  */
 public class CommandBuilder<T> {
 
-    private LiteralArgumentBuilder<ServerCommandSource> builder;
+    private LiteralArgumentBuilder<ISuggestionProvider> builder;
     private List<String> aliases = new ArrayList<>();
 
     /**
@@ -27,7 +27,7 @@ public class CommandBuilder<T> {
      * @return CommandBuilder
      */
     public CommandBuilder<?> addCommand(String command, Consumer<CommandResult> execution) {
-        return set(CommandManager.literal(command).executes(source -> {
+        return set(Commands.literal(command).executes(source -> {
             execution.accept(new CommandResult(source));
             return 1;
         }));
@@ -40,7 +40,7 @@ public class CommandBuilder<T> {
      * @return
      */
     public CommandBuilder<?> set(LiteralArgumentBuilder<?> argument) {
-        builder = (LiteralArgumentBuilder<ServerCommandSource>) argument;
+        builder = (LiteralArgumentBuilder<ISuggestionProvider>) argument;
         return this;
     }
 
@@ -50,7 +50,7 @@ public class CommandBuilder<T> {
      * @param argument
      * @return
      */
-    public CommandBuilder<?> append(LiteralArgumentBuilder<ServerCommandSource> argument) {
+    public CommandBuilder<?> append(LiteralArgumentBuilder<ISuggestionProvider> argument) {
         if (builder == null) {
             builder = argument;
         } else {
@@ -76,7 +76,7 @@ public class CommandBuilder<T> {
      * @return
      */
     public ArgumentType<T> getEntityArgumentType() {
-        return (ArgumentType<T>) EntityArgumentType.players();
+        return (ArgumentType<T>) EntityArgument.players();
     }
 
     /**
@@ -88,7 +88,7 @@ public class CommandBuilder<T> {
         return aliases;
     }
 
-    protected LiteralArgumentBuilder<ServerCommandSource> build() {
+    protected LiteralArgumentBuilder<ISuggestionProvider> build() {
         return builder;
     }
 

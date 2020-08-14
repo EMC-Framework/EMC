@@ -4,24 +4,21 @@ import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.wrappers.item.items.IItemArmor;
 import me.deftware.client.framework.wrappers.world.IBlock;
 import me.deftware.client.framework.wrappers.world.IBlockPos;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.item.ArmorItem;
-import net.minecraft.item.BowItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.StringNbtReader;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.potion.PotionUtil;
-import net.minecraft.util.Rarity;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.MobEffects;
+import net.minecraft.item.*;
+import net.minecraft.nbt.JsonToNBT;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.IRegistry;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 
 import java.util.ArrayList;
 
@@ -56,7 +53,7 @@ public class IItemStack {
     }
 
     public static IItemStack cloneWithoutEffects(IItemStack stack) {
-        return new IItemStack(new ItemStack(Item.byRawId(Item.getRawIdByItem(stack.getStack().getItem())),
+        return new IItemStack(new ItemStack(Item.getItemById(Item.getIdFromItem(stack.getStack().getItem())),
                 Integer.parseInt(stack.getStack().toString().split("x")[0])));
     }
 
@@ -65,20 +62,20 @@ public class IItemStack {
     }
 
     public void setNBT(String nbt) throws Exception {
-        stack.setTag(StringNbtReader.parse(nbt));
+        stack.setTag(JsonToNBT.getTagFromJson(nbt));
     }
 
     public void enchantAll(int level) {
-        for (Enchantment enchantment : Registry.ENCHANTMENT) {
-            stack.addEnchantment(enchantment, level);
+        for (Object enchantment : IRegistry.ENCHANTMENT) {
+            stack.addEnchantment((Enchantment)enchantment, level);
         }
     }
 
     public static ArrayList<String> getEnchantmentNames() {
         ArrayList<String> enchantNames = new ArrayList<>();
 
-        for (Enchantment enchantment : Registry.ENCHANTMENT) {
-            IEnchantment enchantmentObj = new IEnchantment(enchantment);
+        for (Object enchantment : IRegistry.ENCHANTMENT) {
+            IEnchantment enchantmentObj = new IEnchantment((Enchantment)enchantment);
             enchantNames.add(enchantmentObj.getEnchantmentKey());
         }
 
@@ -86,50 +83,50 @@ public class IItemStack {
     }
 
     public void enchant(String name, int level) {
-        for (Enchantment enchantment : Registry.ENCHANTMENT) {
-            IEnchantment enchantmentData = new IEnchantment(enchantment);
+        for (Object enchantment : IRegistry.ENCHANTMENT) {
+            IEnchantment enchantmentData = new IEnchantment((Enchantment)enchantment);
             if (enchantmentData.getEnchantmentKey().equalsIgnoreCase(name)) {
-                stack.addEnchantment(enchantment, level);
+                stack.addEnchantment((Enchantment)enchantment, level);
                 break;
             }
         }
     }
 
     public static IItemStack read(INBTTagCompound compound) {
-        return new IItemStack(ItemStack.fromTag(compound.getCompound()));
+        return new IItemStack(ItemStack.read(compound.getCompound()));
     }
 
     public void setStackDisplayName(String name) {
-        CompoundTag nbttagcompound = stack.getOrCreateSubCompoundTag("display");
-        nbttagcompound.putString("Name", TextComponent.Serializer.toJson(new TextComponent(name)).toString());
+        NBTTagCompound nbttagcompound = stack.getOrCreateChildTag("display");
+        nbttagcompound.putString("Name", ITextComponent.Serializer.toJson(new TextComponentString(name)));
     }
 
-    public boolean hasCompoundTag() {
+    public boolean hasNBTTagCompound() {
         return stack.hasTag();
     }
 
     public void setTagInfo(String key, INBTTagList compound) {
-        stack.setChildTag(key, compound.list);
+        stack.setTagInfo(key, compound.list);
     }
 
     public int getMaxStackSize() {
-        return stack.getMaxAmount();
+        return stack.getMaxStackSize();
     }
 
     public static boolean areItemStackTagsEqual(IItemStack one, IItemStack two) {
-        return ItemStack.areEqualIgnoreTags(one.getStack(), two.getStack());
+        return ItemStack.areItemStackTagsEqual(one.getStack(), two.getStack());
     }
 
     public boolean isItemEqual(IItemStack stack) {
-        return this.stack.isEqualIgnoreTags(stack.getStack());
+        return this.stack.isItemEqual(stack.getStack());
     }
 
     public void setCount(int count) {
-        stack.setAmount(count);
+        stack.setCount(count);
     }
 
     public int getCount() {
-        return stack.getAmount();
+        return stack.getCount();
     }
 
     public INBTTagCompound getTagCompound() {
@@ -145,11 +142,11 @@ public class IItemStack {
     }
 
     public int getItemID() {
-        return Item.getRawIdByItem(stack.getItem());
+        return Item.getIdFromItem(stack.getItem());
     }
 
     public float getStrVsBlock(IBlockPos pos) {
-        return stack.getBlockBreakingSpeed(MinecraftClient.getInstance().world.getBlockState(pos.getPos()));
+        return stack.getDestroySpeed(Minecraft.getInstance().world.getBlockState(pos.getPos()));
     }
 
     public boolean isEmpty() {
@@ -157,15 +154,15 @@ public class IItemStack {
     }
 
     public IItem getIItem() {
-        if (stack.getItem() instanceof ArmorItem) {
+        if (stack.getItem() instanceof ItemArmor) {
             return new IItemArmor(stack.getItem());
         }
         return new IItem(stack.getItem());
     }
 
     public boolean hasEffect(IEffects ieffect) {
-        for (StatusEffectInstance effect : PotionUtil.getPotionEffects(stack)) {
-            if (effect.getEffectType() == ieffect.getEffect()) {
+        for (PotionEffect effect : PotionUtils.getEffectsFromStack(stack)) {
+            if (effect.getPotion() == ieffect.getEffect()) {
                 return true;
             }
         }
@@ -177,32 +174,32 @@ public class IItemStack {
     }
 
     public int getEnchantmentLevel(IEnchantment enchantment) {
-        return EnchantmentHelper.getLevel(enchantment.getEnchantment(), stack);
+        return EnchantmentHelper.getEnchantmentLevel(enchantment.getEnchantment(), stack);
     }
 
     public int getRarity() {
-        if (stack.getRarity() == Rarity.COMMON) {
+        if (stack.getRarity() == EnumRarity.COMMON) {
             return 0;
-        } else if (stack.getRarity() == Rarity.UNCOMMON) {
+        } else if (stack.getRarity() == EnumRarity.UNCOMMON) {
             return 1;
-        } else if (stack.getRarity() == Rarity.RARE) {
+        } else if (stack.getRarity() == EnumRarity.RARE) {
             return 2;
-        } else if (stack.getRarity() == Rarity.EPIC) {
+        } else if (stack.getRarity() == EnumRarity.EPIC) {
             return 3;
         }
         return 0;
     }
 
     public boolean isArmor() {
-        return stack.getItem() instanceof ArmorItem;
+        return stack.getItem() instanceof ItemArmor;
     }
 
     public boolean isBow() {
-        return stack.getItem() instanceof BowItem;
+        return stack.getItem() instanceof ItemBow;
     }
 
     public int getEnchantmentLevel(int enchantID) {
-        return EnchantmentHelper.getLevel(Enchantment.byRawId(enchantID), getStack());
+        return EnchantmentHelper.getEnchantmentLevel(Enchantment.getEnchantmentByID(enchantID), getStack());
     }
 
     public int getDamage() {
@@ -218,20 +215,20 @@ public class IItemStack {
     }
 
     public int getRawMaxDamage() {
-        return stack.getDurability();
+        return stack.getMaxDamage();
     }
 
     public enum IEffects {
 
-        InstantHealth(StatusEffects.INSTANT_HEALTH);
+        InstantHealth(MobEffects.INSTANT_HEALTH);
 
-        private StatusEffect effect;
+        private Potion effect;
 
-        IEffects(StatusEffect effect) {
+        IEffects(Potion effect) {
             this.effect = effect;
         }
 
-        public StatusEffect getEffect() {
+        public Potion getEffect() {
             return effect;
         }
 

@@ -1,23 +1,23 @@
 package me.deftware.client.framework.wrappers;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
 public class ISession {
 
     public static String getISessionID() {
-        return MinecraftClient.getInstance().getSession().getSessionId();
+        return Minecraft.getInstance().getSession().getSessionID();
     }
 
     public static String getIPlayerID() {
-        return MinecraftClient.getInstance().getSession().getUuid();
+        return Minecraft.getInstance().getSession().getSessionID();
     }
 
     public static String getIUsername() {
-        return MinecraftClient.getInstance().getSession().getUsername();
+        return Minecraft.getInstance().getSession().getUsername();
     }
 
     public static String getIToken() {
-        return MinecraftClient.getInstance().getSession().getAccessToken();
+        return Minecraft.getInstance().getSession().getToken();
     }
 
 }

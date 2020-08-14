@@ -2,9 +2,9 @@ package me.deftware.client.framework.network.packets;
 
 import me.deftware.client.framework.network.IPacket;
 import me.deftware.client.framework.wrappers.entity.IEntity;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.packet.EntityAnimationS2CPacket;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.SPacketAnimation;
 
 public class ISPacketAnimation extends IPacket {
 
@@ -13,15 +13,15 @@ public class ISPacketAnimation extends IPacket {
 	}
 
 	public int getEntityID() {
-		return ((EntityAnimationS2CPacket) packet).getId();
+		return ((SPacketAnimation) packet).getEntityID();
 	}
 
 	public int getAnimationID() {
-		return ((EntityAnimationS2CPacket) packet).getAnimationId();
+		return ((SPacketAnimation) packet).getAnimationType();
 	}
 
 	public IEntity getEntity() {
-		return IEntity.fromEntity(MinecraftClient.getInstance().world.getEntityById(getEntityID()));
+		return IEntity.fromEntity(Minecraft.getInstance().world.getEntityByID(getEntityID()));
 	}
 
 }

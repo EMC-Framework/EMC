@@ -14,7 +14,7 @@ import me.deftware.client.framework.path.LocationUtil;
 import me.deftware.client.framework.path.OSUtils;
 import me.deftware.client.framework.utils.Settings;
 import me.deftware.client.framework.wrappers.IMinecraft;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -199,7 +199,7 @@ public class Bootstrap {
         }
         Bootstrap.mods.clear();
         registerFrameworkCommands();
-        MinecraftClient.getInstance().options.gamma = 0.5F;
+        Minecraft.getInstance().gameSettings.gammaSetting = 0.5F;
         System.gc();
     }
 

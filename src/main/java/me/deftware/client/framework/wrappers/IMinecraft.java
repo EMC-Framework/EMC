@@ -1,7 +1,6 @@
 package me.deftware.client.framework.wrappers;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import me.deftware.client.framework.maps.SettingsMap;
+import com.mojang.datafixers.util.Pair;
 import me.deftware.client.framework.wrappers.entity.IEntity;
 import me.deftware.client.framework.wrappers.entity.IEntity.EntityType;
 import me.deftware.client.framework.wrappers.gui.IGuiInventory;
@@ -9,25 +8,22 @@ import me.deftware.client.framework.wrappers.gui.IGuiScreen;
 import me.deftware.client.framework.wrappers.gui.IScreens;
 import me.deftware.client.framework.wrappers.world.IBlockPos;
 import me.deftware.mixin.imp.IMixinMinecraft;
-import net.minecraft.SharedConstants;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.ContainerScreen;
-import net.minecraft.client.gui.Screen;
-import net.minecraft.client.gui.ingame.ChatScreen;
-import net.minecraft.client.gui.ingame.CreativePlayerInventoryScreen;
-import net.minecraft.client.gui.ingame.PlayerInventoryScreen;
-import net.minecraft.client.gui.menu.MultiplayerScreen;
-import net.minecraft.client.gui.menu.ServerConnectingScreen;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiChat;
+import net.minecraft.client.gui.GuiConnecting;
+import net.minecraft.client.gui.GuiMultiplayer;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.inventory.GuiContainerCreative;
+import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.main.Main;
-import net.minecraft.client.options.AoOption;
-import net.minecraft.client.options.ServerEntry;
-import net.minecraft.container.GenericContainer;
+import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.server.network.packet.ChatMessageC2SPacket;
-import net.minecraft.util.Pair;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.ContainerChest;
+import net.minecraft.network.play.client.CPacketChatMessage;
+import net.minecraft.realms.RealmsSharedConstants;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -36,165 +32,155 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@SuppressWarnings("All")
 public class IMinecraft {
 
     public static IServerData lastServer = null;
     private static IServerData iServerCache = null;
-    public static AoOption ao = null;
 
     public static File getMinecraftFile() throws URISyntaxException {
         return new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
     }
 
     public static void clickMouse() {
-        ((IMixinMinecraft) MinecraftClient.getInstance()).doClickMouse();
+        ((IMixinMinecraft) Minecraft.getInstance()).doClickMouse();
     }
 
     public synchronized static IServerData getCurrentServer() {
-        if (MinecraftClient.getInstance().getCurrentServerEntry() == null) {
+        if (Minecraft.getInstance().getCurrentServerData() == null) {
             return null;
         }
-        if (iServerCache != null && MinecraftClient.getInstance().getCurrentServerEntry() != null) {
-            if (iServerCache.address.equals(MinecraftClient.getInstance().getCurrentServerEntry().address)) {
+        if (iServerCache != null && Minecraft.getInstance().getCurrentServerData() != null) {
+            if (iServerCache.serverIP.equals(Minecraft.getInstance().getCurrentServerData().serverIP)) {
                 return iServerCache;
             }
         }
-        ServerEntry sd = MinecraftClient.getInstance().getCurrentServerEntry();
-        iServerCache = new IServerData(sd.name, sd.address, sd.isLocal());
-        iServerCache.version = sd.version;
+        ServerData sd = Minecraft.getInstance().getCurrentServerData();
+        iServerCache = new IServerData(sd.serverName, sd.serverIP, sd.isOnLAN());
+        iServerCache.gameVersion = sd.gameVersion;
         return iServerCache;
     }
 
+    public static long getWindowHandle() {
+        return Minecraft.getInstance().mainWindow.getHandle();
+    }
+
     public static String getRunningLocation() throws URISyntaxException {
-        return new File(MinecraftClient.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath())
+        return new File(Minecraft.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath())
                 .getParent();
     }
 
-    public static long getWindowHandle() {
-        return MinecraftClient.getInstance().window.getHandle();
+    public static boolean isFocused() {
+        return ((IMixinMinecraft) Minecraft.getInstance()).getIsWindowFocused();
     }
 
     public static double getScaleFactor() {
-        return MinecraftClient.getInstance().window.getScaleFactor();
-    }
-
-    public static void setScaleFactor(int factor) {
-        MinecraftClient.getInstance().options.guiScale = factor;
-        MinecraftClient.getInstance().onResolutionChanged();
+        return Minecraft.getInstance().mainWindow.getGuiScaleFactor();
     }
 
     public static IGuiScreen getIScreen() {
-        if (MinecraftClient.getInstance().currentScreen != null) {
-            if (MinecraftClient.getInstance().currentScreen instanceof IGuiScreen) {
-                return (IGuiScreen) MinecraftClient.getInstance().currentScreen;
+        if (Minecraft.getInstance().currentScreen != null) {
+            if (Minecraft.getInstance().currentScreen instanceof IGuiScreen) {
+                return (IGuiScreen) Minecraft.getInstance().currentScreen;
             }
         }
         return null;
     }
 
-    public static boolean isFocused() {
-        return ((IMixinMinecraft) MinecraftClient.getInstance()).getIsWindowFocused();
-    }
-
     public static float getRenderPartialTicks() {
-        return MinecraftClient.getInstance().getTickDelta();
+        return Minecraft.getInstance().getRenderPartialTicks();
     }
 
     public static void leaveServer() {
-        MinecraftClient.getInstance().player.networkHandler.sendPacket(new ChatMessageC2SPacket(new String(new char[]{167})));
+        Minecraft.getInstance().player.connection.sendPacket(new CPacketChatMessage(new String(new char[]{167})));
     }
 
     public static IBlockPos getBlockOver() {
         if (!IMinecraft.isMouseOver()) {
             return null;
         }
-        if (MinecraftClient.getInstance().hitResult != null && MinecraftClient.getInstance().hitResult instanceof BlockHitResult && ((BlockHitResult) MinecraftClient.getInstance().hitResult).getBlockPos() != null) {
-            return new IBlockPos(((BlockHitResult) MinecraftClient.getInstance().hitResult).getBlockPos());
+        if (Minecraft.getInstance().objectMouseOver.getBlockPos() != null) {
+            return new IBlockPos(Minecraft.getInstance().objectMouseOver.getBlockPos());
         }
         return null;
     }
 
     public static IEntity getPointedEntity() {
-        Entity pointedEntity = MinecraftClient.getInstance().targetedEntity;
-        if (pointedEntity != null && pointedEntity instanceof LivingEntity) {
+        Entity pointedEntity = Minecraft.getInstance().pointedEntity;
+        if ((pointedEntity != null) && ((pointedEntity instanceof EntityPlayer))) {
             return IEntity.fromEntity(pointedEntity);
         }
         return null;
     }
 
     public static boolean isEntityHit() {
-        return MinecraftClient.getInstance().hitResult != null && MinecraftClient.getInstance().hitResult instanceof EntityHitResult && ((EntityHitResult) MinecraftClient.getInstance().hitResult).getEntity() != null;
+        return Minecraft.getInstance().objectMouseOver.entity != null;
     }
 
     public static int getFPS() {
-        return ((IMixinMinecraft) MinecraftClient.getInstance()).getFPS();
+        return Minecraft.getDebugFPS();
     }
 
     public static boolean isInGame() {
-        return MinecraftClient.getInstance().currentScreen == null;
+        return Minecraft.getInstance().currentScreen == null;
     }
 
     public static void reloadRenderers() {
-        if (ao == null) {
-            ao = MinecraftClient.getInstance().options.ao;
-        }
-        if (SettingsMap.isOverrideMode()) {
-            ao = MinecraftClient.getInstance().options.ao;
-            MinecraftClient.getInstance().options.ao = AoOption.OFF;
-        } else {
-            MinecraftClient.getInstance().options.ao = ao;
-        }
-        MinecraftClient.getInstance().worldRenderer.reload();
+        Minecraft.getInstance().worldRenderer.loadRenderers();
     }
 
     public static void triggerGuiRenderer() {
-        GlStateManager.clear(256, MinecraftClient.IS_SYSTEM_MAC);
+        Minecraft.getInstance().mainWindow.setupOverlayRendering();
     }
 
     public static void addEntityToWorld(int id, IEntity entity) {
-        MinecraftClient.getInstance().world.addEntity(id, entity.getEntity());
+        Minecraft.getInstance().world.addEntityToWorld(id, entity.getEntity());
     }
 
     public static void removeEntityFromWorld(int id) {
-        MinecraftClient.getInstance().world.removeEntity(id);
+        Minecraft.getInstance().world.removeEntityFromWorld(id);
     }
 
     public static void connectToServer(IServerData server) {
-        MinecraftClient.getInstance().openScreen(new ServerConnectingScreen(new MultiplayerScreen(null), MinecraftClient.getInstance(), server));
+        Minecraft.getInstance()
+                .displayGuiScreen(new GuiConnecting(new GuiMultiplayer(null), Minecraft.getInstance(), server));
     }
 
     public static int thridPersonView() {
-        return MinecraftClient.getInstance().options.perspective;
+        return Minecraft.getInstance().gameSettings.thirdPersonView;
     }
 
     public static int getGuiScaleRaw() {
-        return MinecraftClient.getInstance().options.guiScale;
+        return Minecraft.getInstance().gameSettings.guiScale;
     }
 
     public static int getGuiScale() {
-        int factor = MinecraftClient.getInstance().window.calculateScaleFactor(MinecraftClient.getInstance().options.guiScale, MinecraftClient.getInstance().forcesUnicodeFont());
+        int factor =  Minecraft.getInstance().mainWindow.getScaleFactor(Minecraft.getInstance().gameSettings.guiScale);
         if (factor == 0) {
             factor = 4;
         }
         return factor;
     }
 
+    public static void setScaleFactor(int factor) {
+        Minecraft.getInstance().gameSettings.guiScale = factor;
+        Minecraft.getInstance().mainWindow.updateSize();
+    }
+
     public static boolean isDebugInfoShown() {
-        return MinecraftClient.getInstance().options.debugEnabled;
+        return Minecraft.getInstance().gameSettings.showDebugInfo;
     }
 
     public static IGuiScreen getCurrentScreen() {
-        if (MinecraftClient.getInstance().currentScreen != null) {
-            if (MinecraftClient.getInstance().currentScreen instanceof IGuiScreen) {
-                return (IGuiScreen) MinecraftClient.getInstance().currentScreen;
+        if (Minecraft.getInstance().currentScreen != null) {
+            if (Minecraft.getInstance().currentScreen instanceof IGuiScreen) {
+                return (IGuiScreen) Minecraft.getInstance().currentScreen;
             }
         }
         return null;
     }
 
     public static void setGuiScreen(IGuiScreen screen) {
-        MinecraftClient.getInstance().openScreen(screen);
+        Minecraft.getInstance().displayGuiScreen(screen);
     }
 
     /**
@@ -203,48 +189,48 @@ public class IMinecraft {
      * @return Returns an instance of a class in the current classpath, however it does NOT return a current instance, but a new one.
      */
     @Nullable
-    public static Screen createScreenInstance(Object clazz, Pair<Class<?>, Object>... constructorParameters) {
+    public static GuiScreen createScreenInstance(Object clazz, Pair<Class<?>, Object>... constructorParameters) {
         try {
             Class<?> screenClass = clazz instanceof Class ? (Class<?>) clazz : Class.forName((String) clazz);
             List<Class<?>> paramList = new ArrayList<>();
             List<Object> targetList = new ArrayList<>();
             Arrays.stream(constructorParameters).forEach(c -> {
-                paramList.add(c.getLeft());
-                targetList.add(c.getRight());
+                paramList.add(c.getFirst());
+                targetList.add(c.getSecond());
             });
-            return (Screen) screenClass.getConstructor(paramList.toArray(new Class<?>[paramList.size()]))
+            return (GuiScreen) screenClass.getConstructor(paramList.toArray(new Class<?>[paramList.size()]))
                     .newInstance(targetList.toArray(new Object[targetList.size()]));
         } catch (Exception ignored) { }
         return null;
     }
 
     public static void openInventory(IGuiInventory inventory) {
-        MinecraftClient.getInstance().openScreen(inventory);
+        Minecraft.getInstance().displayGuiScreen(inventory);
     }
 
     public static void setGuiScreenType(IScreens.ScreenType screen) {
-        MinecraftClient.getInstance().openScreen(IScreens.translate(screen, null));
+        Minecraft.getInstance().displayGuiScreen(IScreens.translate(screen, null));
     }
 
     public static void shutdown() {
-        MinecraftClient.getInstance().stop();
-    }
-
-    public static double getGamma() {
-        return MinecraftClient.getInstance().options.gamma;
+        Minecraft.getInstance().shutdown();
     }
 
     public static void setGamma(double value) {
-        MinecraftClient.getInstance().options.gamma = value;
+        Minecraft.getInstance().gameSettings.gammaSetting = value;
+    }
+
+    public static double getGamma() {
+        return Minecraft.getInstance().gameSettings.gammaSetting;
     }
 
     public static void setRightClickDelayTimer(int delay) {
-        ((IMixinMinecraft) MinecraftClient.getInstance()).setRightClickDelayTimer(delay);
+        ((IMixinMinecraft) Minecraft.getInstance()).setRightClickDelayTimer(delay);
     }
 
     public static boolean isChatOpen() {
-        if (MinecraftClient.getInstance().currentScreen != null) {
-            if (MinecraftClient.getInstance().currentScreen instanceof ChatScreen) {
+        if (Minecraft.getInstance().currentScreen != null) {
+            if (Minecraft.getInstance().currentScreen instanceof GuiChat) {
                 return true;
             }
         }
@@ -252,27 +238,20 @@ public class IMinecraft {
     }
 
     public static boolean isContainerOpen() {
-        if (MinecraftClient.getInstance().currentScreen != null) {
-            if (MinecraftClient.getInstance().currentScreen instanceof ContainerScreen
-                    && !(MinecraftClient.getInstance().currentScreen instanceof PlayerInventoryScreen)) {
+        if (Minecraft.getInstance().currentScreen != null) {
+            if (Minecraft.getInstance().currentScreen instanceof GuiContainer
+                    && !(Minecraft.getInstance().currentScreen instanceof GuiInventory)) {
                 return true;
             }
         }
         return false;
     }
 
-    public static IEntity getRenderViewEntity() {
-        if(MinecraftClient.getInstance().getCameraEntity() == null) {
-            return null;
-        }
-        return IEntity.fromEntity(MinecraftClient.getInstance().getCameraEntity());
-    }
-
     public static boolean isInventoryOpen() {
-        if (MinecraftClient.getInstance().currentScreen != null) {
-            if (MinecraftClient.getInstance().currentScreen instanceof ContainerScreen
-                    && (MinecraftClient.getInstance().currentScreen instanceof PlayerInventoryScreen
-                    || MinecraftClient.getInstance().currentScreen instanceof CreativePlayerInventoryScreen)) {
+        if (Minecraft.getInstance().currentScreen != null) {
+            if (Minecraft.getInstance().currentScreen instanceof GuiContainer
+                    && (Minecraft.getInstance().currentScreen instanceof GuiInventory
+                    || Minecraft.getInstance().currentScreen instanceof GuiContainerCreative)) {
                 return true;
             }
         }
@@ -280,8 +259,8 @@ public class IMinecraft {
     }
 
     public static boolean isChestOpen() {
-        if (MinecraftClient.getInstance().player.container != null) {
-            if (MinecraftClient.getInstance().player.container instanceof GenericContainer) {
+        if (Minecraft.getInstance().player.openContainer != null) {
+            if (Minecraft.getInstance().player.openContainer instanceof ContainerChest) {
                 return true;
             }
         }
@@ -289,33 +268,40 @@ public class IMinecraft {
     }
 
     public static String getMinecraftVersion() {
-        return SharedConstants.getGameVersion().getName();
+        return RealmsSharedConstants.VERSION_STRING;
     }
 
     public static int getMinecraftProtocolVersion() {
-        return SharedConstants.getGameVersion().getProtocolVersion();
+        return RealmsSharedConstants.NETWORK_PROTOCOL_VERSION;
     }
 
     public static boolean isMouseOver() {
-        if (MinecraftClient.getInstance().hitResult != null) {
+        if (Minecraft.getInstance().objectMouseOver != null) {
             return true;
         }
         return false;
     }
 
     public static IEntity getHit() {
-        if (!isEntityHit()) {
+        if (!isMouseOver()) {
             return null;
         }
-        return IEntity.fromEntity(((EntityHitResult) MinecraftClient.getInstance().hitResult).getEntity());
+        return IEntity.fromEntity(Minecraft.getInstance().objectMouseOver.entity);
+    }
+
+    public static IEntity getRenderViewEntity() {
+        if(Minecraft.getInstance().getRenderViewEntity() == null) {
+            return null;
+        }
+        return IEntity.fromEntity(Minecraft.getInstance().getRenderViewEntity());
     }
 
     public static boolean entityHitInstanceOf(EntityType type) {
-        if (!isEntityHit()) {
+        if (!isMouseOver()) {
             return false;
         }
         if (type.equals(EntityType.ENTITY_LIVING_BASE)) {
-            return ((EntityHitResult) MinecraftClient.getInstance().hitResult).getEntity() instanceof LivingEntity;
+            return Minecraft.getInstance().objectMouseOver.entity instanceof EntityLivingBase;
         }
         return false;
     }

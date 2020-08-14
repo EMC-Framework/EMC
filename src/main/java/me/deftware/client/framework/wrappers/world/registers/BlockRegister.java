@@ -1,7 +1,7 @@
 package me.deftware.client.framework.wrappers.world.registers;
 
 import me.deftware.client.framework.wrappers.world.IBlock;
-import net.minecraft.block.Blocks;
+import net.minecraft.init.Blocks;
 
 public class BlockRegister {
 

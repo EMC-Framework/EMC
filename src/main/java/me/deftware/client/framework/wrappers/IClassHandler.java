@@ -2,10 +2,10 @@ package me.deftware.client.framework.wrappers;
 
 import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.mixin.imp.IMixinGuiEditSign;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Screen;
-import net.minecraft.client.gui.ingame.EditSignScreen;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiEditSign;
+import net.minecraft.util.text.TextComponentString;
 
 /**
  * Allows direct access to modify data in classes
@@ -24,7 +24,7 @@ public class IClassHandler {
      */
     public static class IClass {
 
-        protected Screen screen = MinecraftClient.getInstance().currentScreen;
+        protected GuiScreen screen = Minecraft.getInstance().currentScreen;
         protected Class<?> clazz;
 
         public IClass(Class<?> clazz) {
@@ -44,7 +44,7 @@ public class IClassHandler {
     public static class IGuiEditSign extends IClass {
 
         public IGuiEditSign() {
-            super(EditSignScreen.class);
+            super(GuiEditSign.class);
         }
 
         public int getCurrentLine() {
@@ -52,11 +52,11 @@ public class IClassHandler {
         }
 
         public ChatMessage getText(int line) {
-            return new ChatMessage().fromText(((IMixinGuiEditSign) screen).getTileSign().text[line]);
+            return new ChatMessage().fromText(((IMixinGuiEditSign) screen).getTileSign().signText[line]);
         }
 
         public void setText(String text, int line) {
-            ((IMixinGuiEditSign) screen).getTileSign().text[line] = new TextComponent(text);
+            ((IMixinGuiEditSign) screen).getTileSign().signText[line] = new TextComponentString(text);
         }
 
         public void save() {

@@ -3,7 +3,7 @@ package me.deftware.client.framework.fonts;
 import me.deftware.client.framework.chat.style.ChatStyle;
 import me.deftware.client.framework.utils.render.ColorUtil;
 import me.deftware.client.framework.utils.render.Texture;
-import net.minecraft.ChatFormat;
+import net.minecraft.util.text.TextFormatting;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -20,7 +20,7 @@ public class ColoredDynamicFont extends DynamicFont {
     public int generateString(String text, Color color) {
         if (color == Color.black) {
             // Assume its a shadow
-            return super.generateString(ChatFormat.stripFormatting(text), color);
+            return super.generateString(TextFormatting.getTextWithoutFormattingCodes(text), color);
         }
         String key = text + color.getRGB() + bold + fontName;
         int textwidth = getStringWidthNonScaled(text);
@@ -79,7 +79,7 @@ public class ColoredDynamicFont extends DynamicFont {
 
     @Override
     public int getStringWidth(String text) {
-        return super.getStringWidthNonScaled(ChatFormat.stripFormatting(text));
+        return super.getStringWidthNonScaled(TextFormatting.getTextWithoutFormattingCodes(text));
     }
 
 }

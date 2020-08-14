@@ -2,11 +2,11 @@ package me.deftware.client.framework.wrappers.gui.imp;
 
 import me.deftware.client.framework.wrappers.item.ISlot;
 import me.deftware.mixin.imp.IMixinGuiContainer;
-import net.minecraft.client.gui.Screen;
+import net.minecraft.client.gui.GuiScreen;
 
 public class GuiContainerInstance extends ScreenInstance {
 
-    public GuiContainerInstance(Screen screen) {
+    public GuiContainerInstance(GuiScreen screen) {
         super(screen);
     }
 

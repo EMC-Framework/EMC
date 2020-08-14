@@ -1,72 +1,31 @@
 {
-    "inheritsFrom": "1.14",
-    "id": "1.14-EMC",
-    "time": "2025-04-10T20:37:13+02:00",
-    "releaseTime": "2025-04-10T20:37:13+02:00",
+    "inheritsFrom": "1.13.2",
+    "id": "1.13.2-EMC",
+    "time": "2018-07-12T08:51:45-05:00",
+    "releaseTime": "2018-07-12T08:51:45-05:00",
     "type": "release",
-    "mainClass": "net.fabricmc.loader.launch.knot.KnotClient",
     "arguments": {
-        "game": []
+        "game": [
+            "--tweakClass",
+            "me.deftware.launch.Launcher"
+        ]
     },
+    "mainClass": "net.minecraft.launchwrapper.Launch",
     "libraries": [
         {
-            "name": "net.fabricmc:tiny-mappings-parser:0.1.1.8",
-            "url": "https://maven.fabricmc.net/"
+            "name": "net.minecraft:launchwrapper:1.12"
         },
         {
-            "name": "net.fabricmc:sponge-mixin:0.7.11.27",
-            "url": "https://maven.fabricmc.net/"
-        },
-        {
-            "name": "net.fabricmc:tiny-remapper:0.1.0.33",
-            "url": "https://maven.fabricmc.net/"
-        },
-        {
-            "name": "net.fabricmc:fabric-loader-sat4j:2.3.5.4",
-            "url": "https://maven.fabricmc.net/"
-        },
-        {
-            "name": "com.google.jimfs:jimfs:1.1",
-            "url": "https://maven.fabricmc.net/"
-        },
-        {
-            "name": "org.ow2.asm:asm:7.0",
-            "url": "https://maven.fabricmc.net/"
-        },
-        {
-            "name": "org.ow2.asm:asm-analysis:7.0",
-            "url": "https://maven.fabricmc.net/"
-        },
-        {
-            "name": "org.ow2.asm:asm-commons:7.0",
-            "url": "https://maven.fabricmc.net/"
-        },
-        {
-            "name": "org.ow2.asm:asm-tree:7.0",
-            "url": "https://maven.fabricmc.net/"
-        },
-        {
-            "name": "org.ow2.asm:asm-util:7.0",
-            "url": "https://maven.fabricmc.net/"
-        },
-        {
-            "name": "net.fabricmc:yarn:1.14+build.21",
-            "url": "https://maven.fabricmc.net/"
-        },
-        {
-            "name": "me.deftware:subsystem:latest-separate",
+            "name": "me.deftware:EMC:latest-1.13.2",
             "url": "https://gitlab.com/EMC-Framework/maven/raw/master/"
         },
         {
-            "name": "me.deftware:EMC-F:latest-1.14",
-            "url": "https://gitlab.com/EMC-Framework/maven/raw/master/"
-        }
-    ],
-    "emcMods": [
+            "name": "org.dimdev:mixin:0.7.11-SNAPSHOT",
+            "url": "https://www.dimdev.org/maven/"
+        },
         {
-            "name": "marketplace",
-            "maven": "me.deftware:marketplace:latest",
-            "url": "https://gitlab.com/EMC-Framework/maven/raw/master/"
+            "name": "net.jodah:typetools:0.5.0",
+            "url": "https://repo.maven.apache.org/maven2/"
         }
     ]
 }

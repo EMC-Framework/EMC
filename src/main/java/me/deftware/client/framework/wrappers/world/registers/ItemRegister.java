@@ -1,7 +1,7 @@
 package me.deftware.client.framework.wrappers.world.registers;
 
 import me.deftware.client.framework.wrappers.item.IItem;
-import net.minecraft.item.Items;
+import net.minecraft.init.Items;
 
 public class ItemRegister {
 

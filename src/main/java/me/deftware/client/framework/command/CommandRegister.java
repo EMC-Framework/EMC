@@ -5,8 +5,8 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import me.deftware.client.framework.maps.SettingsMap;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.client.Minecraft;
+import net.minecraft.command.ISuggestionProvider;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -16,12 +16,12 @@ import java.util.Map;
  */
 public class CommandRegister {
 
-    private static CommandDispatcher<ServerCommandSource> dispatcher = new CommandDispatcher<>();
+    private static CommandDispatcher<ISuggestionProvider> dispatcher = new CommandDispatcher<>();
 
     /**
      * @return Brigadier dispatcher object
      */
-    public static CommandDispatcher<ServerCommandSource> getDispatcher() {
+    public static CommandDispatcher<ISuggestionProvider> getDispatcher() {
         return dispatcher;
     }
 
@@ -39,9 +39,9 @@ public class CommandRegister {
      * @param command
      */
     public static synchronized void registerCommand(CommandBuilder<?> command) {
-        CommandNode<ServerCommandSource> node = dispatcher.register(command.build());
+        CommandNode<ISuggestionProvider> node = dispatcher.register(command.build());
         for (Object alias : command.getAliases()) {
-            LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = LiteralArgumentBuilder.literal((String) alias);
+            LiteralArgumentBuilder<ISuggestionProvider> argumentBuilder = LiteralArgumentBuilder.literal((String) alias);
             dispatcher.register(argumentBuilder.redirect(node));
         }
     }
@@ -75,7 +75,7 @@ public class CommandRegister {
      * @return
      */
     public static ArrayList<String> getCommandsAndUsage() {
-        Map<CommandNode<ServerCommandSource>, String> map = getSmartUsage();
+        Map<CommandNode<ISuggestionProvider>, String> map = getSmartUsage();
         return new ArrayList<>(map.values());
     }
 
@@ -84,8 +84,8 @@ public class CommandRegister {
      *
      * @return
      */
-    public static Map<CommandNode<ServerCommandSource>, String> getSmartUsage() {
-        return dispatcher.getSmartUsage(dispatcher.getRoot(), MinecraftClient.getInstance().player.getCommandSource());
+    public static Map<CommandNode<ISuggestionProvider>, String> getSmartUsage() {
+        return dispatcher.getSmartUsage(dispatcher.getRoot(), Minecraft.getInstance().player.connection.getSuggestionProvider());
     }
 
     /**

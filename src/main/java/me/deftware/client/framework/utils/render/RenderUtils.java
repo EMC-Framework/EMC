@@ -2,7 +2,7 @@ package me.deftware.client.framework.utils.render;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.datafixers.util.Pair;
 import me.deftware.client.framework.wrappers.IResourceLocation;
 import me.deftware.client.framework.wrappers.entity.*;
 import me.deftware.client.framework.wrappers.math.IAxisAlignedBB;
@@ -12,19 +12,17 @@ import me.deftware.client.framework.wrappers.world.ICamera;
 import me.deftware.client.framework.wrappers.world.IChunkPos;
 import me.deftware.mixin.imp.IMixinEntityRenderer;
 import me.deftware.mixin.imp.IMixinRenderManager;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.GuiLighting;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.texture.PlayerSkinTexture;
-import net.minecraft.client.util.DefaultSkinHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Pair;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import org.lwjgl.opengl.GL11;
@@ -50,15 +48,15 @@ public class RenderUtils {
     public static int team = 4;
 
     public static void loadShader(IResourceLocation location) {
-        ((IMixinEntityRenderer) MinecraftClient.getInstance().gameRenderer).loadCustomShader(location);
+        ((IMixinEntityRenderer) Minecraft.getInstance().gameRenderer).loadCustomShader(location);
     }
 
     public static IMixinRenderManager getRenderManager() {
-        return (IMixinRenderManager) MinecraftClient.getInstance().getEntityRenderManager();
+        return (IMixinRenderManager) Minecraft.getInstance().getRenderManager();
     }
 
     public static void disableShader() {
-        MinecraftClient.getInstance().execute(() -> MinecraftClient.getInstance().gameRenderer.disableShader());
+        Minecraft.getInstance().addScheduledTask(() -> Minecraft.getInstance().gameRenderer.stopUseShader());
     }
 
     public static void glColor(Color color) {
@@ -80,7 +78,7 @@ public class RenderUtils {
         GL11.glDepthMask(false);
         GL11.glEnable(2884);
         GlStateManager.activeTexture(33985);
-        GlStateManager.disableTexture();
+        GlStateManager.disableTexture2D();
         GlStateManager.activeTexture(33984);
         GL11.glEnable(2848);
         GL11.glHint(3154, 4354);
@@ -122,7 +120,7 @@ public class RenderUtils {
 
     public static void renderChunks(List<IChunkPos> positions, Color color) {
         final Tessellator tessellator = Tessellator.getInstance();
-        final BufferBuilder worldRenderer = tessellator.getBufferBuilder();
+        final BufferBuilder worldRenderer = tessellator.getBuffer();
 
         final float red = color.getRed();
         final float green = color.getGreen();
@@ -148,11 +146,11 @@ public class RenderUtils {
             if (chunkPos != null) {
                 IVec3d chunkVector = chunkPos.getBlockPos().getVector();
 
-                worldRenderer.begin(2, VertexFormats.POSITION);
-                worldRenderer.vertex(chunkVector.getFluentX(), renderY, chunkVector.getFluentZ()).next();
-                worldRenderer.vertex(chunkVector.getFluentX() + 16, renderY, chunkVector.getFluentZ()).next();
-                worldRenderer.vertex(chunkVector.getFluentX() + 16, renderY, chunkVector.getFluentZ() + 16).next();
-                worldRenderer.vertex(chunkVector.getFluentX(), renderY, chunkVector.getFluentZ() + 16).next();
+                worldRenderer.begin(2, DefaultVertexFormats.POSITION);
+                worldRenderer.pos(chunkVector.getFluentX(), renderY, chunkVector.getFluentZ()).endVertex();
+                worldRenderer.pos(chunkVector.getFluentX() + 16, renderY, chunkVector.getFluentZ()).endVertex();
+                worldRenderer.pos(chunkVector.getFluentX() + 16, renderY, chunkVector.getFluentZ() + 16).endVertex();
+                worldRenderer.pos(chunkVector.getFluentX(), renderY, chunkVector.getFluentZ() + 16).endVertex();
                 tessellator.draw();
             }
         }
@@ -165,32 +163,32 @@ public class RenderUtils {
         GL11.glPopMatrix();
     }
 
-    public static void drawSelectionBoundingBox(BoundingBox boundingBox) {
+    public static void drawSelectionBoundingBox(AxisAlignedBB boundingBox) {
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder vertexbuffer = tessellator.getBufferBuilder();
-        vertexbuffer.begin(3, VertexFormats.POSITION);
-        vertexbuffer.vertex(boundingBox.minX, boundingBox.minY, boundingBox.minZ).next();
-        vertexbuffer.vertex(boundingBox.maxX, boundingBox.minY, boundingBox.minZ).next();
-        vertexbuffer.vertex(boundingBox.maxX, boundingBox.minY, boundingBox.maxZ).next();
-        vertexbuffer.vertex(boundingBox.minX, boundingBox.minY, boundingBox.maxZ).next();
-        vertexbuffer.vertex(boundingBox.minX, boundingBox.minY, boundingBox.minZ).next();
+        BufferBuilder vertexbuffer = tessellator.getBuffer();
+        vertexbuffer.begin(3, DefaultVertexFormats.POSITION);
+        vertexbuffer.pos(boundingBox.minX, boundingBox.minY, boundingBox.minZ).endVertex();
+        vertexbuffer.pos(boundingBox.maxX, boundingBox.minY, boundingBox.minZ).endVertex();
+        vertexbuffer.pos(boundingBox.maxX, boundingBox.minY, boundingBox.maxZ).endVertex();
+        vertexbuffer.pos(boundingBox.minX, boundingBox.minY, boundingBox.maxZ).endVertex();
+        vertexbuffer.pos(boundingBox.minX, boundingBox.minY, boundingBox.minZ).endVertex();
         tessellator.draw();
-        vertexbuffer.begin(3, VertexFormats.POSITION);
-        vertexbuffer.vertex(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).next();
-        vertexbuffer.vertex(boundingBox.maxX, boundingBox.maxY, boundingBox.minZ).next();
-        vertexbuffer.vertex(boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ).next();
-        vertexbuffer.vertex(boundingBox.minX, boundingBox.maxY, boundingBox.maxZ).next();
-        vertexbuffer.vertex(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).next();
+        vertexbuffer.begin(3, DefaultVertexFormats.POSITION);
+        vertexbuffer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).endVertex();
+        vertexbuffer.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.minZ).endVertex();
+        vertexbuffer.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ).endVertex();
+        vertexbuffer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.maxZ).endVertex();
+        vertexbuffer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).endVertex();
         tessellator.draw();
-        vertexbuffer.begin(1, VertexFormats.POSITION);
-        vertexbuffer.vertex(boundingBox.minX, boundingBox.minY, boundingBox.minZ).next();
-        vertexbuffer.vertex(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).next();
-        vertexbuffer.vertex(boundingBox.maxX, boundingBox.minY, boundingBox.minZ).next();
-        vertexbuffer.vertex(boundingBox.maxX, boundingBox.maxY, boundingBox.minZ).next();
-        vertexbuffer.vertex(boundingBox.maxX, boundingBox.minY, boundingBox.maxZ).next();
-        vertexbuffer.vertex(boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ).next();
-        vertexbuffer.vertex(boundingBox.minX, boundingBox.minY, boundingBox.maxZ).next();
-        vertexbuffer.vertex(boundingBox.minX, boundingBox.maxY, boundingBox.maxZ).next();
+        vertexbuffer.begin(1, DefaultVertexFormats.POSITION);
+        vertexbuffer.pos(boundingBox.minX, boundingBox.minY, boundingBox.minZ).endVertex();
+        vertexbuffer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).endVertex();
+        vertexbuffer.pos(boundingBox.maxX, boundingBox.minY, boundingBox.minZ).endVertex();
+        vertexbuffer.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.minZ).endVertex();
+        vertexbuffer.pos(boundingBox.maxX, boundingBox.minY, boundingBox.maxZ).endVertex();
+        vertexbuffer.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ).endVertex();
+        vertexbuffer.pos(boundingBox.minX, boundingBox.minY, boundingBox.maxZ).endVertex();
+        vertexbuffer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.maxZ).endVertex();
         tessellator.draw();
     }
 
@@ -331,14 +329,14 @@ public class RenderUtils {
         GL11.glDisable(GL_DEPTH_TEST);
         GL11.glDepthMask(false);
         GL11.glColor4f(red, green, blue, alpha);
-        RenderUtils.drawColorBox(new BoundingBox(x, y, z, x2, y2, z2), red, green, blue, alpha);
+        RenderUtils.drawColorBox(new AxisAlignedBB(x, y, z, x2, y2, z2), red, green, blue, alpha);
         GL11.glColor4d(0.0D, 0.0D, 0.0D, 0.5D);
-        RenderUtils.drawSelectionBoundingBox(new BoundingBox(x, y, z, x2, y2, z2));
+        RenderUtils.drawSelectionBoundingBox(new AxisAlignedBB(x, y, z, x2, y2, z2));
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glEnable(GL_DEPTH_TEST);
         GL11.glDepthMask(true);
         GL11.glDisable(GL_BLEND);
-        GlStateManager.clearCurrentColor();
+        GlStateManager.clearColor(0.0f, 0.0f, 0.0f, 0.0f);
     }
 
     public static void frame(double x, double y, double z, double x2, double y2, double z2, Color color) {
@@ -355,7 +353,7 @@ public class RenderUtils {
         GL11.glDisable(GL_DEPTH_TEST);
         GL11.glDepthMask(false);
         RenderUtils.glColor(color);
-        RenderUtils.drawSelectionBoundingBox(new BoundingBox(x, y, z, x2, y2, z2));
+        RenderUtils.drawSelectionBoundingBox(new AxisAlignedBB(x, y, z, x2, y2, z2));
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glEnable(GL_DEPTH_TEST);
         GL11.glDepthMask(true);
@@ -364,7 +362,7 @@ public class RenderUtils {
 
     public static void ESPBox(IBlockPos IBlockPos, double red, double green, double blue, double alpha, float lineWidth, boolean boundryBox) {
         RenderUtils.fixDarkLight();
-        GlStateManager.clearCurrentColor();
+        GlStateManager.clearColor(0.0f, 0.0f, 0.0f, 0.0f);
         double x = IBlockPos.getX() - (RenderUtils.getRenderManager()).getRenderPosX();
         double y = IBlockPos.getY() - (RenderUtils.getRenderManager()).getRenderPosY();
         double z = IBlockPos.getZ() - (RenderUtils.getRenderManager()).getRenderPosZ();
@@ -375,21 +373,21 @@ public class RenderUtils {
         GL11.glDisable(GL_DEPTH_TEST);
         GL11.glDepthMask(false);
         GL11.glColor4d(red, green, blue, alpha);
-        RenderUtils.drawColorBox(new BoundingBox(x, y, z, x + 1.0, y + 1.0, z + 1.0), 0F, 0F, 0F, 0F);
+        RenderUtils.drawColorBox(new AxisAlignedBB(x, y, z, x + 1.0, y + 1.0, z + 1.0), 0F, 0F, 0F, 0F);
         if(boundryBox){
             GL11.glColor4d(0.0D, 0.0D, 0.0D, 0.5D);
-            RenderUtils.drawSelectionBoundingBox(new BoundingBox(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D));
+            RenderUtils.drawSelectionBoundingBox(new AxisAlignedBB(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D));
         }
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glEnable(GL_DEPTH_TEST);
         GL11.glDepthMask(true);
         GL11.glDisable(GL_BLEND);
-        GlStateManager.clearCurrentColor();
+        GlStateManager.clearColor(0.0f, 0.0f, 0.0f, 0.0f);
     }
 
     public static void ESPBox(IAxisAlignedBB IBlockPos, double red, double green, double blue, double alpha, float lineWidth, boolean boundryBox) {
         RenderUtils.fixDarkLight();
-        GlStateManager.clearCurrentColor();
+        GlStateManager.clearColor(0.0f, 0.0f, 0.0f, 0.0f);
         IBlockPos = IBlockPos.offSet(-(RenderUtils.getRenderManager()).getRenderPosX(), -(RenderUtils.getRenderManager()).getRenderPosY(), -(RenderUtils.getRenderManager()).getRenderPosZ());
         GL11.glBlendFunc(770, 771);
         GL11.glEnable(GL_BLEND);
@@ -407,12 +405,12 @@ public class RenderUtils {
         GL11.glEnable(GL_DEPTH_TEST);
         GL11.glDepthMask(true);
         GL11.glDisable(GL_BLEND);
-        GlStateManager.clearCurrentColor();
+        GlStateManager.clearColor(0.0f, 0.0f, 0.0f, 0.0f);
     }
 
     public static void emptyESPBox(IBlockPos IBlockPos, double red, double green, double blue, double alpha, float lineWidth) {
         RenderUtils.fixDarkLight();
-        GlStateManager.clearCurrentColor();
+        GlStateManager.clearColor(0.0f, 0.0f, 0.0f, 0.0f);
         double x = IBlockPos.getX() - (RenderUtils.getRenderManager()).getRenderPosX();
         double y = IBlockPos.getY() - (RenderUtils.getRenderManager()).getRenderPosY();
         double z = IBlockPos.getZ() - (RenderUtils.getRenderManager()).getRenderPosZ();
@@ -423,17 +421,17 @@ public class RenderUtils {
         GL11.glDisable(GL_DEPTH_TEST);
         GL11.glDepthMask(false);
         GL11.glColor4d(red, green, blue, alpha);
-        RenderUtils.drawSelectionBoundingBox(new BoundingBox(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D));
+        RenderUtils.drawSelectionBoundingBox(new AxisAlignedBB(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D));
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glEnable(GL_DEPTH_TEST);
         GL11.glDepthMask(true);
         GL11.glDisable(GL_BLEND);
-        GlStateManager.clearCurrentColor();
+        GlStateManager.clearColor(0.0f, 0.0f, 0.0f, 0.0f);
     }
 
     public static void emptyESPBox(IAxisAlignedBB IBlockPos, double red, double green, double blue, double alpha, float lineWidth) {
         RenderUtils.fixDarkLight();
-        GlStateManager.clearCurrentColor();
+        GlStateManager.clearColor(0.0f, 0.0f, 0.0f, 0.0f);
         IBlockPos = IBlockPos.offSet(-(RenderUtils.getRenderManager()).getRenderPosX(), -(RenderUtils.getRenderManager()).getRenderPosY(), -(RenderUtils.getRenderManager()).getRenderPosZ());
         GL11.glBlendFunc(770, 771);
         GL11.glEnable(GL_BLEND);
@@ -447,28 +445,28 @@ public class RenderUtils {
         GL11.glEnable(GL_DEPTH_TEST);
         GL11.glDepthMask(true);
         GL11.glDisable(GL_BLEND);
-        GlStateManager.clearCurrentColor();
+        GlStateManager.clearColor(0.0f, 0.0f, 0.0f, 0.0f);
     }
 
     public static void fixDarkLight() {
         GlStateManager.enableLighting();
-        GuiLighting.disable();
+        RenderHelper.disableStandardItemLighting();
     }
 
-    private static final HashMap<String, Pair<Boolean, Identifier>> loadedSkins = new HashMap<>();
+    private static final HashMap<String, Pair<Boolean, ResourceLocation>> loadedSkins = new HashMap<>();
 
     public static void bindSkinTexture(String name, String uuid) {
         GameProfile profile = new GameProfile(UUID.fromString(uuid), name);
         if(loadedSkins.containsKey(name)) {
-            if (loadedSkins.get(name).getLeft()) {
-                MinecraftClient.getInstance().getTextureManager().bindTexture(loadedSkins.get(name).getRight());
+            if (loadedSkins.get(name).getFirst()) {
+                Minecraft.getInstance().getTextureManager().bindTexture(loadedSkins.get(name).getSecond());
             } else {
-                MinecraftClient.getInstance().getTextureManager().bindTexture(DefaultSkinHelper.getTexture(profile.getId()));
+                Minecraft.getInstance().getTextureManager().bindTexture(DefaultPlayerSkin.getDefaultSkin(profile.getId()));
             }
         } else {
             loadedSkins.put(name, new Pair<>(false, null));
             try {
-                MinecraftClient.getInstance().getSkinProvider().loadSkin(profile, (type, identifier, minecraftProfileTexture) -> {
+                Minecraft.getInstance().getSkinManager().loadProfileTextures(profile, (type, identifier, minecraftProfileTexture) -> {
                     if (type == MinecraftProfileTexture.Type.SKIN) {
                         loadedSkins.put(name, new Pair<>(true, identifier));
                     }
@@ -484,15 +482,15 @@ public class RenderUtils {
             bindSkinTexture(name, uuid);
             glEnable(GL_BLEND);
             glColor4f(0.9F, 0.9F, 0.9F, 1.0F);
-            DrawableHelper.blit(x, y, 24, 24, w, h, 192, 192);
-            DrawableHelper.blit(x, y, 120, 24, w, h, 192, 192);
+            Gui.drawModalRectWithCustomSizedTexture(x, y, 24, 24, w, h, 192, 192);
+            Gui.drawModalRectWithCustomSizedTexture(x, y, 120, 24, w, h, 192, 192);
             glDisable(GL_BLEND);
         } catch (Exception ignored) { }
     }
 
     public static void nukerBox(IBlockPos IBlockPos, float damage) {
         RenderUtils.fixDarkLight();
-        GlStateManager.clearCurrentColor();
+        GlStateManager.clearColor(0.0f, 0.0f, 0.0f, 0.0f);
         double x = IBlockPos.getX() - (RenderUtils.getRenderManager()).getRenderPosX();
         double y = IBlockPos.getY() - (RenderUtils.getRenderManager()).getRenderPosY();
         double z = IBlockPos.getZ() - (RenderUtils.getRenderManager()).getRenderPosZ();
@@ -504,12 +502,12 @@ public class RenderUtils {
         GL11.glDepthMask(false);
         GL11.glColor4f(damage, 1.0F - damage, 0.0F, 0.15F);
         RenderUtils.drawColorBox(
-                new BoundingBox(x + 0.5D - damage / 2.0F, y + 0.5D - damage / 2.0F, z + 0.5D - damage / 2.0F,
+                new AxisAlignedBB(x + 0.5D - damage / 2.0F, y + 0.5D - damage / 2.0F, z + 0.5D - damage / 2.0F,
                         x + 0.5D + damage / 2.0F, y + 0.5D + damage / 2.0F, z + 0.5D + damage / 2.0F),
                 damage, 1.0F - damage, 0.0F, 0.15F);
         GL11.glColor4d(0.0D, 0.0D, 0.0D, 0.5D);
         RenderUtils.drawSelectionBoundingBox(
-                new BoundingBox(x + 0.5D - damage / 2.0F, y + 0.5D - damage / 2.0F, z + 0.5D - damage / 2.0F,
+                new AxisAlignedBB(x + 0.5D - damage / 2.0F, y + 0.5D - damage / 2.0F, z + 0.5D - damage / 2.0F,
                         x + 0.5D + damage / 2.0F, y + 0.5D + damage / 2.0F, z + 0.5D + damage / 2.0F));
         GL11.glEnable(3553);
         GL11.glEnable(2929);
@@ -519,7 +517,7 @@ public class RenderUtils {
 
     public static void searchBox(IBlockPos IBlockPos) {
         RenderUtils.fixDarkLight();
-        GlStateManager.clearCurrentColor();
+        GlStateManager.clearColor(0.0f, 0.0f, 0.0f, 0.0f);
         double x = IBlockPos.getX() - (RenderUtils.getRenderManager()).getRenderPosX();
         double y = IBlockPos.getY() - (RenderUtils.getRenderManager()).getRenderPosY();
         double z = IBlockPos.getZ() - (RenderUtils.getRenderManager()).getRenderPosZ();
@@ -532,9 +530,9 @@ public class RenderUtils {
         GL11.glDisable(2929);
         GL11.glDepthMask(false);
         GL11.glColor4f(1.0F - sinus, sinus, 0.0F, 0.15F);
-        RenderUtils.drawColorBox(new BoundingBox(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D), 1.0F - sinus, sinus, 0.0F, 0.15F);
+        RenderUtils.drawColorBox(new AxisAlignedBB(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D), 1.0F - sinus, sinus, 0.0F, 0.15F);
         GL11.glColor4d(0.0D, 0.0D, 0.0D, 0.5D);
-        RenderUtils.drawSelectionBoundingBox(new BoundingBox(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D));
+        RenderUtils.drawSelectionBoundingBox(new AxisAlignedBB(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D));
         GL11.glEnable(3553);
         GL11.glEnable(2929);
         GL11.glDepthMask(true);
@@ -546,7 +544,7 @@ public class RenderUtils {
     }
 
     public static void drawOutlinedBox(IAxisAlignedBB bbb) {
-        BoundingBox bb = bbb.getAABB();
+        AxisAlignedBB bb = bbb.getAABB();
 
         GL11.glVertex3d(bb.minX, bb.minY, bb.minZ);
         GL11.glVertex3d(bb.maxX, bb.minY, bb.minZ);
@@ -586,7 +584,7 @@ public class RenderUtils {
     }
 
     public static void drawNode(IAxisAlignedBB bbb) {
-        BoundingBox bb = bbb.getAABB();
+        AxisAlignedBB bb = bbb.getAABB();
 
         double midX = (bb.minX + bb.maxX) / 2;
         double midY = (bb.minY + bb.maxY) / 2;
@@ -629,68 +627,68 @@ public class RenderUtils {
         GL11.glVertex3d(midX, midY, bb.maxZ);
     }
 
-    public static void drawColorBox(BoundingBox BoundingBox, float red, float green, float blue, float alpha) {
+    public static void drawColorBox(AxisAlignedBB BoundingBox, float red, float green, float blue, float alpha) {
         Tessellator ts = Tessellator.getInstance();
-        BufferBuilder vb = ts.getBufferBuilder();
-        vb.begin(7, VertexFormats.POSITION_UV);
-        vb.vertex(BoundingBox.minX, BoundingBox.minY, BoundingBox.minZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.minX, BoundingBox.maxY, BoundingBox.minZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.maxX, BoundingBox.minY, BoundingBox.minZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.maxX, BoundingBox.maxY, BoundingBox.minZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.maxX, BoundingBox.minY, BoundingBox.maxZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.maxX, BoundingBox.maxY, BoundingBox.maxZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.minX, BoundingBox.minY, BoundingBox.maxZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.minX, BoundingBox.maxY, BoundingBox.maxZ).color(red, green, blue, alpha).next();
+        BufferBuilder vb = ts.getBuffer();
+        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+        vb.pos(BoundingBox.minX, BoundingBox.minY, BoundingBox.minZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.minX, BoundingBox.maxY, BoundingBox.minZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.maxX, BoundingBox.minY, BoundingBox.minZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.maxX, BoundingBox.maxY, BoundingBox.minZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.maxX, BoundingBox.minY, BoundingBox.maxZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.maxX, BoundingBox.maxY, BoundingBox.maxZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.minX, BoundingBox.minY, BoundingBox.maxZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.minX, BoundingBox.maxY, BoundingBox.maxZ).color(red, green, blue, alpha).endVertex();
         ts.draw();
-        vb.begin(7, VertexFormats.POSITION_UV);
-        vb.vertex(BoundingBox.maxX, BoundingBox.maxY, BoundingBox.minZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.maxX, BoundingBox.minY, BoundingBox.minZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.minX, BoundingBox.maxY, BoundingBox.minZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.minX, BoundingBox.minY, BoundingBox.minZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.minX, BoundingBox.maxY, BoundingBox.maxZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.minX, BoundingBox.minY, BoundingBox.maxZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.maxX, BoundingBox.maxY, BoundingBox.maxZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.maxX, BoundingBox.minY, BoundingBox.maxZ).color(red, green, blue, alpha).next();
+        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+        vb.pos(BoundingBox.maxX, BoundingBox.maxY, BoundingBox.minZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.maxX, BoundingBox.minY, BoundingBox.minZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.minX, BoundingBox.maxY, BoundingBox.minZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.minX, BoundingBox.minY, BoundingBox.minZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.minX, BoundingBox.maxY, BoundingBox.maxZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.minX, BoundingBox.minY, BoundingBox.maxZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.maxX, BoundingBox.maxY, BoundingBox.maxZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.maxX, BoundingBox.minY, BoundingBox.maxZ).color(red, green, blue, alpha).endVertex();
         ts.draw();
-        vb.begin(7, VertexFormats.POSITION_UV);
-        vb.vertex(BoundingBox.minX, BoundingBox.maxY, BoundingBox.minZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.maxX, BoundingBox.maxY, BoundingBox.minZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.maxX, BoundingBox.maxY, BoundingBox.maxZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.minX, BoundingBox.maxY, BoundingBox.maxZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.minX, BoundingBox.maxY, BoundingBox.minZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.minX, BoundingBox.maxY, BoundingBox.maxZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.maxX, BoundingBox.maxY, BoundingBox.maxZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.maxX, BoundingBox.maxY, BoundingBox.minZ).color(red, green, blue, alpha).next();
+        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+        vb.pos(BoundingBox.minX, BoundingBox.maxY, BoundingBox.minZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.maxX, BoundingBox.maxY, BoundingBox.minZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.maxX, BoundingBox.maxY, BoundingBox.maxZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.minX, BoundingBox.maxY, BoundingBox.maxZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.minX, BoundingBox.maxY, BoundingBox.minZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.minX, BoundingBox.maxY, BoundingBox.maxZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.maxX, BoundingBox.maxY, BoundingBox.maxZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.maxX, BoundingBox.maxY, BoundingBox.minZ).color(red, green, blue, alpha).endVertex();
         ts.draw();
-        vb.begin(7, VertexFormats.POSITION_UV);
-        vb.vertex(BoundingBox.minX, BoundingBox.minY, BoundingBox.minZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.maxX, BoundingBox.minY, BoundingBox.minZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.maxX, BoundingBox.minY, BoundingBox.maxZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.minX, BoundingBox.minY, BoundingBox.maxZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.minX, BoundingBox.minY, BoundingBox.minZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.minX, BoundingBox.minY, BoundingBox.maxZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.maxX, BoundingBox.minY, BoundingBox.maxZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.maxX, BoundingBox.minY, BoundingBox.minZ).color(red, green, blue, alpha).next();
+        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+        vb.pos(BoundingBox.minX, BoundingBox.minY, BoundingBox.minZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.maxX, BoundingBox.minY, BoundingBox.minZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.maxX, BoundingBox.minY, BoundingBox.maxZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.minX, BoundingBox.minY, BoundingBox.maxZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.minX, BoundingBox.minY, BoundingBox.minZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.minX, BoundingBox.minY, BoundingBox.maxZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.maxX, BoundingBox.minY, BoundingBox.maxZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.maxX, BoundingBox.minY, BoundingBox.minZ).color(red, green, blue, alpha).endVertex();
         ts.draw();
-        vb.begin(7, VertexFormats.POSITION_UV);
-        vb.vertex(BoundingBox.minX, BoundingBox.minY, BoundingBox.minZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.minX, BoundingBox.maxY, BoundingBox.minZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.minX, BoundingBox.minY, BoundingBox.maxZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.minX, BoundingBox.maxY, BoundingBox.maxZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.maxX, BoundingBox.minY, BoundingBox.maxZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.maxX, BoundingBox.maxY, BoundingBox.maxZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.maxX, BoundingBox.minY, BoundingBox.minZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.maxX, BoundingBox.maxY, BoundingBox.minZ).color(red, green, blue, alpha).next();
+        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+        vb.pos(BoundingBox.minX, BoundingBox.minY, BoundingBox.minZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.minX, BoundingBox.maxY, BoundingBox.minZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.minX, BoundingBox.minY, BoundingBox.maxZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.minX, BoundingBox.maxY, BoundingBox.maxZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.maxX, BoundingBox.minY, BoundingBox.maxZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.maxX, BoundingBox.maxY, BoundingBox.maxZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.maxX, BoundingBox.minY, BoundingBox.minZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.maxX, BoundingBox.maxY, BoundingBox.minZ).color(red, green, blue, alpha).endVertex();
         ts.draw();
-        vb.begin(7, VertexFormats.POSITION_UV);
-        vb.vertex(BoundingBox.minX, BoundingBox.maxY, BoundingBox.maxZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.minX, BoundingBox.minY, BoundingBox.maxZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.minX, BoundingBox.maxY, BoundingBox.minZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.minX, BoundingBox.minY, BoundingBox.minZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.maxX, BoundingBox.maxY, BoundingBox.minZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.maxX, BoundingBox.minY, BoundingBox.minZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.maxX, BoundingBox.maxY, BoundingBox.maxZ).color(red, green, blue, alpha).next();
-        vb.vertex(BoundingBox.maxX, BoundingBox.minY, BoundingBox.maxZ).color(red, green, blue, alpha).next();
+        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+        vb.pos(BoundingBox.minX, BoundingBox.maxY, BoundingBox.maxZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.minX, BoundingBox.minY, BoundingBox.maxZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.minX, BoundingBox.maxY, BoundingBox.minZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.minX, BoundingBox.minY, BoundingBox.minZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.maxX, BoundingBox.maxY, BoundingBox.minZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.maxX, BoundingBox.minY, BoundingBox.minZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.maxX, BoundingBox.maxY, BoundingBox.maxZ).color(red, green, blue, alpha).endVertex();
+        vb.pos(BoundingBox.maxX, BoundingBox.minY, BoundingBox.maxZ).color(red, green, blue, alpha).endVertex();
         ts.draw();
     }
 
@@ -716,10 +714,10 @@ public class RenderUtils {
 
     public static void tracerLine(Entity entity, int mode) {
         RenderUtils.fixDarkLight();
-        GlStateManager.clearCurrentColor();
-        double x = entity.x - (RenderUtils.getRenderManager()).getRenderPosX();
-        double y = entity.y + entity.getHeight() / 2.0F - (RenderUtils.getRenderManager()).getRenderPosY();
-        double z = entity.z - (RenderUtils.getRenderManager()).getRenderPosZ();
+        GlStateManager.clearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        double x = entity.posX - (RenderUtils.getRenderManager()).getRenderPosX();
+        double y = entity.posY + entity.height / 2.0F - (RenderUtils.getRenderManager()).getRenderPosY();
+        double z = entity.posZ - (RenderUtils.getRenderManager()).getRenderPosZ();
         GL11.glBlendFunc(770, 771);
         GL11.glEnable(3042);
         GL11.glLineWidth(2.0F);
@@ -727,8 +725,8 @@ public class RenderUtils {
         GL11.glDisable(2929);
         GL11.glDepthMask(false);
         if (mode == 0) {
-            GL11.glColor4d(1.0F - MinecraftClient.getInstance().player.distanceTo(entity) / 40.0F,
-                    MinecraftClient.getInstance().player.distanceTo(entity) / 40.0F, 0.0D, 0.5D);
+            GL11.glColor4d(1.0F - Minecraft.getInstance().player.getDistance(entity) / 40.0F,
+                    Minecraft.getInstance().player.getDistance(entity) / 40.0F, 0.0D, 0.5D);
         } else if (mode == 1) {
             GL11.glColor4d(0.0D, 0.0D, 1.0D, 0.5D);
         } else if (mode == 2) {
@@ -739,14 +737,13 @@ public class RenderUtils {
             GL11.glColor4d(0.0D, 1.0D, 0.0D, 0.5D);
         }
         Vec3d eyes = new Vec3d(0.0D, 0.0D, 1.0D)
-                .rotateX(-(float) Math.toRadians(MinecraftClient.getInstance().player.pitch))
-                .rotateY(-(float) Math.toRadians(MinecraftClient.getInstance().player.yaw));
+                .rotatePitch(-(float) Math.toRadians(Minecraft.getInstance().player.rotationPitch))
+                .rotateYaw(-(float) Math.toRadians(Minecraft.getInstance().player.rotationYaw));
 
         GL11.glBegin(1);
 
-        GL11.glVertex3d(eyes.x, eyes.y, eyes.z);
+        GL11.glVertex3d(eyes.x, Minecraft.getInstance().player.getEyeHeight() + eyes.y, eyes.z);
         GL11.glVertex3d(x, y, z);
-
 
         GL11.glEnd();
         GL11.glEnable(3553);
@@ -757,11 +754,11 @@ public class RenderUtils {
 
     public static void tracerLine(Entity entity, Color color) {
         RenderUtils.fixDarkLight();
-        GlStateManager.clearCurrentColor();
+        GlStateManager.resetColor();
 
-        double x = entity.x - (RenderUtils.getRenderManager()).getRenderPosX();
-        double y = entity.y + entity.getHeight() / 2.0F - (RenderUtils.getRenderManager()).getRenderPosY();
-        double z = entity.z - (RenderUtils.getRenderManager()).getRenderPosZ();
+        double x = entity.posX - (RenderUtils.getRenderManager()).getRenderPosX();
+        double y = entity.posY + entity.height / 2.0F - (RenderUtils.getRenderManager()).getRenderPosY();
+        double z = entity.posZ - (RenderUtils.getRenderManager()).getRenderPosZ();
 
         GL11.glBlendFunc(770, 771);
         GL11.glEnable(3042);
@@ -773,12 +770,12 @@ public class RenderUtils {
         RenderUtils.glColor(color);
 
         Vec3d eyes = new Vec3d(0.0D, 0.0D, 1.0D)
-                .rotateX(-(float) Math.toRadians(MinecraftClient.getInstance().player.pitch))
-                .rotateY(-(float) Math.toRadians(MinecraftClient.getInstance().player.yaw));
+                .rotatePitch(-(float) Math.toRadians(Minecraft.getInstance().player.rotationPitch))
+                .rotateYaw(-(float) Math.toRadians(Minecraft.getInstance().player.rotationYaw));
 
         GL11.glBegin(1);
 
-        GL11.glVertex3d(eyes.x, eyes.y, eyes.z);
+        GL11.glVertex3d(eyes.x, Minecraft.getInstance().player.getEyeHeight() + eyes.y, eyes.z);
         GL11.glVertex3d(x, y, z);
 
         GL11.glEnd();
@@ -790,10 +787,10 @@ public class RenderUtils {
 
     public static void tracerLine(Entity entity, Color color, float alpha) {
         RenderUtils.fixDarkLight();
-        GlStateManager.clearCurrentColor();
-        double x = entity.x - (RenderUtils.getRenderManager()).getRenderPosX() + 0.5f;
-        double y = entity.y + entity.getHeight() / 2.0F - (RenderUtils.getRenderManager()).getRenderPosY() - 0.5f;
-        double z = entity.z - (RenderUtils.getRenderManager()).getRenderPosZ() + 0.5f;
+        GlStateManager.clearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        double x = entity.posX - (RenderUtils.getRenderManager()).getRenderPosX() + 0.5f;
+        double y = entity.posY + entity.height / 2.0F - (RenderUtils.getRenderManager()).getRenderPosY() - 0.5f;
+        double z = entity.posZ - (RenderUtils.getRenderManager()).getRenderPosZ() + 0.5f;
 
         GL11.glBlendFunc(770, 771);
         GL11.glEnable(3042);
@@ -805,12 +802,12 @@ public class RenderUtils {
         GL11.glColor4f(color.getRed(), color.getGreen(), color.getBlue(), alpha);
 
         Vec3d eyes = new Vec3d(0.0D, 0.0D, 1.0D)
-                .rotateX(-(float) Math.toRadians(MinecraftClient.getInstance().player.pitch))
-                .rotateY(-(float) Math.toRadians(MinecraftClient.getInstance().player.yaw));
+                .rotatePitch(-(float) Math.toRadians(Minecraft.getInstance().player.rotationPitch))
+                .rotateYaw(-(float) Math.toRadians(Minecraft.getInstance().player.rotationYaw));
 
         GL11.glBegin(1);
 
-        GL11.glVertex3d(eyes.x, eyes.y, eyes.z);
+        GL11.glVertex3d(eyes.x, Minecraft.getInstance().player.getEyeHeight() + eyes.y, eyes.z);
         GL11.glVertex3d(x, y, z);
 
         GL11.glEnd();
@@ -819,7 +816,7 @@ public class RenderUtils {
         GL11.glDepthMask(true);
         GL11.glDisable(3042);
 
-        GlStateManager.clearCurrentColor();
+        GlStateManager.resetColor();
     }
 
     public static void enableGL2D() {
@@ -916,7 +913,7 @@ public class RenderUtils {
         RenderUtils.glColor(color);
         GL11.glBegin(1);
 
-        GL11.glVertex3d(0.0D, MinecraftClient.getInstance().player.getEyeHeight(MinecraftClient.getInstance().player.getPose()), 0.0D);
+        GL11.glVertex3d(0.0D, Minecraft.getInstance().player.getEyeHeight(), 0.0D);
         GL11.glVertex3d(x, y, z);
 
         GL11.glEnd();

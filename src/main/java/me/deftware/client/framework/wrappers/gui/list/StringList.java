@@ -2,26 +2,26 @@ package me.deftware.client.framework.wrappers.gui.list;
 
 import me.deftware.client.framework.wrappers.gui.IGuiScreen;
 import me.deftware.client.framework.wrappers.render.IFontRenderer;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.widget.EntryListWidget;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiListExtended;
 
 @SuppressWarnings("ALL")
-public class StringList extends EntryListWidget {
+public class StringList extends GuiListExtended {
 
 	public StringList(int width, int height, int top, int bottom, int itemHeight) {
-		super(MinecraftClient.getInstance(), width, height, top, bottom, itemHeight);
+		super(Minecraft.getInstance(), width, height, top, bottom, itemHeight);
 	}
 
 	public void clear() {
-		this.children().clear();
+		this.getChildren().clear();
 	}
 
 	public void addItem(String text) {
-		this.children().add(new StringEntry(text));
+		this.getChildren().add(new StringEntry(text));
 	}
 
 	public void doDraw(int mouseX, int mouseY, float delta) {
-		this.render(mouseX, mouseY, delta);
+		this.drawScreen(mouseX, mouseY, delta);
 	}
 
 	public void addToEventListener(IGuiScreen screen) {
@@ -29,16 +29,16 @@ public class StringList extends EntryListWidget {
 	}
 
 	@Override
-	public int getRowWidth() {
+	public int getListWidth() {
 		return width - 2;
 	}
 
 	@Override
-	protected int getScrollbarPosition() {
+	protected int getScrollBarX() {
 		return width - 6;
 	}
 
-	public static class StringEntry extends EntryListWidget.Entry {
+	public static class StringEntry extends IGuiListEntry {
 
 		private String string;
 
@@ -46,12 +46,13 @@ public class StringList extends EntryListWidget {
 			this.string = string;
 		}
 
-		public void render(int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovering, float delta) {
+		@Override
+		public void drawEntry(int entryWidth, int entryHeight, int mouseX, int mouseY, boolean p_194999_5_, float partialTicks) {
 			String render = string;
-			if (IFontRenderer.getStringWidth(render) > width) {
+			if (IFontRenderer.getStringWidth(render) > entryWidth) {
 				render = "";
 				for (String s : string.split("")) {
-					if (IFontRenderer.getStringWidth(render + s + "...") < width - 6) {
+					if (IFontRenderer.getStringWidth(render + s + "...") < entryWidth - 6) {
 						render += s;
 					} else {
 						render += "...";
@@ -59,7 +60,7 @@ public class StringList extends EntryListWidget {
 					}
 				}
 			}
-			IFontRenderer.drawString(render, x, y, 0xFFFFFF);
+			IFontRenderer.drawString(render, getX(), getY(), 0xFFFFFF);
 		}
 
 	}

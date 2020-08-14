@@ -1,29 +1,23 @@
 package me.deftware.client.framework.chat;
 
-import lombok.Getter;
 import me.deftware.client.framework.chat.event.ChatClickEvent;
 import me.deftware.client.framework.chat.event.ChatHoverEvent;
 import me.deftware.client.framework.chat.style.ChatColors;
 import me.deftware.client.framework.chat.style.ChatStyle;
-import net.minecraft.util.Language;
-
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.client.resources.Language;
 
 /**
  * @author Deftware
  */
 public class ChatBuilder {
-
-	private @Getter static final char chevron = 187;
-
+	private static final char chevron = 187;
 	private final ChatMessage message = new ChatMessage();
-	private @Getter ChatSection currentSection = new ChatSection("");
+	private ChatSection currentSection = new ChatSection("");
 
 	/*
 		Functions
 	 */
-
 	public ChatBuilder append() {
 		message.getSectionList().add(currentSection);
 		currentSection = new ChatSection("");
@@ -46,15 +40,13 @@ public class ChatBuilder {
 	}
 
 	public ChatBuilder withPrefix() {
-		message.join(new ChatBuilder().withText("EMC").withColor(ChatColors.AQUA).setBold().append().withSpace()
-				.withChar(chevron).withColor(ChatColors.GRAY).append().withSpace().build());
+		message.join(new ChatBuilder().withText("EMC").withColor(ChatColors.AQUA).setBold().append().withSpace().withChar(chevron).withColor(ChatColors.GRAY).append().withSpace().build());
 		return this;
 	}
 
 	/*
 		Text
 	 */
-
 	public ChatBuilder withCodeFormattedString(String text, char formattingChar) {
 		message.join(new ChatMessage().fromString(text, formattingChar));
 		return this;
@@ -66,12 +58,12 @@ public class ChatBuilder {
 	}
 
 	public ChatBuilder withChar(char _char) {
-		currentSection.setText(new String(new char[]{ _char }));
+		currentSection.setText(new String(new char[] {_char}));
 		return this;
 	}
 
 	public ChatBuilder withMinecraftTranslatedText(String key) {
-		currentSection.setText(Language.getInstance().translate(key));
+		currentSection.setText(I18n.format(key));
 		return this;
 	}
 
@@ -99,7 +91,6 @@ public class ChatBuilder {
 	/*
 		Color
 	 */
-
 	public ChatBuilder withColor(ChatColors color) {
 		return withColor(color.getChatColor());
 	}
@@ -112,7 +103,6 @@ public class ChatBuilder {
 	/*
 		Style
 	 */
-
 	public ChatBuilder withStyle(ChatStyle style) {
 		currentSection.setStyle(style);
 		return this;
@@ -146,7 +136,6 @@ public class ChatBuilder {
 	/*
 		Event
 	 */
-
 	public ChatBuilder withClickEvent(ChatClickEvent event) {
 		currentSection.getStyle().setClickEvent(event);
 		return this;
@@ -157,4 +146,11 @@ public class ChatBuilder {
 		return this;
 	}
 
+	public static char getChevron() {
+		return ChatBuilder.chevron;
+	}
+
+	public ChatSection getCurrentSection() {
+		return this.currentSection;
+	}
 }
