@@ -10,7 +10,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.data.TrackedData;
-import net.minecraft.util.math.Box;
+import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -53,7 +53,7 @@ public abstract class MixinEntity implements IMixinEntity {
     public abstract boolean hasVehicle();
 
     @Shadow
-    public abstract Box getBoundingBox();
+    public abstract BoundingBox getBoundingBox();
 
     @Shadow
     protected abstract boolean getFlag(int int_1);

@@ -3,7 +3,6 @@ package me.deftware.client.framework.wrappers.entity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.OtherClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.world.GameRules;
 
 @SuppressWarnings("ALL")
 public class IEntityOtherPlayerMP extends OtherClientPlayerEntity {
@@ -24,9 +23,9 @@ public class IEntityOtherPlayerMP extends OtherClientPlayerEntity {
             experienceProgress = oldPlayer.experienceProgress;
             totalExperience = oldPlayer.totalExperience;
             setScore(oldPlayer.getScore());
-            lastPortalDirectionVector = oldPlayer.getLastPortalDirectionVector();
-            lastPortalDirection = oldPlayer.getLastPortalDirection();
-        } else if (world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY) || oldPlayer.isSpectator()) {
+            field_6020 = oldPlayer.method_5656();
+            field_6028 = oldPlayer.method_5843();
+        } else if (world.getGameRules().getBoolean("keepInventory") || oldPlayer.isSpectator()) {
             inventory.clone(oldPlayer.inventory);
             experienceLevel = oldPlayer.experienceLevel;
             experienceProgress = oldPlayer.experienceProgress;

@@ -80,7 +80,7 @@ public class IBlock {
     }
 
     public ChatMessage getLocalizedName() {
-        return new ChatMessage().fromText(block.getName());
+        return new ChatMessage().fromText(block.getTextComponent());
     }
 
     public String getBlockKey() {

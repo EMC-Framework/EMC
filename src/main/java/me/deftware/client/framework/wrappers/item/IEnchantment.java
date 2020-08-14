@@ -2,7 +2,7 @@ package me.deftware.client.framework.wrappers.item;
 
 import me.deftware.client.framework.chat.ChatMessage;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -23,7 +23,7 @@ public class IEnchantment {
     }
 
     public ChatMessage getName() {
-        return new ChatMessage().fromText(new TranslatableText(item.getTranslationKey()));
+        return new ChatMessage().fromText(new TranslatableComponent(item.getTranslationKey()));
     }
 
     public String getTranslationKey() {

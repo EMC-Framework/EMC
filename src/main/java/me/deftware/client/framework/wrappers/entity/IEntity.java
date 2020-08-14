@@ -97,7 +97,7 @@ public class IEntity {
     }
 
     public String getEntityTypeName() {
-        return new ChatMessage().fromText(entity.getType().getName()).toString(false);
+        return new ChatMessage().fromText(entity.getType().getTextComponent()).toString(false);
     }
 
     public boolean isPlayer() {

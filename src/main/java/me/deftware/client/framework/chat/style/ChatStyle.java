@@ -4,8 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import me.deftware.client.framework.chat.event.ChatClickEvent;
 import me.deftware.client.framework.chat.event.ChatHoverEvent;
-import net.minecraft.text.Style;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormat;
+import net.minecraft.network.chat.Style;
 
 import java.util.regex.Pattern;
 
@@ -27,14 +27,14 @@ public class ChatStyle {
 			bold = underline = italic = obfuscated = strikethrough = false;
 			return;
 		}
-		for (Formatting formatting : Formatting.values()) {
+		for (ChatFormat formatting : ChatFormat.values()) {
 			if (formatting.toString().substring(1).equalsIgnoreCase(code)) {
 				// Formatting
-				if (formatting == Formatting.BOLD) bold = true;
-				else if (formatting == Formatting.UNDERLINE) underline = true;
-				else if (formatting == Formatting.ITALIC) italic = true;
-				else if (formatting == Formatting.OBFUSCATED) obfuscated = true;
-				else if (formatting == Formatting.STRIKETHROUGH) strikethrough = true;
+				if (formatting == ChatFormat.BOLD) bold = true;
+				else if (formatting == ChatFormat.UNDERLINE) underline = true;
+				else if (formatting == ChatFormat.ITALIC) italic = true;
+				else if (formatting == ChatFormat.OBFUSCATED) obfuscated = true;
+				else if (formatting == ChatFormat.STRIKETHROUGH) strikethrough = true;
 				// Color
 				else color = new ChatColors.ChatColor(formatting);
 				break;
@@ -79,11 +79,11 @@ public class ChatStyle {
 		// Color
 		if (color != null) builder.append(color.toString());
 		// Formatting
-		if (bold) builder.append(Formatting.BOLD.toString());
-		if (underline) builder.append(Formatting.UNDERLINE.toString());
-		if (italic) builder.append(Formatting.ITALIC.toString());
-		if (obfuscated) builder.append(Formatting.OBFUSCATED.toString());
-		if (strikethrough) builder.append(Formatting.STRIKETHROUGH.toString());
+		if (bold) builder.append(ChatFormat.BOLD.toString());
+		if (underline) builder.append(ChatFormat.UNDERLINE.toString());
+		if (italic) builder.append(ChatFormat.ITALIC.toString());
+		if (obfuscated) builder.append(ChatFormat.OBFUSCATED.toString());
+		if (strikethrough) builder.append(ChatFormat.STRIKETHROUGH.toString());
 		return builder.toString();
 	}
 

@@ -15,7 +15,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
-import net.minecraft.text.LiteralText;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.SystemUtil;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
@@ -39,16 +39,16 @@ public abstract class IGuiScreen extends Screen {
     protected @Getter List<Tuple<Integer, Integer, ChatMessage>> compiledText = new ArrayList<>();
 
     public IGuiScreen() {
-        super(new LiteralText(""));
+        super(new TextComponent(""));
     }
 
     public IGuiScreen(ScreenInstance parent) {
-        super(new LiteralText(""));
+        super(new TextComponent(""));
         this.parentInstance = parent;
     }
 
     public IGuiScreen(IGuiScreen parent) {
-        super(new LiteralText(""));
+        super(new TextComponent(""));
         this.parent = parent;
     }
 

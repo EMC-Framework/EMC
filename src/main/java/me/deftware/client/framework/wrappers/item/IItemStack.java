@@ -17,8 +17,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringNbtReader;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.potion.PotionUtil;
-import net.minecraft.text.LiteralText;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
@@ -101,7 +101,7 @@ public class IItemStack {
 
     public void setStackDisplayName(String name) {
         CompoundTag nbttagcompound = stack.getOrCreateSubTag("display");
-        nbttagcompound.putString("Name", LiteralText.Serializer.toJson(new LiteralText(name)));
+        nbttagcompound.putString("Name", TextComponent.Serializer.toJson(new TextComponent(name)).toString());
     }
 
     public boolean hasCompoundTag() {
@@ -141,7 +141,7 @@ public class IItemStack {
     }
 
     public ChatMessage getDisplayName() {
-        return new ChatMessage().fromText(stack.getName());
+        return new ChatMessage().fromText(stack.getCustomName());
     }
 
     public int getItemID() {

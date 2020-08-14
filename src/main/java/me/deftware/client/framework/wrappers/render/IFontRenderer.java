@@ -2,7 +2,6 @@ package me.deftware.client.framework.wrappers.render;
 
 import me.deftware.client.framework.chat.ChatMessage;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.LiteralText;
 
 /**
  * Wrapper for Minecrafts built in font renderer

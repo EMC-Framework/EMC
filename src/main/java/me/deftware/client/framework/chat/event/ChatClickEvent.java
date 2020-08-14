@@ -3,7 +3,7 @@ package me.deftware.client.framework.chat.event;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.text.ClickEvent;
+import net.minecraft.network.chat.ClickEvent;
 
 /**
  * @author Deftware

@@ -2,7 +2,7 @@ package me.deftware.client.framework.fonts;
 
 import me.deftware.client.framework.chat.style.ChatStyle;
 import me.deftware.client.framework.utils.render.ColorUtil;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormat;
 
 import java.awt.*;
 
@@ -17,7 +17,7 @@ public class ColoredBitmapFont extends BitmapFont {
     @Override
     public int drawString(int x, int y, String text, Color color) {
         if (color == Color.black) {
-            return super.drawString(x, y, Formatting.strip(text), color);
+            return super.drawString(x, y, ChatFormat.stripFormatting(text), color);
         }
         if (text == null) {
             return 0;

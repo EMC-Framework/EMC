@@ -4,26 +4,25 @@ import lombok.Getter;
 import me.deftware.client.framework.chat.hud.ChatHud;
 import me.deftware.client.framework.chat.style.ChatStyle;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormat;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author Deftware
  */
 public class ChatMessage {
 
-	private LiteralText compiledText; /* Cache */
+	private TextComponent compiledText; /* Cache */
 	protected @Getter final List<ChatSection> sectionList = new ArrayList<>();
 
 	public String toString(boolean withFormatting) {
 		StringBuilder builder = new StringBuilder();
 		for (ChatSection section : sectionList) {
-			builder.append(withFormatting ? Formatting.RESET.toString() + section.getStyle().toString() : "").append(section.getText());
+			builder.append(withFormatting ? ChatFormat.RESET.toString() + section.getStyle().toString() : "").append(section.getText());
 		}
 		return builder.toString();
 	}
@@ -79,10 +78,10 @@ public class ChatMessage {
 		return this;
 	}
 
-	public ChatMessage fromText(Text text) {
+	public ChatMessage fromText(Component text) {
 		// This function is highly dependant on which Minecraft version this is implemented on
-		for (Text component : text) {
-			ChatSection section = new ChatSection(component.asString());
+		for (Component component : text) {
+			ChatSection section = new ChatSection(component.getString());
 			section.getStyle().fromStyle(component.getStyle());
 			sectionList.add(section);
 		}
@@ -102,11 +101,11 @@ public class ChatMessage {
 		compiledText = null;
 	}
 
-	public synchronized LiteralText build() {
+	public synchronized TextComponent build() {
 		if (compiledText == null) {
-			compiledText = new LiteralText("");
+			compiledText = new TextComponent("");
 			for (ChatSection section : sectionList) {
-				compiledText.append(new LiteralText(section.getText())
+				compiledText.append(new TextComponent(section.getText())
 						.setStyle(section.getStyle().getStyle()));
 			}
 		}

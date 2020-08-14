@@ -3,8 +3,8 @@ package me.deftware.client.framework.chat.style;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.text.Style;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormat;
+import net.minecraft.network.chat.Style;
 
 /**
  * @author Deftware
@@ -38,13 +38,13 @@ public enum ChatColors {
 		this.code = code;
 		this.index = index;
 		this.rgb = rgb;
-		this.chatColor = new ChatColor(Formatting.byCode(code));
+		this.chatColor = new ChatColor(ChatFormat.bySectionSignCode(code));
 	}
 
 	@Override
 	@SuppressWarnings("ConstantConditions")
 	public String toString() {
-		return Formatting.byCode(code).toString();
+		return ChatFormat.bySectionSignCode(code).toString();
 	}
 
 	public static @AllArgsConstructor class ChatColor {
@@ -52,7 +52,7 @@ public enum ChatColors {
 		/**
 		 * Old style legacy color system
 		 */
-		private @Setter Formatting formatting;
+		private @Setter ChatFormat formatting;
 
 		public Style applyToStyle(Style style) {
 			 if (formatting != null) {

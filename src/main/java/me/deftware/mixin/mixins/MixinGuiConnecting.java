@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ConnectScreen.class)
 public class MixinGuiConnecting {
 
-    @Inject(method = "connect", at = @At("HEAD"))
+    @Inject(method = "method_2130", at = @At("HEAD"))
     private void connect(String ip, int port, CallbackInfo ci) {
         IMinecraft.lastServer = new IServerData("Server", ip + ":" + port, false);
     }

@@ -24,7 +24,7 @@ import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
-import net.minecraft.util.math.Box;
+import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import org.lwjgl.opengl.GL11;
@@ -165,7 +165,7 @@ public class RenderUtils {
         GL11.glPopMatrix();
     }
 
-    public static void drawSelectionBoundingBox(Box boundingBox) {
+    public static void drawSelectionBoundingBox(BoundingBox boundingBox) {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder vertexbuffer = tessellator.getBufferBuilder();
         vertexbuffer.begin(3, VertexFormats.POSITION);
@@ -331,9 +331,9 @@ public class RenderUtils {
         GL11.glDisable(GL_DEPTH_TEST);
         GL11.glDepthMask(false);
         GL11.glColor4f(red, green, blue, alpha);
-        RenderUtils.drawColorBox(new Box(x, y, z, x2, y2, z2), red, green, blue, alpha);
+        RenderUtils.drawColorBox(new BoundingBox(x, y, z, x2, y2, z2), red, green, blue, alpha);
         GL11.glColor4d(0.0D, 0.0D, 0.0D, 0.5D);
-        RenderUtils.drawSelectionBoundingBox(new Box(x, y, z, x2, y2, z2));
+        RenderUtils.drawSelectionBoundingBox(new BoundingBox(x, y, z, x2, y2, z2));
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glEnable(GL_DEPTH_TEST);
         GL11.glDepthMask(true);
@@ -355,7 +355,7 @@ public class RenderUtils {
         GL11.glDisable(GL_DEPTH_TEST);
         GL11.glDepthMask(false);
         RenderUtils.glColor(color);
-        RenderUtils.drawSelectionBoundingBox(new Box(x, y, z, x2, y2, z2));
+        RenderUtils.drawSelectionBoundingBox(new BoundingBox(x, y, z, x2, y2, z2));
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glEnable(GL_DEPTH_TEST);
         GL11.glDepthMask(true);
@@ -375,10 +375,10 @@ public class RenderUtils {
         GL11.glDisable(GL_DEPTH_TEST);
         GL11.glDepthMask(false);
         GL11.glColor4d(red, green, blue, alpha);
-        RenderUtils.drawColorBox(new Box(x, y, z, x + 1.0, y + 1.0, z + 1.0), 0F, 0F, 0F, 0F);
+        RenderUtils.drawColorBox(new BoundingBox(x, y, z, x + 1.0, y + 1.0, z + 1.0), 0F, 0F, 0F, 0F);
         if(boundryBox){
             GL11.glColor4d(0.0D, 0.0D, 0.0D, 0.5D);
-            RenderUtils.drawSelectionBoundingBox(new Box(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D));
+            RenderUtils.drawSelectionBoundingBox(new BoundingBox(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D));
         }
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glEnable(GL_DEPTH_TEST);
@@ -423,7 +423,7 @@ public class RenderUtils {
         GL11.glDisable(GL_DEPTH_TEST);
         GL11.glDepthMask(false);
         GL11.glColor4d(red, green, blue, alpha);
-        RenderUtils.drawSelectionBoundingBox(new Box(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D));
+        RenderUtils.drawSelectionBoundingBox(new BoundingBox(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D));
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glEnable(GL_DEPTH_TEST);
         GL11.glDepthMask(true);
@@ -504,12 +504,12 @@ public class RenderUtils {
         GL11.glDepthMask(false);
         GL11.glColor4f(damage, 1.0F - damage, 0.0F, 0.15F);
         RenderUtils.drawColorBox(
-                new Box(x + 0.5D - damage / 2.0F, y + 0.5D - damage / 2.0F, z + 0.5D - damage / 2.0F,
+                new BoundingBox(x + 0.5D - damage / 2.0F, y + 0.5D - damage / 2.0F, z + 0.5D - damage / 2.0F,
                         x + 0.5D + damage / 2.0F, y + 0.5D + damage / 2.0F, z + 0.5D + damage / 2.0F),
                 damage, 1.0F - damage, 0.0F, 0.15F);
         GL11.glColor4d(0.0D, 0.0D, 0.0D, 0.5D);
         RenderUtils.drawSelectionBoundingBox(
-                new Box(x + 0.5D - damage / 2.0F, y + 0.5D - damage / 2.0F, z + 0.5D - damage / 2.0F,
+                new BoundingBox(x + 0.5D - damage / 2.0F, y + 0.5D - damage / 2.0F, z + 0.5D - damage / 2.0F,
                         x + 0.5D + damage / 2.0F, y + 0.5D + damage / 2.0F, z + 0.5D + damage / 2.0F));
         GL11.glEnable(3553);
         GL11.glEnable(2929);
@@ -532,9 +532,9 @@ public class RenderUtils {
         GL11.glDisable(2929);
         GL11.glDepthMask(false);
         GL11.glColor4f(1.0F - sinus, sinus, 0.0F, 0.15F);
-        RenderUtils.drawColorBox(new Box(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D), 1.0F - sinus, sinus, 0.0F, 0.15F);
+        RenderUtils.drawColorBox(new BoundingBox(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D), 1.0F - sinus, sinus, 0.0F, 0.15F);
         GL11.glColor4d(0.0D, 0.0D, 0.0D, 0.5D);
-        RenderUtils.drawSelectionBoundingBox(new Box(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D));
+        RenderUtils.drawSelectionBoundingBox(new BoundingBox(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D));
         GL11.glEnable(3553);
         GL11.glEnable(2929);
         GL11.glDepthMask(true);
@@ -546,7 +546,7 @@ public class RenderUtils {
     }
 
     public static void drawOutlinedBox(IAxisAlignedBB bbb) {
-        Box bb = bbb.getAABB();
+        BoundingBox bb = bbb.getAABB();
 
         GL11.glVertex3d(bb.minX, bb.minY, bb.minZ);
         GL11.glVertex3d(bb.maxX, bb.minY, bb.minZ);
@@ -586,7 +586,7 @@ public class RenderUtils {
     }
 
     public static void drawNode(IAxisAlignedBB bbb) {
-        Box bb = bbb.getAABB();
+        BoundingBox bb = bbb.getAABB();
 
         double midX = (bb.minX + bb.maxX) / 2;
         double midY = (bb.minY + bb.maxY) / 2;
@@ -629,7 +629,7 @@ public class RenderUtils {
         GL11.glVertex3d(midX, midY, bb.maxZ);
     }
 
-    public static void drawColorBox(Box BoundingBox, float red, float green, float blue, float alpha) {
+    public static void drawColorBox(BoundingBox BoundingBox, float red, float green, float blue, float alpha) {
         Tessellator ts = Tessellator.getInstance();
         BufferBuilder vb = ts.getBufferBuilder();
         vb.begin(7, VertexFormats.POSITION_UV);

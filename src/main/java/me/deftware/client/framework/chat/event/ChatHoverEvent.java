@@ -4,8 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.deftware.client.framework.chat.ChatMessage;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.HoverEvent;
 
 import java.util.Objects;
 
@@ -18,7 +17,8 @@ public @RequiredArgsConstructor class ChatHoverEvent {
 
 	private @Getter final EventType eventType;
 	private @Getter final ChatMessage message;
-	private @Getter HoverEvent rawEvent = null; /* Internal only! */
+	private @Getter
+	HoverEvent rawEvent = null; /* Internal only! */
 
 	public HoverEvent toEvent() {
 		return eventType == EventType.SHOW_TEXT ?
