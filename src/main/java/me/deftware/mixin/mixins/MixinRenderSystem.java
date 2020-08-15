@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(GlStateManager.class)
 public class MixinRenderSystem {
 
-	@Inject(method = "enableDepthTest", at = @At(value = "HEAD"), cancellable = true)
+	@Inject(method = "enableDepth", at = @At(value = "HEAD"), cancellable = true)
 	private static void renderWorld(CallbackInfo ci) {
 		if (!((boolean) SettingsMap.getValue(SettingsMap.MapKeys.RENDER, "WORLD_DEPTH", true))) {
 			ci.cancel();

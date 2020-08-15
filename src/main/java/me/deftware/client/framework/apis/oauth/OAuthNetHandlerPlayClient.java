@@ -12,11 +12,11 @@ public class OAuthNetHandlerPlayClient extends NetHandlerPlayClient {
 
     private final OAuth.OAuthCallback callback;
 
-    public OAuthNetHandlerPlayClient(Minecraft mcIn, GuiScreen p_i46300_2_, NetworkManager networkManagerIn,
-                                     GameProfile profileIn, OAuth.OAuthCallback callback) {
-        super(mcIn, p_i46300_2_, networkManagerIn, profileIn);
-        this.callback = callback;
-    }
+	public OAuthNetHandlerPlayClient(Minecraft mcIn, GuiScreen p_i46300_2_, NetworkManager networkManagerIn,
+									 GameProfile profileIn, OAuth.OAuthCallback callback) {
+		super(mcIn, p_i46300_2_, networkManagerIn, profileIn);
+		this.callback = callback;
+	}
 
     @Override
     public void handleDisconnect(SPacketDisconnect packetIn) {

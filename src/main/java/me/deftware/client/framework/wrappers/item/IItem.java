@@ -23,7 +23,7 @@ public class IItem {
     }
 
     public ChatMessage getName() {
-        return new ChatMessage().fromText(item.getName(), false);
+        return new ChatMessage().fromString(item.getTranslationKey());
     }
 
     public String getTranslationKey() {
@@ -70,7 +70,7 @@ public class IItem {
         } else if (type.equals(IItemType.SplashPotion)) {
             return item == Items.SPLASH_POTION;
         } else if (type.equals(IItemType.ItemFood)) {
-            return item.getGroup() == ItemGroup.FOOD;
+            return item instanceof ItemFood;
         } else if (type.equals(IItemType.ItemSword)) {
             return item instanceof ItemSword;
         } else if (type.equals(IItemType.ItemTool)) {
@@ -99,7 +99,7 @@ public class IItem {
     protected static Item getByName(String id) {
         ResourceLocation resourceLocation = new ResourceLocation(id);
         if (Item.REGISTRY.containsKey(resourceLocation)) {
-            return Item.REGISTRY.get(resourceLocation);
+            return Item.REGISTRY.getObject(resourceLocation);
         }
         return null;
     }

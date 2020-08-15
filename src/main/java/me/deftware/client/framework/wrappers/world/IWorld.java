@@ -30,22 +30,20 @@ public class IWorld {
         this.world = world;
     }
 
-    @SuppressWarnings("ConstantConditions")
     public static HashMap<Integer, IEntity> getLoadedEntities() {
-        return ((IMixinWorldClient) Minecraft.getInstance().world).getIEntities();
+        return ((IMixinWorldClient) Minecraft.getMinecraft().world).getIEntities();
     }
 
-    @SuppressWarnings("ConstantConditions")
     public static Collection<ITileEntity> getLoadedTileEntities() {
-        return ((IMixinWorld) Minecraft.getInstance().world).getEmcTileEntities();
+        return ((IMixinWorld) Minecraft.getMinecraft().world).getEmcTileEntities();
     }
 
     public static ArrayList<IBlock> getLoadedBlocks() {
         ArrayList<IBlock> blocks = new ArrayList<>();
 
-        if (Minecraft.getInstance().player != null && Minecraft.getInstance().world != null) {
-            Chunk currentChunk = Minecraft.getInstance().world.getChunk(Minecraft.getInstance().player.getPosition());
-            for (BlockPos pos : currentChunk.getTileEntitiesPos()) {
+        if (Minecraft.getMinecraft().player != null && Minecraft.getMinecraft().world != null) {
+            Chunk currentChunk = Minecraft.getMinecraft().world.getChunk(Minecraft.getMinecraft().player.getPosition());
+            for (BlockPos pos : currentChunk.getTileEntityMap().keySet()) {
                 blocks.add(new IBlock(currentChunk.getBlockState(pos).getBlock(), pos));
             }
         }
@@ -56,7 +54,7 @@ public class IWorld {
     public static ArrayList<IBlock> getLoadedBlocks(int rangeFromPlayer) {
         ArrayList<IBlock> blocks = new ArrayList<>();
 
-        if (Minecraft.getInstance().player != null && Minecraft.getInstance().world != null) {
+        if (Minecraft.getMinecraft().player != null && Minecraft.getMinecraft().world != null) {
             for (int xRange = -rangeFromPlayer; xRange <= rangeFromPlayer; xRange++) {
                 for (int yRange = -rangeFromPlayer; yRange <= rangeFromPlayer; yRange++) {
                     for (int zRange = -rangeFromPlayer; zRange <= rangeFromPlayer; zRange++) {
@@ -77,24 +75,24 @@ public class IWorld {
     }
 
     public static long getWorldTime() {
-        if (Minecraft.getInstance().world == null) {
+        if (Minecraft.getMinecraft().world == null) {
             return 0L;
         }
-        return Minecraft.getInstance().world.getGameTime();
+        return Minecraft.getMinecraft().world.getWorldTime();
     }
 
     public static void sendQuittingPacket() {
-        if (Minecraft.getInstance().world != null) {
-            Minecraft.getInstance().world.sendQuittingDisconnectingPacket();
+        if (Minecraft.getMinecraft().world != null) {
+            Minecraft.getMinecraft().world.sendQuittingDisconnectingPacket();
         }
     }
 
     public static void leaveWorld() {
-        Minecraft.getInstance().loadWorld(null);
+        Minecraft.getMinecraft().loadWorld(null);
     }
 
     public static IBlock getBlockFromPos(IBlockPos pos) {
-        Block mBlock = Minecraft.getInstance().world.getBlockState(pos.getPos()).getBlock();
+        Block mBlock = Minecraft.getMinecraft().world.getBlockState(pos.getPos()).getBlock();
         IBlock block = new IBlock(mBlock, pos.getPos());
         if (block.instanceOf(IBlock.IBlockTypes.BlockCrops)) {
             block = new IBlockCrops(mBlock, pos.getPos());
@@ -105,11 +103,11 @@ public class IWorld {
     }
 
     public static IBlockState getStateFromPos(IBlockPos pos) {
-        return Minecraft.getInstance().world.getBlockState(pos.getPos());
+        return Minecraft.getMinecraft().world.getBlockState(pos.getPos());
     }
 
     public static boolean isNull() {
-        return Minecraft.getInstance().world == null;
+        return Minecraft.getMinecraft().world == null;
     }
 
     public int getActualHeight() {

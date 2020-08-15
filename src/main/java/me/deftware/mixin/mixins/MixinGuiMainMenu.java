@@ -12,10 +12,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(GuiMainMenu.class)
 public class MixinGuiMainMenu {
 
-    @Inject(method = "render", at = @At("RETURN"))
+    @Inject(method = "drawScreen", at = @At("RETURN"))
     public void render(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
         if ((boolean) SettingsMap.getValue(SettingsMap.MapKeys.RENDER, "MAIN_MENU_OVERLAY", true)) {
-            Minecraft.getInstance().fontRenderer.drawStringWithShadow(FrameworkConstants.toDataString(), 2, 2, 0xFFFFFF);
+            Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(FrameworkConstants.toDataString(), 2, 2, 0xFFFFFF);
         }
     }
 }

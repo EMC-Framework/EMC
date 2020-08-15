@@ -1,7 +1,11 @@
 package me.deftware.client.framework.wrappers.entity;
 
 import me.deftware.client.framework.wrappers.world.IBlockPos;
-import net.minecraft.tileentity.*;
+import net.minecraft.block.BlockChest;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.tileentity.TileEntityEnderChest;
+import net.minecraft.tileentity.TileEntityShulkerBox;
 
 import java.awt.*;
 
@@ -13,7 +17,7 @@ public class ITileEntity {
 
     public ITileEntity(TileEntity entity) {
         chestType = entity instanceof TileEntityChest
-                ? entity instanceof TileEntityTrappedChest ? IChestType.TRAPPED_CHEST : IChestType.CHEST
+                ? ((TileEntityChest)entity).getChestType() == BlockChest.Type.TRAP ? IChestType.TRAPPED_CHEST : IChestType.CHEST
                 : entity instanceof TileEntityEnderChest ? IChestType.ENDER_CHEST
                 : entity instanceof TileEntityShulkerBox ? IChestType.SHULKER_BOX : null;
         if (chestType != null) {

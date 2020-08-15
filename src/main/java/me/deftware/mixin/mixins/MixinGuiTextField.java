@@ -5,6 +5,7 @@ import me.deftware.client.framework.fonts.EMCFont;
 import me.deftware.client.framework.utils.render.GraphicsUtil;
 import me.deftware.client.framework.wrappers.gui.IGuiScreen;
 import me.deftware.mixin.imp.IMixinGuiTextField;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiTextField;
 import org.lwjgl.opengl.GL11;
@@ -19,7 +20,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.awt.*;
 import java.lang.ref.WeakReference;
-import java.util.function.BiFunction;
 
 @Mixin(GuiTextField.class)
 public abstract class MixinGuiTextField implements IMixinGuiTextField {
@@ -60,14 +60,8 @@ public abstract class MixinGuiTextField implements IMixinGuiTextField {
     private int maxStringLength;
 
     @Shadow
-    private String suggestion;
-
-    @Shadow
     @Final
     private FontRenderer fontRenderer;
-
-    @Shadow
-    private BiFunction<String, Integer, String> textFormatter;
 
     @Shadow public abstract String getText();
 
@@ -150,18 +144,19 @@ public abstract class MixinGuiTextField implements IMixinGuiTextField {
         customFont = font;
     }
 
-    @Inject(method = "drawTextField", at = @At("HEAD"))
-    public void drawTextField(int p_drawTextField_1_, int p_drawTextField_2_, float p_drawTextField_3_, CallbackInfo ci) {
+    @Inject(method = "drawTextBox", at = @At("HEAD"))
+    public void drawTextField(CallbackInfo ci) {
         if (!useMinecraftScaling) {
             GL11.glPushMatrix();
             GraphicsUtil.prepareMatrix(IGuiScreen.getDisplayWidth(), IGuiScreen.getDisplayHeight());
         }
     }
 
-    @Inject(method = "drawTextField", at = @At("RETURN"))
-    public void drawTextFieldReturn(int p_drawTextField_1_, int p_drawTextField_2_, float p_drawTextField_3_, CallbackInfo ci) {
+    @Inject(method = "drawTextBox", at = @At("RETURN"))
+    public void drawTextFieldReturn(CallbackInfo ci) {
         if (!useMinecraftScaling) {
             GL11.glPopMatrix();
+            Minecraft.getMinecraft().entityRenderer.setupOverlayRendering();
         }
         if (overlay) {
             String currentText = getText();
@@ -175,7 +170,7 @@ public abstract class MixinGuiTextField implements IMixinGuiTextField {
         }
     }
 
-    @Redirect(method = "drawTextField", at = @At(value = "INVOKE", target = "net/minecraft/client/gui/FontRenderer.drawStringWithShadow(Ljava/lang/String;FFI)I"))
+    @Redirect(method = "drawTextBox", at = @At(value = "INVOKE", target = "net/minecraft/client/gui/FontRenderer.drawStringWithShadow(Ljava/lang/String;FFI)I"))
     public int onDrawText(FontRenderer self, String text, float x, float y, int color) {
         if (useCustomFont) {
             customFont.drawStringWithShadow((int) x, (int) y - 6, text, new Color(color));
@@ -187,16 +182,6 @@ public abstract class MixinGuiTextField implements IMixinGuiTextField {
 
     public int getMaxTextLength() {
         return maxStringLength;
-    }
-
-    @Override
-    public BiFunction<String, Integer, String> getRenderTextProvider() {
-        return textFormatter;
-    }
-
-    @Override
-    public String getSuggestion() {
-        return suggestion;
     }
 
     @Override

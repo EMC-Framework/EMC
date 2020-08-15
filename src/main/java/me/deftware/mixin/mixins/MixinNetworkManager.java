@@ -19,9 +19,9 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public abstract class MixinNetworkManager implements IMixinNetworkManager {
 
     @Shadow
-    protected abstract void dispatchPacket(Packet<?> p_dispatchPacket_1_, GenericFutureListener<? extends Future<? super Void>> p_dispatchPacket_2_);
+    protected abstract void dispatchPacket(Packet<?> inPacket, GenericFutureListener<? extends Future<? super Void>>[] futureListeners);
 
-    @Redirect(method = "channelRead0", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/NetworkManager;func_197664_a(Lnet/minecraft/network/Packet;Lnet/minecraft/network/INetHandler;)V"))
+    @Redirect(method = "channelRead0", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/Packet;processPacket(Lnet/minecraft/network/INetHandler;)V"))
     private void channelRead0(Packet<INetHandler> packet, INetHandler listener) {
         EventPacketReceive event = new EventPacketReceive(packet);
         event.broadcast();
@@ -30,8 +30,8 @@ public abstract class MixinNetworkManager implements IMixinNetworkManager {
         }
     }
 
-    @Redirect(method = "sendPacket(Lnet/minecraft/network/Packet;Lio/netty/util/concurrent/GenericFutureListener;)V", at = @At(value = "INVOKE", target = "net/minecraft/network/NetworkManager.dispatchPacket(Lnet/minecraft/network/Packet;Lio/netty/util/concurrent/GenericFutureListener;)V"))
-    private void sendPacket$dispatchPacket(NetworkManager networkManager, Packet<?> packetIn, final GenericFutureListener<? extends Future<? super Void>> futureListeners) {
+    @Redirect(method = "sendPacket(Lnet/minecraft/network/Packet;Lio/netty/util/concurrent/GenericFutureListener;[Lio/netty/util/concurrent/GenericFutureListener;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/NetworkManager;dispatchPacket(Lnet/minecraft/network/Packet;[Lio/netty/util/concurrent/GenericFutureListener;)V"))
+    private void sendPacket$dispatchPacket(NetworkManager networkManager, Packet<?> packetIn, final GenericFutureListener<? extends Future<? super Void>>[] futureListeners) {
         EventPacketSend event = new EventPacketSend(packetIn);
         event.broadcast();
         if (event.isCanceled()) {

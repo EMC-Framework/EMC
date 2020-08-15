@@ -49,7 +49,6 @@ public class EventGuiScreenDraw extends Event {
 
     public void addButton(IGuiButton button) {
         ((IMixinGuiScreen) screen).getButtonList().add(button);
-        ((IMixinGuiScreen) screen).getEventList().add(button);
     }
 
     public ArrayList<IGuiButton> getIButtonList() {

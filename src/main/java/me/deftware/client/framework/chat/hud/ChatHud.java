@@ -16,7 +16,7 @@ public class ChatHud {
 
 	static GuiNewChat getHud() {
 		/* Internal only! */
-		return Minecraft.getInstance().ingameGUI.getChatGUI();
+		return Minecraft.getMinecraft().ingameGUI.getChatGUI();
 	}
 
 	static IMixinGuiNewChat getMixinHudImpl() {
@@ -29,7 +29,7 @@ public class ChatHud {
 	}
 
 	public static void addMessage(ChatMessage message, int line) {
-		getMixinHudImpl().setTheChatLine(message.build(), line, Minecraft.getInstance().ingameGUI.getTicks(), false);
+		getMixinHudImpl().setTheChatLine(message.build(), line, Minecraft.getMinecraft().ingameGUI.getUpdateCounter(), false);
 	}
 
 	public static List<ChatHudLine> getLines() {

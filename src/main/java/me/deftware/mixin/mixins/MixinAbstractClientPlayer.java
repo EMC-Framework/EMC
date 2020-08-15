@@ -10,7 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.renderer.ImageBufferDownload;
-import net.minecraft.client.renderer.texture.ThreadDownloadImageData;
+import net.minecraft.client.renderer.ThreadDownloadImageData;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.util.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
@@ -41,7 +41,7 @@ public abstract class MixinAbstractClientPlayer implements IMixinAbstractClientP
 		cir.setReturnValue(event.isSpectator());
 	}
 
-	@ModifyVariable(method = "getFovModifier", ordinal = 0, at = @At(value = "INVOKE", ordinal = 0, target = "Lnet/minecraft/entity/EntityLivingBase;getAttribute(Lnet/minecraft/entity/ai/attributes/IAttribute;)Lnet/minecraft/entity/ai/attributes/IAttributeInstance;"))
+	@ModifyVariable(method = "getFovModifier", ordinal = 0, at = @At(value = "INVOKE", ordinal = 0, target = "Lnet/minecraft/entity/EntityLivingBase;getEntityAttribute(Lnet/minecraft/entity/ai/attributes/IAttribute;)Lnet/minecraft/entity/ai/attributes/IAttributeInstance;"))
 	private float onGetSpeed(float f) {
 		EventFovModifier event = new EventFovModifier(f);
 		event.broadcast();
@@ -64,7 +64,7 @@ public abstract class MixinAbstractClientPlayer implements IMixinAbstractClientP
 					ThreadDownloadImageData playerSkinTexture = new ThreadDownloadImageData(new File(String.format("%s/libraries/EMC/capes/%s.png", OSUtils.getMCDir(), uidHash)),
 				            (String) SettingsMap.getValue(SettingsMap.MapKeys.CAPES_TEXTURE, id, ""), DefaultPlayerSkin.getDefaultSkinLegacy(), new ImageBufferDownload());
 		            capeLoaded = true;
-		            Minecraft.getInstance().getTextureManager().loadTexture(capeIdentifier, playerSkinTexture);
+		            Minecraft.getMinecraft().getTextureManager().loadTexture(capeIdentifier, playerSkinTexture);
 	            }
             }
 		} catch (Exception ex) {

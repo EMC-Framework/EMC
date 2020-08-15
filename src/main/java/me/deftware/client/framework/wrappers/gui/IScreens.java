@@ -5,6 +5,7 @@ import me.deftware.client.framework.wrappers.IMinecraft;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import net.minecraft.realms.RealmsBridge;
+import net.minecraft.util.Tuple;
 
 import java.util.Objects;
 
@@ -19,17 +20,16 @@ public class IScreens {
         } else if (type.equals(ScreenType.WorldSelection)) {
             screen = new GuiWorldSelection(parent);
         } else if (type.equals(ScreenType.Options)) {
-            screen = new GuiOptions(parent, Minecraft.getInstance().gameSettings);
+            screen = new GuiOptions(parent, Minecraft.getMinecraft().gameSettings);
         } else if (type.equals(ScreenType.Mods)) {
-            if (ResourceUtils.hasSpecificMod("riftmodlist")) {
-                screen = Objects.requireNonNull(IMinecraft.createScreenInstance("me.shedaniel.gui.GuiModList"));
-            }
+            // Non functional - TODO
+            screen = IMinecraft.createScreenInstance("net.minecraftforge.fml.client.GuiModList", new Tuple<>(GuiScreen.class, parent));
         }
         return screen;
     }
 
     public static void displayGuiScreen(ScreenType type, IGuiScreen parent) {
-        Minecraft.getInstance().displayGuiScreen(IScreens.translate(type, parent));
+        Minecraft.getMinecraft().displayGuiScreen(IScreens.translate(type, parent));
     }
 
     public static void switchToRealms(IGuiScreen parent) {

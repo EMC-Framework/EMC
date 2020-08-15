@@ -11,26 +11,25 @@ import net.minecraft.util.text.ITextComponent;
 
 public class OAuthNetHandler extends NetHandlerLoginClient {
 
-    public OAuth.OAuthCallback callback;
+	public OAuth.OAuthCallback callback;
 
-    public OAuthNetHandler(NetworkManager networkManagerIn, Minecraft mcIn, GuiScreen previousScreenIn,
-                           OAuth.OAuthCallback callback) {
-        super(networkManagerIn, mcIn, previousScreenIn, fakeConsumer -> {
-        });
-        this.callback = callback;
-    }
+	public OAuthNetHandler(NetworkManager networkManagerIn, Minecraft mcIn, GuiScreen previousScreenIn,
+						   OAuth.OAuthCallback callback) {
+		super(networkManagerIn, mcIn, previousScreenIn);
+		this.callback = callback;
+	}
 
-    @Override
-    public void onDisconnect(ITextComponent reason) {
-        callback.callback(false, "", "");
-    }
+	@Override
+	public void onDisconnect(ITextComponent reason) {
+		callback.callback(false, "", "");
+	}
 
-    @Override
-    public void handleLoginSuccess(SPacketLoginSuccess packetIn) {
-        ((IMixinNetHandlerLoginClient) this).setGameProfile(packetIn.getProfile());
-        ((IMixinNetHandlerLoginClient) this).getNetworkManager().setConnectionState(EnumConnectionState.PLAY);
-        ((IMixinNetHandlerLoginClient) this).getNetworkManager().setNetHandler(new OAuthNetHandlerPlayClient(Minecraft.getInstance(), null,
-                ((IMixinNetHandlerLoginClient) this).getNetworkManager(), ((IMixinNetHandlerLoginClient) this).getGameProfile(), callback));
-    }
+	@Override
+	public void handleLoginSuccess(SPacketLoginSuccess packetIn) {
+		((IMixinNetHandlerLoginClient) this).setGameProfile(packetIn.getProfile());
+		((IMixinNetHandlerLoginClient) this).getNetworkManager().setConnectionState(EnumConnectionState.PLAY);
+		((IMixinNetHandlerLoginClient) this).getNetworkManager().setNetHandler(new OAuthNetHandlerPlayClient(Minecraft.getMinecraft(), null,
+				((IMixinNetHandlerLoginClient) this).getNetworkManager(), ((IMixinNetHandlerLoginClient) this).getGameProfile(), callback));
+	}
 
 }

@@ -5,14 +5,14 @@ import me.deftware.client.framework.maps.SettingsMap;
 import me.deftware.client.framework.wrappers.IMinecraft;
 import me.deftware.client.framework.wrappers.gui.IGuiScreen;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.glfw.GLFW;
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.lang.ref.WeakReference;
-import java.nio.DoubleBuffer;
 
 @SuppressWarnings("All")
 public class NonScaledRenderer {
@@ -113,13 +113,14 @@ public class NonScaledRenderer {
     }
 
     public static void resetScale() {
+        ScaledResolution sc = new ScaledResolution(Minecraft.getMinecraft());
         GlStateManager.clear(256);
         GlStateManager.matrixMode(5889);
         GlStateManager.loadIdentity();
-        GlStateManager.ortho(0.0D, Minecraft.getInstance().mainWindow.getFramebufferWidth() / Minecraft.getInstance().mainWindow.getGuiScaleFactor(), Minecraft.getInstance().mainWindow.getFramebufferHeight() / Minecraft.getInstance().mainWindow.getGuiScaleFactor(), 0.0D, 1000.0D, 3000.0D);
+        GlStateManager.ortho(0.0D, sc.getScaledWidth_double(), sc.getScaledHeight_double(), 0.0D, 1000.0D, 3000.0D);
         GlStateManager.matrixMode(5888);
         GlStateManager.loadIdentity();
-        GlStateManager.translatef(0.0F, 0.0F, -2000.0F);
+        GlStateManager.translate(0.0F, 0.0F, -2000.0F);
     }
 
     public static void drawLine(float x1, float y1, float x2, float y2) {
@@ -147,11 +148,12 @@ public class NonScaledRenderer {
     }
 
     public static int getMouseX() {
-        return getMouseX(getScale());
+        return Mouse.getX();
     }
 
     public static int getMouseY() {
-        return getMouseY(getScale());
+        // Mouse Y inverted in LWJGL 2
+        return Display.getHeight() - Mouse.getY();
     }
 
     public static int getMouseX(float scale) {
@@ -164,11 +166,8 @@ public class NonScaledRenderer {
 
     public static double[] getCursorPos() {
         double[] pos = new double[2];
-        DoubleBuffer posX = BufferUtils.createDoubleBuffer(1),
-                posY = BufferUtils.createDoubleBuffer(1);
-        GLFW.glfwGetCursorPos(Minecraft.getInstance().mainWindow.getHandle(), posX, posY);
-        pos[0] = posX.get(0);
-        pos[1] = posY.get(0);
+        pos[0] = getMouseX();
+        pos[1] = getMouseY();
         return pos;
     }
 

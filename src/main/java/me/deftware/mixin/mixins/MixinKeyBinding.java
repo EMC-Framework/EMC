@@ -2,7 +2,6 @@ package me.deftware.mixin.mixins;
 
 import me.deftware.mixin.imp.IMixinKeyBinding;
 import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.client.util.InputMappings;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
@@ -13,7 +12,7 @@ public class MixinKeyBinding implements IMixinKeyBinding {
     private boolean pressed;
 
     @Shadow
-    private InputMappings.Input keyCode;
+    private int keyCode;
 
     @Override
     public void setPressed(boolean state) {
@@ -21,9 +20,8 @@ public class MixinKeyBinding implements IMixinKeyBinding {
     }
 
     @Override
-    public InputMappings.Input getInput() {
+    public int getKey() {
         return keyCode;
     }
-
 
 }

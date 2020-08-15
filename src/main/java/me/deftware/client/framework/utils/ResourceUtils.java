@@ -78,7 +78,7 @@ public class ResourceUtils {
      * @return Boolean depending on Mod Menu and MC Version/Modloader
      */
     public static boolean hasExternalModMenu() {
-        return hasSpecificMod("riftmodlist");
+        return false;
     }
 
     /**

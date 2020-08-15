@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.entity.EntityFlying;
 import net.minecraft.entity.*;
 import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.entity.boss.EntityWither;
@@ -18,7 +19,6 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.*;
 import net.minecraft.entity.passive.*;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.text.TextComponentTranslation;
 
 import java.math.BigDecimal;
 
@@ -50,7 +50,7 @@ public class IEntity {
     }
 
     public IAxisAlignedBB getBoundingBox() {
-        return new IAxisAlignedBB(entity.getBoundingBox());
+        return new IAxisAlignedBB(entity.getEntityBoundingBox());
     }
 
     public IBlockPos getBlockPos() {
@@ -70,11 +70,11 @@ public class IEntity {
     }
 
     public float getDistanceToPlayer() {
-        return entity.getDistance(Minecraft.getInstance().player);
+        return entity.getDistance(Minecraft.getMinecraft().player);
     }
 
     public float getDistanceToEntity() {
-        return Minecraft.getInstance().player.getDistance(entity);
+        return Minecraft.getMinecraft().player.getDistance(entity);
     }
 
     public String getName() {
@@ -90,7 +90,7 @@ public class IEntity {
     }
 
     public boolean isDead() {
-        return !entity.isAlive();
+        return entity.isDead;
     }
 
     public boolean isMob() {
@@ -98,7 +98,7 @@ public class IEntity {
     }
 
     public String getEntityTypeName() {
-        return new ChatMessage().fromString(entity.getType().getTranslationKey()).toString(false);
+        return new ChatMessage().fromString(entity.getName()).toString(false);
     }
 
     public boolean isPlayer() {
@@ -129,7 +129,7 @@ public class IEntity {
     }
 
     public int getResponseTime() {
-        return Minecraft.getInstance().getConnection().getPlayerInfo(entity.getUniqueID()).getResponseTime();
+        return Minecraft.getMinecraft().getConnection().getPlayerInfo(entity.getUniqueID()).getResponseTime();
     }
 
     public float getRotationYaw(boolean fullCircleCalc) {
@@ -223,7 +223,7 @@ public class IEntity {
 
     public boolean isPlayerOwned() {
         if (entity instanceof EntityWolf) {
-            return ((EntityWolf) entity).isOwner(Minecraft.getInstance().player);
+            return ((EntityWolf) entity).isOwner(Minecraft.getMinecraft().player);
         }
         return false;
     }
@@ -237,15 +237,15 @@ public class IEntity {
     }
 
     public boolean isInvisibleToPlayer() {
-        return entity.isInvisibleToPlayer(Minecraft.getInstance().player);
+        return entity.isInvisibleToPlayer(Minecraft.getMinecraft().player);
     }
 
     public boolean canBeSeen() {
-        return Minecraft.getInstance().player.canEntityBeSeen(entity);
+        return Minecraft.getMinecraft().player.canEntityBeSeen(entity);
     }
 
     public boolean isSelf() {
-        return entity == Minecraft.getInstance().player;
+        return entity == Minecraft.getMinecraft().player;
     }
 
     public double getPosX() {
@@ -327,8 +327,6 @@ public class IEntity {
             return entity instanceof EntityChicken;
         } else if (e.equals(EntityType.ENTITY_COW)) {
             return entity instanceof EntityCow;
-        } else if (e.equals(EntityType.ENTITY_FISH)) {
-            return entity instanceof AbstractFish;
         } else if (e.equals(EntityType.ENTITY_MOOSHROOM)) {
             return entity instanceof EntityMooshroom;
         } else if (e.equals(EntityType.ENTITY_OCELOT)) {
@@ -343,12 +341,8 @@ public class IEntity {
             return entity instanceof EntitySheep;
         } else if (e.equals(EntityType.ENTITY_SQUID)) {
             return entity instanceof EntitySquid;
-        } else if (e.equals(EntityType.ENTITY_TURTLE)) {
-            return entity instanceof EntityTurtle;
         } else if (e.equals(EntityType.ENTITY_VILLAGER)) {
             return entity instanceof EntityVillager;
-        } else if (e.equals(EntityType.ENTITY_DOLPHIN)) {
-            return entity instanceof EntityDolphin;
         } else if (e.equals(EntityType.ENTITY_DONKEY)) {
             return entity instanceof EntityDonkey;
         } else if (e.equals(EntityType.ENTITY_MULE)) {
@@ -377,10 +371,6 @@ public class IEntity {
             return entity instanceof EntityWither;
         } else if (e.equals(EntityType.ENTITY_DRAGON)) {
             return entity instanceof EntityDragon;
-        } else if (e.equals(EntityType.ENTITY_PHANTOM)) {
-            return entity instanceof EntityPhantom;
-        } else if (e.equals(EntityType.ENTITY_DROWNED)) {
-            return entity instanceof EntityDrowned;
         } else if (e.equals(EntityType.ENTITY_EVOKER)) {
             return entity instanceof EntityEvoker;
         } else if (e.equals(EntityType.ENTITY_STRAY)) {
@@ -431,8 +421,6 @@ public class IEntity {
             return entity instanceof EntityIronGolem;
         } else if (e.equals(EntityType.ENTITY_SNOW_GOLEM)) {
             return entity instanceof EntitySnowman;
-        } else if (e.equals(EntityType.ENTITY_PUFFERFISH)) {
-            return entity instanceof EntityPufferFish;
         }
         return false;
     }

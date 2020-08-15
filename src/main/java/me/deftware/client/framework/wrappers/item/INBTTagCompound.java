@@ -15,15 +15,15 @@ public class INBTTagCompound {
     }
 
     public boolean contains(String key) {
-        return compound.contains(key);
+        return compound.hasKey(key);
     }
 
     public boolean contains(String key, int i) {
-        return compound.contains(key, i);
+        return compound.hasKey(key, i);
     }
 
     public INBTTagCompound get(String key) {
-        return new INBTTagCompound(compound.getCompound(key));
+        return new INBTTagCompound(compound.getCompoundTag(key));
     }
 
     public NBTTagCompound getCompound() {
@@ -31,7 +31,7 @@ public class INBTTagCompound {
     }
 
     public void setTagInfo(String key, INBTTagList list) {
-        compound.put(key, list.list);
+        compound.setTag(key, list.list);
     }
 
 }

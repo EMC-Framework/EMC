@@ -14,7 +14,7 @@ public class EventNametagRender extends Event {
 
     public EventNametagRender(Entity entity) {
         if (isPlayer = entity instanceof EntityPlayer) {
-            name = new ChatMessage().fromText(entity.getName(), false);
+            name = new ChatMessage().fromString(entity.getName());
         }
     }
 

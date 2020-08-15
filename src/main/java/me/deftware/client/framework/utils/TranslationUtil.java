@@ -1,11 +1,11 @@
 package me.deftware.client.framework.utils;
 
-import net.minecraft.util.text.translation.LanguageMap;
+import net.minecraft.client.resources.I18n;
 
 public class TranslationUtil {
 
     public static String translate(String key) {
-        return LanguageMap.getInstance().translateKey(key);
+        return I18n.format(key);
     }
 
 }

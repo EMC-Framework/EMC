@@ -6,12 +6,12 @@ import net.minecraft.network.play.client.CPacketPlayer;
 
 public class ICPacketPosition extends IPacket {
 
-    public ICPacketPosition(Packet<?> packet) {
-        super(packet);
-    }
+	public ICPacketPosition(Packet<?> packet) {
+		super(packet);
+	}
 
-    public ICPacketPosition(double xIn, double yIn, double zIn, boolean onGroundIn) {
-        super(new CPacketPlayer.Position(xIn, yIn, zIn, onGroundIn));
-    }
+	public ICPacketPosition(double xIn, double yIn, double zIn, boolean onGroundIn) {
+		super(new CPacketPlayer.Position(xIn, yIn, zIn, onGroundIn));
+	}
 
 }

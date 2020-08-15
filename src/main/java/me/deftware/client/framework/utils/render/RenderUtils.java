@@ -2,7 +2,6 @@ package me.deftware.client.framework.utils.render;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
-import com.mojang.datafixers.util.Pair;
 import me.deftware.client.framework.wrappers.IResourceLocation;
 import me.deftware.client.framework.wrappers.entity.*;
 import me.deftware.client.framework.wrappers.math.IAxisAlignedBB;
@@ -22,6 +21,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Tuple;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -48,15 +48,15 @@ public class RenderUtils {
     public static int team = 4;
 
     public static void loadShader(IResourceLocation location) {
-        ((IMixinEntityRenderer) Minecraft.getInstance().entityRenderer).loadCustomShader(location);
+        ((IMixinEntityRenderer) Minecraft.getMinecraft().entityRenderer).loadCustomShader(location);
     }
 
     public static IMixinRenderManager getRenderManager() {
-        return (IMixinRenderManager) Minecraft.getInstance().getRenderManager();
+        return (IMixinRenderManager) Minecraft.getMinecraft().getRenderManager();
     }
 
     public static void disableShader() {
-        Minecraft.getInstance().addScheduledTask(() -> Minecraft.getInstance().entityRenderer.stopUseShader());
+        Minecraft.getMinecraft().addScheduledTask(() -> Minecraft.getMinecraft().entityRenderer.stopUseShader());
     }
 
     public static void glColor(Color color) {
@@ -77,9 +77,9 @@ public class RenderUtils {
         GL11.glDisable(2929);
         GL11.glDepthMask(false);
         GL11.glEnable(2884);
-        GlStateManager.activeTexture(33985);
+        GlStateManager.setActiveTexture(33985);
         GlStateManager.disableTexture2D();
-        GlStateManager.activeTexture(33984);
+        GlStateManager.setActiveTexture(33984);
         GL11.glEnable(2848);
         GL11.glHint(3154, 4354);
         GL11.glHint(3155, 4354);
@@ -453,22 +453,23 @@ public class RenderUtils {
         RenderHelper.disableStandardItemLighting();
     }
 
-    private static final HashMap<String, Pair<Boolean, ResourceLocation>> loadedSkins = new HashMap<>();
+    private static final HashMap<String, Tuple<Boolean, ResourceLocation>> loadedSkins = new HashMap<>();
 
     public static void bindSkinTexture(String name, String uuid) {
         GameProfile profile = new GameProfile(UUID.fromString(uuid), name);
         if(loadedSkins.containsKey(name)) {
             if (loadedSkins.get(name).getFirst()) {
-                Minecraft.getInstance().getTextureManager().bindTexture(loadedSkins.get(name).getSecond());
+                Minecraft.getMinecraft().getTextureManager().bindTexture(loadedSkins.get(name).getSecond());
             } else {
-                Minecraft.getInstance().getTextureManager().bindTexture(DefaultPlayerSkin.getDefaultSkin(profile.getId()));
+                Minecraft.getMinecraft().getTextureManager().bindTexture(DefaultPlayerSkin.getDefaultSkin(profile.getId()));
             }
         } else {
-            loadedSkins.put(name, new Pair<>(false, null));
+            // NonNull with Tuple in <1.12.2
+            loadedSkins.put(name, new Tuple<>(false, new ResourceLocation("")));
             try {
-                Minecraft.getInstance().getSkinManager().loadProfileTextures(profile, (type, identifier, minecraftProfileTexture) -> {
+                Minecraft.getMinecraft().getSkinManager().loadProfileTextures(profile, (type, identifier, minecraftProfileTexture) -> {
                     if (type == MinecraftProfileTexture.Type.SKIN) {
-                        loadedSkins.put(name, new Pair<>(true, identifier));
+                        loadedSkins.put(name, new Tuple<>(true, identifier));
                     }
                 }, true);
             } catch (Exception ex) {
@@ -725,8 +726,8 @@ public class RenderUtils {
         GL11.glDisable(2929);
         GL11.glDepthMask(false);
         if (mode == 0) {
-            GL11.glColor4d(1.0F - Minecraft.getInstance().player.getDistance(entity) / 40.0F,
-                    Minecraft.getInstance().player.getDistance(entity) / 40.0F, 0.0D, 0.5D);
+            GL11.glColor4d(1.0F - Minecraft.getMinecraft().player.getDistance(entity) / 40.0F,
+                    Minecraft.getMinecraft().player.getDistance(entity) / 40.0F, 0.0D, 0.5D);
         } else if (mode == 1) {
             GL11.glColor4d(0.0D, 0.0D, 1.0D, 0.5D);
         } else if (mode == 2) {
@@ -737,12 +738,12 @@ public class RenderUtils {
             GL11.glColor4d(0.0D, 1.0D, 0.0D, 0.5D);
         }
         Vec3d eyes = new Vec3d(0.0D, 0.0D, 1.0D)
-                .rotatePitch(-(float) Math.toRadians(Minecraft.getInstance().player.rotationPitch))
-                .rotateYaw(-(float) Math.toRadians(Minecraft.getInstance().player.rotationYaw));
+                .rotatePitch(-(float) Math.toRadians(Minecraft.getMinecraft().player.rotationPitch))
+                .rotateYaw(-(float) Math.toRadians(Minecraft.getMinecraft().player.rotationYaw));
 
         GL11.glBegin(1);
 
-        GL11.glVertex3d(eyes.x, Minecraft.getInstance().player.getEyeHeight() + eyes.y, eyes.z);
+        GL11.glVertex3d(eyes.x, Minecraft.getMinecraft().player.getEyeHeight() + eyes.y, eyes.z);
         GL11.glVertex3d(x, y, z);
 
         GL11.glEnd();
@@ -770,12 +771,12 @@ public class RenderUtils {
         RenderUtils.glColor(color);
 
         Vec3d eyes = new Vec3d(0.0D, 0.0D, 1.0D)
-                .rotatePitch(-(float) Math.toRadians(Minecraft.getInstance().player.rotationPitch))
-                .rotateYaw(-(float) Math.toRadians(Minecraft.getInstance().player.rotationYaw));
+                .rotatePitch(-(float) Math.toRadians(Minecraft.getMinecraft().player.rotationPitch))
+                .rotateYaw(-(float) Math.toRadians(Minecraft.getMinecraft().player.rotationYaw));
 
         GL11.glBegin(1);
 
-        GL11.glVertex3d(eyes.x, Minecraft.getInstance().player.getEyeHeight() + eyes.y, eyes.z);
+        GL11.glVertex3d(eyes.x, Minecraft.getMinecraft().player.getEyeHeight() + eyes.y, eyes.z);
         GL11.glVertex3d(x, y, z);
 
         GL11.glEnd();
@@ -802,12 +803,12 @@ public class RenderUtils {
         GL11.glColor4f(color.getRed(), color.getGreen(), color.getBlue(), alpha);
 
         Vec3d eyes = new Vec3d(0.0D, 0.0D, 1.0D)
-                .rotatePitch(-(float) Math.toRadians(Minecraft.getInstance().player.rotationPitch))
-                .rotateYaw(-(float) Math.toRadians(Minecraft.getInstance().player.rotationYaw));
+                .rotatePitch(-(float) Math.toRadians(Minecraft.getMinecraft().player.rotationPitch))
+                .rotateYaw(-(float) Math.toRadians(Minecraft.getMinecraft().player.rotationYaw));
 
         GL11.glBegin(1);
 
-        GL11.glVertex3d(eyes.x, Minecraft.getInstance().player.getEyeHeight() + eyes.y, eyes.z);
+        GL11.glVertex3d(eyes.x, Minecraft.getMinecraft().player.getEyeHeight() + eyes.y, eyes.z);
         GL11.glVertex3d(x, y, z);
 
         GL11.glEnd();
@@ -913,7 +914,7 @@ public class RenderUtils {
         RenderUtils.glColor(color);
         GL11.glBegin(1);
 
-        GL11.glVertex3d(0.0D, Minecraft.getInstance().player.getEyeHeight(), 0.0D);
+        GL11.glVertex3d(0.0D, Minecraft.getMinecraft().player.getEyeHeight(), 0.0D);
         GL11.glVertex3d(x, y, z);
 
         GL11.glEnd();

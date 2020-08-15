@@ -19,19 +19,19 @@ public class IRenderManager {
     }
 
     public static float getPlayerViewY() {
-        return Minecraft.getInstance().getRenderManager().playerViewY;
+        return Minecraft.getMinecraft().getRenderManager().playerViewY;
     }
 
     public static float getPlayerViewX() {
-        return Minecraft.getInstance().getRenderManager().playerViewX;
+        return Minecraft.getMinecraft().getRenderManager().playerViewX;
     }
 
     public static float getPlayerFovMultiplier() {
-        return ((IMixinEntityRenderer) Minecraft.getInstance().entityRenderer).getFovMultiplier();
+        return ((IMixinEntityRenderer) Minecraft.getMinecraft().entityRenderer).getFovMultiplier();
     }
 
     public static void updatePlayerFovMultiplier(float newValue) {
-        ((IMixinEntityRenderer) Minecraft.getInstance().entityRenderer).updateFovMultiplier(newValue);
+        ((IMixinEntityRenderer) Minecraft.getMinecraft().entityRenderer).updateFovMultiplier(newValue);
     }
 
 }

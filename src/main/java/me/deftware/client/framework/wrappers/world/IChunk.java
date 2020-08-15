@@ -1,7 +1,7 @@
 package me.deftware.client.framework.wrappers.world;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.EnumLightType;
+import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.chunk.Chunk;
 
 public class IChunk {
@@ -15,11 +15,11 @@ public class IChunk {
     }
 
     public IWorld getWorld() {
-        return new IWorld(Minecraft.getInstance().world);
+        return new IWorld(Minecraft.getMinecraft().world);
     }
 
     public int getLightFor(IEnumLightType lightType, IBlockPos pos) {
-        return chunk.getLightFor(EnumLightType.valueOf(lightType.name()), pos.getPos());
+        return chunk.getLightFor(lightType.getMCType(), pos.getPos());
     }
 
     public IChunkPos getPos() {
@@ -36,10 +36,21 @@ public class IChunk {
 
         public final int defaultLightValue;
 
-        private IEnumLightType(int defaultLightValueIn) {
+        private IEnumLightType(int defaultLightValueIn)
+        {
             this.defaultLightValue = defaultLightValueIn;
         }
 
+        public EnumSkyBlock getMCType() {
+            switch(this) {
+                case SKY:
+                    return EnumSkyBlock.SKY;
+                case BLOCK:
+                    return EnumSkyBlock.BLOCK;
+                default:
+                    return null;
+            }
+        }
     }
 
 }

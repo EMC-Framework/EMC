@@ -7,6 +7,7 @@ import me.deftware.client.framework.utils.ResourceUtils;
 import me.deftware.client.framework.utils.Tuple;
 import me.deftware.client.framework.utils.render.Texture;
 import me.deftware.client.framework.wrappers.IMinecraft;
+import me.deftware.client.framework.wrappers.IMouse;
 import me.deftware.client.framework.wrappers.IResourceLocation;
 import me.deftware.client.framework.wrappers.gui.imp.ScreenInstance;
 import net.minecraft.client.Minecraft;
@@ -14,13 +15,21 @@ import net.minecraft.client.gui.*;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.Util;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author Deftware
@@ -31,6 +40,7 @@ public abstract class IGuiScreen extends GuiScreen {
     protected ScreenInstance parentInstance;
     protected HashMap<String, Texture> textureHashMap = new HashMap<>();
     protected List<Tuple<Integer, Integer, ChatMessage>> compiledText = new ArrayList<>();
+    private List<CustomIGuiEventListener> children = new ArrayList<>();
 
     public IGuiScreen() {
         // N/A
@@ -45,59 +55,47 @@ public abstract class IGuiScreen extends GuiScreen {
     }
 
     public static String getClipboardString() {
-        return Minecraft.getInstance().keyboardListener.getClipboardString();
+        try {
+            Transferable transferable = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
+
+            if (transferable != null && transferable.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+                return (String) transferable.getTransferData(DataFlavor.stringFlavor);
+            }
+        } catch (Exception ignored) {
+        }
+
+        return "";
     }
 
     public static void setClipboardString(String copyText) {
-        Minecraft.getInstance().keyboardListener.setClipboardString(copyText);
-    }
-
-    public static void openLink(String url) {
-        Util.getOSType().openURI(url);
-    }
-
-    public static boolean isCtrlPressed() {
-        return isCtrlKeyDown();
-    }
-
-    public static boolean isShiftPressed() {
-        return isShiftKeyDown();
-    }
-
-    public static int getScaledHeight() {
-        return Minecraft.getInstance().mainWindow.getScaledHeight();
-    }
-
-    public static int getScaledWidth() {
-        return Minecraft.getInstance().mainWindow.getScaledWidth();
-    }
-
-    public static int getDisplayHeight() {
-        return Minecraft.getInstance().mainWindow.getHeight();
-    }
-
-    public static int getDisplayWidth() {
-        return Minecraft.getInstance().mainWindow.getWidth();
+        try {
+            StringSelection stringselection = new StringSelection(copyText);
+            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringselection, null);
+        } catch (Exception ignored) {
+        }
     }
 
     @Override
-    public boolean mouseReleased(double x, double y, int button) {
-        onMouseReleased((int) Math.round(x), (int) Math.round(y), button);
+    public void mouseReleased(int x, int y, int button) {
+        onMouseReleased(x, y, button);
         super.mouseReleased(x, y, button);
-        return false;
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-        onMouseClicked((int) Math.round(mouseX), (int) Math.round(mouseY), mouseButton);
+    public void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+        onMouseClicked(mouseX, mouseY, mouseButton);
+        children.forEach(c -> {
+            if (c instanceof IGuiTextField) {
+                c.doMouseClicked(mouseX, mouseY, mouseButton);
+            }
+        });
         super.mouseClicked(mouseX, mouseY, mouseButton);
-        return false;
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         onDraw(mouseX, mouseY, partialTicks);
-        super.render(mouseX, mouseY, partialTicks);
+        super.drawScreen(mouseX, mouseY, partialTicks);
         for (Tuple<Integer, Integer, ChatMessage> text : compiledText) {
             fontRenderer.drawStringWithShadow(text.getRight().toString(true), text.getLeft(), text.getMiddle(), 16777215);
         }
@@ -110,15 +108,32 @@ public abstract class IGuiScreen extends GuiScreen {
         onGuiResize(w, h);
     }
 
+    public void addEventListener(CustomIGuiEventListener listener) {
+        children.add(listener);
+    }
+
     @Override
-    public void tick() {
-        super.tick();
+    public void handleMouseInput() throws IOException {
+        super.handleMouseInput();
+        children.forEach(CustomIGuiEventListener::doHandleMouse);
+        if (Mouse.hasWheel()) {
+            int mY = Mouse.getEventDWheel();
+            if (mY != 0) {
+                IMouse.onScroll(0, mY < 0 ? -1 : 1);
+            }
+        }
+    }
+
+    @Override
+    public void updateScreen() {
+        super.updateScreen();
         onUpdate();
     }
 
     @Override
     public void initGui() {
         super.initGui();
+        children.clear();
         onInitGui();
     }
 
@@ -130,15 +145,21 @@ public abstract class IGuiScreen extends GuiScreen {
 
     @Override
     @SuppressWarnings("OptionalGetWithoutIsPresent")
-    public boolean keyPressed(int keyCode, int action, int modifiers) {
+    protected void keyTyped(char typedChar, int keyCode) throws IOException {
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
             if (escGoesBack) {
                 goBack();
-                return true;
+                return;
             }
-            return onGoBackRequested();
+            onGoBackRequested();
+            return;
         } else {
-            onKeyPressed(keyCode, action, modifiers);
+            children.forEach(c -> {
+                if (c instanceof IGuiTextField) {
+                    c.doKeyTyped(typedChar, keyCode);
+                }
+            });
+            keyPressed(GLFW.toGLFW.getOrDefault(keyCode, keyCode), 0, 0);
             if (keyCode == GLFW.GLFW_KEY_TAB && children.stream().anyMatch(e -> e instanceof GuiTextField)) {
                 int i = Iterables.indexOf(children, e -> e instanceof GuiTextField && ((GuiTextField) e).isFocused());
                 int newIndex = i == Iterables.indexOf(children, e -> e == children.stream().filter(t -> t instanceof GuiTextField).reduce((first, second) -> second).get()) || i == -1 ? Iterables.indexOf(children, e -> e == children.stream().filter(t -> t instanceof GuiTextField).findFirst().get()) : i + 1;
@@ -147,33 +168,30 @@ public abstract class IGuiScreen extends GuiScreen {
                 }
                 children.get(newIndex).focusChanged(true);
             }
-            super.keyPressed(keyCode, action, modifiers);
+            super.keyTyped(typedChar, keyCode);
         }
-        return false;
+        GLFW.callbacks.forEach((c) -> c.invoke(0L, typedChar));
     }
 
-    public void addEventListener(CustomIGuiEventListener listener) {
-        this.children.add(listener);
-    }
-
-    public void addRawEventListener(IGuiEventListener listener) {
-        this.children.add(listener);
+    public boolean keyPressed(int keyCode, int action, int modifiers) {
+        onKeyPressed(keyCode, action, modifiers);
+        return true;
     }
 
     /**
      * @param offset Default value is 0
      */
     protected void renderBackgroundWrap(int offset) {
-        drawBackground(offset);
+        drawWorldBackground(offset);
     }
 
     protected void renderBackgroundTextureWrap(int offset) {
-        this.drawWorldBackground(offset);
+        this.drawBackground(offset);
     }
 
     protected IGuiScreen addButton(IGuiButton button) {
         children.add(button);
-        buttons.add(button);
+        buttonList.add(button);
         return this;
     }
 
@@ -183,13 +201,13 @@ public abstract class IGuiScreen extends GuiScreen {
     }
 
     protected IGuiScreen addCenteredText(int x, int y, ChatMessage text) {
-        compiledText.add(new Tuple<>(x - Minecraft.getInstance().fontRenderer.getStringWidth(text.toString(true)) / 2, y, text));
+        compiledText.add(new Tuple<>(x - Minecraft.getMinecraft().fontRenderer.getStringWidth(text.toString(true)) / 2, y, text));
         return this;
     }
 
     protected ArrayList<IGuiButton> getIButtonList() {
         ArrayList<IGuiButton> list = new ArrayList<>();
-        for (GuiButton b : buttons) {
+        for (GuiButton b : buttonList) {
             if (b instanceof IGuiButton) {
                 list.add((IGuiButton) b);
             }
@@ -198,7 +216,7 @@ public abstract class IGuiScreen extends GuiScreen {
     }
 
     protected void clearButtons() {
-        buttons.clear();
+        buttonList.clear();
         children.removeIf(element -> element instanceof IGuiButton);
     }
 
@@ -211,7 +229,7 @@ public abstract class IGuiScreen extends GuiScreen {
         GL11.glPushMatrix();
         if (!textureHashMap.containsKey(texture)) {
             try {
-                BufferedImage img = ImageIO.read(Objects.requireNonNull(ResourceUtils.getStreamFromModResources(mod, texture)));
+                BufferedImage img = ImageIO.read(ResourceUtils.getStreamFromModResources(mod, texture));
                 Texture tex = new Texture(img.getWidth(), img.getHeight(), true);
                 tex.fillFromBufferedImageFlip(img);
                 tex.update();
@@ -228,15 +246,13 @@ public abstract class IGuiScreen extends GuiScreen {
         GL11.glPopMatrix();
     }
 
-    protected void drawTexture(IResourceLocation texture, int x, int y, int width, int height) {
-        Minecraft.getInstance().getTextureManager().bindTexture(texture);
-        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        GuiScreen.drawModalRectWithCustomSizedTexture(x, y, 0, 0, width, height, width, height);
+    public static boolean isCtrlPressed() {
+        return isCtrlKeyDown();
     }
 
     protected void goBack() {
         if (parentInstance != null) {
-            Minecraft.getInstance().displayGuiScreen(parentInstance.screen);
+            Minecraft.getMinecraft().displayGuiScreen(parentInstance.screen);
         } else {
             IMinecraft.setGuiScreen(parent);
         }
@@ -250,8 +266,26 @@ public abstract class IGuiScreen extends GuiScreen {
         return height;
     }
 
+    public static int getDisplayWidth() {
+        return Display.getWidth();
+    }
+
+    public static int getDisplayHeight() {
+        return Display.getHeight();
+    }
+
+    public static int getScaledHeight() {
+        ScaledResolution r = new ScaledResolution(Minecraft.getMinecraft());
+        return r.getScaledHeight();
+    }
+
+    public static int getScaledWidth() {
+        ScaledResolution r = new ScaledResolution(Minecraft.getMinecraft());
+        return r.getScaledWidth();
+    }
+
     public void setFocusedComponent(CustomIGuiEventListener listener) {
-        this.setFocused(listener);
+        //this.setFocused(listener);
     }
 
     protected void onGuiClose() {
@@ -266,11 +300,8 @@ public abstract class IGuiScreen extends GuiScreen {
 
     protected abstract void onUpdate();
 
-    /**
-     * @see GLFW#GLFW_RELEASE
-     * @see GLFW#GLFW_PRESS
-     * @see GLFW#GLFW_REPEAT
-     */
+    protected abstract void onKeyPressed(char typedChar, int keyCode) throws IOException;
+
     protected abstract void onKeyPressed(int keyCode, int action, int modifiers);
 
     protected abstract void onMouseReleased(int mouseX, int mouseY, int mouseButton);

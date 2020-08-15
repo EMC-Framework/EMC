@@ -8,32 +8,22 @@ import org.lwjgl.glfw.GLFW;
  */
 public class EventKeyAction extends Event {
 
-    private int keyCode, action, modifiers;
+    private int keyCode;
 
-    public EventKeyAction(int keyCode, int action, int modifiers) {
-        this.keyCode = keyCode;
-        this.action = action;
-        this.modifiers = modifiers;
+    public EventKeyAction(int keyCode) {
+        this.keyCode = GLFW.toGLFW.getOrDefault(keyCode, keyCode);
     }
 
     public int getKeyCode() {
         return keyCode;
     }
 
-    /**
-     * @see GLFW#GLFW_RELEASE
-     * @see GLFW#GLFW_PRESS
-     * @see GLFW#GLFW_REPEAT
-     */
     public int getAction() {
-        return action;
+        return 0;
     }
 
-    /**
-     * @see GLFW#GLFW_MOD_SHIFT
-     */
     public int getModifiers() {
-        return modifiers;
+        return 0;
     }
 
 }

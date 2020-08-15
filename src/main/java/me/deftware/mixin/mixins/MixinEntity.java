@@ -37,13 +37,12 @@ public abstract class MixinEntity implements IMixinEntity {
     public abstract boolean isSprinting();
 
     @Shadow
-    public abstract boolean isPassenger();
-
-    @Shadow
-    public abstract AxisAlignedBB getBoundingBox();
+    public abstract boolean isRiding();
 
     @Shadow
     protected abstract boolean getFlag(int int_1);
+
+    @Shadow public abstract AxisAlignedBB getEntityBoundingBox();
 
     @Redirect(method = "move", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;noClip:Z", opcode = 180))
     private boolean noClipCheck(Entity self) {

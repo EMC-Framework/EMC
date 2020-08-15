@@ -2,31 +2,28 @@ package me.deftware.mixin.mixins;
 
 import me.deftware.client.framework.maps.SettingsMap;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockFlowingFluid;
+import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.BlockModelRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorldReader;
+import net.minecraft.world.IBlockAccess;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Random;
-
 @Mixin(BlockModelRenderer.class)
-public abstract class MixinBlockModelRenderer
-{
+public abstract class MixinBlockModelRenderer {
 
-    @Inject(method = "renderModel", at = @At("HEAD"), cancellable = true)
-    public void tesselate(IWorldReader extendedBlockView_1, IBakedModel bakedModel_1, IBlockState blockState_1, BlockPos blockPos_1, BufferBuilder bufferBuilder_1, boolean boolean_1, Random random_1, long long_1, CallbackInfoReturnable<Boolean> ci) {
-        if (blockState_1.getBlock() instanceof BlockFlowingFluid) {
+    @Inject(method = "renderModel(Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/BufferBuilder;Z)Z", at = @At("HEAD"), cancellable = true)
+    private void renderModel(IBlockAccess blockAccessIn, IBakedModel modelIn, IBlockState blockStateIn, BlockPos blockPosIn, BufferBuilder buffer, boolean checkSides, CallbackInfoReturnable<Boolean> ci) {
+        if (blockStateIn.getBlock() instanceof BlockLiquid) {
             ci.setReturnValue(((boolean) SettingsMap.getValue(SettingsMap.MapKeys.RENDER, "FLUIDS", true)));
         } else {
-            if (SettingsMap.isOverrideMode() || (SettingsMap.isOverwriteMode() && SettingsMap.hasValue(Block.REGISTRY.getId(blockState_1.getBlock()), "render"))) {
-                boolean doRender = (boolean) SettingsMap.getValue(Block.REGISTRY.getId(blockState_1.getBlock()), "render", false);
+            if (SettingsMap.isOverrideMode() || (SettingsMap.isOverwriteMode() && SettingsMap.hasValue(Block.REGISTRY.getIDForObject(blockStateIn.getBlock()), "render"))) {
+                boolean doRender = (boolean) SettingsMap.getValue(Block.REGISTRY.getIDForObject(blockStateIn.getBlock()), "render", false);
                 if (!doRender) {
                     ci.setReturnValue(false);
                 }

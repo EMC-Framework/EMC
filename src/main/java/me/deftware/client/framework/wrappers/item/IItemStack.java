@@ -61,7 +61,7 @@ public class IItemStack {
     }
 
     public void setNBT(String nbt) throws Exception {
-        stack.setTag(JsonToNBT.getTagFromJson(nbt));
+        stack.setTagCompound(JsonToNBT.getTagFromJson(nbt));
     }
 
     public void enchantAll(int level) {
@@ -92,16 +92,17 @@ public class IItemStack {
     }
 
     public static IItemStack read(INBTTagCompound compound) {
-        return new IItemStack(ItemStack.read(compound.getCompound()));
+
+        return new IItemStack(new ItemStack(compound.getCompound()));
     }
 
     public void setStackDisplayName(String name) {
-        NBTTagCompound nbttagcompound = stack.getOrCreateChildTag("display");
-        nbttagcompound.putString("Name", ITextComponent.Serializer.toJson(new TextComponentString(name)));
+        NBTTagCompound nbttagcompound = stack.getOrCreateSubCompound("display");
+        nbttagcompound.setString("Name", ITextComponent.Serializer.componentToJson(new TextComponentString(name)));
     }
 
-    public boolean hasNBTTagCompound() {
-        return stack.hasTag();
+    public boolean hasCompoundTag() {
+        return stack.hasTagCompound();
     }
 
     public void setTagInfo(String key, INBTTagList compound) {
@@ -129,7 +130,7 @@ public class IItemStack {
     }
 
     public INBTTagCompound getTagCompound() {
-        return new INBTTagCompound(stack.getTag());
+        return new INBTTagCompound(stack.getTagCompound());
     }
 
     public ItemStack getStack() {
@@ -137,7 +138,7 @@ public class IItemStack {
     }
 
     public ChatMessage getDisplayName() {
-        return new ChatMessage().fromText(stack.getDisplayName(), false);
+        return new ChatMessage().fromString(stack.getDisplayName());
     }
 
     public int getItemID() {
@@ -145,11 +146,11 @@ public class IItemStack {
     }
 
     public float getStrVsBlock(IBlockPos pos) {
-        return stack.getDestroySpeed(Minecraft.getInstance().world.getBlockState(pos.getPos()));
+        return stack.getDestroySpeed(Minecraft.getMinecraft().world.getBlockState(pos.getPos()));
     }
 
     public boolean isEmpty() {
-        return stack.getItem() == Blocks.AIR.asItem();
+        return stack.getItem() == Item.getItemFromBlock(Blocks.AIR);
     }
 
     public IItem getIItem() {
@@ -206,7 +207,7 @@ public class IItemStack {
     }
 
     public int getRawDamage() {
-        return stack.getDamage();
+        return stack.getItemDamage();
     }
 
     public int getMaxDamage() {

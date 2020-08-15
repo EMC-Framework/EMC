@@ -46,7 +46,7 @@ public abstract class MixinWorld implements IMixinWorld {
 		emcTileEntities.put(blockEntity, new ITileEntity(blockEntity));
 	}
 
-	@Inject(method = "tickBlocks", at = @At("HEAD"))
+	@Inject(method = "updateEntities", at = @At("HEAD"))
 	private void tickBlockEntities(CallbackInfo info) {
 		if (!tileEntitiesToBeRemoved.isEmpty()) {
 			for (TileEntity entity : tileEntitiesToBeRemoved) {

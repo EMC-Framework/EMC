@@ -1,13 +1,9 @@
 package me.deftware.client.framework.utils.render;
 
 import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.client.renderer.texture.NativeImage;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -15,13 +11,14 @@ public class Texture {
     int width;
     int height;
     DynamicTexture dynamicTexture;
-    NativeImage nativeImage;
+    BufferedImage bufferedImage;
 
     public Texture(int width, int height, boolean clear) {
+        //System.out.println("Warning: clear bool unsupported in this version of MC!");
         this.width = width;
         this.height = height;
-        this.nativeImage = new NativeImage(NativeImage.PixelFormat.RGBA, width, height, clear);
-        this.dynamicTexture = new DynamicTexture(nativeImage);
+        this.bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        this.dynamicTexture = new DynamicTexture(bufferedImage);
     }
 
     public int getHeight() {
@@ -33,20 +30,13 @@ public class Texture {
     }
 
     public void refreshParameters() {
-        this.width = nativeImage.getWidth();
-        this.height = nativeImage.getHeight();
+        this.width = bufferedImage.getWidth();
+        this.height = bufferedImage.getHeight();
     }
 
     public int fillFromBufferedImage(BufferedImage img) {
         try {
-            this.nativeImage = new NativeImage(img.getWidth(), img.getHeight(), true);
-            for (int width = 0; width < img.getWidth(); width++) {
-                for (int height = 0; height < img.getHeight(); height++) {
-                    this.setPixel(width, height, img.getRGB(width, height));
-                }
-
-            }
-
+            this.bufferedImage = img;
             this.refreshParameters();
         } catch (Exception e) {
             e.printStackTrace();
@@ -57,23 +47,7 @@ public class Texture {
 
     public int fillFromBufferedImageFlip(BufferedImage img) {
         try {
-            this.nativeImage = new NativeImage(img.getWidth(), img.getHeight(), true);
-            for (int width = 0; width < img.getWidth(); width++) {
-                for (int height = 0; height < img.getHeight(); height++) {
-                    int rgb = img.getRGB(width, height);
-                    int alpha = (rgb >> 24) & 0xFF;
-                    int red = (rgb >> 16) & 0xFF;
-                    int green = (rgb >> 8) & 0xFF;
-                    int blue = rgb & 0xFF;
-                    rgb = ((alpha & 0xFF) << 24) |
-                            ((blue & 0xFF) << 16) |
-                            ((green & 0xFF) << 8) |
-                            ((red & 0xFF));
-                    this.setPixel(width, height, rgb);
-                }
-
-            }
-
+            this.bufferedImage = img;
             this.refreshParameters();
         } catch (Exception e) {
             e.printStackTrace();
@@ -82,14 +56,12 @@ public class Texture {
         return 0;
     }
 
-    public int fillFromBufferedFormatImage(BufferedImage img, NativeImage.PixelFormat pixelFormat) {
-        byte[] imageBytes = ((DataBufferByte) img.getData().getDataBuffer()).getData();
+    public int fillFromBufferedFormatImage(BufferedImage img, int pixelFormat) {
+        //byte[] imageBytes = ((DataBufferByte) img.getData().getDataBuffer()).getData();
         try {
-            this.nativeImage = NativeImage.read(pixelFormat, new ByteArrayInputStream(imageBytes));
-            this.dynamicTexture.setTextureData(nativeImage);
+            this.bufferedImage = img;
+            this.dynamicTexture = new DynamicTexture(bufferedImage);
             this.refreshParameters();
-        } catch (IOException ioe) {
-            return 1;
         } catch (Exception e) {
             e.printStackTrace();
             return 2;
@@ -98,18 +70,18 @@ public class Texture {
     }
 
     public int fillFromBufferedRGBImage(BufferedImage img) {
-        return fillFromBufferedFormatImage(img, NativeImage.PixelFormat.RGB);
+        return fillFromBufferedFormatImage(img, BufferedImage.TYPE_INT_ARGB);
     }
 
 
     public int fillFromBufferedRGBAImage(BufferedImage img) {
-        return fillFromBufferedFormatImage(img, NativeImage.PixelFormat.RGBA);
+        return fillFromBufferedFormatImage(img, BufferedImage.TYPE_INT_ARGB);
     }
 
     public int clearPixels() {
         try {
-            for (int x = 0; x < nativeImage.getWidth(); x++) {
-                for (int y = 0; y < nativeImage.getHeight(); y++) {
+            for (int x = 0; x < bufferedImage.getWidth(); x++) {
+                for (int y = 0; y < bufferedImage.getHeight(); y++) {
                     int rgb = ((0xFF) << 24) |
                             ((0xFF) << 16) |
                             ((0xFF) << 8) |
@@ -117,7 +89,7 @@ public class Texture {
                     this.setPixel(x, y, rgb);
                 }
             }
-            this.dynamicTexture.setTextureData(this.nativeImage);
+            this.dynamicTexture = new DynamicTexture(bufferedImage);
         } catch (Exception e) {
             e.printStackTrace();
             return 1;
@@ -130,7 +102,7 @@ public class Texture {
         int rgb = ((red & 0xFF) << 16) |
                 ((green & 0xFF) << 8) |
                 ((blue & 0xFF));
-        this.nativeImage.setPixelRGBA(x, y, rgb);
+        this.bufferedImage.setRGB(x, y, rgb);
     }
 
     public void setPixel(int x, int y, int red, int green, int blue, int alpha) {
@@ -138,28 +110,23 @@ public class Texture {
                 ((red & 0xFF) << 16) |
                 ((green & 0xFF) << 8) |
                 ((blue & 0xFF));
-        this.nativeImage.setPixelRGBA(x, y, rgba);
+        this.bufferedImage.setRGB(x, y, rgba);
     }
 
     public void setPixel(int x, int y, int rgba) {
-        this.nativeImage.setPixelRGBA(x, y, rgba);
+        this.bufferedImage.setRGB(x, y, rgba);
     }
 
     public int getPixel(int x, int y) {
-        return this.nativeImage.getPixelRGBA(x, y);
+        return this.bufferedImage.getRGB(x, y);
     }
 
     public byte getAlpha(int x, int y) {
-        return this.nativeImage.getPixelLuminanceOrAlpha(x, y);
+        return (byte) this.bufferedImage.getTransparency();
     }
 
     public int updatePixels() {
-        try {
-            this.dynamicTexture.setTextureData(nativeImage);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return 1;
-        }
+        this.dynamicTexture = new DynamicTexture(bufferedImage);
         return 0;
     }
 
@@ -189,7 +156,7 @@ public class Texture {
 
 
     public void blindBind() {
-        this.dynamicTexture.bindTexture();
+        this.dynamicTexture.updateDynamicTexture();
     }
 
 
@@ -199,11 +166,10 @@ public class Texture {
     }
 
     public void destroy() {
-        nativeImage.close();
-        nativeImage = null;
-        dynamicTexture.close();
+        bufferedImage.flush();
+        bufferedImage = null;
+        dynamicTexture.deleteGlTexture();
         dynamicTexture = null;
     }
 
 }
-

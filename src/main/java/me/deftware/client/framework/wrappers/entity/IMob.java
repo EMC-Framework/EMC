@@ -52,7 +52,7 @@ public class IMob {
     }
 
     public String getName() {
-        return mob.getName().getFormattedText();
+        return mob.getName();
     }
 
 }

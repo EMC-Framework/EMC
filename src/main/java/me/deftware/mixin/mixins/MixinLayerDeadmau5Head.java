@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(LayerDeadmau5Head.class)
 public class MixinLayerDeadmau5Head {
 
-    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Ljava/lang/String;equals(Ljava/lang/Object;)Z"))
+    @Redirect(method = "doRenderLayer", at = @At(value = "INVOKE", target = "Ljava/lang/String;equals(Ljava/lang/Object;)Z"))
     private boolean render(String deadmau5, Object playerName) {
         String usernames = (String) SettingsMap.getValue(SettingsMap.MapKeys.MISC, "DEADMAU_EARS", "");
         for (String username : usernames.split(",")) {

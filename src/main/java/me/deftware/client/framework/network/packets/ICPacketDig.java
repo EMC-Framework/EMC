@@ -8,22 +8,22 @@ import net.minecraft.network.play.client.CPacketPlayerDigging;
 
 public class ICPacketDig extends IPacket {
 
-    public ICPacketDig(Packet<?> packet) {
-        super(packet);
-    }
+	public ICPacketDig(Packet<?> packet) {
+		super(packet);
+	}
 
-    public ICPacketDig(IDigAction action, IBlockPos pos, IEnumFacing facing) {
-        super(new CPacketPlayerDigging(getAction(action), pos.getPos(), IEnumFacing.getFacing(facing)));
-    }
+	public ICPacketDig(IDigAction action, IBlockPos pos, IEnumFacing facing) {
+		super(new CPacketPlayerDigging(getAction(action), pos.getPos(), IEnumFacing.getFacing(facing)));
+	}
 
-    public static CPacketPlayerDigging.Action getAction(IDigAction action) {
-        if (action.equals(IDigAction.START_DESTROY_BLOCK)) {
-            return CPacketPlayerDigging.Action.START_DESTROY_BLOCK;
-        } else if (action.equals(IDigAction.STOP_DESTROY_BLOCK)) {
-            return CPacketPlayerDigging.Action.STOP_DESTROY_BLOCK;
-        }
-        return null;
-    }
+	public static CPacketPlayerDigging.Action getAction(IDigAction action) {
+		if (action.equals(IDigAction.START_DESTROY_BLOCK)) {
+			return CPacketPlayerDigging.Action.START_DESTROY_BLOCK;
+		} else if (action.equals(IDigAction.STOP_DESTROY_BLOCK)) {
+			return CPacketPlayerDigging.Action.STOP_DESTROY_BLOCK;
+		}
+		return null;
+	}
 
     public enum IDigAction {
         START_DESTROY_BLOCK, STOP_DESTROY_BLOCK

@@ -24,7 +24,7 @@ public class IClassHandler {
      */
     public static class IClass {
 
-        protected GuiScreen screen = Minecraft.getInstance().currentScreen;
+        protected GuiScreen screen = Minecraft.getMinecraft().currentScreen;
         protected Class<?> clazz;
 
         public IClass(Class<?> clazz) {

@@ -5,19 +5,27 @@ import me.deftware.client.framework.wrappers.render.IFontRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiListExtended;
 
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Custom implementation for Minecraft < 1.13
+ */
 @SuppressWarnings("ALL")
 public class StringList extends GuiListExtended {
 
+	private List<StringEntry> entryList = new ArrayList<>();
+
 	public StringList(int width, int height, int top, int bottom, int itemHeight) {
-		super(Minecraft.getInstance(), width, height, top, bottom, itemHeight);
+		super(Minecraft.getMinecraft(), width, height, top, bottom, itemHeight);
 	}
 
 	public void clear() {
-		this.getChildren().clear();
+		entryList.clear();
 	}
 
 	public void addItem(String text) {
-		this.getChildren().add(new StringEntry(text));
+		entryList.add(new StringEntry(text));
 	}
 
 	public void doDraw(int mouseX, int mouseY, float delta) {
@@ -25,7 +33,12 @@ public class StringList extends GuiListExtended {
 	}
 
 	public void addToEventListener(IGuiScreen screen) {
-		screen.addRawEventListener(this);
+		//screen.addEventListener(this);
+	}
+
+	@Override
+	protected int getSize() {
+		return entryList.size();
 	}
 
 	@Override
@@ -38,7 +51,12 @@ public class StringList extends GuiListExtended {
 		return width - 6;
 	}
 
-	public static class StringEntry extends IGuiListEntry {
+	@Override
+	public IGuiListEntry getListEntry(int index) {
+		return entryList.get(index);
+	}
+
+	public static class StringEntry implements IGuiListEntry {
 
 		private String string;
 
@@ -47,7 +65,7 @@ public class StringList extends GuiListExtended {
 		}
 
 		@Override
-		public void drawEntry(int entryWidth, int entryHeight, int mouseX, int mouseY, boolean p_194999_5_, float partialTicks) {
+		public void drawEntry(int slotIndex, int x, int y, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean p_194999_5_, float partialTicks) {
 			String render = string;
 			if (IFontRenderer.getStringWidth(render) > entryWidth) {
 				render = "";
@@ -60,9 +78,23 @@ public class StringList extends GuiListExtended {
 					}
 				}
 			}
-			IFontRenderer.drawString(render, getX(), getY(), 0xFFFFFF);
+			IFontRenderer.drawString(render, x, y, 0xFFFFFF);
 		}
 
+		@Override
+		public void updatePosition(int slotIndex, int x, int y, float partialTicks) {
+			//
+		}
+
+		@Override
+		public boolean mousePressed(int slotIndex, int mouseX, int mouseY, int mouseEvent, int relativeX, int relativeY) {
+			return false;
+		}
+
+		@Override
+		public void mouseReleased(int slotIndex, int x, int y, int mouseEvent, int relativeX, int relativeY) {
+			//
+		}
 	}
 
 }

@@ -44,7 +44,7 @@ public class IEnchantment {
     public static IEnchantment getByName(String id) {
         ResourceLocation resourceLocation = new ResourceLocation(id);
         if (Enchantment.REGISTRY.containsKey(resourceLocation)) {
-            return new IEnchantment(Enchantment.REGISTRY.get(resourceLocation));
+            return new IEnchantment(Enchantment.REGISTRY.getObject(resourceLocation));
         } else {
             for (Object enchantment : Enchantment.REGISTRY) {
                 IEnchantment enchantmentObj = new IEnchantment((Enchantment)enchantment);

@@ -19,13 +19,23 @@ public enum ChatColors {
 		this.code = code;
 		this.index = index;
 		this.rgb = rgb;
-		this.chatColor = new ChatColor(TextFormatting.fromFormattingCode(code));
+		this.chatColor = new ChatColor(fromFormattingCode(code));
 	}
 
 	@Override
 	@SuppressWarnings("ConstantConditions")
 	public String toString() {
-		return TextFormatting.fromFormattingCode(code).toString();
+		return fromFormattingCode(code).toString();
+	}
+
+	public static TextFormatting fromFormattingCode(char index) {
+		for (TextFormatting textformatting : TextFormatting.values()) {
+			if (textformatting.toString().substring(1).equalsIgnoreCase(Character.toString(index))) {
+				return textformatting;
+			}
+		}
+
+		return TextFormatting.RESET;
 	}
 
 

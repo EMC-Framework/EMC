@@ -27,7 +27,7 @@ public class MixinGuiContainer extends MixinGuiScreen implements IMixinGuiContai
         this.shouldSendPostRenderEvent = false;
     }
 
-    @Inject(method = "render", at = @At("RETURN"))
+    @Inject(method = "drawScreen", at = @At("RETURN"))
     public void render_return(int x, int y, float p_render_3_, CallbackInfo ci) {
         new EventGuiScreenPostDraw((GuiScreen) (Object) this, x, y).broadcast();
     }

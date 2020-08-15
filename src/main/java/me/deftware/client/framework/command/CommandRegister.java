@@ -2,11 +2,10 @@ package me.deftware.client.framework.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import me.deftware.client.framework.maps.SettingsMap;
-import net.minecraft.client.Minecraft;
-import net.minecraft.command.ISuggestionProvider;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -16,14 +15,14 @@ import java.util.Map;
  */
 public class CommandRegister {
 
-    private static CommandDispatcher<ISuggestionProvider> dispatcher = new CommandDispatcher<>();
+    private static CommandDispatcher<SuggestionProvider<?>> dispatcher = new CommandDispatcher<>();
 
-    /**
-     * @return Brigadier dispatcher object
-     */
-    public static CommandDispatcher<ISuggestionProvider> getDispatcher() {
-        return dispatcher;
-    }
+	/**
+	 * @return Brigadier dispatcher object
+	 */
+	public static CommandDispatcher<SuggestionProvider<?>> getDispatcher() {
+		return dispatcher;
+	}
 
     /**
      * Clears the Brigadier dispatcher object
@@ -39,9 +38,9 @@ public class CommandRegister {
      * @param command
      */
     public static synchronized void registerCommand(CommandBuilder<?> command) {
-        CommandNode<ISuggestionProvider> node = dispatcher.register(command.build());
+        CommandNode<SuggestionProvider<?>> node = dispatcher.register(command.build());
         for (Object alias : command.getAliases()) {
-            LiteralArgumentBuilder<ISuggestionProvider> argumentBuilder = LiteralArgumentBuilder.literal((String) alias);
+            LiteralArgumentBuilder<SuggestionProvider<?>> argumentBuilder = LiteralArgumentBuilder.literal((String) alias);
             dispatcher.register(argumentBuilder.redirect(node));
         }
     }
@@ -55,19 +54,19 @@ public class CommandRegister {
         registerCommand(modCommand.getCommandBuilder());
     }
 
-    /**
-     * Returns an array of all registered commands, without any argument usage
-     *
-     * @return
-     */
-    public static ArrayList<String> listCommands() {
-        ArrayList<String> commands = new ArrayList<>();
-        RootCommandNode<?> rootNode = dispatcher.getRoot();
-        for (CommandNode<?> child : rootNode.getChildren()) {
-            commands.add(child.getName());
-        }
-        return commands;
-    }
+	/**
+	 * Returns an array of all registered commands, without any argument usage
+	 *
+	 * @return
+	 */
+	public static ArrayList<String> listCommands() {
+		ArrayList<String> commands = new ArrayList<>();
+		RootCommandNode<?> rootNode = dispatcher.getRoot();
+		for (CommandNode<?> child : rootNode.getChildren()) {
+			commands.add(child.getName());
+		}
+		return commands;
+	}
 
     /**
      * Returns an array of all registered commands, with argument usage
@@ -75,7 +74,7 @@ public class CommandRegister {
      * @return
      */
     public static ArrayList<String> getCommandsAndUsage() {
-        Map<CommandNode<ISuggestionProvider>, String> map = getSmartUsage();
+        Map<CommandNode<SuggestionProvider<?>>, String> map = getSmartUsage();
         return new ArrayList<>(map.values());
     }
 
@@ -84,17 +83,17 @@ public class CommandRegister {
      *
      * @return
      */
-    public static Map<CommandNode<ISuggestionProvider>, String> getSmartUsage() {
-        return dispatcher.getSmartUsage(dispatcher.getRoot(), Minecraft.getInstance().player.connection.getSuggestionProvider());
+    public static Map<CommandNode<SuggestionProvider<?>>, String> getSmartUsage() {
+        return dispatcher.getSmartUsage(dispatcher.getRoot(), null);
     }
 
-    /**
-     * Returns the command trigger used to trigger commands, default is a .
-     *
-     * @return
-     */
-    public static String getCommandTrigger() {
-        return (String) SettingsMap.getValue(SettingsMap.MapKeys.EMC_SETTINGS, "COMMAND_TRIGGER", ".");
-    }
+	/**
+	 * Returns the command trigger used to trigger commands, default is a .
+	 *
+	 * @return
+	 */
+	public static String getCommandTrigger() {
+		return (String) SettingsMap.getValue(SettingsMap.MapKeys.EMC_SETTINGS, "COMMAND_TRIGGER", ".");
+	}
 
 }

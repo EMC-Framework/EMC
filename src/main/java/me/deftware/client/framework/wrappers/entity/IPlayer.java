@@ -26,8 +26,8 @@ public class IPlayer extends IEntity {
     }
 
     public boolean isSelf() {
-        return player == Minecraft.getInstance().player
-                || player.getName().equals(Minecraft.getInstance().getSession().getUsername());
+        return player == Minecraft.getMinecraft().player
+                || player.getName().equals(Minecraft.getMinecraft().getSession().getUsername());
     }
 
     public IItemStack getHeldItem() {

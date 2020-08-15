@@ -14,7 +14,7 @@ public class IItemArmor extends IItem {
     }
 
     public int getDamageReduceAmount() {
-        return armor.getDamageReduceAmount();
+        return armor.damageReduceAmount;
     }
 
     public int getTypeOrdinal() {

@@ -1,6 +1,13 @@
 package me.deftware.client.framework.wrappers.gui;
 
-import net.minecraft.client.gui.IGuiEventListener;
+public interface CustomIGuiEventListener {
 
-public interface CustomIGuiEventListener extends IGuiEventListener {
+    void doHandleMouse();
+
+    void doKeyTyped(char typedChar, int keyCode);
+
+    void doMouseClicked(int mouseX, int mouseY, int mouseButton);
+
+    void focusChanged(boolean state);
+
 }

@@ -15,8 +15,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinFilledMapItem {
     @Inject(method = "updateVisiblePlayers", at = @At("TAIL"))
     private void fillMap_after(EntityPlayer player, ItemStack stack, CallbackInfo ci) {
-        NBTTagCompound compoundTag = stack.getTag();
-        if (compoundTag != null && compoundTag.contains("Decorations", 9)) {
+        NBTTagCompound compoundTag = stack.getTagCompound();
+        if (compoundTag != null && compoundTag.hasKey("Decorations", 9)) {
             // Try and Get Decoration X and Z
             EventStructureLocation event = new EventStructureLocation(new IBlockPos(compoundTag.getDouble("x"), 0, compoundTag.getDouble("z")), EventStructureLocation.StructureType.BuriedTreasure);
             event.broadcast();

@@ -1,12 +1,12 @@
 package me.deftware.client.framework.wrappers.world;
 
 import me.deftware.client.framework.chat.ChatMessage;
+import me.deftware.client.framework.wrappers.math.IAxisAlignedBB;
 import me.deftware.client.framework.wrappers.math.IVoxelShape;
 import net.minecraft.block.*;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.IRegistry;
 
 public class IBlock {
 
@@ -47,13 +47,13 @@ public class IBlock {
     private static Block getBlockFromName(String p_getBlockFromName_0_) {
         ResourceLocation lvt_1_1_ = new ResourceLocation(p_getBlockFromName_0_);
         if (Block.REGISTRY.containsKey(lvt_1_1_)) {
-            return Block.REGISTRY.get(lvt_1_1_);
+            return Block.REGISTRY.getObject(lvt_1_1_);
         }
         return null;
     }
 
     public static IVoxelShape makeCuboidShape(double x1, double y1, double z1, double x2, double y2, double z2) {
-        return new IVoxelShape(Block.makeCuboidShape(x1, y1, z1, x2, y2, z2));
+        return new IVoxelShape(new IAxisAlignedBB(x1, y1, z1, x2, y2, z2));
     }
 
     public boolean isValidBlock() {
@@ -65,11 +65,11 @@ public class IBlock {
     }
 
     public boolean isLiquid() {
-        return block == Blocks.WATER || block == Blocks.LAVA || block instanceof BlockFlowingFluid;
+        return block == Blocks.WATER || block == Blocks.LAVA || block instanceof BlockLiquid;
     }
 
     public boolean isCaveAir() {
-        return block == Blocks.CAVE_AIR;
+        return block == Blocks.AIR;
     }
 
     public Block getBlock() {
@@ -77,15 +77,15 @@ public class IBlock {
     }
 
     public int getID() {
-        return Block.REGISTRY.getId(block);
+        return Block.REGISTRY.getIDForObject(block);
     }
 
     public ChatMessage getLocalizedName() {
-        return new ChatMessage().fromText(block.getNameTextComponent(), false);
+        return new ChatMessage().fromString(block.getLocalizedName());
     }
 
     public String getBlockKey() {
-        return getTranslationKey().substring("block.minecraft.".length());
+        return getTranslationKey().substring("tile.".length());
     }
 
     public String getTranslationKey() {
@@ -112,7 +112,7 @@ public class IBlock {
         } else if (type.equals(IBlockTypes.BlockSoulSand)) {
             return block instanceof BlockSoulSand;
         } else if (type.equals(IBlockTypes.FluidBlock)) {
-            return block instanceof BlockFlowingFluid;
+            return block instanceof BlockLiquid;
         }
         return false;
     }

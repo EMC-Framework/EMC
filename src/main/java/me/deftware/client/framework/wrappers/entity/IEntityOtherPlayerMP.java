@@ -8,10 +8,10 @@ import net.minecraft.entity.player.EntityPlayer;
 public class IEntityOtherPlayerMP extends EntityOtherPlayerMP {
 
     public IEntityOtherPlayerMP() {
-        super(Minecraft.getInstance().world, Minecraft.getInstance().player.getGameProfile());
-        clonePlayer(Minecraft.getInstance().player, true);
-        copyLocationAndAnglesFrom(Minecraft.getInstance().player);
-        rotationYawHead = Minecraft.getInstance().player.rotationYawHead;
+        super(Minecraft.getMinecraft().world, Minecraft.getMinecraft().player.getGameProfile());
+        clonePlayer(Minecraft.getMinecraft().player, true);
+        copyLocationAndAnglesFrom(Minecraft.getMinecraft().player);
+        rotationYawHead = Minecraft.getMinecraft().player.rotationYawHead;
     }
 
     public void clonePlayer(EntityPlayer oldPlayer, boolean respawnFromEnd) {

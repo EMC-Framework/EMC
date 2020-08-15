@@ -44,8 +44,8 @@ public abstract class MixinRenderLivingBase<T extends EntityLivingBase> {
                 flip = names.equals(s);
             }
             if (flip) {
-                GlStateManager.translatef(0.0F, entity.height + 0.1F, 0.0F);
-                GlStateManager.rotatef(180.0F, 0.0F, 0.0F, 1.0F);
+                GlStateManager.translate(0.0F, entity.height + 0.1F, 0.0F);
+                GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
             }
         }
     }

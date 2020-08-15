@@ -1,16 +1,15 @@
-import org.gradle.internal.os.OperatingSystem
+import org.apache.tools.ant.filters.ReplaceTokens
 
 buildscript {
     repositories {
         maven { url = 'https://repo.spongepowered.org/maven' }
         maven { url = 'https://plugins.gradle.org/m2/' }
-        maven { url = 'https://gitlab.com/EMC-Framework/maven/raw/master/' }
         maven { url = 'https://files.minecraftforge.net/maven' }
     }
 
     dependencies {
         // classpath "io.freefair.gradle:lombok-plugin:2.5.0"
-        classpath "com.github.Chocohead:ForgeGradle:moderniser-SNAPSHOT"
+        classpath "net.minecraftforge.gradle:ForgeGradle:${project.forgeGradleVersion}"
         classpath "org.spongepowered:mixingradle:${project.mixinGradleVersion}"
         classpath "com.github.jengelman.gradle.plugins:shadow:2.0.0"
     }
@@ -30,10 +29,7 @@ def getVersionFromJava() {
     return "${ver}.${patch}".toString()
 }
 
-def minecraftRoot = System.getenv('APPDATA') + "/.minecraft"
-if (OperatingSystem.current().isMacOsX()) {
-    minecraftRoot = System.getenv('HOME') + "/Library/Application Support/minecraft"
-}
+def forgeBuild = project.hasProperty('forgebuild') ? project.property('forgebuild').toBoolean() : false
 
 group = 'me.deftware'
 version = getVersionFromJava()
@@ -41,18 +37,28 @@ version = getVersionFromJava()
 // apply plugin: 'io.freefair.lombok'
 apply plugin: 'maven'
 apply plugin: 'java'
-apply plugin: 'net.minecraftforge.gradle.tweaker-client'
+if (forgeBuild) {
+    apply plugin: 'net.minecraftforge.gradle.forge'
+} else {
+    apply plugin: 'net.minecraftforge.gradle.tweaker-client'
+}
 apply plugin: 'org.spongepowered.mixin'
 apply plugin: "com.github.johnrengelman.shadow"
 
 sourceCompatibility = targetCompatibility = 1.8
+compileJava {
+    sourceCompatibility = targetCompatibility = 1.8
+}
 
 minecraft {
-    version = project.minecraftVersion
+    version = forgeBuild ? project.minecraftVersion + project.forgeVersion : project.minecraftVersion
     runDir = 'run'
     mappings = project.mappingsVer
+    useDepAts = true
     makeObfSourceJar = true
-    tweakClass = 'me.deftware.launch.Launcher'
+    if (!forgeBuild) {
+        tweakClass = 'me.deftware.launch.Launcher'
+    }
 }
 
 repositories {
@@ -70,76 +76,112 @@ configurations {
 }
 
 dependencies {
-    implementation('org.dimdev:mixin:0.7.11-SNAPSHOT') { transitive = false }
-    implementation('net.minecraft:launchwrapper:1.12') { transitive = false }
-    implementation 'com.google.code.gson:gson:2.8.5'
-    implementation 'org.ow2.asm:asm:6.2'
-    implementation 'org.ow2.asm:asm-commons:6.2'
+    compile('org.spongepowered:mixin:0.7.11-SNAPSHOT') {
+        exclude module: 'launchwrapper'
+        exclude module: 'guava'
+        exclude module: 'gson'
+        exclude module: 'commons-io'
+    }
+    compile 'com.mojang:brigadier:1.0.17'
 }
 
 mixin {
-    defaultObfuscationEnv notch
+    defaultObfuscationEnv forgeBuild ? searge : notch
     add sourceSets.main, "mixins.emc.refmap.json"
+}
+
+tasks.jar.configure {
+    classifier = 'default'
 }
 
 shadowJar {
     dependencies {
-        include('org.dimdev:mixin')
+        include(dependency('org.spongepowered:mixin'))
+        include(dependency('com.mojang:brigadier'))
     }
-    classifier = 'full'
+    classifier = null
 }
 
-//noinspection GroovyAssignabilityCheck
-task createPom {
-    doLast {
-        pom {
-            //noinspection GroovyAssignabilityCheck
-            project {
-                groupId "me.deftware"
-                artifactId "EMC"
-                version "${version}-${project.minecraftVersion}"
-            }
-        }.writeTo("maven/me/deftware/EMC/${version}-${project.minecraftVersion}/EMC-${version}-${project.minecraftVersion}.pom")
-    }
+task createPom << {
+    pom {
+        project {
+            groupId "me.deftware"
+            artifactId "EMC"
+            version "${version}-${project.minecraftVersion}"
+        }
+    }.writeTo("maven/me/deftware/EMC/${version}-${project.minecraftVersion}/EMC-${version}-${project.minecraftVersion}.pom")
 }
 
-//noinspection GroovyAssignabilityCheck
 task copyBuilds(type: Copy) {
     from "$rootDir/build/libs"
-    into "$rootDir/maven/me/deftware/EMC/${version}-${project.minecraftVersion}/"
+    into "$rootDir/maven/me/deftware/" + (forgeBuild ? "EMC-Forge" : "EMC") + "/${version}-${project.minecraftVersion}/"
+    if (forgeBuild) {
+        rename { String fileName ->
+            fileName.replace("EMC", "EMC-Forge")
+        }
+    }
     rename { String fileName ->
         fileName.replace(version, "${version}-${project.minecraftVersion}")
     }
     doLast {
-        project.ant.checksum(file: "$rootDir/maven/me/deftware/EMC/${version}-${project.minecraftVersion}/EMC-${version}-${project.minecraftVersion}.jar", algorithm: "sha1", todir: "$rootDir/maven/me/deftware/EMC/${version}-${project.minecraftVersion}/")
-    }
-}
-
-//noinspection GroovyAssignabilityCheck
-task generateApiDocumentation(type: Javadoc) {
-    source = ['src/main/java/me/deftware/client']
-    title = "EMC Framework Documentation"
-    destinationDir = file("docs")
-    failOnError false
-}
-
-//noinspection GroovyAssignabilityCheck
-task copyToMinecraft(type: Copy) {
-    from "$rootDir/build/libs/EMC-${version}.jar"
-    into "${minecraftRoot}/libraries/me/deftware/EMC/${version}-${project.minecraftVersion}/"
-    rename { String fileName ->
-        fileName.replace("${version}", "${version}-${project.minecraftVersion}")
+        project.ant.checksum(file: "$rootDir/maven/me/deftware/" + (forgeBuild ? "EMC-Forge" : "EMC") + "/${version}-${project.minecraftVersion}/" + (forgeBuild ? "EMC-Forge" : "EMC") + "-${version}-${project.minecraftVersion}.jar", algorithm: "sha1", todir: "$rootDir/maven/me/deftware/" + (forgeBuild ? "EMC-Forge" : "EMC") + "/${version}-${project.minecraftVersion}/")
     }
 }
 
 reobf {
     shadowJar {
-        mappingType = 'NOTCH'
+        mappingType = forgeBuild ? 'SEARGE' : 'NOTCH'
         classpath = sourceSets.main.compileClasspath
     }
 }
 
+if (forgeBuild) {
+    jar {
+        manifest.attributes(
+                "EMC-Version": version,
+                "EMC-ForgeBuild": forgeBuild,
+                "MixinConfigs": 'mixins.emc.json',
+                "tweakClass": 'org.spongepowered.asm.launch.MixinTweaker',
+                "TweakOrder": 0,
+                "FMLCorePluginContainsFMLMod": 'me.deftware.forge.MixinLoader',
+                "Manifest-Version": 1.0
+        )
+    }
+} else {
+    jar {
+        manifest.attributes(
+                "EMC-Version": version,
+                "EMC-ForgeBuild": forgeBuild,
+                "Manifest-Version": 1.0
+        )
+    }
+}
+
+println "Building EMC ${version} for " + (forgeBuild ? "Forge" : "Vanilla Minecraft") + "..."
+delete "$rootDir/build/libs"
 build.dependsOn(shadowJar)
-build.dependsOn(createPom)
-build.finalizedBy(copyBuilds)
-copyToMinecraft.dependsOn(build)
+if (!forgeBuild) {
+    build.dependsOn(createPom)
+}
+
+build.dependsOn(copyBuilds)
+
+tasks.build.doLast(){
+    if (forgeBuild) {
+        copy {
+            from "$rootDir/build/libs/EMC-${version}.jar"
+            into "$rootDir/run/mods/"
+            rename("EMC-${version}.jar", "EMC.jar")
+        }
+    }
+}
+
+// Only applicable for some versions
+def copyDir = "$compileJava.temporaryDir/replaced"
+task tokenReplace(type: Copy) {
+    from(sourceSets.main.java.sourceDirectories)
+    into copyDir
+    filter(ReplaceTokens, tokens: [FORGE: forgeBuild.toString()])
+}
+compileJava.setSource(copyDir)
+compileJava.dependsOn(tokenReplace)

@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(OpenGlHelper.class)
 public class MixinOpenGlHelper {
 
-	@Inject(method = "init", at = @At("RETURN"))
+	@Inject(method = "initializeTextures", at = @At("RETURN"))
 	private static void initializeTextures(CallbackInfo ci) {
 		OpenGlHelper.GL_DEPTH_ATTACHMENT = 33306;
 	}

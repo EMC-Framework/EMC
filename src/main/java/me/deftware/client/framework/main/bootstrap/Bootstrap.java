@@ -199,7 +199,7 @@ public class Bootstrap {
         }
         Bootstrap.mods.clear();
         registerFrameworkCommands();
-        Minecraft.getInstance().gameSettings.gammaSetting = 0.5F;
+        Minecraft.getMinecraft().gameSettings.gammaSetting = 0.5F;
         System.gc();
     }
 

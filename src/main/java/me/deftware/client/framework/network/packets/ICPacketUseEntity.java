@@ -6,8 +6,8 @@ import net.minecraft.network.play.client.CPacketUseEntity;
 
 public class ICPacketUseEntity extends IPacket {
 
-    public ICPacketUseEntity(IEntity entity) {
-        super(new CPacketUseEntity(entity.getEntity()));
-    }
+	public ICPacketUseEntity(IEntity entity) {
+		super(new CPacketUseEntity(entity.getEntity()));
+	}
 
 }

@@ -9,9 +9,7 @@ import me.deftware.mixin.imp.IMixinGuiScreen;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.item.ItemStack;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -31,35 +29,25 @@ public class MixinGuiScreen implements IMixinGuiScreen {
     protected FontRenderer fontRenderer;
 
     @Shadow
-    @Final
-    protected List<GuiButton> buttons;
-
-    @Shadow
-    @Final
-    protected List<IGuiEventListener> children;
+    protected List<GuiButton> buttonList;
 
     @Override
     public List<GuiButton> getButtonList() {
-        return buttons;
+        return buttonList;
     }
 
     @Override
-    public FontRenderer getFont() {
+    public FontRenderer getFontRenderer() {
         return fontRenderer;
     }
 
-    @Override
-    public List<IGuiEventListener> getEventList() {
-        return children;
-    }
-
-    @Inject(method = "render", at = @At("HEAD"))
-    public void render(int x, int y, float p_render_3_, CallbackInfo ci) {
+    @Inject(method = "drawScreen", at = @At("HEAD"))
+    public void drawScreen(int x, int y, float p_render_3_, CallbackInfo ci) {
         new EventGuiScreenDraw((GuiScreen) (Object) this, x, y).broadcast();
     }
 
-    @Inject(method = "render", at = @At("RETURN"))
-    public void render_return(int x, int y, float p_render_3_, CallbackInfo ci) {
+    @Inject(method = "drawScreen", at = @At("RETURN"))
+    public void drawScreen_return(int x, int y, float p_render_3_, CallbackInfo ci) {
         if (shouldSendPostRenderEvent) {
             new EventGuiScreenPostDraw((GuiScreen) (Object) this, x, y).broadcast();
         }
@@ -79,4 +67,5 @@ public class MixinGuiScreen implements IMixinGuiScreen {
         }
         cir.setReturnValue(modifiedTextList);
     }
+
 }

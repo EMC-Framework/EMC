@@ -7,17 +7,17 @@ import net.minecraft.network.play.client.CPacketPlayer;
 
 public class ICPacketPlayer extends IPacket {
 
-    public ICPacketPlayer(Packet<?> packet) {
-        super(packet);
-    }
+	public ICPacketPlayer(Packet<?> packet) {
+		super(packet);
+	}
 
-    public ICPacketPlayer() {
-        super(new CPacketPlayer());
-    }
+	public ICPacketPlayer() {
+		super(new CPacketPlayer());
+	}
 
-    public void setOnGround(boolean state) {
-        ((IMixinCPacketPlayer) getPacket()).setOnGround(state);
-    }
+	public void setOnGround(boolean state) {
+		((IMixinCPacketPlayer) getPacket()).setOnGround(state);
+	}
 
     public void setY(double y) {
         ((IMixinCPacketPlayer) getPacket()).setY(y);

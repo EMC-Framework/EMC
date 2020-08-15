@@ -1,8 +1,8 @@
 {
   "required": true,
   "package": "me.deftware.mixin.mixins",
-  "compatibilityLevel": "JAVA_8",
   "refmap": "mixins.emc.refmap.json",
+  "compatibilityLevel": "JAVA_8",
   "mixins": [
     "MixinAbstractClientPlayer",
     "MixinAbstractHorse",
@@ -12,7 +12,6 @@
     "MixinBlockFluidRenderer",
     "MixinBlockModelRenderer",
     "MixinBlockSoulSand",
-    "MixinClientBrandRetriever",
     "MixinCPacketPlayer",
     "MixinEnderEyeEntity",
     "MixinEntity",
@@ -22,7 +21,6 @@
     "MixinFilledMapItem",
     "MixinOpenGlHelper",
     "MixinGuiButton",
-    "MixinGuiChat",
     "MixinGuiConnecting",
     "MixinGuiContainer",
     "MixinGuiDisconnected",
@@ -37,10 +35,8 @@
     "MixinItemStack",
     "MixinItemTool",
     "MixinKeyBinding",
-    "MixinKeyboardListener",
     "MixinLayerDeadmau5Head",
     "MixinMinecraft",
-    "MixinMouseHelper",
     "MixinMovementInputFromOptions",
     "MixinNetHandlerLoginClient",
     "MixinNetHandlerPlayClient",
@@ -54,14 +50,13 @@
     "MixinRenderPlayer",
     "MixinRenderSystem",
     "MixinServerListEntryNormal",
-    "MixinSplashScreen",
     "MixinTextRenderer",
     "MixinTextureManager",
     "MixinTimer",
     "MixinVisGraph",
     "MixinWorldClient",
-    "MixinDebugHud",
-    "MixinWindow",
-    "MixinWorld"
+    "MixinWorld",
+    "MixinOpenGlHelper",
+    "MixinDebugHud"
   ]
 }

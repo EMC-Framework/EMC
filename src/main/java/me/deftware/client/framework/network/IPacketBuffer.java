@@ -5,6 +5,8 @@ import me.deftware.client.framework.wrappers.item.IItemStack;
 import me.deftware.client.framework.wrappers.world.IBlockPos;
 import net.minecraft.network.PacketBuffer;
 
+import java.io.IOException;
+
 public class IPacketBuffer {
 
     public PacketBuffer buffer;
@@ -57,7 +59,7 @@ public class IPacketBuffer {
         return buffer.readString(0);
     }
 
-    public IItemStack readItemStack() {
+    public IItemStack readItemStack() throws IOException {
         return new IItemStack(buffer.readItemStack());
     }
 

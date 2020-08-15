@@ -1,21 +1,19 @@
 package me.deftware.client.framework.wrappers.math;
 
-
-import net.minecraft.util.math.shapes.VoxelShape;
-
+// 1.12.2 and Below uses IAxisAlignedBB instead
 public class IVoxelShape {
 
-    private final VoxelShape shape;
+    private final IAxisAlignedBB shape;
 
-    public IVoxelShape(VoxelShape shape) {
+    public IVoxelShape(IAxisAlignedBB shape) {
         this.shape = shape;
     }
 
     public IAxisAlignedBB getBoundingBox() {
-        return new IAxisAlignedBB(shape.getBoundingBox());
+        return new IAxisAlignedBB(shape.getAABB());
     }
 
-    public VoxelShape getVoxelShape() {
+    public IAxisAlignedBB getVoxelShape() {
         return shape;
     }
 

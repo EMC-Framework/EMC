@@ -3,10 +3,10 @@ package me.deftware.mixin.mixins;
 import me.deftware.client.framework.chat.ChatBuilder;
 import me.deftware.client.framework.chat.style.ChatColors;
 import me.deftware.client.framework.command.CommandRegister;
+import me.deftware.client.framework.command.CustomSuggestionProvider;
 import me.deftware.client.framework.event.events.*;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
 import me.deftware.mixin.imp.IMixinEntityPlayerSP;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.init.MobEffects;
@@ -37,7 +37,7 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
     @Final
     public NetHandlerPlayClient connection;
 
-    @Redirect(method = "livingTick", at = @At(value = "INVOKE", target = "net/minecraft/client/entity/EntityPlayerSP.isHandActive()Z", ordinal = 0))
+    @Redirect(method = "onLivingUpdate", at = @At(value = "INVOKE", target = "net/minecraft/client/entity/EntityPlayerSP.isHandActive()Z", ordinal = 0))
     private boolean itemUseSlowdownEvent(EntityPlayerSP self) {
         EventSlowdown event = new EventSlowdown(EventSlowdown.SlowdownType.Item_Use);
         event.broadcast();
@@ -47,7 +47,7 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
         return isHandActive();
     }
 
-    @Redirect(method = "livingTick", at = @At(value = "INVOKE", target = "net/minecraft/util/FoodStats.getFoodLevel()I"))
+    @Redirect(method = "onLivingUpdate", at = @At(value = "INVOKE", target = "net/minecraft/util/FoodStats.getFoodLevel()I"))
     private int hungerSlowdownEvent(FoodStats self) {
         EventSlowdown event = new EventSlowdown(EventSlowdown.SlowdownType.Hunger);
         event.broadcast();
@@ -57,7 +57,7 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
         return self.getFoodLevel();
     }
 
-    @Redirect(method = "livingTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;isPotionActive(Lnet/minecraft/potion/Potion;)Z"))
+    @Redirect(method = "onLivingUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;isPotionActive(Lnet/minecraft/potion/Potion;)Z"))
     private boolean blindlessSlowdownEvent(EntityPlayerSP self, Potion potion) {
         EventSlowdown event = new EventSlowdown(EventSlowdown.SlowdownType.Blindness);
         event.broadcast();
@@ -67,8 +67,8 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
         return self.isPotionActive(MobEffects.BLINDNESS);
     }
 
-    @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
-    private void tick(CallbackInfo ci) {
+    @Inject(method = "onUpdate", at = @At("HEAD"), cancellable = true)
+    private void onUpdate(CallbackInfo ci) {
         EntityPlayerSP entity = (EntityPlayerSP) (Object) this;
         EventUpdate event = new EventUpdate(entity.posX, entity.posY, entity.posZ, entity.rotationYaw, entity.rotationPitch, entity.onGround);
         event.broadcast();
@@ -86,7 +86,7 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
                 connection.sendPacket(new CPacketChatMessage(event.getMessage()));
             } else {
                 try {
-                    CommandRegister.getDispatcher().execute(message.substring(CommandRegister.getCommandTrigger().length()), Minecraft.getInstance().player.getCommandSource());
+                    CommandRegister.getDispatcher().execute(message.substring(CommandRegister.getCommandTrigger().length()), new CustomSuggestionProvider());
                 } catch (Exception ex) {
                     Bootstrap.logger.error("Failed to execute command", ex);
                     new ChatBuilder().withText(ex.getMessage()).withColor(ChatColors.RED).build().print();

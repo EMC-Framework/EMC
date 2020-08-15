@@ -10,7 +10,7 @@ import net.minecraft.client.Minecraft;
 public class ToastAPI {
 
 	public static void addToast(ToastImpl toast) {
-		Minecraft.getInstance().getToastGui().add(toast);
+		Minecraft.getMinecraft().getToastGui().add(toast);
 	}
 
 }

@@ -6,12 +6,12 @@ import net.minecraft.client.Minecraft;
 public class IGameSettings {
 
     public static int getLimitFramerate() {
-        return Minecraft.getInstance().gameSettings.limitFramerate;
+        return Minecraft.getMinecraft().gameSettings.limitFramerate;
     }
 
     public static void setLimitFramerate(int framerate) {
-        Minecraft.getInstance().gameSettings.limitFramerate = framerate;
-        //Minecraft.getInstance().mainWindow.setFramerateLimit(framerate);
+        Minecraft.getMinecraft().gameSettings.limitFramerate = framerate;
+        //Minecraft.getMinecraft().mainWindow.setFramerateLimit(framerate);
     }
 
 }

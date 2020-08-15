@@ -4,6 +4,7 @@ package me.deftware.client.framework.wrappers;
 import me.deftware.mixin.imp.IMixinMinecraft;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.input.Mouse;
 
 import java.util.ArrayList;
 
@@ -18,19 +19,16 @@ public class IMouse {
      */
     public static void clickMouse(int button) {
         if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
-            ((IMixinMinecraft) Minecraft.getInstance()).doClickMouse();
+            ((IMixinMinecraft) Minecraft.getMinecraft()).doClickMouse();
         } else if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
-            ((IMixinMinecraft) Minecraft.getInstance()).doRightClickMouse();
+            ((IMixinMinecraft) Minecraft.getMinecraft()).doRightClickMouse();
         } else if (button == GLFW.GLFW_MOUSE_BUTTON_MIDDLE) {
-            ((IMixinMinecraft) Minecraft.getInstance()).doMiddleClickMouse();
+            ((IMixinMinecraft) Minecraft.getMinecraft()).doMiddleClickMouse();
         }
     }
 
     public static boolean isButtonDown(int button) {
-        if (button == 0 || button == 1) {
-            return GLFW.glfwGetMouseButton(Minecraft.getInstance().mainWindow.getHandle(), (button == 0 ? GLFW.GLFW_MOUSE_BUTTON_1 : GLFW.GLFW_MOUSE_BUTTON_2)) == 1;
-        }
-        return false;
+        return Mouse.getEventButton() == button;
     }
 
     public static void registerScrollHook(MouseScrollCallback cb) {

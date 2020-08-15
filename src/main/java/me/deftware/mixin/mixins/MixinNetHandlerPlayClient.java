@@ -4,6 +4,7 @@ import io.netty.buffer.Unpooled;
 import me.deftware.client.framework.event.events.EventAnimation;
 import me.deftware.client.framework.event.events.EventChunkDataReceive;
 import me.deftware.client.framework.event.events.EventKnockback;
+import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -28,8 +29,8 @@ public class MixinNetHandlerPlayClient {
             connection.sendPacket(packet);
             return;
         }
-        // Overwrite the brand packet to send vanilla, because Rift modifies it and some server do not like it
-        connection.sendPacket(new CPacketCustomPayload(CPacketCustomPayload.BRAND, (new PacketBuffer(Unpooled.buffer())).writeString("vanilla")));
+        // Overwrite the brand packet to send vanilla, because Forge modifies it and some server do not like it
+        connection.sendPacket(new CPacketCustomPayload(ClientBrandRetriever.getClientModName(), (new PacketBuffer(Unpooled.buffer())).writeString("vanilla")));
     }
 
     @Inject(method = "handleEntityStatus", at = @At("HEAD"), cancellable = true)

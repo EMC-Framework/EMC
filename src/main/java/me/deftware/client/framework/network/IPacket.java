@@ -28,6 +28,10 @@ public class IPacket {
         this.packet = packet;
     }
 
+    public IPacket() {
+        this.packet = null;
+    }
+
     public Packet<?> getPacket() {
         return packet;
     }
@@ -40,15 +44,19 @@ public class IPacket {
         packet.writePacketData(buffer.buffer);
     }
 
+    public void setPacket(Packet<?> packet) {
+        this.packet = packet;
+    }
+
     public void sendPacket() {
-        Minecraft.getInstance().player.connection.sendPacket(packet);
+        Minecraft.getMinecraft().player.connection.sendPacket(packet);
     }
 
     /**
      * Bypasses this event, and can be used to prevent an infinite loop
      */
     public void sendImmediately() {
-        ((IMixinNetworkManager) Minecraft.getInstance().player.connection.getNetworkManager()).sendPacketImmediately(packet);
+        ((IMixinNetworkManager) Minecraft.getMinecraft().player.connection.getNetworkManager()).sendPacketImmediately(packet);
     }
 
     /**

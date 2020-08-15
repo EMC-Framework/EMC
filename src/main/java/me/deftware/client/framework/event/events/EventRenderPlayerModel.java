@@ -14,7 +14,7 @@ public class EventRenderPlayerModel extends Event {
 	private final ChatMessage name;
 
 	public EventRenderPlayerModel(Entity entity) {
-		this.name = new ChatMessage().fromText(entity.getName(), false);
+		this.name = new ChatMessage().fromString(entity.getName());
 	}
 
 	public boolean isShouldRender() {

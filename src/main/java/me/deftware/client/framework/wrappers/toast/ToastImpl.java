@@ -41,7 +41,7 @@ public class ToastImpl implements IToast {
 		manager.drawTexturedModalRect(0, 0, 0, 0, width, height);
 
 		// Title
-		manager.getMinecraft().fontRenderer.drawString(title, 30.0F, 7.0F, -1);
+		manager.getMinecraft().fontRenderer.drawString(title, 30.0F, 7.0F, -1, false);
 
 		// Draw text
 		if (text != null && text.length != 0) {
@@ -50,7 +50,7 @@ public class ToastImpl implements IToast {
 					index++;
 				}
 			}
-			manager.getMinecraft().fontRenderer.drawString(text[index], 30.0F, 18f, -1);
+			manager.getMinecraft().fontRenderer.drawString(text[index], 30.0F, 18f, -1, false);
 		}
 
 		// Icon

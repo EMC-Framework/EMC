@@ -17,6 +17,6 @@ public class MixinMovementInputFromOptions {
         if (event.isCanceled()) {
             return false;
         }
-        return Minecraft.getInstance().gameSettings.keyBindSneak.isKeyDown();
+        return Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown();
     }
 }

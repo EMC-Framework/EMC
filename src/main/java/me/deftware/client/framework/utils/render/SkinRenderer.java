@@ -4,7 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.texture.ThreadDownloadImageData;
+import net.minecraft.client.renderer.ThreadDownloadImageData;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;

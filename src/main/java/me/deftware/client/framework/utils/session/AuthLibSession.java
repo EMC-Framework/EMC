@@ -68,12 +68,12 @@ public class AuthLibSession {
 	}
 
 	public void setSession(Session session) {
-		((IMixinMinecraft) Minecraft.getInstance()).setSession(buildSession());
-		((IMixinMinecraft) Minecraft.getInstance()).setSessionService(authenticationService.createMinecraftSessionService());
+		((IMixinMinecraft) Minecraft.getMinecraft()).setSession(buildSession());
+		((IMixinMinecraft) Minecraft.getMinecraft()).setSessionService(authenticationService.createMinecraftSessionService());
 	}
 
 	public void setOfflineSession(String username) {
-		((IMixinMinecraft) Minecraft.getInstance()).setSession(new Session(username, "", "0", "legacy"));
+		((IMixinMinecraft) Minecraft.getMinecraft()).setSession(new Session(username, "", "0", "legacy"));
 	}
 
 }

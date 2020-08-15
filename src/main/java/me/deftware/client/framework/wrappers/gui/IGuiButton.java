@@ -17,20 +17,24 @@ public abstract class IGuiButton extends GuiButton implements CustomIGuiEventLis
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float float_1) {
+    public void drawButton(Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
         if (onDraw(mouseX, mouseY) == 0) {
-            super.render(mouseX, mouseY, float_1);
+            super.drawButton(minecraft, mouseX, mouseY, partialTicks);
         }
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == 0 && this.isPressable(mouseX, mouseY)) {
-            if (shouldPlaySound) this.playPressSound(Minecraft.getInstance().getSoundHandler());
+    public boolean mousePressed(Minecraft minecraft, int mouseX, int mouseY) {
+        if (super.mousePressed(minecraft, mouseX, mouseY)) {
+            if (shouldPlaySound) this.playPressSound(Minecraft.getMinecraft().getSoundHandler());
             onButtonClick(x, y);
             return true;
         }
         return false;
+    }
+
+    public void doHandleMouse() {
+
     }
 
     public abstract void onButtonClick(double mouseX, double mouseY);
@@ -59,16 +63,16 @@ public abstract class IGuiButton extends GuiButton implements CustomIGuiEventLis
         return x;
     }
 
-    protected void setButtonX(int x) {
-        this.x = x;
-    }
-
     protected int getButtonY() {
         return y;
     }
 
     protected void setButtonY(int y) {
         this.y = y;
+    }
+
+    protected void setButtonX(int x) {
+        this.x = x;
     }
 
     protected int getTheButtonWidth() {
@@ -92,7 +96,7 @@ public abstract class IGuiButton extends GuiButton implements CustomIGuiEventLis
     }
 
     protected void setButtonHovered(boolean state) {
-        ((IMixinGuiButton) this).setIsHovered(state);
+        hovered = state;
     }
 
     public ChatMessage getButtonText() {

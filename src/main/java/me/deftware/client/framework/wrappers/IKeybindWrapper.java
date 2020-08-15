@@ -3,12 +3,13 @@ package me.deftware.client.framework.wrappers;
 import me.deftware.mixin.imp.IMixinKeyBinding;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.client.util.InputMappings;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.input.Keyboard;
 
 public class IKeybindWrapper {
 
     public static boolean isPressed(IKeybind bind) {
-        return bind.bind.isPressed();
+        return bind.bind.isKeyDown();
     }
 
     public static void setPressed(IKeybind bind, boolean state) {
@@ -16,7 +17,7 @@ public class IKeybindWrapper {
     }
 
     public static boolean isKeyDown(IKeybind bind) {
-        return InputMappings.isKeyDown(((IMixinKeyBinding) bind.bind).getInput().getKeyCode());
+        return Keyboard.isKeyDown(((IMixinKeyBinding) bind.bind).getKey());
     }
 
     public static String getKeyName(int key) {
@@ -26,21 +27,22 @@ public class IKeybindWrapper {
         return String.valueOf((char) key);
     }
 
+
     public static boolean isKeyDown(int key) {
-        return InputMappings.isKeyDown(key);
+        return Keyboard.isKeyDown(GLFW.fromGLFW.getOrDefault(key, key));
     }
 
     public enum IKeybind {
 
-        SNEAK(Minecraft.getInstance().gameSettings.keyBindSneak),
-        USEITEM(Minecraft.getInstance().gameSettings.keyBindUseItem),
-        JUMP(Minecraft.getInstance().gameSettings.keyBindJump),
-        SPRINT(Minecraft.getInstance().gameSettings.keyBindSprint),
-        FORWARD(Minecraft.getInstance().gameSettings.keyBindForward),
-        BACK(Minecraft.getInstance().gameSettings.keyBindBack),
-        LEFT(Minecraft.getInstance().gameSettings.keyBindLeft),
-        RIGHT(Minecraft.getInstance().gameSettings.keyBindRight),
-        ATTACK(Minecraft.getInstance().gameSettings.keyBindAttack);
+        SNEAK(Minecraft.getMinecraft().gameSettings.keyBindSneak),
+        USEITEM(Minecraft.getMinecraft().gameSettings.keyBindUseItem),
+        JUMP(Minecraft.getMinecraft().gameSettings.keyBindJump),
+        SPRINT(Minecraft.getMinecraft().gameSettings.keyBindSprint),
+        FORWARD(Minecraft.getMinecraft().gameSettings.keyBindForward),
+        BACK(Minecraft.getMinecraft().gameSettings.keyBindBack),
+        LEFT(Minecraft.getMinecraft().gameSettings.keyBindLeft),
+        RIGHT(Minecraft.getMinecraft().gameSettings.keyBindRight),
+        ATTACK(Minecraft.getMinecraft().gameSettings.keyBindAttack);
 
         KeyBinding bind;
 
