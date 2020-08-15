@@ -153,17 +153,17 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
         }
     }
 
-    @Inject(method = "getVersionType", at = @At("HEAD"), cancellable = true)
+    /*@Inject(method = "getVersionType", at = @At("HEAD"), cancellable = true)
     private void onGetVersionType(CallbackInfoReturnable<String> cir) {
         cir.setReturnValue("release");
-    }
+    }*/
 
     @Inject(method = "getVersion", at = @At("TAIL"), cancellable = true)
     private void onGetGameVersion(CallbackInfoReturnable<String> cir) {
         cir.setReturnValue(RealmsSharedConstants.VERSION_STRING);
     }
 
-	@Inject(method = "runTickMouse", at = @At(value = "INVOKE_ASSIGN", target = "org/lwjgl/input/Mouse.getEventButton()I", remap = false))
+	@Inject(method = "clickMouse", at = @At(value = "INVOKE_ASSIGN", target = "org/lwjgl/input/Mouse.getEventButton()I", remap = false))
 	private void onMouseEvent(CallbackInfo info) {
 		if (currentScreen != null) {
 			return;
@@ -171,7 +171,7 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
 		new EventMouseClick(Mouse.getEventButton()).broadcast();
 	}
 
-	@Inject(method = "runTickKeyboard", at = @At(value = "INVOKE_ASSIGN", target = "org/lwjgl/input/Keyboard.getEventKeyState()Z", remap = false))
+	@Inject(method = "dispatchKeypresses", at = @At(value = "INVOKE_ASSIGN", target = "org/lwjgl/input/Keyboard.getEventKeyState()Z", remap = false))
 	private void onKeyEvent(CallbackInfo ci) {
 		if (Keyboard.getEventKeyState()) {
 			new EventKeyAction(Keyboard.getEventKey()).broadcast();

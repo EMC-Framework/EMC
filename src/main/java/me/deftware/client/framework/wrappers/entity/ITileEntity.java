@@ -1,7 +1,6 @@
 package me.deftware.client.framework.wrappers.entity;
 
 import me.deftware.client.framework.wrappers.world.IBlockPos;
-import net.minecraft.block.BlockChest;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityEnderChest;
@@ -16,11 +15,10 @@ public class ITileEntity {
 
     public ITileEntity(TileEntity entity) {
         chestType = entity instanceof TileEntityChest
-                ? ((TileEntityChest)entity).getChestType() == BlockChest.Type.TRAP ? IChestType.TRAPPED_CHEST : IChestType.CHEST
+                ? IChestType.CHEST
                 : entity instanceof TileEntityEnderChest ? IChestType.ENDER_CHEST : null;
         if (chestType != null) {
-            color = chestType.equals(IChestType.TRAPPED_CHEST) ? Color.RED
-                    : chestType.equals(IChestType.CHEST) ? Color.ORANGE
+            color = chestType.equals(IChestType.CHEST) ? Color.ORANGE
                     : chestType.equals(IChestType.ENDER_CHEST) ? Color.BLUE : Color.PINK;
         }
         position = new IBlockPos(entity.getPos());

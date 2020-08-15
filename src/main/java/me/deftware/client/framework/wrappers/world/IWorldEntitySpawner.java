@@ -1,12 +1,12 @@
 package me.deftware.client.framework.wrappers.world;
 
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.world.WorldEntitySpawner;
+import net.minecraft.world.SpawnerAnimals;
 
 public class IWorldEntitySpawner {
 
     public static boolean canCreatureTypeSpawnAtLocation(ISpawnPlacementType placementType, IWorld world, IBlockPos pos, boolean passive) {
-        return WorldEntitySpawner.canCreatureTypeSpawnAtLocation(placementType.toMCType(), world.getWorld(), pos.getPos());
+        return SpawnerAnimals.canCreatureTypeSpawnAtLocation(placementType.toMCType(), world.getWorld(), pos.getPos());
     }
 
     public enum ISpawnPlacementType {

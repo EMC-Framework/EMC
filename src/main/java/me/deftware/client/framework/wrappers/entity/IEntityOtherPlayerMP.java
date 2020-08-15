@@ -23,7 +23,7 @@ public class IEntityOtherPlayerMP extends EntityOtherPlayerMP {
             experienceTotal = oldPlayer.experienceTotal;
             experience = oldPlayer.experience;
             setScore(oldPlayer.getScore());
-            lastPortalVec = oldPlayer.getLastPortalVec();
+            //lastPortalVec = oldPlayer.getLastPortalVec();
             teleportDirection = oldPlayer.getTeleportDirection();
         } else if (worldObj.getGameRules().getBoolean("keepInventory") || oldPlayer.isSpectator()) {
             inventory.copyInventory(oldPlayer.inventory);
@@ -33,9 +33,9 @@ public class IEntityOtherPlayerMP extends EntityOtherPlayerMP {
             setScore(oldPlayer.getScore());
         }
         //xpSeed = oldPlayer.getXPSeed();
-        if (getDataManager() != null) {
-            getDataManager().set(EntityPlayer.PLAYER_MODEL_FLAG, oldPlayer.getDataManager().get(EntityPlayer.PLAYER_MODEL_FLAG));
-        }
+        //if (getDataManager() != null) {
+        //    getDataManager().set(EntityPlayer.PLAYER_MODEL_FLAG, oldPlayer.getDataManager().get(EntityPlayer.PLAYER_MODEL_FLAG));
+        //}
     }
 
 }

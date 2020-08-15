@@ -2,8 +2,8 @@ package me.deftware.client.framework.chat.style;
 
 import me.deftware.client.framework.chat.event.ChatClickEvent;
 import me.deftware.client.framework.chat.event.ChatHoverEvent;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.EnumChatFormatting;
+
 import java.util.regex.Pattern;
 
 /**
@@ -27,14 +27,14 @@ public class ChatStyle {
 			bold = underline = italic = obfuscated = strikethrough = false;
 			return;
 		}
-		for (TextFormatting formatting : TextFormatting.values()) {
+		for (EnumChatFormatting formatting : EnumChatFormatting.values()) {
 			if (formatting.toString().substring(1).equalsIgnoreCase(code)) {
 				// Formatting
-				if (formatting == TextFormatting.BOLD) bold = true;
-				 else if (formatting == TextFormatting.UNDERLINE) underline = true;
-				 else if (formatting == TextFormatting.ITALIC) italic = true;
-				 else if (formatting == TextFormatting.OBFUSCATED) obfuscated = true;
-				 else if (formatting == TextFormatting.STRIKETHROUGH) strikethrough = true;
+				if (formatting == EnumChatFormatting.BOLD) bold = true;
+				 else if (formatting == EnumChatFormatting.UNDERLINE) underline = true;
+				 else if (formatting == EnumChatFormatting.ITALIC) italic = true;
+				 else if (formatting == EnumChatFormatting.OBFUSCATED) obfuscated = true;
+				 else if (formatting == EnumChatFormatting.STRIKETHROUGH) strikethrough = true;
 				 else 
 				// Color
 				color = new ChatColors.ChatColor(formatting);
@@ -43,7 +43,7 @@ public class ChatStyle {
 		}
 	}
 
-	public void fromStyle(Style style) {
+	public void fromStyle(net.minecraft.util.ChatStyle style) {
 		// Color
 		color = new ChatColors.ChatColor(style.getColor());
 		// Formatting
@@ -53,19 +53,19 @@ public class ChatStyle {
 		obfuscated = style.getObfuscated();
 		strikethrough = style.getStrikethrough();
 		// Other
-		if (style.getClickEvent() != null) clickEvent = ChatClickEvent.fromEvent(style.getClickEvent());
-		if (style.getHoverEvent() != null) hoverEvent = ChatHoverEvent.fromEvent(style.getHoverEvent());
+		if (style.getChatClickEvent() != null) clickEvent = ChatClickEvent.fromEvent(style.getChatClickEvent());
+		if (style.getChatHoverEvent() != null) hoverEvent = ChatHoverEvent.fromEvent(style.getChatHoverEvent());
 	}
 
-	public Style getStyle() {
-		Style style = new Style();
+	public net.minecraft.util.ChatStyle getStyle() {
+		net.minecraft.util.ChatStyle style = new net.minecraft.util.ChatStyle();
 		// Formatting
 		style = style.setBold(bold).setItalic(italic).setUnderlined(underline).setObfuscated(obfuscated).setStrikethrough(strikethrough);
 		// Color
 		if (color != null) style = color.applyToStyle(style);
 		// Other
-		if (clickEvent != null) style = style.setClickEvent(clickEvent.toEvent());
-		if (hoverEvent != null) style = style.setHoverEvent(hoverEvent.toEvent());
+		if (clickEvent != null) style = style.setChatClickEvent(clickEvent.toEvent());
+		if (hoverEvent != null) style = style.setChatHoverEvent(hoverEvent.toEvent());
 		return style;
 	}
 
@@ -75,11 +75,11 @@ public class ChatStyle {
 		// Color
 		if (color != null) builder.append(color.toString());
 		// Formatting
-		if (bold) builder.append(TextFormatting.BOLD.toString());
-		if (underline) builder.append(TextFormatting.UNDERLINE.toString());
-		if (italic) builder.append(TextFormatting.ITALIC.toString());
-		if (obfuscated) builder.append(TextFormatting.OBFUSCATED.toString());
-		if (strikethrough) builder.append(TextFormatting.STRIKETHROUGH.toString());
+		if (bold) builder.append(EnumChatFormatting.BOLD.toString());
+		if (underline) builder.append(EnumChatFormatting.UNDERLINE.toString());
+		if (italic) builder.append(EnumChatFormatting.ITALIC.toString());
+		if (obfuscated) builder.append(EnumChatFormatting.OBFUSCATED.toString());
+		if (strikethrough) builder.append(EnumChatFormatting.STRIKETHROUGH.toString());
 		return builder.toString();
 	}
 

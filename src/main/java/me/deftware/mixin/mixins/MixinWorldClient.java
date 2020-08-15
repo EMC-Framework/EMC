@@ -21,13 +21,13 @@ public class MixinWorldClient implements IMixinWorldClient {
     @Unique
     private final HashMap<Integer, IEntity> entities = new HashMap<>();
 
-    @ModifyVariable(method = "showBarrierParticles", at = @At("HEAD"))
+    /*@ModifyVariable(method = "showBarrierParticles", at = @At("HEAD"))
     public boolean isHoldingBarrierBlock(boolean holdingBarrier) {
         if ((boolean) SettingsMap.getValue(SettingsMap.MapKeys.BLOCKS, "render_barrier_blocks", false)) {
             return true;
         }
         return holdingBarrier;
-    }
+    }*/
 
     @Inject(method = "spawnEntityInWorld", at = @At("TAIL"))
     public void spawnEntity(Entity entity, CallbackInfoReturnable<Boolean> ci) {

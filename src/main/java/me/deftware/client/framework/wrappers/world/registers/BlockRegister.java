@@ -5,12 +5,12 @@ import net.minecraft.init.Blocks;
 
 public class BlockRegister {
 
-    public static final IBlock WHEAT = new IBlock(Blocks.WHEAT);
-    public static final IBlock CARROTS = new IBlock(Blocks.CARROTS);
-    public static final IBlock POTATOES = new IBlock(Blocks.POTATOES);
-    public static final IBlock BEETROOTS = new IBlock(Blocks.BEETROOTS);
-    public static final IBlock PUMPKIN_STEM = new IBlock(Blocks.PUMPKIN_STEM);
-    public static final IBlock MELON_STEM = new IBlock(Blocks.MELON_STEM);
-    public static final IBlock NETHER_WART = new IBlock(Blocks.NETHER_WART);
+    public static final IBlock WHEAT = new IBlock(Blocks.wheat);
+    public static final IBlock CARROTS = new IBlock(Blocks.carrots);
+    public static final IBlock POTATOES = new IBlock(Blocks.potatoes);
+    public static final IBlock BEETROOTS = null;
+    public static final IBlock PUMPKIN_STEM = new IBlock(Blocks.pumpkin_stem);
+    public static final IBlock MELON_STEM = new IBlock(Blocks.melon_stem);
+    public static final IBlock NETHER_WART = new IBlock(Blocks.nether_wart);
 
 }

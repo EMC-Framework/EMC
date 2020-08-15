@@ -2,8 +2,7 @@ package me.deftware.client.framework.wrappers.render;
 
 import me.deftware.client.framework.wrappers.item.IItemStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderItem;
-
+import net.minecraft.client.renderer.entity.RenderItem;
 
 public class IRenderItem {
 

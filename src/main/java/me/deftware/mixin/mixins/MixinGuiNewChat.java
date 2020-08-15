@@ -6,9 +6,9 @@ import me.deftware.client.framework.event.events.EventChatReceive;
 import me.deftware.mixin.imp.IMixinGuiNewChat;
 import net.minecraft.client.gui.ChatLine;
 import net.minecraft.client.gui.GuiNewChat;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.IChatComponent;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -36,17 +36,17 @@ public abstract class MixinGuiNewChat implements IMixinGuiNewChat {
     private EventChatReceive event;
 
     @Shadow
-    protected abstract void setChatLine(ITextComponent component_1, int int_1, int int_2, boolean boolean_1);
+    protected abstract void setChatLine(IChatComponent component_1, int int_1, int int_2, boolean boolean_1);
 
     @Override
-    public void setTheChatLine(ITextComponent chatComponent, int chatLineId, int updateCounter, boolean displayOnly) {
+    public void setTheChatLine(IChatComponent chatComponent, int chatLineId, int updateCounter, boolean displayOnly) {
         setChatLine(chatComponent, chatLineId, updateCounter, displayOnly);
     }
 
     @Override
     public void removeMessage(ChatHudLine line) {
-        chatLines.removeIf(message -> TextFormatting.getTextWithoutFormattingCodes(message.getChatComponent().getFormattedText()).equalsIgnoreCase(line.getMessage().toString(false)));
-        drawnChatLines.removeIf(message -> TextFormatting.getTextWithoutFormattingCodes(message.getChatComponent().getFormattedText()).equalsIgnoreCase(line.getMessage().toString(false)));
+        chatLines.removeIf(message -> EnumChatFormatting.getTextWithoutFormattingCodes(message.getChatComponent().getFormattedText()).equalsIgnoreCase(line.getMessage().toString(false)));
+        drawnChatLines.removeIf(message -> EnumChatFormatting.getTextWithoutFormattingCodes(message.getChatComponent().getFormattedText()).equalsIgnoreCase(line.getMessage().toString(false)));
     }
 
     @Override
@@ -60,21 +60,21 @@ public abstract class MixinGuiNewChat implements IMixinGuiNewChat {
         List<ChatHudLine> list = new ArrayList<>();
         for (int i = 0; i < chatLines.size(); i++) {
             ChatLine line = chatLines.get(i);
-            if (line.getChatComponent() instanceof TextComponentString) {
+            if (line.getChatComponent() instanceof ChatComponentText) {
                 list.add(new ChatHudLine(new ChatMessage().fromText(line.getChatComponent(), false), i));
             }
         }
         return list;
     }
 
-    @ModifyVariable(method = "printChatMessageWithOptionalDeletion", at = @At("HEAD"))
-    public ITextComponent addMessage(ITextComponent chatComponent) {
-        event = new EventChatReceive(new ChatMessage().fromText(chatComponent, false)).broadcast();
+    @ModifyVariable(method = "printChatMessageWithOptionalDeletion(Lnet/minecraft/util/IChatComponent;I)V", at = @At("HEAD"))
+    public IChatComponent addMessage(IChatComponent chatComponent) {
+        event = new EventChatReceive(new ChatMessage().fromText(chatComponent, true)).broadcast();
         return event.getMessage().build();
     }
 
     @Inject(method = "printChatMessageWithOptionalDeletion", at = @At("HEAD"), cancellable = true)
-    public void addMessage(ITextComponent textComponent_1, int int_1, CallbackInfo ci) {
+    public void addMessage(IChatComponent textComponent_1, int int_1, CallbackInfo ci) {
         if (event != null && event.isCanceled()) {
             ci.cancel();
         }

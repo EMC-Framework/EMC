@@ -6,7 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketDisconnect;
+import net.minecraft.network.play.server.S40PacketDisconnect;
 
 public class OAuthNetHandlerPlayClient extends NetHandlerPlayClient {
 
@@ -18,8 +18,8 @@ public class OAuthNetHandlerPlayClient extends NetHandlerPlayClient {
 		this.callback = callback;
 	}
 
-    @Override
-    public void handleDisconnect(SPacketDisconnect packetIn) {
+	@Override
+	public void handleDisconnect(S40PacketDisconnect packetIn) {
         String[] data = new ChatMessage().fromText(packetIn.getReason(), false).toString(false).split("\n");
         String code = data[0].split("\"")[1].replace("\"", "");
         String time = data[2].substring("Your code will expire in ".length() + 1);

@@ -1,6 +1,6 @@
 package me.deftware.client.framework.wrappers.math;
 
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.AxisAlignedBB;
 
 public class IAxisAlignedBB {
 
@@ -12,6 +12,10 @@ public class IAxisAlignedBB {
     public final double z2;
 
     private AxisAlignedBB bb;
+
+    public static AxisAlignedBB FULL_BLOCK_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D);
+
+    public static AxisAlignedBB NULL_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
 
     public IAxisAlignedBB(AxisAlignedBB aabb) {
         bb = aabb;

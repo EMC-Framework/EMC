@@ -5,8 +5,8 @@ import me.deftware.client.framework.wrappers.math.IAxisAlignedBB;
 import me.deftware.client.framework.wrappers.math.IVoxelShape;
 import net.minecraft.block.*;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 
 public class IBlock {
 
@@ -41,13 +41,13 @@ public class IBlock {
     }
 
     public static boolean isReplaceable(IBlockPos pos) {
-        return IWorld.getStateFromPos(pos).getMaterial().isReplaceable();
+        return IWorld.getStateFromPos(pos).getBlock().getMaterial().isReplaceable();
     }
 
     private static Block getBlockFromName(String p_getBlockFromName_0_) {
         ResourceLocation lvt_1_1_ = new ResourceLocation(p_getBlockFromName_0_);
-        if (Block.REGISTRY.containsKey(lvt_1_1_)) {
-            return Block.REGISTRY.getObject(lvt_1_1_);
+        if (Block.blockRegistry.containsKey(lvt_1_1_)) {
+            return Block.blockRegistry.getObject(lvt_1_1_);
         }
         return null;
     }
@@ -61,15 +61,15 @@ public class IBlock {
     }
 
     public boolean isAir() {
-        return block == Blocks.AIR;
+        return block == Blocks.air;
     }
 
     public boolean isLiquid() {
-        return block == Blocks.WATER || block == Blocks.LAVA || block instanceof BlockLiquid;
+        return block == Blocks.water || block == Blocks.lava || block instanceof BlockLiquid;
     }
 
     public boolean isCaveAir() {
-        return block == Blocks.AIR;
+        return block == Blocks.air;
     }
 
     public Block getBlock() {
@@ -77,7 +77,7 @@ public class IBlock {
     }
 
     public int getID() {
-        return Block.REGISTRY.getIDForObject(block);
+        return Block.blockRegistry.getIDForObject(block);
     }
 
     public ChatMessage getLocalizedName() {

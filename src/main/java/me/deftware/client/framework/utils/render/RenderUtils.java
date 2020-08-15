@@ -16,15 +16,15 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Tuple;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.Vec3;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -120,7 +120,7 @@ public class RenderUtils {
 
     public static void renderChunks(List<IChunkPos> positions, Color color) {
         final Tessellator tessellator = Tessellator.getInstance();
-        final VertexBuffer worldRenderer = tessellator.getBuffer();
+        final WorldRenderer worldRenderer = tessellator.getWorldRenderer();
 
         final float red = color.getRed();
         final float green = color.getGreen();
@@ -165,7 +165,7 @@ public class RenderUtils {
 
     public static void drawSelectionBoundingBox(AxisAlignedBB boundingBox) {
         Tessellator tessellator = Tessellator.getInstance();
-        VertexBuffer vertexbuffer = tessellator.getBuffer();
+        WorldRenderer vertexbuffer = tessellator.getWorldRenderer();
         vertexbuffer.begin(3, DefaultVertexFormats.POSITION);
         vertexbuffer.pos(boundingBox.minX, boundingBox.minY, boundingBox.minZ).endVertex();
         vertexbuffer.pos(boundingBox.maxX, boundingBox.minY, boundingBox.minZ).endVertex();
@@ -630,7 +630,7 @@ public class RenderUtils {
 
     public static void drawColorBox(AxisAlignedBB BoundingBox, float red, float green, float blue, float alpha) {
         Tessellator ts = Tessellator.getInstance();
-        VertexBuffer vb = ts.getBuffer();
+        WorldRenderer vb = ts.getWorldRenderer();
         vb.begin(7, DefaultVertexFormats.POSITION_TEX);
         vb.pos(BoundingBox.minX, BoundingBox.minY, BoundingBox.minZ).color(red, green, blue, alpha).endVertex();
         vb.pos(BoundingBox.minX, BoundingBox.maxY, BoundingBox.minZ).color(red, green, blue, alpha).endVertex();
@@ -737,9 +737,9 @@ public class RenderUtils {
         } else if (mode == 4) {
             GL11.glColor4d(0.0D, 1.0D, 0.0D, 0.5D);
         }
-        Vec3d eyes = new Vec3d(0.0D, 0.0D, 1.0D)
+        Vec3 eyes = new IVec3d(0.0D, 0.0D, 1.0D)
                 .rotatePitch(-(float) Math.toRadians(Minecraft.getMinecraft().thePlayer.rotationPitch))
-                .rotateYaw(-(float) Math.toRadians(Minecraft.getMinecraft().thePlayer.rotationYaw));
+                .rotateYaw(-(float) Math.toRadians(Minecraft.getMinecraft().thePlayer.rotationYaw)).vector;
 
         GL11.glBegin(1);
 
@@ -770,9 +770,9 @@ public class RenderUtils {
 
         RenderUtils.glColor(color);
 
-        Vec3d eyes = new Vec3d(0.0D, 0.0D, 1.0D)
+        Vec3 eyes = new IVec3d(0.0D, 0.0D, 1.0D)
                 .rotatePitch(-(float) Math.toRadians(Minecraft.getMinecraft().thePlayer.rotationPitch))
-                .rotateYaw(-(float) Math.toRadians(Minecraft.getMinecraft().thePlayer.rotationYaw));
+                .rotateYaw(-(float) Math.toRadians(Minecraft.getMinecraft().thePlayer.rotationYaw)).vector;
 
         GL11.glBegin(1);
 
@@ -802,9 +802,9 @@ public class RenderUtils {
 
         GL11.glColor4f(color.getRed(), color.getGreen(), color.getBlue(), alpha);
 
-        Vec3d eyes = new Vec3d(0.0D, 0.0D, 1.0D)
+        Vec3 eyes = new IVec3d(0.0D, 0.0D, 1.0D)
                 .rotatePitch(-(float) Math.toRadians(Minecraft.getMinecraft().thePlayer.rotationPitch))
-                .rotateYaw(-(float) Math.toRadians(Minecraft.getMinecraft().thePlayer.rotationYaw));
+                .rotateYaw(-(float) Math.toRadians(Minecraft.getMinecraft().thePlayer.rotationYaw)).vector;
 
         GL11.glBegin(1);
 

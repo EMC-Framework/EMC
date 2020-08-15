@@ -8,16 +8,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.MobEffects;
 import net.minecraft.item.*;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.potion.PotionUtils;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.IChatComponent;
+import net.minecraft.util.MathHelper;
 
 import java.util.ArrayList;
 
@@ -66,7 +63,7 @@ public class IItemStack {
     }
 
     public void enchantAll(int level) {
-        for (Object enchantment : Enchantment.REGISTRY) {
+        for (Object enchantment : Enchantment.enchantmentsBookList) {
             stack.addEnchantment((Enchantment)enchantment, level);
         }
     }
@@ -74,7 +71,7 @@ public class IItemStack {
     public static ArrayList<String> getEnchantmentNames() {
         ArrayList<String> enchantNames = new ArrayList<>();
 
-        for (Object enchantment : Enchantment.REGISTRY) {
+        for (Object enchantment : Enchantment.enchantmentsBookList) {
             IEnchantment enchantmentObj = new IEnchantment((Enchantment)enchantment);
             enchantNames.add(enchantmentObj.getEnchantmentKey());
         }
@@ -83,7 +80,7 @@ public class IItemStack {
     }
 
     public void enchant(String name, int level) {
-        for (Object enchantment : Enchantment.REGISTRY) {
+        for (Object enchantment : Enchantment.enchantmentsBookList) {
             IEnchantment enchantmentData = new IEnchantment((Enchantment)enchantment);
             if (enchantmentData.getEnchantmentKey().equalsIgnoreCase(name)) {
                 stack.addEnchantment((Enchantment)enchantment, level);
@@ -99,7 +96,7 @@ public class IItemStack {
 
     public void setStackDisplayName(String name) {
         NBTTagCompound nbttagcompound = stack.getSubCompound("display", true);
-        nbttagcompound.setString("Name", ITextComponent.Serializer.componentToJson(new TextComponentString(name)));
+        nbttagcompound.setString("Name", IChatComponent.Serializer.componentToJson(new ChatComponentText(name)));
     }
 
     public boolean hasCompoundTag() {
@@ -151,11 +148,11 @@ public class IItemStack {
     }
 
     public float getStrVsBlock(IBlockPos pos) {
-        return stack.getStrVsBlock(Minecraft.getMinecraft().theWorld.getBlockState(pos.getPos()));
+        return stack.getStrVsBlock(Minecraft.getMinecraft().theWorld.getBlockState(pos.getPos()).getBlock());
     }
 
     public boolean isEmpty() {
-        return stack.getItem() == Item.getItemFromBlock(Blocks.AIR);
+        return stack.getItem() == Item.getItemFromBlock(Blocks.air);
     }
 
     public IItem getIItem() {
@@ -166,11 +163,12 @@ public class IItemStack {
     }
 
     public boolean hasEffect(IEffects ieffect) {
-        for (PotionEffect effect : PotionUtils.getEffectsFromStack(stack)) {
-            if (effect.getPotion() == ieffect.getEffect()) {
+        // FIXME
+        /*for (PotionEffect effect : PotionHelper.getPotionEffects(stack.getMetadata(), true)) {
+            if (Potion.absorption.getPotionFromResourceLocation(PotionEffect.).getPotion() == ieffect.getEffect()) {
                 return true;
             }
-        }
+        }*/
         return false;
     }
 
@@ -179,7 +177,7 @@ public class IItemStack {
     }
 
     public int getEnchantmentLevel(IEnchantment enchantment) {
-        return EnchantmentHelper.getEnchantmentLevel(enchantment.getEnchantment(), stack);
+        return EnchantmentHelper.getEnchantmentLevel(enchantment.getEnchantment().effectId, stack);
     }
 
     public int getRarity() {
@@ -204,7 +202,7 @@ public class IItemStack {
     }
 
     public int getEnchantmentLevel(int enchantID) {
-        return EnchantmentHelper.getEnchantmentLevel(Enchantment.getEnchantmentByID(enchantID), getStack());
+        return EnchantmentHelper.getEnchantmentLevel(enchantID, getStack());
     }
 
     public int getDamage() {
@@ -225,7 +223,7 @@ public class IItemStack {
 
     public enum IEffects {
 
-        InstantHealth(MobEffects.INSTANT_HEALTH);
+        InstantHealth(Potion.heal);
 
         private Potion effect;
 

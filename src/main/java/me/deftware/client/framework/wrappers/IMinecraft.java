@@ -21,7 +21,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ContainerChest;
-import net.minecraft.network.play.client.CPacketChatMessage;
+import net.minecraft.network.play.client.C01PacketChatMessage;
 import net.minecraft.realms.RealmsSharedConstants;
 import net.minecraft.util.Tuple;
 import org.lwjgl.opengl.Display;
@@ -88,11 +88,11 @@ public class IMinecraft {
     }
 
     public static float getRenderPartialTicks() {
-        return Minecraft.getMinecraft().getRenderPartialTicks();
+        return 0;
     }
 
     public static void leaveServer() {
-        Minecraft.getMinecraft().thePlayer.connection.sendPacket(new CPacketChatMessage(new String(new char[]{167})));
+        Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C01PacketChatMessage(new String(new char[]{167})));
     }
 
     public static IBlockPos getBlockOver() {

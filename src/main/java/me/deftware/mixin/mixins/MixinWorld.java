@@ -4,7 +4,7 @@ package me.deftware.mixin.mixins;
 import me.deftware.client.framework.wrappers.entity.ITileEntity;
 import me.deftware.mixin.imp.IMixinWorld;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;

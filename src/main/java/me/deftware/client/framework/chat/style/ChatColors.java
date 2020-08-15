@@ -1,7 +1,7 @@
 package me.deftware.client.framework.chat.style;
 
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.ChatStyle;
+import net.minecraft.util.EnumChatFormatting;
 
 /**
  * @author Deftware
@@ -28,14 +28,14 @@ public enum ChatColors {
 		return fromFormattingCode(code).toString();
 	}
 
-	public static TextFormatting fromFormattingCode(char index) {
-		for (TextFormatting textformatting : TextFormatting.values()) {
+	public static EnumChatFormatting fromFormattingCode(char index) {
+		for (EnumChatFormatting textformatting : EnumChatFormatting.values()) {
 			if (textformatting.toString().substring(1).equalsIgnoreCase(Character.toString(index))) {
 				return textformatting;
 			}
 		}
 
-		return TextFormatting.RESET;
+		return EnumChatFormatting.RESET;
 	}
 
 
@@ -43,9 +43,9 @@ public enum ChatColors {
 		/**
 		 * Old style legacy color system
 		 */
-		private TextFormatting formatting;
+		private EnumChatFormatting formatting;
 
-		public Style applyToStyle(Style style) {
+		public ChatStyle applyToStyle(ChatStyle style) {
 			if (formatting != null) {
 				style = style.setColor(formatting);
 			}
@@ -61,11 +61,11 @@ public enum ChatColors {
 			return new ChatColor(formatting);
 		}
 
-		public ChatColor(final TextFormatting formatting) {
+		public ChatColor(final EnumChatFormatting formatting) {
 			this.formatting = formatting;
 		}
 
-		public void setFormatting(final TextFormatting formatting) {
+		public void setFormatting(final EnumChatFormatting formatting) {
 			this.formatting = formatting;
 		}
 	}

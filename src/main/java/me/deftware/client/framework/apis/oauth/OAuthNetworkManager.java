@@ -7,7 +7,8 @@ import io.netty.channel.epoll.EpollSocketChannel;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.timeout.ReadTimeoutHandler;
-import net.minecraft.network.*;
+import net.minecraft.network.EnumPacketDirection;
+import net.minecraft.network.NetworkManager;
 import net.minecraft.util.LazyLoadBase;
 
 import java.net.InetAddress;

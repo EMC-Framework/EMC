@@ -128,7 +128,7 @@ public class IEntity {
     }
 
     public int getResponseTime() {
-        return Minecraft.getMinecraft().getConnection().getPlayerInfo(entity.getUniqueID()).getResponseTime();
+        return Minecraft.getMinecraft().getNetHandler().getPlayerInfo(entity.getUniqueID()).getResponseTime();
     }
 
     public float getRotationYaw(boolean fullCircleCalc) {
@@ -341,9 +341,9 @@ public class IEntity {
         } else if (e.equals(EntityType.ENTITY_VILLAGER)) {
             return entity instanceof EntityVillager;
         } else if (e.equals(EntityType.ENTITY_DONKEY)) {
-            return ((EntityHorse)entity).getType() == HorseArmorType.DONKEY;
+            return ((EntityHorse)entity).getHorseType() == 1;
         } else if (e.equals(EntityType.ENTITY_MULE)) {
-            return ((EntityHorse)entity).getType() == HorseArmorType.MULE;
+            return ((EntityHorse)entity).getHorseType() == 2;
         } else if (e.equals(EntityType.ENTITY_HORSE)) {
             return entity instanceof EntityHorse;
         }
@@ -378,8 +378,6 @@ public class IEntity {
             return entity instanceof EntityZombie;
         } else if (e.equals(EntityType.ENTITY_SKELETON)) {
             return entity instanceof EntitySkeleton;
-        } else if (e.equals(EntityType.ENTITY_SHULKER)) {
-            return entity instanceof EntityShulker;
         } else if (e.equals(EntityType.ENTITY_GUARDIAN)) {
             return entity instanceof EntityGuardian;
         } else if (e.equals(EntityType.ENTITY_SILVERFISH)) {

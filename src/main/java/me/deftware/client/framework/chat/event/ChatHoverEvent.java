@@ -1,7 +1,8 @@
 package me.deftware.client.framework.chat.event;
 
 import me.deftware.client.framework.chat.ChatMessage;
-import net.minecraft.util.text.event.HoverEvent;
+import net.minecraft.event.HoverEvent;
+
 import java.util.Objects;
 
 /**

@@ -1,6 +1,6 @@
 package me.deftware.client.framework.chat.event;
 
-import net.minecraft.util.text.event.ClickEvent;
+import net.minecraft.event.ClickEvent;
 
 /**
  * @author Deftware

@@ -13,16 +13,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(GuiIngame.class)
 public class MixinGuiIngame {
 
-    @Inject(method = "renderAttackIndicator", at = @At(value = "INVOKE", target = "net/minecraft/client/renderer/GlStateManager.enableAlpha()V"), cancellable = true)
-    private void crosshairEvent(float partialTicks, ScaledResolution p_renderAttackIndicator_2_, CallbackInfo ci) {
+    @Inject(method = "renderStreamIndicator", at = @At(value = "INVOKE", target = "net/minecraft/client/renderer/GlStateManager.enableAlpha()V"), cancellable = true)
+    private void crosshairEvent(ScaledResolution p_renderAttackIndicator_2_, CallbackInfo ci) {
         if (!((boolean) SettingsMap.getValue(SettingsMap.MapKeys.RENDER, "CROSSHAIR", true))) {
             GlStateManager.enableAlpha();
             ci.cancel();
         }
     }
 
-    @Inject(method = "renderHotbar", at = @At("HEAD"))
-    private void postHotbarEvent(ScaledResolution sr, float partialTicks, CallbackInfo ci) {
+    @Inject(method = "renderPlayerStats", at = @At("HEAD"))
+    private void postHotbarEvent(ScaledResolution sr, CallbackInfo ci) {
         new EventRenderHotbar().broadcast();
     }
 

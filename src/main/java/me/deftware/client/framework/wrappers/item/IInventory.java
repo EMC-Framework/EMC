@@ -5,9 +5,6 @@ import me.deftware.mixin.imp.IMixinEntityLivingBase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.gui.inventory.GuiInventory;
-import net.minecraft.network.play.client.CPacketPlayerDigging;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
 
 public class IInventory {
 
@@ -30,8 +27,8 @@ public class IInventory {
     }
 
     public static void swapHands() {
-        Minecraft.getMinecraft().thePlayer.connection.sendPacket(new CPacketPlayerDigging(
-                CPacketPlayerDigging.Action.SWAP_HELD_ITEMS, BlockPos.ORIGIN, EnumFacing.DOWN));
+        //Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(
+        //        C07PacketPlayerDigging.Action.SWAP_HELD_ITEMS, BlockPos.ORIGIN, EnumFacing.DOWN));
     }
 
     public static void openEntityInventory(IEntity entity) {

@@ -14,7 +14,7 @@ public class IServerData extends ServerData {
     }
 
     public boolean isIPinged() {
-        return pinged;
+        return true; // TODO: ???
     }
 
     public String getIIP() {

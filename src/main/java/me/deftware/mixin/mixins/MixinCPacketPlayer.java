@@ -1,11 +1,11 @@
 package me.deftware.mixin.mixins;
 
 import me.deftware.mixin.imp.IMixinCPacketPlayer;
-import net.minecraft.network.play.client.CPacketPlayer;
+import net.minecraft.network.play.client.C03PacketPlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(CPacketPlayer.class)
+@Mixin(C03PacketPlayer.class)
 public class MixinCPacketPlayer implements IMixinCPacketPlayer {
 
     @Shadow

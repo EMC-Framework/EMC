@@ -4,7 +4,7 @@ import me.deftware.mixin.imp.IMixinGuiTextField;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 
 public class IGuiPasswordTextField extends IGuiTextField {
@@ -94,11 +94,11 @@ public class IGuiPasswordTextField extends IGuiTextField {
         }
 
         Tessellator tessellator = Tessellator.getInstance();
-        VertexBuffer VertexBuffer = tessellator.getBuffer();
+        WorldRenderer VertexBuffer = tessellator.getWorldRenderer();
         GlStateManager.color(0.0F, 0.0F, 255.0F, 255.0F);
         GlStateManager.disableTexture2D();
         GlStateManager.enableColorLogic();
-        GlStateManager.colorLogicOp(GlStateManager.LogicOp.OR_REVERSE);
+        GlStateManager.colorLogicOp(5387);
         VertexBuffer.begin(7, DefaultVertexFormats.POSITION);
         VertexBuffer.pos(startX, endY, 0.0D).endVertex();
         VertexBuffer.pos(endX, endY, 0.0D).endVertex();

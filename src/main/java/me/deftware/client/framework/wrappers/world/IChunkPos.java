@@ -2,7 +2,7 @@ package me.deftware.client.framework.wrappers.world;
 
 import me.deftware.client.framework.wrappers.math.IAxisAlignedBB;
 import me.deftware.client.framework.wrappers.math.IVec3d;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.ChunkCoordIntPair;
 
 public class IChunkPos {
@@ -18,7 +18,7 @@ public class IChunkPos {
     }
 
     public IChunkPos(BlockPos pos) {
-        this.pos = new ChunkCoordIntPair(pos);
+        this.pos = new ChunkCoordIntPair(pos.getX(), pos.getZ());
         updateCords(false);
     }
 
@@ -83,7 +83,7 @@ public class IChunkPos {
     private void updateCords(boolean blockPos) {
         if (blockPos) {
             centerPos = new IBlockPos((int)x << 4, 0, (int)z << 4);
-            pos = new ChunkCoordIntPair(centerPos.getPos());
+            pos = new ChunkCoordIntPair((int) x << 4, (int) z << 4);
             boundingBox = new IAxisAlignedBB(getStartX(), 0, getStartZ(), getEndX(), 255, getEndZ());
         } else {
             boundingBox = new IAxisAlignedBB(getStartX(), 0, getStartZ(), getEndX(), 255, getEndZ());

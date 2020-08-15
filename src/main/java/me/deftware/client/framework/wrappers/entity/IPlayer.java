@@ -38,11 +38,11 @@ public class IPlayer extends IEntity {
     }
 
     public boolean isCreative() {
-        return player.isCreative();
+        return false;//player.isCreative();
     }
 
     public void setGlowing(boolean state) {
-        player.setGlowing(state);
+        //player.setGlowing(state);
     }
 
 }

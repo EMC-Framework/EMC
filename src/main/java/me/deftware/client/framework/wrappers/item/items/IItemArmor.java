@@ -18,7 +18,7 @@ public class IItemArmor extends IItem {
     }
 
     public int getTypeOrdinal() {
-        return armor.getEquipmentSlot().ordinal();
+        return armor.armorType;
     }
 
 }

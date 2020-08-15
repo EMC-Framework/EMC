@@ -4,12 +4,12 @@ import me.deftware.client.framework.network.packets.*;
 import me.deftware.mixin.imp.IMixinNetworkManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.Packet;
-import net.minecraft.network.play.client.CPacketClientStatus;
-import net.minecraft.network.play.client.CPacketCloseWindow;
-import net.minecraft.network.play.client.CPacketKeepAlive;
-import net.minecraft.network.play.client.CPacketPlayer;
-import net.minecraft.network.play.server.SPacketAnimation;
-import net.minecraft.network.play.server.SPacketEntity;
+import net.minecraft.network.play.client.C00PacketKeepAlive;
+import net.minecraft.network.play.client.C03PacketPlayer;
+import net.minecraft.network.play.client.C0DPacketCloseWindow;
+import net.minecraft.network.play.client.C16PacketClientStatus;
+import net.minecraft.network.play.server.S0BPacketAnimation;
+import net.minecraft.network.play.server.S14PacketEntity;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -49,14 +49,14 @@ public class IPacket {
     }
 
     public void sendPacket() {
-        Minecraft.getMinecraft().thePlayer.connection.sendPacket(packet);
+        Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(packet);
     }
 
     /**
      * Bypasses this event, and can be used to prevent an infinite loop
      */
     public void sendImmediately() {
-        ((IMixinNetworkManager) Minecraft.getMinecraft().thePlayer.connection.getNetworkManager()).sendPacketImmediately(packet);
+        ((IMixinNetworkManager) Minecraft.getMinecraft().thePlayer.sendQueue.getNetworkManager()).sendPacketImmediately(packet);
     }
 
     /**
@@ -65,25 +65,25 @@ public class IPacket {
     @Nullable
     public static IPacket translatePacket(Packet<?> packet) {
         // Client to server packets
-        if (packet instanceof CPacketPlayer) {
+        if (packet instanceof C03PacketPlayer) {
             return new ICPacketPlayer(packet);
-        } else if (packet instanceof CPacketPlayer.C06PacketPlayerPosLook) {
+        } else if (packet instanceof C03PacketPlayer.C06PacketPlayerPosLook) {
             return new ICPacketPositionRotation(packet);
-        } else if (packet instanceof CPacketPlayer.C05PacketPlayerLook) {
+        } else if (packet instanceof C03PacketPlayer.C05PacketPlayerLook) {
             return new ICPacketRotation(packet);
-        } else if (packet instanceof CPacketPlayer.C04PacketPlayerPosition) {
+        } else if (packet instanceof C03PacketPlayer.C04PacketPlayerPosition) {
             return new ICPacketPosition(packet);
-        } else if (packet instanceof CPacketCloseWindow) {
+        } else if (packet instanceof C0DPacketCloseWindow) {
             return new ICPacketCloseWindow(packet);
-        } else if (packet instanceof CPacketKeepAlive) {
+        } else if (packet instanceof C00PacketKeepAlive) {
             return new ICPacketKeepAlive(packet);
-        } else if (packet instanceof CPacketClientStatus) {
+        } else if (packet instanceof C16PacketClientStatus) {
             return new ICPacketClientStatus(packet);
         }
         // Server to client packets
-        if (packet instanceof SPacketEntity) {
+        if (packet instanceof S14PacketEntity) {
             return new ISPacketEntity(packet);
-        } else if (packet instanceof SPacketAnimation) {
+        } else if (packet instanceof S0BPacketAnimation) {
             return new ISPacketAnimation(packet);
         }
         return new IPacket(packet);

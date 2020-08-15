@@ -23,10 +23,8 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.play.client.CPacketAnimation;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.network.play.client.C0APacketAnimation;
+import net.minecraft.util.BlockPos;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -60,13 +58,12 @@ public class IEntityPlayer {
 	}
 
 	public static boolean isAtEdge() {
-		return Minecraft.getMinecraft().theWorld.getCollisionBoxes(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().thePlayer.getEntityBoundingBox().offset(0, -0.5, 0).expand(-0.001, 0, -0.001)).isEmpty();
+		return Minecraft.getMinecraft().theWorld.getCollisionBoxes(Minecraft.getMinecraft().thePlayer.getEntityBoundingBox().offset(0, -0.5, 0).expand(-0.001, 0, -0.001)).isEmpty();
 	}
 
 	public static boolean processRightClickBlock(IBlockPos pos, IEnumFacing facing, IVec3d vec) {
-		return Minecraft.getMinecraft().playerController.processRightClickBlock(Minecraft.getMinecraft().thePlayer,
-				Minecraft.getMinecraft().theWorld, Minecraft.getMinecraft().thePlayer.getHeldItem(EnumHand.MAIN_HAND), pos.getPos(), IEnumFacing.getFacing(facing), vec.getVector(),
-				EnumHand.MAIN_HAND) == EnumActionResult.SUCCESS;
+		return Minecraft.getMinecraft().playerController.onPlayerRightClick(Minecraft.getMinecraft().thePlayer,
+				Minecraft.getMinecraft().theWorld, Minecraft.getMinecraft().thePlayer.getHeldItem(), pos.getPos(), IEnumFacing.getFacing(facing), vec.vector);
 	}
 
 
@@ -77,10 +74,10 @@ public class IEntityPlayer {
 	public static IItemStack getHeldItem(boolean offset) {
 		ItemStack stack = Minecraft.getMinecraft().thePlayer.inventory.getCurrentItem();
 		if (offset) {
-			stack = Minecraft.getMinecraft().thePlayer.getHeldItemOffhand();
+			//stack = Minecraft.getMinecraft().thePlayer.getHeldItemOffhand();
 		}
 		if (stack == null) {
-			return new IItemStack(new IBlock(Blocks.AIR));
+			return new IItemStack(new IBlock(Blocks.air));
 		}
 		return new IItemStack(stack);
 	}
@@ -94,8 +91,8 @@ public class IEntityPlayer {
 	}
 
 	public static IEntity getRidingEntity() {
-		if (Minecraft.getMinecraft().thePlayer.getRidingEntity() != null) {
-			return IEntity.fromEntity(Minecraft.getMinecraft().thePlayer.getRidingEntity());
+		if (Minecraft.getMinecraft().thePlayer.ridingEntity != null) {
+			return IEntity.fromEntity(Minecraft.getMinecraft().thePlayer.ridingEntity);
 		}
 		return null;
 	}
@@ -176,19 +173,19 @@ public class IEntityPlayer {
 	}
 
 	public static boolean isRidingEntityInWater() {
-		return Minecraft.getMinecraft().thePlayer.getRidingEntity().isInWater();
+		return Minecraft.getMinecraft().thePlayer.ridingEntity.isInWater();
 	}
 
 	public static double getRidingEntityMotionX() {
-		return Minecraft.getMinecraft().thePlayer.getRidingEntity().motionX;
+		return Minecraft.getMinecraft().thePlayer.ridingEntity.motionX;
 	}
 
 	public static double getRidingEntityMotionY() {
-		return Minecraft.getMinecraft().thePlayer.getRidingEntity().motionY;
+		return Minecraft.getMinecraft().thePlayer.ridingEntity.motionY;
 	}
 
 	public static double getRidingEntityMotionZ() {
-		return Minecraft.getMinecraft().thePlayer.getRidingEntity().motionZ;
+		return Minecraft.getMinecraft().thePlayer.ridingEntity.motionZ;
 	}
 
 	public static int getHurtTime() {
@@ -196,31 +193,31 @@ public class IEntityPlayer {
 	}
 
 	public static void ridingEntityMotionY(double y) {
-		Minecraft.getMinecraft().thePlayer.getRidingEntity().motionY = y;
+		Minecraft.getMinecraft().thePlayer.ridingEntity.motionY = y;
 	}
 
 	public static void ridingEntityMotionX(double x) {
-		Minecraft.getMinecraft().thePlayer.getRidingEntity().motionX = x;
+		Minecraft.getMinecraft().thePlayer.ridingEntity.motionX = x;
 	}
 
 	public static void ridingEntityMotionZ(double z) {
-		Minecraft.getMinecraft().thePlayer.getRidingEntity().motionZ = z;
+		Minecraft.getMinecraft().thePlayer.ridingEntity.motionZ = z;
 	}
 
 	public static void ridingEntityMotionTimesY(double y) {
-		Minecraft.getMinecraft().thePlayer.getRidingEntity().motionY *= y;
+		Minecraft.getMinecraft().thePlayer.ridingEntity.motionY *= y;
 	}
 
 	public static void ridingEntityMotionTimesX(double x) {
-		Minecraft.getMinecraft().thePlayer.getRidingEntity().motionX *= x;
+		Minecraft.getMinecraft().thePlayer.ridingEntity.motionX *= x;
 	}
 
 	public static void ridingEntityMotionTimesZ(double z) {
-		Minecraft.getMinecraft().thePlayer.getRidingEntity().motionZ *= z;
+		Minecraft.getMinecraft().thePlayer.ridingEntity.motionZ *= z;
 	}
 
 	public static boolean isRidingOnGround() {
-		return Minecraft.getMinecraft().thePlayer.getRidingEntity().onGround;
+		return Minecraft.getMinecraft().thePlayer.ridingEntity.onGround;
 	}
 
 	public static void attackEntity(IEntity entity) {
@@ -235,7 +232,7 @@ public class IEntityPlayer {
 		if (IEntityPlayer.isNull()) {
 			return false;
 		}
-		return Minecraft.getMinecraft().thePlayer.isCreative();
+		return Minecraft.getMinecraft().playerController.isInCreativeMode();
 	}
 
 	public static void setPositionX(int x) {
@@ -420,7 +417,7 @@ public class IEntityPlayer {
 		if (IEntityPlayer.isNull()) {
 			return;
 		}
-		Minecraft.getMinecraft().thePlayer.swingArm(EnumHand.MAIN_HAND);
+		Minecraft.getMinecraft().thePlayer.swingItem();
 	}
 
 	public static float getSaturationLevel() {
@@ -434,14 +431,14 @@ public class IEntityPlayer {
 		if (IEntityPlayer.isNull()) {
 			return;
 		}
-		Minecraft.getMinecraft().thePlayer.connection.sendPacket(new CPacketAnimation(EnumHand.MAIN_HAND));
+		Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C0APacketAnimation());
 	}
 
 	public static float getCooldown() {
 		if (IEntityPlayer.isNull()) {
 			return 0;
 		}
-		return Minecraft.getMinecraft().thePlayer.getCooledAttackStrength(0);
+		return 1;
 	}
 
 	public static IDirection getDirection() {
@@ -524,7 +521,7 @@ public class IEntityPlayer {
 	}
 
 	public static int getItemInUseMaxCount() {
-		return Minecraft.getMinecraft().thePlayer.getItemInUseMaxCount();
+		return Minecraft.getMinecraft().thePlayer.getHeldItem().getMaxItemUseDuration();
 	}
 
 	public static double getPrevPosX() {
@@ -612,7 +609,7 @@ public class IEntityPlayer {
 	public static boolean isRowingBoat() {
 		if (IEntityPlayer.isNull()) {
 			return false;
-		} else return Minecraft.getMinecraft().thePlayer.getRidingEntity() instanceof EntityBoat;
+		} else return Minecraft.getMinecraft().thePlayer.ridingEntity instanceof EntityBoat;
 	}
 
 	public static boolean isRiding() {
@@ -623,7 +620,7 @@ public class IEntityPlayer {
 		if (IEntityPlayer.isNull()) {
 			return false;
 		}
-		return Minecraft.getMinecraft().thePlayer.isRidingHorse() && Minecraft.getMinecraft().thePlayer.getRidingEntity() instanceof EntityHorse;
+		return Minecraft.getMinecraft().thePlayer.isRidingHorse() && Minecraft.getMinecraft().thePlayer.ridingEntity instanceof EntityHorse;
 	}
 
 	public static boolean isInLiquid() {
@@ -712,8 +709,7 @@ public class IEntityPlayer {
 			return false;
 		}
 		if (item.equals(HandItem.ItemBow)) {
-			return Minecraft.getMinecraft().thePlayer.getHeldItemMainhand().getItem() instanceof ItemBow
-					|| Minecraft.getMinecraft().thePlayer.getHeldItemOffhand().getItem() instanceof ItemBow;
+			return Minecraft.getMinecraft().thePlayer.getHeldItem().getItem() instanceof ItemBow;
 		}
 		return false;
 	}
@@ -723,7 +719,7 @@ public class IEntityPlayer {
 	}
 
 	public static boolean isInAir() {
-		return Minecraft.getMinecraft().thePlayer.isInsideOfMaterial(Material.AIR);
+		return Minecraft.getMinecraft().thePlayer.isInsideOfMaterial(Material.air);
 	}
 
 	public static IAxisAlignedBB getBoundingBox() {
@@ -754,7 +750,7 @@ public class IEntityPlayer {
 			pingThread = Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
 				try {
 					if (!IEntityPlayer.isNull() && !IWorld.isNull()) {
-						NetHandlerPlayClient nethandlerplayclient = Minecraft.getMinecraft().thePlayer.connection;
+						NetHandlerPlayClient nethandlerplayclient = Minecraft.getMinecraft().thePlayer.sendQueue;
 						ping = nethandlerplayclient.getPlayerInfo(Minecraft.getMinecraft().thePlayer.getUniqueID()).getResponseTime();
 					} else {
                         ping = 0;

@@ -44,7 +44,7 @@ public class IMob {
     }
 
     public void setGlowing(boolean state) {
-        mob.setGlowing(state);
+        //mob.setGlowing(state);
     }
 
     public IWorld getWorld() {

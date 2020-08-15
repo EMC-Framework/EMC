@@ -123,7 +123,7 @@ public class IGlStateManager {
         GlStateManager.enablePolygonOffset();
     }
     public static void lineWidth(float f) {
-         GlStateManager.glLineWidth(f);
+        GL11.glLineWidth(f);
     }
 
 }

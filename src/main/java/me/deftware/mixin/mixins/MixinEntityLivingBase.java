@@ -4,6 +4,7 @@ import me.deftware.client.framework.event.events.EventIsPotionActive;
 import me.deftware.client.framework.event.events.EventSlowdown;
 import me.deftware.client.framework.maps.SettingsMap;
 import me.deftware.mixin.imp.IMixinEntityLivingBase;
+import net.minecraft.client.Minecraft;
 import net.minecraft.block.Block;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.EntityLivingBase;
@@ -26,11 +27,8 @@ public class MixinEntityLivingBase implements IMixinEntityLivingBase {
     @Final
     private Map<Potion, PotionEffect> activePotionsMap;
 
-    @Shadow
-    private int activeItemStackUseCount;
-
     @SuppressWarnings("ConstantConditions")
-    @Inject(method = "isPotionActive", at = @At(value = "TAIL"), cancellable = true)
+    @Inject(method = "isPotionActive(Lnet/minecraft/potion/Potion;)Z", at = @At(value = "TAIL"), cancellable = true)
     private void onHasStatusEffect(Potion effect, CallbackInfoReturnable<Boolean> cir) {
         if (!((EntityLivingBase) (Object) this instanceof EntityPlayerSP)) {
             return;
@@ -55,7 +53,7 @@ public class MixinEntityLivingBase implements IMixinEntityLivingBase {
 
     @Override
     public int getActiveItemStackUseCount() {
-        return activeItemStackUseCount;
+        return Minecraft.getMinecraft().thePlayer.getHeldItem().getMaxItemUseDuration();
     }
 
 }

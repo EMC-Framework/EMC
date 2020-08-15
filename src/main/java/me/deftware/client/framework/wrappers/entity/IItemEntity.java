@@ -43,7 +43,7 @@ public class IItemEntity {
     }
 
     public void setGlowing(boolean state) {
-        item.setGlowing(state);
+        //item.setGlowing(state);
     }
 
 }

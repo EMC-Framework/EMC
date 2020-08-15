@@ -62,8 +62,8 @@ public class IItem {
 
     public boolean isThrowable() {
         return item instanceof ItemBow || item instanceof ItemSnowball || item instanceof ItemEgg
-                || item instanceof ItemEnderPearl || item instanceof ItemSplashPotion
-                || item instanceof ItemLingeringPotion || item instanceof ItemFishingRod;
+                || item instanceof ItemEnderPearl || (item instanceof ItemPotion && ItemPotion.isSplash(stack.getMetadata()))
+                || item instanceof ItemFishingRod;
     }
 
     public boolean instanceOf(IItemType type) {
@@ -72,7 +72,7 @@ public class IItem {
         } else if (type.equals(IItemType.ItemPotion)) {
             return item instanceof ItemPotion;
         } else if (type.equals(IItemType.SplashPotion)) {
-            return item == Items.SPLASH_POTION;
+            return item == Items.potionitem;
         } else if (type.equals(IItemType.ItemFood)) {
             return item instanceof ItemFood;
         } else if (type.equals(IItemType.ItemSword)) {
@@ -102,8 +102,8 @@ public class IItem {
 
     protected static Item getByName(String id) {
         ResourceLocation resourceLocation = new ResourceLocation(id);
-        if (Item.REGISTRY.containsKey(resourceLocation)) {
-            return Item.REGISTRY.getObject(resourceLocation);
+        if (Item.itemRegistry.containsKey(resourceLocation)) {
+            return Item.itemRegistry.getObject(resourceLocation);
         }
         return null;
     }

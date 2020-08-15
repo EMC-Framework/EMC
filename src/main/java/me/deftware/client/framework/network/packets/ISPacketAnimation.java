@@ -4,7 +4,7 @@ import me.deftware.client.framework.network.IPacket;
 import me.deftware.client.framework.wrappers.entity.IEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.SPacketAnimation;
+import net.minecraft.network.play.server.S0BPacketAnimation;
 
 public class ISPacketAnimation extends IPacket {
 
@@ -13,11 +13,11 @@ public class ISPacketAnimation extends IPacket {
 	}
 
 	public int getEntityID() {
-		return ((SPacketAnimation) packet).getEntityID();
+		return ((S0BPacketAnimation) packet).getEntityID();
 	}
 
 	public int getAnimationID() {
-		return ((SPacketAnimation) packet).getAnimationType();
+		return ((S0BPacketAnimation) packet).getAnimationType();
 	}
 
 	public IEntity getEntity() {

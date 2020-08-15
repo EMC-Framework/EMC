@@ -2,7 +2,7 @@ package me.deftware.client.framework.network.packets;
 
 import me.deftware.client.framework.network.IPacket;
 import net.minecraft.network.Packet;
-import net.minecraft.network.play.client.CPacketPlayer;
+import net.minecraft.network.play.client.C03PacketPlayer;
 
 public class ICPacketPosition extends IPacket {
 
@@ -11,7 +11,7 @@ public class ICPacketPosition extends IPacket {
 	}
 
 	public ICPacketPosition(double xIn, double yIn, double zIn, boolean onGroundIn) {
-		super(new CPacketPlayer.C04PacketPlayerPosition(xIn, yIn, zIn, onGroundIn));
+		super(new C03PacketPlayer.C04PacketPlayerPosition(xIn, yIn, zIn, onGroundIn));
 	}
 
 }

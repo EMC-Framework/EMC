@@ -2,8 +2,7 @@ package me.deftware.client.framework.wrappers.item;
 
 import me.deftware.client.framework.chat.ChatMessage;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.ChatComponentTranslation;
 
 public class IEnchantment {
 
@@ -22,7 +21,7 @@ public class IEnchantment {
     }
 
     public ChatMessage getName() {
-        return new ChatMessage().fromText(new TextComponentTranslation(item.getName()), false);
+        return new ChatMessage().fromText(new ChatComponentTranslation(item.getName()), false);
     }
 
     public String getTranslationKey() {
@@ -42,15 +41,10 @@ public class IEnchantment {
     }
 
     public static IEnchantment getByName(String id) {
-        ResourceLocation resourceLocation = new ResourceLocation(id);
-        if (Enchantment.REGISTRY.containsKey(resourceLocation)) {
-            return new IEnchantment(Enchantment.REGISTRY.getObject(resourceLocation));
-        } else {
-            for (Object enchantment : Enchantment.REGISTRY) {
-                IEnchantment enchantmentObj = new IEnchantment((Enchantment)enchantment);
-                if (enchantmentObj.getEnchantmentKey().equalsIgnoreCase(id)) {
-                    return enchantmentObj;
-                }
+        for (Object enchantment : Enchantment.enchantmentsBookList) {
+            IEnchantment enchantmentObj = new IEnchantment((Enchantment)enchantment);
+            if (enchantmentObj.getEnchantmentKey().equalsIgnoreCase(id)) {
+                return enchantmentObj;
             }
         }
         return null;

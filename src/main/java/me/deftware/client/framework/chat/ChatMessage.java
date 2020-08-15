@@ -3,9 +3,9 @@ package me.deftware.client.framework.chat;
 import me.deftware.client.framework.chat.hud.ChatHud;
 import me.deftware.client.framework.chat.style.ChatStyle;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.IChatComponent;
+import net.minecraft.util.EnumChatFormatting;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,13 +13,13 @@ import java.util.List;
  * @author Deftware
  */
 public class ChatMessage {
-	private TextComponentString compiledText; /* Cache */
+	private ChatComponentText compiledText; /* Cache */
 	protected final List<ChatSection> sectionList = new ArrayList<>();
 
 	public String toString(boolean withFormatting) {
 		StringBuilder builder = new StringBuilder();
 		for (ChatSection section : sectionList) {
-			builder.append(withFormatting ? TextFormatting.RESET.toString() + section.getStyle().toString() : "").append(section.getText());
+			builder.append(withFormatting ? EnumChatFormatting.RESET.toString() + section.getStyle().toString() : "").append(section.getText());
 		}
 		return builder.toString();
 	}
@@ -76,11 +76,11 @@ public class ChatMessage {
 		return this;
 	}
 
-	public ChatMessage fromText(ITextComponent text, boolean chat) {
+	public ChatMessage fromText(IChatComponent text, boolean chat) {
 		// This function is highly dependant on which Minecraft version this is implemented on
-		for (ITextComponent component : chat ? text.getSiblings() : text) {
-			ChatSection section = new ChatSection(component.getUnformattedComponentText());
-			section.getStyle().fromStyle(component.getStyle());
+		for (IChatComponent component : chat ? text.getSiblings() : text) {
+			ChatSection section = new ChatSection(component.getUnformattedText());
+			section.getStyle().fromStyle(component.getChatStyle());
 			sectionList.add(section);
 		}
 		return this;
@@ -99,11 +99,11 @@ public class ChatMessage {
 		compiledText = null;
 	}
 
-	public synchronized TextComponentString build() {
+	public synchronized ChatComponentText build() {
 		if (compiledText == null) {
-			compiledText = new TextComponentString("");
+			compiledText = new ChatComponentText("");
 			for (ChatSection section : sectionList) {
-				compiledText.appendSibling(new TextComponentString(section.getText()).setStyle(section.getStyle().getStyle()));
+				compiledText.appendSibling(new ChatComponentText(section.getText()).setChatStyle(section.getStyle().getStyle()));
 			}
 		}
 		return compiledText;

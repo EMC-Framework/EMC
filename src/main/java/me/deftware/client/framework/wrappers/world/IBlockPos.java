@@ -1,7 +1,7 @@
 package me.deftware.client.framework.wrappers.world;
 
 import me.deftware.client.framework.wrappers.math.IVec3d;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.BlockPos;
 
 import java.util.ArrayList;
 import java.util.List;

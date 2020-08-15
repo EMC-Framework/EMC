@@ -5,7 +5,7 @@ import me.deftware.client.framework.wrappers.world.IBlockPos;
 import me.deftware.client.framework.wrappers.world.IWorld;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockNetherWart;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.BlockPos;
 
 public class IBlockNetherWart extends IBlock {
 

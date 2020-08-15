@@ -18,7 +18,7 @@ public class IScreens {
         } else if (type.equals(ScreenType.MainMenu)) {
             screen = new GuiMainMenu();
         } else if (type.equals(ScreenType.WorldSelection)) {
-            screen = new GuiWorldSelection(parent);
+            screen = new GuiSelectWorld(parent);
         } else if (type.equals(ScreenType.Options)) {
             screen = new GuiOptions(parent, Minecraft.getMinecraft().gameSettings);
         } else if (type.equals(ScreenType.Mods)) {

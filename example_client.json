@@ -1,6 +1,6 @@
 {
-    "inheritsFrom": "1.9",
-    "id": "1.9-EMC",
+    "inheritsFrom": "1.8.9",
+    "id": "1.8.9-EMC",
     "time": "2018-07-12T08:51:45-05:00",
     "releaseTime": "2018-07-12T08:51:45-05:00",
     "type": "release",
@@ -13,10 +13,10 @@
     "mainClass": "net.minecraft.launchwrapper.Launch",
     "libraries": [
         {
-            "name": "net.minecraft:launchwrapper:1.9"
+            "name": "net.minecraft:launchwrapper:1.8.9"
         },
         {
-            "name": "me.deftware:EMC:latest-1.9",
+            "name": "me.deftware:EMC:latest-1.8.9",
             "url": "https://gitlab.com/EMC-Framework/maven/raw/master/"
         },
         {

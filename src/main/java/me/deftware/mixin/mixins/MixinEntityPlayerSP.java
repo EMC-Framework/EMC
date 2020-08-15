@@ -9,8 +9,8 @@ import me.deftware.client.framework.main.bootstrap.Bootstrap;
 import me.deftware.mixin.imp.IMixinEntityPlayerSP;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.network.NetHandlerPlayClient;
-import net.minecraft.init.MobEffects;
-import net.minecraft.network.play.client.CPacketChatMessage;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.play.client.C01PacketChatMessage;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.FoodStats;
 import org.spongepowered.asm.mixin.Final;
@@ -24,27 +24,27 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(EntityPlayerSP.class)
 public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinEntityPlayerSP {
 
-    @Shadow
-    private boolean prevOnGround;
+    //@Shadow
+    public boolean prevOnGround;
 
     @Shadow
     private float horseJumpPower;
 
     @Shadow
-    public abstract boolean isHandActive();
+    public abstract boolean isCurrentViewEntity();
 
     @Shadow
     @Final
-    public NetHandlerPlayClient connection;
+    public NetHandlerPlayClient sendQueue;
 
-    @Redirect(method = "onLivingUpdate", at = @At(value = "INVOKE", target = "net/minecraft/client/entity/EntityPlayerSP.isHandActive()Z", ordinal = 0))
-    private boolean itemUseSlowdownEvent(EntityPlayerSP self) {
+    @Redirect(method = "onLivingUpdate", at = @At(value = "INVOKE", target = "net/minecraft/entity/player/EntityPlayer.isUsingItem()Z", ordinal = 0))
+    private boolean itemUseSlowdownEvent(EntityPlayer self) {
         EventSlowdown event = new EventSlowdown(EventSlowdown.SlowdownType.Item_Use);
         event.broadcast();
         if (event.isCanceled()) {
             return false;
         }
-        return isHandActive();
+        return self.isUsingItem();
     }
 
     @Redirect(method = "onLivingUpdate", at = @At(value = "INVOKE", target = "net/minecraft/util/FoodStats.getFoodLevel()I"))
@@ -64,7 +64,7 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
         if (event.isCanceled()) {
             return false;
         }
-        return self.isPotionActive(MobEffects.BLINDNESS);
+        return self.isPotionActive(Potion.blindness);
     }
 
     @Inject(method = "onUpdate", at = @At("HEAD"), cancellable = true)
@@ -75,6 +75,7 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
         if (event.isCanceled()) {
             ci.cancel();
         }
+        prevOnGround = entity.onGround;
     }
 
     @Inject(method = "sendChatMessage", at = @At("HEAD"), cancellable = true)
@@ -83,7 +84,7 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
         EventChatSend event = new EventChatSend(message).broadcast();
         if (!event.isCanceled()) {
             if (event.isDispatch() || !message.startsWith(trigger)) {
-                connection.sendPacket(new CPacketChatMessage(event.getMessage()));
+                sendQueue.addToSendQueue(new C01PacketChatMessage(event.getMessage()));
             } else {
                 try {
                     CommandRegister.getDispatcher().execute(message.substring(CommandRegister.getCommandTrigger().length()), new CustomSuggestionProvider());

@@ -6,7 +6,7 @@ import me.deftware.client.framework.network.IPacketBuffer;
 import me.deftware.client.framework.wrappers.item.IItemStack;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.play.client.CPacketCustomPayload;
+import net.minecraft.network.play.client.C17PacketCustomPayload;
 
 public class ICPacketEditBook extends IPacket {
 
@@ -20,7 +20,7 @@ public class ICPacketEditBook extends IPacket {
         PacketBuffer packetbuffer = new PacketBuffer(Unpooled.buffer());
         IPacketBuffer.writeItemStack(packetbuffer, book.getStack());
 
-        setPacket(new CPacketCustomPayload("MC|BEdit", packetbuffer));
+        setPacket(new C17PacketCustomPayload("MC|BEdit", packetbuffer));
     }
 
 }
