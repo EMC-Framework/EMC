@@ -57,7 +57,7 @@ public class ContainerHelper {
 	}
 
 	public static int getMaxSlots() {
-		return Objects.requireNonNull(getCurrent()).slots.size();
+		return Objects.requireNonNull(getCurrent()).slotList.size();
 	}
 
 }

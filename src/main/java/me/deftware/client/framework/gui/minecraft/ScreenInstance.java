@@ -3,7 +3,7 @@ package me.deftware.client.framework.gui.minecraft;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
 import net.minecraft.client.gui.screen.GameMenuScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.ContainerScreen;
+import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
 
 /**
  * @author Deftware
@@ -14,7 +14,7 @@ public class ScreenInstance {
 	private final CommonScreenTypes type;
 
 	public static ScreenInstance newInstance(Screen screen) {
-		if (screen instanceof ContainerScreen<?>) {
+		if (screen instanceof AbstractContainerScreen<?>) {
 			return new ContainerScreenInstance(screen);
 		}
 		return new ScreenInstance(screen);
@@ -26,7 +26,7 @@ public class ScreenInstance {
 			type = CommonScreenTypes.GuiDisconnected;
 		} else if (screen instanceof GameMenuScreen) {
 			type = CommonScreenTypes.GuiIngameMenu;
-		} else if (screen instanceof ContainerScreen<?>) {
+		} else if (screen instanceof AbstractContainerScreen<?>) {
 			type = CommonScreenTypes.GuiContainer;
 		} else {
 			type = CommonScreenTypes.Unknown;

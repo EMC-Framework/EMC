@@ -55,7 +55,7 @@ public class LivingEntity extends Entity {
 	public void setAlive(boolean flag) {
 		getMinecraftEntity().removed = false;
 		getMinecraftEntity().setHealth(20f);
-		getMinecraftEntity().updatePosition(getPosX(), getPosY(), getPosZ());
+		getMinecraftEntity().setPosition(getPosX(), getPosY(), getPosZ());
 	}
 	
 }

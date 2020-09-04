@@ -3,7 +3,7 @@ package me.deftware.client.framework.network.packets;
 import me.deftware.client.framework.network.PacketWrapper;
 import me.deftware.mixin.imp.IMixinCPacketPlayer;
 import net.minecraft.network.Packet;
-import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
+import net.minecraft.server.network.packet.PlayerMoveC2SPacket;
 
 /**
  * @author Deftware

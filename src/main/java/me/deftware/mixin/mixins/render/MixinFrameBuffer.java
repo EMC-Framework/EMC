@@ -14,7 +14,7 @@ public class MixinFrameBuffer {
 
 	@Inject(method = "initFramebufferSupport", at = @At("RETURN"))
 	private static void initFramebufferSupport(GLCapabilities capabilities, CallbackInfoReturnable<String> ci) {
-		FramebufferInfo.DEPTH_ATTACHMENT = 33306;
+		FramebufferInfo.attachment = 33306;
 	}
 
 	@ModifyVariable(method = "renderbufferStorage", at = @At("HEAD"), ordinal = 1)

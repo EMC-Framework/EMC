@@ -5,7 +5,7 @@ import me.deftware.client.framework.chat.hud.ChatHud;
 import me.deftware.client.framework.chat.style.ChatStyle;
 import me.deftware.client.framework.fonts.minecraft.FontRenderer;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
+import net.minecraft.server.network.packet.ChatMessageC2SPacket;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;

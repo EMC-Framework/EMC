@@ -254,7 +254,7 @@ public class Entity {
 	}
 
 	public boolean canBeSeenBy(EntityPlayer entity) {
-		return !this.entity.isInvisibleTo(entity.getMinecraftEntity());
+		return !this.entity.canSeePlayer(entity.getMinecraftEntity());
 	}
 
 	public float distanceToEntity(Entity entity) {
@@ -334,11 +334,11 @@ public class Entity {
 	}
 
 	public void setPosition(double x, double y, double z) {
-		entity.updatePosition(x, y, z);
+		entity.setPosition(x, y, z);
 	}
 
 	public void setPositionAndRotation(double x, double y, double z, float yaw, float pitch) {
-		entity.refreshPositionAndAngles(x, y, z, yaw, pitch);
+		entity.setPositionAndAngles(x, y, z, yaw, pitch);
 	}
 
 	public Vector3d getEyesPos() {
