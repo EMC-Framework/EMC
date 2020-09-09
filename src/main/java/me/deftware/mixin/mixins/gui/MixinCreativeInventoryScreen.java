@@ -8,6 +8,7 @@ import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -38,10 +39,10 @@ public abstract class MixinCreativeInventoryScreen extends AbstractInventoryScre
      */
 
     @Override
-    public void renderTooltip(MatrixStack matrices, List<Text> lines, int x, int y) {
+    public void renderTooltip(MatrixStack matrices, List<? extends StringRenderable> lines, int x, int y) {
         List<ChatMessage> list = new ArrayList<>();
-        for (Text text : lines) {
-            list.add(new ChatMessage().fromText(text));
+        for (StringRenderable text : lines) {
+            list.add(new ChatMessage().fromString(text.getString()));
         }
         EventGetItemToolTip event = new EventGetItemToolTip(list, Item.newInstance(stack.getItem()), client.options.advancedItemTooltips);
         event.broadcast();

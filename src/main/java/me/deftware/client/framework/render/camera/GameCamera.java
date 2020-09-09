@@ -11,7 +11,7 @@ import net.minecraft.client.render.Camera;
 public class GameCamera {
 
 	public Camera getMinecraftCamera() {
-		return MinecraftClient.getInstance().getEntityRenderDispatcher().camera;
+		return MinecraftClient.getInstance().getEntityRenderManager().camera;
 	}
 
 	public Vector3d getCameraPosition() {

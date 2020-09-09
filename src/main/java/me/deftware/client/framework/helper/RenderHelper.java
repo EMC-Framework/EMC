@@ -2,20 +2,20 @@ package me.deftware.client.framework.helper;
 
 import me.deftware.client.framework.maps.SettingsMap;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.options.AoMode;
+import net.minecraft.client.options.AoOption;
 
 /**
  * @author Deftware
  */
 public class RenderHelper {
 
-	private static AoMode aoMode = null;
+	private static AoOption aoMode = null;
 
 	public static void reloadRenderers() {
 		if (aoMode == null) aoMode = MinecraftClient.getInstance().options.ao;
 		if (SettingsMap.isOverrideMode()) {
 			aoMode = MinecraftClient.getInstance().options.ao;
-			MinecraftClient.getInstance().options.ao = AoMode.OFF;
+			MinecraftClient.getInstance().options.ao = AoOption.OFF;
 		} else {
 			MinecraftClient.getInstance().options.ao = aoMode;
 		}

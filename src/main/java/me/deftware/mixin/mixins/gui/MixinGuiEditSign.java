@@ -19,7 +19,7 @@ public class MixinGuiEditSign implements IMixinGuiEditSign {
 
     @Shadow
     @Final
-    private String[] text;
+    private String[] field_24285;
 
     @Override
     public int getEditLine() {
@@ -33,7 +33,7 @@ public class MixinGuiEditSign implements IMixinGuiEditSign {
 
     @Override
     public void setTextOnLine(String newText, int line) {
-        text[line] = newText;
+        field_24285[line] = newText;
     }
 
 }

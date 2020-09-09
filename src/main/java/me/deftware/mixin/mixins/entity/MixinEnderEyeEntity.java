@@ -29,7 +29,7 @@ public class MixinEnderEyeEntity {
         }
     }
 
-    @Inject(method = "initTargetPos", at = @At("HEAD"))
+    @Inject(method = "moveTowards", at = @At("HEAD"))
     public void moveTowards(BlockPos pos, CallbackInfo ci) {
         EventStructureLocation event = new EventStructureLocation(DoubleBlockPosition.fromMinecraftBlockPos(pos), EventStructureLocation.StructureType.Stronghold);
         event.broadcast();

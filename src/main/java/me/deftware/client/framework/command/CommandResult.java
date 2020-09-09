@@ -4,7 +4,7 @@ import com.mojang.brigadier.arguments.*;
 import com.mojang.brigadier.context.CommandContext;
 import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.entity.Entity;
-import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 
 /**

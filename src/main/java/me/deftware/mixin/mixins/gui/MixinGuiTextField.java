@@ -6,7 +6,6 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -60,7 +59,7 @@ public abstract class MixinGuiTextField extends AbstractButtonWidget implements 
     private TextRenderer textRenderer;
 
     @Shadow
-    private BiFunction<String, Integer, OrderedText> renderTextProvider;
+    private BiFunction<String, Integer, String> renderTextProvider;
 
     @Shadow
     private boolean editable;
@@ -148,7 +147,7 @@ public abstract class MixinGuiTextField extends AbstractButtonWidget implements 
     }
 
     @Redirect(method = "renderButton", at = @At(value = "INVOKE", target = "Ljava/util/function/BiFunction;apply(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"))
-    public Object render(BiFunction<String, Integer, OrderedText> biFunction, Object text, Object index) {
+    public Object render(BiFunction<String, Integer, String> biFunction, Object text, Object index) {
         String data = (String) text;
         if (passwordField) {
             StringBuilder hidden = new StringBuilder();
@@ -175,7 +174,7 @@ public abstract class MixinGuiTextField extends AbstractButtonWidget implements 
     }
 
     @Override
-    public BiFunction<String, Integer, OrderedText> getRenderTextProvider() {
+    public BiFunction<String, Integer, String> getRenderTextProvider() {
         return renderTextProvider;
     }
 

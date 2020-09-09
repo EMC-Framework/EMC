@@ -6,7 +6,7 @@ import me.deftware.client.framework.event.events.EventChatReceive;
 import me.deftware.mixin.imp.IMixinGuiNewChat;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.OrderedText;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,23 +19,24 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Mixin(ChatHud.class)
 public abstract class MixinGuiNewChat implements IMixinGuiNewChat {
 
     @Shadow
     @Final
-    private List<net.minecraft.client.gui.hud.ChatHudLine<Text>> messages;
+    private List<net.minecraft.client.gui.hud.ChatHudLine> messages;
 
     @Shadow
     @Final
-    private List<net.minecraft.client.gui.hud.ChatHudLine<OrderedText>> visibleMessages;
+    private List<net.minecraft.client.gui.hud.ChatHudLine> visibleMessages;
 
     @Unique
     private EventChatReceive event;
 
     @Shadow
-    protected abstract void addMessage(Text chatComponent, int messageId, int timestamp, boolean displayOnly);
+    protected abstract void addMessage(StringRenderable chatComponent, int messageId, int timestamp, boolean displayOnly);
 
     @Override
     public void setTheChatLine(LiteralText chatComponent, int chatLineId, int updateCounter, boolean displayOnly) {
@@ -48,9 +49,9 @@ public abstract class MixinGuiNewChat implements IMixinGuiNewChat {
         messages.removeIf(message -> message.getText().getString().equalsIgnoreCase(text));
         visibleMessages.removeIf(message -> {
             StringBuilder builder = new StringBuilder();
-            message.getText().accept((index, style, codePoint) -> {
-                builder.append((char) codePoint);
-                return true;
+            message.getText().visit((string) -> {
+                builder.append(string);
+                return Optional.empty();
             });
             return builder.toString().equalsIgnoreCase(text);
         });
@@ -66,9 +67,9 @@ public abstract class MixinGuiNewChat implements IMixinGuiNewChat {
     public List<ChatHudLine> getLines() {
         List<ChatHudLine> list = new ArrayList<>();
         for (int index = 0; index < messages.size(); index++) {
-            net.minecraft.client.gui.hud.ChatHudLine<Text> line = messages.get(index);
+            net.minecraft.client.gui.hud.ChatHudLine line = messages.get(index);
             if (line.getText() instanceof LiteralText) {
-                list.add(new ChatHudLine(new ChatMessage().fromText(line.getText()),  index));
+                list.add(new ChatHudLine(new ChatMessage().fromString(line.getText().getString()),  index));
             }
         }
         return list;
@@ -80,8 +81,8 @@ public abstract class MixinGuiNewChat implements IMixinGuiNewChat {
         return event.getMessage().build();
     }
 
-    @Inject(method = "addMessage(Lnet/minecraft/text/Text;IIZ)V", at = @At("HEAD"), cancellable = true)
-    public void addMessage(Text chatComponent, int messageId, int timestamp, boolean displayOnly, CallbackInfo ci) {
+    @Inject(method = "addMessage(Lnet/minecraft/text/StringRenderable;IIZ)V", at = @At("HEAD"), cancellable = true)
+    public void addMessage(StringRenderable chatComponent, int messageId, int timestamp, boolean displayOnly, CallbackInfo ci) {
         if (event != null && event.isCanceled()) {
             ci.cancel();
         }
