@@ -5,10 +5,8 @@ import me.deftware.client.framework.event.events.EventGetItemToolTip;
 import me.deftware.client.framework.item.Item;
 import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -20,13 +18,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Mixin(CreativeInventoryScreen.class)
-public abstract class MixinCreativeInventoryScreen extends AbstractInventoryScreen<CreativeInventoryScreen.CreativeScreenHandler> {
+public abstract class MixinCreativeInventoryScreen extends AbstractInventoryScreen<CreativeInventoryScreen.CreativeContainer> {
 
     @Unique
     private ItemStack stack;
 
     @Inject(at = @At("HEAD"), method="renderTooltip")
-    public void onRenderTooolip(MatrixStack matrices, ItemStack stack, int x, int y, CallbackInfo ci) {
+    public void onRenderTooolip(ItemStack stack, int x, int y, CallbackInfo ci) {
         this.stack = stack;
     }
 
@@ -39,23 +37,22 @@ public abstract class MixinCreativeInventoryScreen extends AbstractInventoryScre
      */
 
     @Override
-    public void renderTooltip(MatrixStack matrices, List<? extends StringRenderable> lines, int x, int y) {
+    public void renderTooltip(String textObj, int x, int y) {
         List<ChatMessage> list = new ArrayList<>();
-        for (StringRenderable text : lines) {
-            list.add(new ChatMessage().fromString(text.getString()));
-        }
-        EventGetItemToolTip event = new EventGetItemToolTip(list, Item.newInstance(stack.getItem()), client.options.advancedItemTooltips);
+        list.add(new ChatMessage().fromString(textObj));
+
+        EventGetItemToolTip event = new EventGetItemToolTip(list, Item.newInstance(stack.getItem()), minecraft.options.advancedItemTooltips);
         event.broadcast();
-        List<Text> modifiedTextList = new ArrayList<>();
+        List<String> modifiedTextList = new ArrayList<>();
         for (ChatMessage text : event.getList()) {
-            modifiedTextList.add(text.build());
+            modifiedTextList.add(text.toString(true));
         }
-        super.renderTooltip(matrices, modifiedTextList, x, y);
+        super.renderTooltip(modifiedTextList.get(0), x, y);
     }
 
 
 
-    public MixinCreativeInventoryScreen(CreativeInventoryScreen.CreativeScreenHandler screenHandler, PlayerInventory playerInventory, Text text) {
+    public MixinCreativeInventoryScreen(CreativeInventoryScreen.CreativeContainer screenHandler, PlayerInventory playerInventory, Text text) {
         super(screenHandler, playerInventory, text);
     }
 }

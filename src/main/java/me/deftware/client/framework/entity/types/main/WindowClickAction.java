@@ -1,6 +1,6 @@
 package me.deftware.client.framework.entity.types.main;
 
-import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.container.SlotActionType;
 
 /**
  * @author Deftware

@@ -101,11 +101,7 @@ public class World {
 	 * @return The dimension
 	 */
 	public static int getDimension() {
-		net.minecraft.world.World dimension = Objects.requireNonNull(MinecraftClient.getInstance().player).world;
-		return dimension.getRegistryKey() == net.minecraft.world.World.OVERWORLD ? 0 :
-				dimension.getRegistryKey() == net.minecraft.world.World.END ? 1 :
-						dimension.getRegistryKey() == net.minecraft.world.World.NETHER ? -1
-								: dimension.getDimension().hashCode();
+		return Objects.requireNonNull(MinecraftClient.getInstance().player).world.getDimension().getType().getRawId();
 	}
 
 	public static double getTPS() {

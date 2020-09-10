@@ -16,14 +16,14 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.projectile.ProjectileUtil;
+import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -49,8 +49,10 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     @Shadow
     protected abstract void loadShader(Identifier identifier);
 
+    // method_22973 -> getBasicProjectionMatrix
+    // method_22709 -> loadProjectionMatrix
     @Shadow
-    public abstract Matrix4f getBasicProjectionMatrix(Camera camera, float f, boolean bl);
+    public abstract Matrix4f method_22973(Camera camera, float f, boolean bl);
 
     @Shadow
     @Final
@@ -70,15 +72,15 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
            // Camera model stack without bobbing applied
            MatrixStack matrix = new MatrixStack();
            matrix.push();
-           matrix.peek().getModel().multiply(this.getBasicProjectionMatrix(this.camera, partialTicks, true));
-           MinecraftClient.getInstance().gameRenderer.loadProjectionMatrix(matrix.peek().getModel());
+           matrix.peek().getModel().multiply(this.method_22973(this.camera, partialTicks, true));
+           MinecraftClient.getInstance().gameRenderer.method_22709(matrix.peek().getModel());
            // Camera transformation stack
            matrix.pop();
            matrix.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(this.camera.getPitch()));
            matrix.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(this.camera.getYaw() + 180f));
            loadPushPop(renderEventNoBobbing, matrix, partialTicks);
            // Reset projection
-           MinecraftClient.getInstance().gameRenderer.loadProjectionMatrix(matrixStack.peek().getModel());
+           MinecraftClient.getInstance().gameRenderer.method_22709(matrixStack.peek().getModel());
            GlStateHelper.enableLighting();
        }
     }
@@ -101,7 +103,7 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
         }
     }
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;render(Lnet/minecraft/client/util/math/MatrixStack;F)V"))
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;render(F)V"))
     private void onRender2D(CallbackInfo ci) {
         if (!WindowHelper.isMinimized()) {
             // Chat queue
@@ -123,7 +125,7 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
         loadShader(location);
     }
 
-    @Redirect(method = "updateTargetedEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/projectile/ProjectileUtil;rayTrace(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Box;Ljava/util/function/Predicate;D)Lnet/minecraft/util/hit/EntityHitResult;"))
+    @Redirect(method = "updateTargetedEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ProjectileUtil;rayTrace(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Box;Ljava/util/function/Predicate;D)Lnet/minecraft/util/hit/EntityHitResult;"))
     private EntityHitResult onRayTraceDistance(Entity entity, Vec3d vec3d, Vec3d vec3d2, Box box, Predicate<Entity> predicate, double distance) {
         return ProjectileUtil.rayTrace(entity, vec3d, vec3d2, box, predicate, (boolean) SettingsMap.getValue(SettingsMap.MapKeys.ENTITY_SETTINGS, "BYPASS_REACH_LIMIT", false) ? 0d : distance);
     }

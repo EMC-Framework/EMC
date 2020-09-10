@@ -27,7 +27,6 @@ public class SignHelper {
 	}
 
 	public static void setText(String text, int line) {
-		Objects.requireNonNull((IMixinGuiEditSign) MinecraftClient.getInstance().currentScreen).setTextOnLine(text, line);
 		Objects.requireNonNull((IMixinGuiEditSign) MinecraftClient.getInstance().currentScreen).getTileSign().setTextOnRow(line, new LiteralText(text));
 	}
 

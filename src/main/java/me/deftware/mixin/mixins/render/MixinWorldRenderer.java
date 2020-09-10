@@ -13,11 +13,11 @@ import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -44,7 +44,7 @@ public abstract class MixinWorldRenderer {
 	@Shadow
 	protected abstract boolean canDrawEntityOutlines();
 
-	@Inject(method = "tickRainSplashing", at = @At("HEAD"), cancellable = true)
+	@Inject(method = "method_22713", at = @At("HEAD"), cancellable = true)
 	private void renderRain(Camera camera, CallbackInfo ci) {
 		EventWeather event = new EventWeather(EventWeather.WeatherType.Rain);
 		event.broadcast();

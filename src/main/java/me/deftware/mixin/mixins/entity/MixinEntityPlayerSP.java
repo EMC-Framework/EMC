@@ -40,7 +40,7 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
     @Shadow
     public abstract boolean isUsingItem();
 
-    @Inject(method = "closeHandledScreen", at = @At("HEAD"))
+    @Inject(method = "closeContainer", at = @At("HEAD"))
     private void onCloseHandledScreen(CallbackInfo ci) {
         new EventGuiContainerClose().broadcast();
     }

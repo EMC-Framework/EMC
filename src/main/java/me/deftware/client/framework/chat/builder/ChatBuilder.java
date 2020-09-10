@@ -71,7 +71,7 @@ public class ChatBuilder {
 	}
 
 	public ChatBuilder withMinecraftTranslatedText(String key) {
-		currentSection.setText(Language.getInstance().get(key));
+		currentSection.setText(Language.getInstance().translate(key));
 		return this;
 	}
 

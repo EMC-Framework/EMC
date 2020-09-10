@@ -8,6 +8,4 @@ public interface IMixinGuiEditSign {
 
     SignBlockEntity getTileSign();
 
-    void setTextOnLine(String text, int line);
-
 }

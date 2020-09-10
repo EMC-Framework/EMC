@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.deftware.client.framework.chat.ChatMessage;
 import net.minecraft.text.HoverEvent;
-import net.minecraft.text.Text;
 
 import java.util.Objects;
 
@@ -20,10 +19,9 @@ public @RequiredArgsConstructor class ChatHoverEvent {
 	private @Getter final ChatMessage message;
 	private @Getter HoverEvent rawEvent = null; /* Internal only! */
 
-	@SuppressWarnings("unchecked")
 	public HoverEvent toEvent() {
 		return eventType == EventType.SHOW_TEXT ?
-				new HoverEvent((HoverEvent.Action<Text>) eventType.getAction(), message.build()) : rawEvent;
+				new HoverEvent(eventType.getAction(), message.build()) : rawEvent;
 	}
 
 	public static ChatHoverEvent fromEvent(HoverEvent hoverEvent) {
@@ -35,7 +33,7 @@ public @RequiredArgsConstructor class ChatHoverEvent {
 			}
 		}
 		ChatMessage message = type == EventType.SHOW_TEXT ?
-				new ChatMessage().fromText(Objects.requireNonNull(hoverEvent.getValue(HoverEvent.Action.SHOW_TEXT))) : null;
+				new ChatMessage().fromText(Objects.requireNonNull(hoverEvent.getValue())) : null;
 		ChatHoverEvent event = new ChatHoverEvent(type, message);
 		event.rawEvent = hoverEvent;
 		return event;
@@ -46,7 +44,7 @@ public @RequiredArgsConstructor class ChatHoverEvent {
 		SHOW_TEXT(HoverEvent.Action.SHOW_TEXT),
 		UNSUPPORTED(HoverEvent.Action.SHOW_TEXT); // Dummy value
 
-		private @Getter final HoverEvent.Action<?> action;
+		private @Getter final HoverEvent.Action action;
 
 	}
 

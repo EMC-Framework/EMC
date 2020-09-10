@@ -6,14 +6,11 @@ import me.deftware.client.framework.gui.GuiScreen;
 import me.deftware.client.framework.util.types.Pair;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.EntryListWidget;
-import net.minecraft.client.util.math.MatrixStack;
 
 /**
  * @author Deftware
  */
 public class StringList extends EntryListWidget<StringList.StringEntry> {
-
-	private final MatrixStack stack = new MatrixStack();
 
 	public StringList(int width, int height, int top, int bottom, int itemHeight) {
 		super(MinecraftClient.getInstance(), width, height, top, bottom, itemHeight);
@@ -28,7 +25,7 @@ public class StringList extends EntryListWidget<StringList.StringEntry> {
 	}
 
 	public void doDraw(int mouseX, int mouseY, float delta) {
-		this.render(stack, mouseX, mouseY, delta);
+		this.render(mouseX, mouseY, delta);
 	}
 
 	public void addToEventListener(GuiScreen screen) {
@@ -41,7 +38,7 @@ public class StringList extends EntryListWidget<StringList.StringEntry> {
 	}
 
 	@Override
-	protected int getScrollbarPositionX() {
+	protected int getScrollbarPosition() {
 		return width - 6;
 	}
 
@@ -54,7 +51,7 @@ public class StringList extends EntryListWidget<StringList.StringEntry> {
 			this.string = string;
 		}
 
-		public void render(MatrixStack matrixStack, int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovering, float delta) {
+		public void render(int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovering, float delta) {
 			if (compiledText.getRight() == null || compiledText.getLeft() != width) {
 				compiledText.setLeft(width);
 				compiledText.setRight(string.trimToWidth(width));

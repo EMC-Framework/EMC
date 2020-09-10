@@ -29,7 +29,7 @@ public class Inventory {
 		, ItemStack::new);
 
 		this.mainInventory = new ConvertedList<>(() -> entity.inventory.main, pair ->
-				net.minecraft.item.ItemStack.areEqual(pair.getLeft().getMinecraftItemStack(), entity.inventory.main.get(pair.getRight()))
+				net.minecraft.item.ItemStack.areItemsEqual(pair.getLeft().getMinecraftItemStack(), entity.inventory.main.get(pair.getRight()))
 				, ItemStack::new);
 	}
 
@@ -76,7 +76,7 @@ public class Inventory {
 	}
 
 	public ItemStack getStackInSlot(int slotId) {
-		return new ItemStack(entity.inventory.getStack(slotId));
+		return new ItemStack(entity.inventory.getInvStack(slotId));
 	}
 
 	public ItemStack getStackInArmourSlot(int slotId) {

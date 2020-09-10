@@ -16,10 +16,10 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.input.Input;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.entity.PlayerModelPart;
+import net.minecraft.container.SlotActionType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
-import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -37,9 +37,9 @@ import java.util.Set;
  */
 public class MainEntityPlayer extends RotationLogic {
 
-	private final ConvertedList<Slot, net.minecraft.screen.slot.Slot> inventorySlots =
-			new ConvertedList<>(() -> Objects.requireNonNull(MinecraftClient.getInstance().player).currentScreenHandler.slots, pair ->
-					pair.getLeft().getMinecraftSlot() == Objects.requireNonNull(MinecraftClient.getInstance().player).currentScreenHandler.slots.get(pair.getRight())
+	private final ConvertedList<Slot, net.minecraft.container.Slot> inventorySlots =
+			new ConvertedList<>(() -> Objects.requireNonNull(MinecraftClient.getInstance().player).container.slots, pair ->
+					pair.getLeft().getMinecraftSlot() == Objects.requireNonNull(MinecraftClient.getInstance().player).container.slots.get(pair.getRight())
 					, Slot::new);
 
 	public MainEntityPlayer(PlayerEntity entity) {
@@ -59,7 +59,7 @@ public class MainEntityPlayer extends RotationLogic {
 
 	public void swapHands() {
 		Objects.requireNonNull(MinecraftClient.getInstance().player).networkHandler.sendPacket(new PlayerActionC2SPacket(
-				PlayerActionC2SPacket.Action.SWAP_ITEM_WITH_OFFHAND, BlockPos.ORIGIN, Direction.DOWN));
+				PlayerActionC2SPacket.Action.SWAP_HELD_ITEMS, BlockPos.ORIGIN, Direction.DOWN));
 	}
 
 	public void setRightClickDelayTimer(int delay) {
@@ -125,7 +125,7 @@ public class MainEntityPlayer extends RotationLogic {
 	}
 
 	public void closeHandledScreen() {
-		getMinecraftEntity().closeHandledScreen();
+		getMinecraftEntity().closeContainer();
 	}
 
 	/*

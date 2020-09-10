@@ -9,11 +9,11 @@ import org.spongepowered.asm.mixin.Shadow;
 public class MixinGuiButton implements IMixinGuiButton {
 
     @Shadow
-    protected boolean hovered;
+    protected boolean isHovered;
 
     @Override
     public void setIsHovered(boolean state) {
-        hovered = state;
+        isHovered = state;
     }
 
 }

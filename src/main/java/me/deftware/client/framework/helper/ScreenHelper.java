@@ -4,8 +4,8 @@ import me.deftware.client.framework.gui.GuiScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ingame.ContainerScreen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.util.Pair;
 
@@ -36,7 +36,7 @@ public class ScreenHelper {
 
 	public static boolean isContainerOpen() {
 		if (MinecraftClient.getInstance().currentScreen != null) {
-			return MinecraftClient.getInstance().currentScreen instanceof HandledScreen<?>
+			return MinecraftClient.getInstance().currentScreen instanceof ContainerScreen<?>
 					&& !(MinecraftClient.getInstance().currentScreen instanceof InventoryScreen);
 		}
 		return false;
@@ -44,7 +44,7 @@ public class ScreenHelper {
 
 	public static boolean isInventoryOpen() {
 		if (MinecraftClient.getInstance().currentScreen != null) {
-			return MinecraftClient.getInstance().currentScreen instanceof HandledScreen<?>
+			return MinecraftClient.getInstance().currentScreen instanceof ContainerScreen<?>
 					&& (MinecraftClient.getInstance().currentScreen instanceof InventoryScreen
 					|| MinecraftClient.getInstance().currentScreen instanceof CreativeInventoryScreen);
 		}

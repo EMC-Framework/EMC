@@ -16,8 +16,8 @@ public class TitleAPI {
         InGameHud igh = MinecraftClient.getInstance().inGameHud;
         if (igh != null) {
             //have to be done seperate because, minecraft...
-            igh.setTitles(title.build(), null, ticksFadeIn, ticksVisible, ticksFadeOut);
-            igh.setTitles(null, subtitle.build(), ticksFadeIn, ticksVisible, ticksFadeOut);
+            igh.setTitles(title.toString(true), null, ticksFadeIn, ticksVisible, ticksFadeOut);
+            igh.setTitles(null, subtitle.toString(true), ticksFadeIn, ticksVisible, ticksFadeOut);
         }
     }
 

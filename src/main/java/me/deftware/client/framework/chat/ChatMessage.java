@@ -12,7 +12,6 @@ import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author Deftware
@@ -99,12 +98,11 @@ public class ChatMessage {
 
 	public ChatMessage fromText(Text text) {
 		// This function is highly dependant on which Minecraft version this is implemented on
-		text.visit((style, string) -> {
-			ChatSection section = new ChatSection(string);
-			section.getStyle().fromStyle(style);
+		for (Text component : text) {
+			ChatSection section = new ChatSection(component.asString());
+			section.getStyle().fromStyle(component.getStyle());
 			sectionList.add(section);
-			return Optional.empty();
-		}, text.getStyle());
+		}
 		return this;
 	}
 

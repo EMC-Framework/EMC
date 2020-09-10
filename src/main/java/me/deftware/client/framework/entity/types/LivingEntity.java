@@ -25,7 +25,7 @@ public class LivingEntity extends Entity {
 	}
 
 	public float getMaxHealth() {
-		return getMinecraftEntity().getMaxHealth();
+		return getMinecraftEntity().getMaximumHealth();
 	}
 
 	public void setMovementMultiplier(float multiplier) {

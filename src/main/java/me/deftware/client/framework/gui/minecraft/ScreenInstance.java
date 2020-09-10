@@ -3,8 +3,7 @@ package me.deftware.client.framework.gui.minecraft;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
 import net.minecraft.client.gui.screen.GameMenuScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.screen.ingame.ContainerScreen;
 
 /**
  * @author Deftware
@@ -12,11 +11,10 @@ import net.minecraft.client.util.math.MatrixStack;
 public class ScreenInstance {
 
 	private final Screen screen;
-	private final MatrixStack stack = new MatrixStack();
 	private final CommonScreenTypes type;
 
 	public static ScreenInstance newInstance(Screen screen) {
-		if (screen instanceof HandledScreen<?>) {
+		if (screen instanceof ContainerScreen<?>) {
 			return new ContainerScreenInstance(screen);
 		}
 		return new ScreenInstance(screen);
@@ -28,7 +26,7 @@ public class ScreenInstance {
 			type = CommonScreenTypes.GuiDisconnected;
 		} else if (screen instanceof GameMenuScreen) {
 			type = CommonScreenTypes.GuiIngameMenu;
-		} else if (screen instanceof HandledScreen<?>) {
+		} else if (screen instanceof ContainerScreen<?>) {
 			type = CommonScreenTypes.GuiContainer;
 		} else {
 			type = CommonScreenTypes.Unknown;
@@ -44,7 +42,7 @@ public class ScreenInstance {
 	}
 
 	public void doDrawTexturedModalRect(int x, int y, int u, int v, int width, int height) {
-		screen.drawTexture(stack, x, y, u, v, width, height);
+		screen.blit(x, y, u, v, width, height);
 	}
 
 	public enum CommonScreenTypes {

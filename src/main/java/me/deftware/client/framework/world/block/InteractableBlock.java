@@ -18,7 +18,7 @@ public class InteractableBlock extends Block {
 				block instanceof CraftingTableBlock || block instanceof DoorBlock || block instanceof DragonEggBlock ||
 				block instanceof FenceBlock || block instanceof FenceGateBlock || block instanceof FlowerPotBlock ||
 				block instanceof GrindstoneBlock || block instanceof JigsawBlock || block instanceof LeverBlock ||
-				block instanceof LoomBlock || block instanceof NoteBlock || block instanceof RespawnAnchorBlock ||
+				block instanceof LoomBlock || block instanceof NoteBlock ||
 				block instanceof StonecutterBlock || block instanceof TrapdoorBlock;
 	}
 

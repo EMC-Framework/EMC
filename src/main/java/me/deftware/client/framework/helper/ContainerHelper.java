@@ -3,11 +3,11 @@ package me.deftware.client.framework.helper;
 import me.deftware.client.framework.item.ItemStack;
 import me.deftware.mixin.imp.IMixinShulkerBoxScreenHandler;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.container.Container;
+import net.minecraft.container.GenericContainer;
+import net.minecraft.container.ShulkerBoxContainer;
 import net.minecraft.inventory.DoubleInventory;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.screen.GenericContainerScreenHandler;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ShulkerBoxScreenHandler;
 
 import java.util.Objects;
 
@@ -16,10 +16,10 @@ import java.util.Objects;
  */
 public class ContainerHelper {
 
-	private static ScreenHandler getCurrent() {
-		ScreenHandler handler = Objects.requireNonNull(MinecraftClient.getInstance().player).currentScreenHandler;
-		if (handler != null && (handler instanceof GenericContainerScreenHandler || handler instanceof ShulkerBoxScreenHandler)) {
-			return MinecraftClient.getInstance().player.currentScreenHandler;
+	private static Container getCurrent() {
+		Container handler = Objects.requireNonNull(MinecraftClient.getInstance().player).container;
+		if (handler != null && (handler instanceof GenericContainer || handler instanceof ShulkerBoxContainer)) {
+			return MinecraftClient.getInstance().player.container;
 		}
 		return null;
 	}
@@ -29,11 +29,11 @@ public class ContainerHelper {
 	}
 
 	public static Inventory getInventory() {
-		ScreenHandler screenHandler = Objects.requireNonNull(getCurrent());
-		if (screenHandler instanceof ShulkerBoxScreenHandler) {
+		Container screenHandler = Objects.requireNonNull(getCurrent());
+		if (screenHandler instanceof ShulkerBoxContainer) {
 			return ((IMixinShulkerBoxScreenHandler) screenHandler).getInventory();
 		}
-		return ((GenericContainerScreenHandler) screenHandler).getInventory();
+		return ((GenericContainer) screenHandler).getInventory();
 	}
 
 	public static boolean isDouble() {
@@ -41,11 +41,11 @@ public class ContainerHelper {
 	}
 
 	public static int getInventorySize() {
-		return getInventory().size();
+		return getInventory().getInvSize();
 	}
 
 	public static ItemStack getStackInSlot(int id) {
-		return new ItemStack(getInventory().getStack(id));
+		return new ItemStack(getInventory().getInvStack(id));
 	}
 
 	public static int getContainerID() {
@@ -53,7 +53,7 @@ public class ContainerHelper {
 	}
 
 	public static boolean isEmpty() {
-		return getInventory().isEmpty();
+		return getInventory().isInvEmpty();
 	}
 
 	public static int getMaxSlots() {

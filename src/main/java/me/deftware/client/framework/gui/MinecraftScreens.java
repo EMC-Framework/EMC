@@ -5,9 +5,9 @@ import me.deftware.client.framework.util.ResourceUtils;
 import me.deftware.mixin.imp.IMixinTitleScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.SettingsScreen;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
-import net.minecraft.client.gui.screen.options.OptionsScreen;
 import net.minecraft.client.gui.screen.world.SelectWorldScreen;
 import net.minecraft.util.Pair;
 
@@ -20,7 +20,7 @@ import java.util.function.Function;
 public enum MinecraftScreens {
 
 	Multiplayer(MultiplayerScreen::new), WorldSelection(SelectWorldScreen::new),
-	Options(parent -> new OptionsScreen(parent, MinecraftClient.getInstance().options)), MainMenu(parent -> new TitleScreen()),
+	Options(parent -> new SettingsScreen(parent, MinecraftClient.getInstance().options)), MainMenu(parent -> new TitleScreen()),
 	Mods(parent -> {
 		// Important: Change "modmenu" to what's relevant on this mc version
 		if (ResourceUtils.hasSpecificMod("modmenu")) {

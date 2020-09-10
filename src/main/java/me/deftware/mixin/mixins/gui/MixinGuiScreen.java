@@ -16,9 +16,7 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -43,7 +41,7 @@ public class MixinGuiScreen implements IMixinGuiScreen {
             new InstanceList<>(() -> this.buttons, button -> button instanceof Button, button -> (Button) button);
 
     @Shadow
-    protected TextRenderer textRenderer;
+    protected TextRenderer font;
 
     @Shadow
     @Final
@@ -54,7 +52,7 @@ public class MixinGuiScreen implements IMixinGuiScreen {
     protected List<Element> children;
 
     @Shadow
-    protected MinecraftClient client;
+    protected MinecraftClient minecraft;
 
     @Unique
     protected CachedSupplier<ScreenInstance> screenInstance = new CachedSupplier<>(() -> {
@@ -77,7 +75,7 @@ public class MixinGuiScreen implements IMixinGuiScreen {
 
     @Override
     public TextRenderer getFont() {
-        return textRenderer;
+        return font;
     }
 
     @Override
@@ -86,30 +84,30 @@ public class MixinGuiScreen implements IMixinGuiScreen {
     }
 
     @Inject(method = "render", at = @At("HEAD"))
-    public void render(MatrixStack matrixStack, int x, int y, float tickDelta, CallbackInfo ci) {
+    public void render(int x, int y, float tickDelta, CallbackInfo ci) {
         if (!(((Screen) (Object) this) instanceof GuiScreen)) {
             new EventGuiScreenDraw(screenInstance.get(), x, y).broadcast();
         }
     }
 
     @Inject(method = "render", at = @At("RETURN"))
-    public void render_return(MatrixStack matrixStack, int x, int y, float tickDelta, CallbackInfo ci) {
+    public void render_return(int x, int y, float tickDelta, CallbackInfo ci) {
         if (shouldSendPostRenderEvent && !(((Screen) (Object) this) instanceof GuiScreen)) {
             new EventGuiScreenPostDraw(screenInstance.get(), x, y).broadcast();
         }
     }
 
     @Inject(method = "getTooltipFromItem", at = @At(value = "TAIL"), cancellable = true)
-    private void onGetTooltipFromItem(ItemStack stack, CallbackInfoReturnable<List<Text>> cir) {
+    private void onGetTooltipFromItem(ItemStack stack, CallbackInfoReturnable<List<String>> cir) {
         List<ChatMessage> list = new ArrayList<>();
-        for (Text text : cir.getReturnValue()) {
-            list.add(new ChatMessage().fromText(text));
+        for (String text : cir.getReturnValue()) {
+            list.add(new ChatMessage().fromString(text));
         }
-        EventGetItemToolTip event = new EventGetItemToolTip(list, Item.newInstance(stack.getItem()), client.options.advancedItemTooltips);
+        EventGetItemToolTip event = new EventGetItemToolTip(list, Item.newInstance(stack.getItem()), minecraft.options.advancedItemTooltips);
         event.broadcast();
-        List<Text> modifiedTextList = new ArrayList<>();
+        List<String> modifiedTextList = new ArrayList<>();
         for (ChatMessage text : event.getList()) {
-            modifiedTextList.add(text.build());
+            modifiedTextList.add(text.toString(true));
         }
         cir.setReturnValue(modifiedTextList);
     }

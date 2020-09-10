@@ -199,11 +199,11 @@ public class Entity {
 	}
 
 	public boolean isOnGround() {
-		return entity.isOnGround();
+		return entity.onGround;
 	}
 
 	public void setOnGround(boolean flag) {
-		entity.setOnGround(flag);
+		entity.onGround = flag;
 	}
 
 	public boolean isOnFire() {

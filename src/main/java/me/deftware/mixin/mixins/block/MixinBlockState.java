@@ -4,11 +4,11 @@ import me.deftware.client.framework.event.events.EventBlockhardness;
 import me.deftware.client.framework.event.events.EventCollideCheck;
 import me.deftware.client.framework.event.events.EventVoxelShape;
 import me.deftware.client.framework.maps.SettingsMap;
-import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
-import net.minecraft.block.ShapeContext;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.SweetBerryBushBlock;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.util.math.BlockPos;
@@ -23,7 +23,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(AbstractBlock.AbstractBlockState.class)
+@Mixin(BlockState.class)
 public abstract class MixinBlockState {
 
     @Shadow
@@ -41,8 +41,8 @@ public abstract class MixinBlockState {
     @Shadow
     public abstract FluidState getFluidState();
 
-    @Inject(method = "getOutlineShape(Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/ShapeContext;)Lnet/minecraft/util/shape/VoxelShape;", at = @At("HEAD"), cancellable = true)
-    public void getOutlineShape(BlockView world, BlockPos pos, ShapeContext context, CallbackInfoReturnable<VoxelShape> ci) {
+    @Inject(method = "getOutlineShape(Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/entity/EntityContext;)Lnet/minecraft/util/shape/VoxelShape;", at = @At("HEAD"), cancellable = true)
+    public void getOutlineShape(BlockView world, BlockPos pos, EntityContext context, CallbackInfoReturnable<VoxelShape> ci) {
         EventCollideCheck event = new EventCollideCheck(me.deftware.client.framework.world.block.Block.newInstance(this.getBlock()));
         event.broadcast();
         if (event.updated) {
@@ -86,8 +86,8 @@ public abstract class MixinBlockState {
         }
     }
 
-    @Inject(method = "getCollisionShape(Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/ShapeContext;)Lnet/minecraft/util/shape/VoxelShape;", at = @At("HEAD"), cancellable = true)
-    public void getCollisionShape(BlockView world, BlockPos pos, ShapeContext context, CallbackInfoReturnable<VoxelShape> ci) {
+    @Inject(method = "getCollisionShape(Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/entity/EntityContext;)Lnet/minecraft/util/shape/VoxelShape;", at = @At("HEAD"), cancellable = true)
+    public void getCollisionShape(BlockView world, BlockPos pos, EntityContext context, CallbackInfoReturnable<VoxelShape> ci) {
         EventVoxelShape event = new EventVoxelShape(this.getOutlineShape(world, pos), me.deftware.client.framework.world.block.Block.newInstance(this.getBlock()));
         event.broadcast();
         if (event.modified) {

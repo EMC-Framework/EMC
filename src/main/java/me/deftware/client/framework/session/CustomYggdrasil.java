@@ -1,7 +1,5 @@
 package me.deftware.client.framework.session;
 
-import com.mojang.authlib.Environment;
-
 import java.util.StringJoiner;
 
 /**
@@ -45,10 +43,6 @@ public class CustomYggdrasil {
 				.add("sessionHost='" + sessionHost + "'")
 				.add("name='" + getName() + "'")
 				.toString();
-	}
-
-	public Environment build() {
-		return Environment.create(getAuthHost(), getAccountsHost(), getSessionHost(), getName());
 	}
 
 }

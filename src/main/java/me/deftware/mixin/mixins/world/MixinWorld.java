@@ -64,8 +64,8 @@ public abstract class MixinWorld implements IMixinWorld {
 		}
 	}
 
-	@Inject(method = "setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;II)Z", at = @At("TAIL"))
-	public void setBlockState(BlockPos pos, BlockState state, int flags, int maxUpdateDepth, CallbackInfoReturnable<Boolean> info) {
+	@Inject(method = "setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;I)Z", at = @At("TAIL"))
+	public void setBlockState(BlockPos pos, BlockState state, int flags, CallbackInfoReturnable<Boolean> info) {
 		if (state.isAir()) {
 			BlockClassifier.getClassifiers().forEach(blockClassifier -> {
 				if (blockClassifier.getClassifiedBlocks().containsKey(pos.asLong())) {

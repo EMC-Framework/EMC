@@ -5,8 +5,6 @@ import me.deftware.mixin.imp.IMixinGuiTextField;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -23,7 +21,7 @@ import java.util.function.BiFunction;
 @Mixin(TextFieldWidget.class)
 public abstract class MixinGuiTextField extends AbstractButtonWidget implements IMixinGuiTextField {
 
-    public MixinGuiTextField(int x, int y, Text message) {
+    public MixinGuiTextField(int x, int y, String message) {
         super(x, y, 200, 20, message);
     }
 
@@ -133,13 +131,13 @@ public abstract class MixinGuiTextField extends AbstractButtonWidget implements 
 
     @SuppressWarnings("ConstantConditions")
     @Inject(method = "renderButton", at = @At("RETURN"))
-    public void drawTextFieldReturn(MatrixStack matrixStack, int mouseX, int mouseY, float tickDelta, CallbackInfo ci) {
+    public void drawTextFieldReturn(int mouseX, int mouseY, float tickDelta, CallbackInfo ci) {
         if (overlay) {
             String currentText = getText();
-            int currentWidth = ((IMixinGuiTextField) this).getFontRendererInstance().getWidth(currentText);
+            int currentWidth = ((IMixinGuiTextField) this).getFontRendererInstance().getStringWidth(currentText);
             int x = isFocused() ? ((IMixinGuiTextField) this).getX() + 4 : ((IMixinGuiTextField) this).getX();
             int y = isFocused() ? ((IMixinGuiTextField) this).getY() + (((IMixinGuiTextField) this).getHeight() - 8) / 2 : ((IMixinGuiTextField) this).getY();
-            ((IMixinGuiTextField) this).getFontRendererInstance().drawWithShadow(matrixStack, overlayText, x + currentWidth - 3, y - 2, Color.GRAY.getRGB());
+            ((IMixinGuiTextField) this).getFontRendererInstance().drawWithShadow(overlayText, x + currentWidth - 3, y - 2, Color.GRAY.getRGB());
             WeakReference<EventChatboxType> event = new WeakReference<>(new EventChatboxType(getText(), overlayText));
             event.get().broadcast();
             overlayText = event.get().getOverlay();

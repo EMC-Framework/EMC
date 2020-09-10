@@ -62,27 +62,27 @@ public class BoundingBox {
 	}
 
 	public double getMinX() {
-		return getMinecraftBox().minX + offsetX;
+		return getMinecraftBox().x1 + offsetX;
 	}
 
 	public double getMinY() {
-		return getMinecraftBox().minY + offsetY;
+		return getMinecraftBox().y1 + offsetY;
 	}
 
 	public double getMinZ() {
-		return getMinecraftBox().minZ + offsetZ;
+		return getMinecraftBox().z1 + offsetZ;
 	}
 
 	public double getMaxX() {
-		return getMinecraftBox().maxX + offsetX;
+		return getMinecraftBox().x2 + offsetX;
 	}
 
 	public double getMaxY() {
-		return getMinecraftBox().maxY + offsetY;
+		return getMinecraftBox().y2 + offsetY;
 	}
 
 	public double getMaxZ() {
-		return getMinecraftBox().maxZ + offsetZ;
+		return getMinecraftBox().z2 + offsetZ;
 	}
 
 	@Nullable

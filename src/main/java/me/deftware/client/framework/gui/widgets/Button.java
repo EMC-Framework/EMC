@@ -7,7 +7,6 @@ import me.deftware.client.framework.gui.GuiEventListener;
 import me.deftware.mixin.imp.IMixinGuiButton;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
-import net.minecraft.client.util.math.MatrixStack;
 
 /**
  * @author Deftware
@@ -17,17 +16,17 @@ public abstract class Button extends AbstractButtonWidget implements GuiEventLis
 	private @Getter @Setter boolean shouldPlaySound = true;
 
 	public Button(int id, int x, int y, ChatMessage buttonText) {
-		super(x, y, 200, 20, buttonText.build());
+		super(x, y, 200, 20, buttonText.toString(true));
 	}
 
 	public Button(int id, int x, int y, int widthIn, int heightIn, ChatMessage buttonText) {
-		super(x, y, widthIn, heightIn, buttonText.build());
+		super(x, y, widthIn, heightIn, buttonText.toString(true));
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, int mouseX, int mouseY, float float_1) {
+	public void render(int mouseX, int mouseY, float float_1) {
 		if (onDraw(mouseX, mouseY) == 0) {
-			super.render(matrixStack, mouseX, mouseY, float_1);
+			super.render(mouseX, mouseY, float_1);
 		}
 	}
 
@@ -104,11 +103,11 @@ public abstract class Button extends AbstractButtonWidget implements GuiEventLis
 	}
 
 	public ChatMessage getButtonText() {
-		return new ChatMessage().fromText(getMessage());
+		return new ChatMessage().fromString(getMessage());
 	}
 
 	public Button setButtonText(ChatMessage text) {
-		setMessage(text.build());
+		setMessage(text.toString(true));
 		return this;
 	}
 

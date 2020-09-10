@@ -4,7 +4,7 @@ import io.netty.buffer.Unpooled;
 import me.deftware.client.framework.item.ItemStack;
 import me.deftware.client.framework.math.position.BlockPosition;
 import me.deftware.client.framework.math.position.DoubleBlockPosition;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.PacketByteBuf;
 
 /**
  * @author Deftware

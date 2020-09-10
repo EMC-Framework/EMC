@@ -4,10 +4,10 @@ import me.deftware.client.framework.event.events.EventBlockhardness;
 import me.deftware.client.framework.event.events.EventCollideCheck;
 import me.deftware.client.framework.maps.SettingsMap;
 import me.deftware.mixin.imp.IMixinAbstractBlock;
-import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.ShapeContext;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(AbstractBlock.class)
+@Mixin(Block.class)
 public abstract class MixinAbstractBlock implements IMixinAbstractBlock {
 
     @Shadow @Final protected float slipperiness;
@@ -29,7 +29,7 @@ public abstract class MixinAbstractBlock implements IMixinAbstractBlock {
     @Shadow @Final protected float velocityMultiplier;
 
     @Inject(method = "getOutlineShape", at = @At("HEAD"), cancellable = true)
-    public void getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context, CallbackInfoReturnable<VoxelShape> ci) {
+    public void getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context, CallbackInfoReturnable<VoxelShape> ci) {
         EventCollideCheck event = new EventCollideCheck(me.deftware.client.framework.world.block.Block.newInstance(state.getBlock()));
         event.broadcast();
         if (event.updated) {

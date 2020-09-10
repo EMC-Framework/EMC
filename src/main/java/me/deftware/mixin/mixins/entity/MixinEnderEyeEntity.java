@@ -3,7 +3,7 @@ package me.deftware.mixin.mixins.entity;
 import me.deftware.client.framework.event.events.EventStructureLocation;
 import me.deftware.client.framework.item.ThrowData;
 import me.deftware.client.framework.math.position.DoubleBlockPosition;
-import net.minecraft.entity.EyeOfEnderEntity;
+import net.minecraft.entity.EnderEyeEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(EyeOfEnderEntity.class)
+@Mixin(EnderEyeEntity.class)
 public class MixinEnderEyeEntity {
 
     @Unique
@@ -37,7 +37,7 @@ public class MixinEnderEyeEntity {
 
     @Inject(method = "setVelocityClient", at = @At("TAIL"))
     public void setVelocityClient(double x, double y, double z, CallbackInfo info) {
-        EyeOfEnderEntity entity = (EyeOfEnderEntity) (Object) this;
+        EnderEyeEntity entity = (EnderEyeEntity) (Object) this;
 
         if (firstThrow == null) {
             firstThrow = new ThrowData(entity, (entity).getX(), (entity).getZ(), x, z);
@@ -58,9 +58,9 @@ public class MixinEnderEyeEntity {
         }
     }
 
-    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/EyeOfEnderEntity;setPos(DDD)V"))
+    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/EnderEyeEntity;setPos(DDD)V"))
     public void setPos(CallbackInfo info) {
-        Vec3d vel = ((EyeOfEnderEntity)(Object)this).getVelocity();
+        Vec3d vel = ((EnderEyeEntity)(Object)this).getVelocity();
 
         if (firstThrow != null && secondThrow != null && Math.abs(vel.x * vel.z) <= .0000001 && Math.abs(vel.y) != 0.0D) {
             EventStructureLocation event = new EventStructureLocation(DoubleBlockPosition.fromMinecraftBlockPos(firstThrow.calculateIntersection(secondThrow)), EventStructureLocation.StructureType.Stronghold);

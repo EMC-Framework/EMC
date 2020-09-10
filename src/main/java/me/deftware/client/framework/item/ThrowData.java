@@ -1,17 +1,17 @@
 package me.deftware.client.framework.item;
 
-import net.minecraft.entity.EyeOfEnderEntity;
+import net.minecraft.entity.EnderEyeEntity;
 import net.minecraft.util.math.BlockPos;
 
 public class ThrowData {
-    private final EyeOfEnderEntity entity;
+    private final EnderEyeEntity entity;
     public double x;
     public double z;
     public double posX;
     public double posZ;
     private double count = 1;
 
-    public ThrowData(EyeOfEnderEntity entity, double posX, double posZ, double x, double z) {
+    public ThrowData(EnderEyeEntity entity, double posX, double posZ, double x, double z) {
         this.entity = entity;
         this.posX = posX;
         this.posZ = posZ;
@@ -38,7 +38,7 @@ public class ThrowData {
         return new BlockPos(x, 36, z);
     }
 
-    public boolean sameEntity(EyeOfEnderEntity e) {
+    public boolean sameEntity(EnderEyeEntity e) {
         return entity == e;
     }
 }

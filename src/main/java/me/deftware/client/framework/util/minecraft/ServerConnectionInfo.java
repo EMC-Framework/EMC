@@ -24,7 +24,7 @@ public class ServerConnectionInfo extends ServerInfo {
 	}
 
 	public ChatMessage getMotdAccessor() {
-		return new ChatMessage().fromText(label);
+		return new ChatMessage().fromString(label);
 	}
 
 	public boolean isPingedAccessor() {
@@ -44,7 +44,7 @@ public class ServerConnectionInfo extends ServerInfo {
 	}
 
 	public ChatMessage getGameVersionAccessor() {
-		return new ChatMessage().fromText(version);
+		return new ChatMessage().fromString(version);
 	}
 
 	public int getVersionAccessor() {
@@ -52,7 +52,7 @@ public class ServerConnectionInfo extends ServerInfo {
 	}
 
 	public ChatMessage getPopulationInfoAccessor() {
-		return new ChatMessage().fromText(playerCountLabel);
+		return new ChatMessage().fromString(playerCountLabel);
 	}
 
 	public long getPingToServerAccessor() {

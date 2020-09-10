@@ -1,11 +1,9 @@
 package me.deftware.client.framework.session;
 
 import com.mojang.authlib.Agent;
-import com.mojang.authlib.Environment;
 import com.mojang.authlib.UserAuthentication;
 import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
-import com.mojang.authlib.yggdrasil.YggdrasilEnvironment;
 import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication;
 import me.deftware.mixin.imp.IMixinMinecraft;
 import net.minecraft.client.MinecraftClient;
@@ -25,21 +23,14 @@ public class AuthLibSession {
 	private Session session;
 	private final UserAuthentication userAuthentication;
 	private final YggdrasilAuthenticationService authenticationService;
-	private final Environment environment;
-
-	private AuthLibSession(Environment yggdrasil) {
-		// Custom yggdrasil as an argument below is only applicable for Minecraft 1.16 and above. Prior versions of Minecraft do not need it.
-		this.environment = yggdrasil;
-		authenticationService = new YggdrasilAuthenticationService(Proxy.NO_PROXY, UUID.randomUUID().toString(), yggdrasil);
-		userAuthentication = new YggdrasilUserAuthentication(authenticationService, Agent.MINECRAFT, yggdrasil);
-	}
 
 	public AuthLibSession(CustomYggdrasil yggdrasil) {
-		this(yggdrasil.build());
+		authenticationService = new YggdrasilAuthenticationService(Proxy.NO_PROXY, UUID.randomUUID().toString());
+		userAuthentication = new YggdrasilUserAuthentication(authenticationService, Agent.MINECRAFT);
 	}
 
 	public AuthLibSession() {
-		this(YggdrasilEnvironment.PROD);
+		this(null);
 	}
 
 	public void setCredentials(String username, String password) {
@@ -81,7 +72,7 @@ public class AuthLibSession {
 
 	public void setSession(Session session) {
 		((IMixinMinecraft) MinecraftClient.getInstance()).setSession(buildSession());
-		((IMixinMinecraft) MinecraftClient.getInstance()).setSessionService(new CustomSessionService(authenticationService, environment));
+		((IMixinMinecraft) MinecraftClient.getInstance()).setSessionService(new CustomSessionService(authenticationService));
 	}
 
 	public void setOfflineSession(String username) {

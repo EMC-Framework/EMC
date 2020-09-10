@@ -12,6 +12,7 @@ import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -80,7 +81,7 @@ public class EntityPlayer extends LivingEntity {
 	}
 
 	public boolean isAtEdge() {
-		return Objects.requireNonNull(MinecraftClient.getInstance().world).getCollisions(getMinecraftEntity(), getMinecraftEntity().getBoundingBox().offset(0, -0.5, 0).expand(-0.001, 0, -0.001), (foundEntity) -> true).count() == 0;
+		return Objects.requireNonNull(MinecraftClient.getInstance().world).getCollisions(getMinecraftEntity(), getMinecraftEntity().getBoundingBox().offset(0, -0.5, 0).expand(-0.001, 0, -0.001), Collections.emptySet()).count() == 0;
 	}
 
 	public void openInventory() {

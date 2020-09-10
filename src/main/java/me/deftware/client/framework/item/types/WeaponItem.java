@@ -13,7 +13,7 @@ public class WeaponItem extends ToolItem {
 
 	public float getAttackDamage() {
 		if (item instanceof MiningToolItem) {
-			return ((MiningToolItem) item).getAttackDamage();
+			return ((MiningToolItem) item).getMaterial().getAttackDamage();
 		}
 		return 0;
 	}

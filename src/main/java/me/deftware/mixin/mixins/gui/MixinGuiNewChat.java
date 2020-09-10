@@ -6,8 +6,8 @@ import me.deftware.client.framework.event.events.EventChatReceive;
 import me.deftware.mixin.imp.IMixinGuiNewChat;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -19,7 +19,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Mixin(ChatHud.class)
 public abstract class MixinGuiNewChat implements IMixinGuiNewChat {
@@ -36,7 +35,7 @@ public abstract class MixinGuiNewChat implements IMixinGuiNewChat {
     private EventChatReceive event;
 
     @Shadow
-    protected abstract void addMessage(StringRenderable chatComponent, int messageId, int timestamp, boolean displayOnly);
+    protected abstract void addMessage(Text chatComponent, int messageId, int timestamp, boolean displayOnly);
 
     @Override
     public void setTheChatLine(LiteralText chatComponent, int chatLineId, int updateCounter, boolean displayOnly) {
@@ -45,16 +44,8 @@ public abstract class MixinGuiNewChat implements IMixinGuiNewChat {
 
     @Override
     public void removeMessage(ChatHudLine line) {
-        String text = line.getMessage().toString(false);
-        messages.removeIf(message -> message.getText().getString().equalsIgnoreCase(text));
-        visibleMessages.removeIf(message -> {
-            StringBuilder builder = new StringBuilder();
-            message.getText().visit((string) -> {
-                builder.append(string);
-                return Optional.empty();
-            });
-            return builder.toString().equalsIgnoreCase(text);
-        });
+        messages.removeIf(message -> Formatting.strip(message.getText().getString()).equalsIgnoreCase(line.getMessage().toString(false)));
+        visibleMessages.removeIf(message -> Formatting.strip(message.getText().getString()).equalsIgnoreCase(line.getMessage().toString(false)));
     }
 
     @Override
@@ -81,8 +72,8 @@ public abstract class MixinGuiNewChat implements IMixinGuiNewChat {
         return event.getMessage().build();
     }
 
-    @Inject(method = "addMessage(Lnet/minecraft/text/StringRenderable;IIZ)V", at = @At("HEAD"), cancellable = true)
-    public void addMessage(StringRenderable chatComponent, int messageId, int timestamp, boolean displayOnly, CallbackInfo ci) {
+    @Inject(method = "addMessage(Lnet/minecraft/text/Text;IIZ)V", at = @At("HEAD"), cancellable = true)
+    public void addMessage(Text chatComponent, int messageId, int timestamp, boolean displayOnly, CallbackInfo ci) {
         if (event != null && event.isCanceled()) {
             ci.cancel();
         }

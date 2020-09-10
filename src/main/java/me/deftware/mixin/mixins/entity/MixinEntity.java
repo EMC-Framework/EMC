@@ -60,7 +60,7 @@ public abstract class MixinEntity implements IMixinEntity {
         }
     }
 
-    @Redirect(method = "updateMovementInFluid(Lnet/minecraft/tag/Tag;D)Z", at = @At(value = "INVOKE",
+    @Redirect(method = "updateMovementInFluid", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/entity/Entity;setVelocity(Lnet/minecraft/util/math/Vec3d;)V",
             opcode = 182))
     private void applyFluidVelocity(Entity entity, Vec3d velocity) {

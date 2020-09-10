@@ -30,11 +30,11 @@ public class Enchantment {
 	}
 
 	public int getMinLevel() {
-		return enchantment.getMinLevel();
+		return enchantment.getMinimumLevel();
 	}
 
 	public int getMaxLevel() {
-		return enchantment.getMaxLevel();
+		return enchantment.getMaximumLevel();
 	}
 
 	public ChatMessage getName(int level) {

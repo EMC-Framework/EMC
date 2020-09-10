@@ -1,6 +1,5 @@
 package me.deftware.client.framework.session;
 
-import com.mojang.authlib.Environment;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService;
@@ -10,8 +9,8 @@ import java.lang.reflect.Modifier;
 
 public class CustomSessionService extends YggdrasilMinecraftSessionService {
 
-	public CustomSessionService(YggdrasilAuthenticationService service, Environment env) {
-		super(service, env);
+	public CustomSessionService(YggdrasilAuthenticationService service) {
+		super(service);
 	}
 
 	@Override

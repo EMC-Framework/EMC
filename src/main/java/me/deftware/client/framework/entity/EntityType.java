@@ -112,7 +112,7 @@ public enum EntityType {
 		} else if (type.equals(EntityType.ENTITY_SPIDER)) {
 			return entity instanceof SpiderEntity;
 		} else if (type.equals(EntityType.ENTITY_ZOMBIE_PIGMAN)) {
-			return entity instanceof ZombifiedPiglinEntity;
+			return entity instanceof ZombiePigmanEntity;
 		} else if (type.equals(EntityType.ENTITY_ENDERMAN)) {
 			return entity instanceof EndermanEntity;
 		} else if (type.equals(EntityType.ENTITY_WITHER_SKELETON)) {

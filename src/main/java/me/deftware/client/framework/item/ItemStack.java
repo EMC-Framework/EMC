@@ -20,8 +20,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.text.LiteralText;
+import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Rarity;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.ArrayList;
@@ -76,7 +76,7 @@ public class ItemStack {
 	}
 
 	public List<Pair<Enchantment, Integer>> getEnchantments() {
-		Map<net.minecraft.enchantment.Enchantment, Integer> stackEnchantments = EnchantmentHelper.get(itemStack);
+		Map<net.minecraft.enchantment.Enchantment, Integer> stackEnchantments = EnchantmentHelper.getEnchantments(itemStack);
 		if (enchantments.size() != stackEnchantments.size()) {
 			for (net.minecraft.enchantment.Enchantment enchantment : stackEnchantments.keySet()) {
 				EnchantmentRegistry.INSTANCE.find(enchantment.getTranslationKey()).ifPresent(e ->
@@ -140,13 +140,13 @@ public class ItemStack {
 	}
 
 	public float getStrVsBlock(BlockPosition pos) {
-		return itemStack.getMiningSpeedMultiplier(Objects.requireNonNull(MinecraftClient.getInstance().world).getBlockState(pos.getMinecraftBlockPos()));
+		return itemStack.getMiningSpeed(Objects.requireNonNull(MinecraftClient.getInstance().world).getBlockState(pos.getMinecraftBlockPos()));
 	}
 
 	@Override
 	public boolean equals(Object object) {
 		if (object instanceof ItemStack) {
-			return net.minecraft.item.ItemStack.areEqual(getMinecraftItemStack(), ((ItemStack) object).getMinecraftItemStack());
+			return net.minecraft.item.ItemStack.areItemsEqual(getMinecraftItemStack(), ((ItemStack) object).getMinecraftItemStack());
 		}
 		return false;
 	}
@@ -203,7 +203,7 @@ public class ItemStack {
 	}
 
 	public void renderItemAndEffectIntoGUI(int x, int y) {
-		getRenderItem().renderInGui(getMinecraftItemStack(), x, y);
+		getRenderItem().renderGuiItem(getMinecraftItemStack(), x, y);
 	}
 
 	public void renderItemOverlayIntoGUI(int x, int y, String text) {

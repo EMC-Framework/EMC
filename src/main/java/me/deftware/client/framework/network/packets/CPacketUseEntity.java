@@ -10,7 +10,7 @@ import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
 public class CPacketUseEntity extends PacketWrapper {
 
     public CPacketUseEntity(Entity entity) {
-        super(new PlayerInteractEntityC2SPacket(entity.getMinecraftEntity(), entity.getMinecraftEntity().isSneaking()));
+        super(new PlayerInteractEntityC2SPacket(entity.getMinecraftEntity()));
     }
 
 }
