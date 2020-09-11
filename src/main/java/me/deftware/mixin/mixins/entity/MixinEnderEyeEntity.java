@@ -21,7 +21,7 @@ public class MixinEnderEyeEntity {
     @Unique
     private static ThrowData secondThrow = null;
 
-    @Inject(method = "initDataTracker", at = @At("HEAD"))
+    @Inject(method = "<init>(Lnet/minecraft/world/World;)V", at = @At("HEAD"))
     public void onInit(CallbackInfo ci) {
         if (firstThrow != null && secondThrow != null) {
             firstThrow = null;
@@ -35,12 +35,12 @@ public class MixinEnderEyeEntity {
         event.broadcast();
     }
 
-    @Inject(method = "setVelocityClient", at = @At("TAIL"))
+    @Inject(method = "setVelocity", at = @At("TAIL"))
     public void setVelocityClient(double x, double y, double z, CallbackInfo info) {
-        EnderEyeEntity entity = (EnderEyeEntity) (Object) this;
+        EntityEnderEye entity = (EntityEnderEye) (Object) this;
 
         if (firstThrow == null) {
-            firstThrow = new ThrowData(entity, (entity).x, (entity).z, x, z);
+            firstThrow = new ThrowData(entity, (entity).posX, (entity).posZ, x, z);
             return;
         }
         if (firstThrow.sameEntity(entity)) {
@@ -49,7 +49,7 @@ public class MixinEnderEyeEntity {
         }
 
         if (secondThrow == null) {
-            secondThrow = new ThrowData(entity, (entity).x, (entity).z, x, z);
+            secondThrow = new ThrowData(entity, (entity).posX, (entity).posZ, x, z);
             return;
         }
         if (secondThrow.sameEntity(entity)) {
@@ -60,9 +60,9 @@ public class MixinEnderEyeEntity {
 
     @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;setPosition(DDD)V"))
     public void setPos(CallbackInfo info) {
-        Vec3d vel = ((EntityEnderEye)(Object)this).getVelocity();
+        double velX = ((EntityEnderEye)(Object)this).motionX, velZ = ((EntityEnderEye)(Object)this).motionZ, velY = ((EntityEnderEye)(Object)this).motionY;
 
-        if (firstThrow != null && secondThrow != null && Math.abs(vel.x * vel.z) <= .0000001 && Math.abs(vel.y) != 0.0D) {
+        if (firstThrow != null && secondThrow != null && Math.abs(velX * velZ) <= .0000001 && Math.abs(velY) != 0.0D) {
             EventStructureLocation event = new EventStructureLocation(DoubleBlockPosition.fromMinecraftBlockPos(firstThrow.calculateIntersection(secondThrow)), EventStructureLocation.StructureType.Stronghold);
             event.broadcast();
         }
