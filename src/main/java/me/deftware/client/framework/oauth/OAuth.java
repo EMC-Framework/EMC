@@ -1,16 +1,14 @@
 package me.deftware.client.framework.oauth;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.NetworkState;
-import net.minecraft.server.network.packet.HandshakeC2SPacket;
-import net.minecraft.server.network.packet.LoginHelloC2SPacket;
+import net.minecraft.network.EnumConnectionState;
+import net.minecraft.network.handshake.client.CPacketHandshake;
+import net.minecraft.network.login.client.CPacketLoginStart;
 
 import java.net.InetAddress;
 
 /**
  * API to authenticate with https://mc-oauth.net/
- *
- * @author Deftware
  */
 public class OAuth {
 
@@ -22,11 +20,11 @@ public class OAuth {
             Thread.currentThread().setName("OAuth thread");
             try {
                 InetAddress inetaddress = InetAddress.getByName(OAuth.ip);
-                OAuthNetworkManager manager = OAuthNetworkManager.connect(inetaddress, OAuth.port,
-                        net.minecraft.client.Minecraft.getInstance().options.useNativeTransport, callback);
-                manager.setPacketListener(new OAuthNetHandler(manager, net.minecraft.client.Minecraft.getInstance(), null, callback));
-                manager.send(new HandshakeC2SPacket(OAuth.ip, OAuth.port, NetworkState.LOGIN));
-                manager.send(new LoginHelloC2SPacket(net.minecraft.client.Minecraft.getInstance().getSession().getProfile()));
+                OAuthNetworkManager manager = OAuthNetworkManager.createNetworkManagerAndConnect(inetaddress, OAuth.port,
+                        Minecraft.getInstance().gameSettings.isUsingNativeTransport(), callback);
+                manager.setNetHandler(new OAuthNetHandler(manager, Minecraft.getInstance(), null, callback));
+                manager.sendPacket(new CPacketHandshake(OAuth.ip, OAuth.port, EnumConnectionState.LOGIN));
+                manager.sendPacket(new CPacketLoginStart(Minecraft.getInstance().getSession().getProfile()));
             } catch (Exception ex) {
                 callback.callback(false, "", "");
             }

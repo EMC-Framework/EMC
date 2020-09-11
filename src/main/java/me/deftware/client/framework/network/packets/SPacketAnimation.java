@@ -3,10 +3,7 @@ package me.deftware.client.framework.network.packets;
 import me.deftware.client.framework.entity.Entity;
 import me.deftware.client.framework.network.PacketWrapper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.network.packet.EntityAnimationS2CPacket;
 import net.minecraft.network.Packet;
-
-import java.util.Objects;
 
 /**
  * @author Deftware
@@ -18,15 +15,15 @@ public class SPacketAnimation extends PacketWrapper {
 	}
 
 	public int getEntityID() {
-		return ((EntityAnimationS2CPacket) packet).getId();
+		return ((net.minecraft.network.play.server.SPacketAnimation) packet).getEntityID();
 	}
 
 	public int getAnimationID() {
-		return ((EntityAnimationS2CPacket) packet).getAnimationId();
+		return ((net.minecraft.network.play.server.SPacketAnimation) packet).getAnimationType();
 	}
 
 	public Entity getEntity() {
-		return Entity.newInstance(Objects.requireNonNull(net.minecraft.client.Minecraft.getInstance().world).getEntityById(getEntityID()));
+		return Entity.newInstance(Minecraft.getInstance().world.getEntityByID(getEntityID()));
 	}
 
 }

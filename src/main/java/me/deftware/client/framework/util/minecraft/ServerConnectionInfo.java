@@ -1,22 +1,23 @@
 package me.deftware.client.framework.util.minecraft;
 
 import me.deftware.client.framework.chat.ChatMessage;
-import net.minecraft.client.options.ServerEntry;
+import net.minecraft.client.multiplayer.ServerData;
 
 /**
  * @author Deftware
  */
-public class ServerConnectionInfo extends ServerEntry {
+public class ServerConnectionInfo extends ServerData {
 
-	public ServerConnectionInfo(ServerEntry server) {
-		super(server.name, server.address, server.isLocal());
-		this.label = server.label;
-		this.online = server.online;
-		this.protocolVersion = server.protocolVersion;
-		this.ping = server.ping;
+	public ServerConnectionInfo(ServerData server) {
+		super(server.serverName, server.serverIP, server.isOnLAN());
+		this.serverName = server.serverName;
+		this.pinged = server.pinged;
+		this.gameVersion = server.gameVersion;
+		this.pingToServer = server.pingToServer;
 		this.version = server.version;
-		this.playerCountLabel = server.playerCountLabel;
-		this.setIcon(server.getIcon());
+		this.serverMOTD = server.serverMOTD;
+		this.populationInfo = server.populationInfo;
+		this.setBase64EncodedIconData(server.getBase64EncodedIconData());
 	}
 
 	public ServerConnectionInfo(String name, String ip, boolean isLan) {
@@ -24,47 +25,47 @@ public class ServerConnectionInfo extends ServerEntry {
 	}
 
 	public ChatMessage getMotdAccessor() {
-		return new ChatMessage().fromString(label);
+		return new ChatMessage().fromString(serverMOTD);
 	}
 
 	public boolean isPingedAccessor() {
-		return online;
+		return pinged;
 	}
 
 	public String getIPAccessor() {
-		return address;
+		return serverIP;
 	}
 
 	public boolean isLanServerAccessor () {
-		return isLocal();
+		return isOnLAN();
 	}
 
 	public String getServerNameAccessor() {
-		return name;
+		return serverName;
 	}
 
 	public ChatMessage getGameVersionAccessor() {
-		return new ChatMessage().fromString(version);
+		return new ChatMessage().fromString(gameVersion);
 	}
 
 	public int getVersionAccessor() {
-		return protocolVersion;
+		return version;
 	}
 
 	public ChatMessage getPopulationInfoAccessor() {
-		return new ChatMessage().fromString(playerCountLabel);
+		return new ChatMessage().fromString(populationInfo);
 	}
 
 	public long getPingToServerAccessor() {
-		return ping;
+		return pingToServer;
 	}
 
 	public String getBase64EncodedIconDataAccessor() {
-		return getIcon();
+		return getBase64EncodedIconData();
 	}
 
 	public void setBase64EncodedIconDataAccessor(String icon) {
-		setIcon(icon);
+		setBase64EncodedIconData(icon);
 	}
 
 }

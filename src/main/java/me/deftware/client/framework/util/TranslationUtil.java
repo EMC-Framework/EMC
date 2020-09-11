@@ -1,6 +1,6 @@
 package me.deftware.client.framework.util;
 
-import net.minecraft.util.Language;
+import net.minecraft.client.resources.I18n;
 
 /**
  * @author Deftware
@@ -8,7 +8,7 @@ import net.minecraft.util.Language;
 public class TranslationUtil {
 
     public static String translate(String key) {
-        return Language.getInstance().translate(key);
+        return I18n.format(key);
     }
 
 }

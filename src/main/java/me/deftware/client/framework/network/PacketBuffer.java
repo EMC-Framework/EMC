@@ -4,20 +4,19 @@ import io.netty.buffer.Unpooled;
 import me.deftware.client.framework.item.ItemStack;
 import me.deftware.client.framework.math.position.BlockPosition;
 import me.deftware.client.framework.math.position.DoubleBlockPosition;
-import net.minecraft.util.PacketByteBuf;
 
 /**
  * @author Deftware
  */
 public class PacketBuffer {
 
-    public PacketByteBuf buffer;
+    public net.minecraft.network.PacketBuffer buffer;
 
     public PacketBuffer() {
-        this.buffer = new PacketByteBuf(Unpooled.buffer());
+        this.buffer = new net.minecraft.network.PacketBuffer(Unpooled.buffer());
     }
 
-    public PacketBuffer(PacketByteBuf buffer) {
+    public PacketBuffer(net.minecraft.network.PacketBuffer buffer) {
         this.buffer = buffer;
     }
 
@@ -58,7 +57,7 @@ public class PacketBuffer {
     }
 
     public String readString() {
-        return buffer.readString();
+        return buffer.readString(0);
     }
 
     public ItemStack readItemStack() {

@@ -1,9 +1,8 @@
 package me.deftware.client.framework.network.packets;
 
-
 import me.deftware.client.framework.network.PacketWrapper;
 import net.minecraft.network.Packet;
-import net.minecraft.server.network.packet.PlayerMoveC2SPacket;
+import net.minecraft.network.play.client.CPacketPlayer;
 
 /**
  * @author Deftware
@@ -15,7 +14,7 @@ public class CPacketPositionRotation extends PacketWrapper {
 	}
 
 	public CPacketPositionRotation(double x, double y, double z, float yaw, float pitch, boolean isOnGround) {
-		super(new PlayerMoveC2SPacket.Both(x,y,z,yaw,pitch,isOnGround));
+		super(new CPacketPlayer.PositionRotation(x,y,z,yaw,pitch,isOnGround));
 	}
 
 }

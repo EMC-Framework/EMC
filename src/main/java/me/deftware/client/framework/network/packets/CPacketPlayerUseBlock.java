@@ -2,9 +2,10 @@ package me.deftware.client.framework.network.packets;
 
 import me.deftware.client.framework.network.PacketWrapper;
 import me.deftware.client.framework.util.minecraft.BlockSwingResult;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.Packet;
-import net.minecraft.server.network.packet.PlayerInteractBlockC2SPacket;
-import net.minecraft.util.Hand;
+import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
+import net.minecraft.util.EnumHand;
 
 /**
  * @author Deftware
@@ -16,6 +17,10 @@ public class CPacketPlayerUseBlock extends PacketWrapper {
 	}
 
 	public CPacketPlayerUseBlock(BlockSwingResult swingResult) {
-		this(new PlayerInteractBlockC2SPacket(Hand.MAIN_HAND, swingResult.getMinecraftHitResult()));
+		// FIXME Verify this
+		this(new CPacketPlayerTryUseItemOnBlock(
+				swingResult.getBlockPos(), swingResult.sideHit, EnumHand.MAIN_HAND,
+				(float) Minecraft.getInstance().player.posX, (float) Minecraft.getInstance().player.posY, (float) Minecraft.getInstance().player.posZ
+		));
 	}
 }

@@ -2,21 +2,18 @@ package me.deftware.client.framework.oauth;
 
 import me.deftware.mixin.imp.IMixinNetHandlerLoginClient;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Screen;
-import net.minecraft.client.network.ClientLoginNetworkHandler;
-import net.minecraft.client.network.packet.LoginSuccessS2CPacket;
-import net.minecraft.network.ClientConnection;
-import net.minecraft.network.NetworkState;
-import net.minecraft.network.chat.Component;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.network.NetHandlerLoginClient;
+import net.minecraft.network.EnumConnectionState;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.login.server.SPacketLoginSuccess;
+import net.minecraft.util.text.ITextComponent;
 
-/**
- * @author Deftware
- */
-public class OAuthNetHandler extends ClientLoginNetworkHandler {
+public class OAuthNetHandler extends NetHandlerLoginClient {
 
     public OAuth.OAuthCallback callback;
 
-    public OAuthNetHandler(ClientConnection networkManagerIn, Minecraft mcIn, Screen previousScreenIn,
+    public OAuthNetHandler(NetworkManager networkManagerIn, Minecraft mcIn, GuiScreen previousScreenIn,
                            OAuth.OAuthCallback callback) {
         super(networkManagerIn, mcIn, previousScreenIn, fakeConsumer -> {
         });
@@ -24,15 +21,15 @@ public class OAuthNetHandler extends ClientLoginNetworkHandler {
     }
 
     @Override
-    public void onDisconnected(Component reason) {
+    public void onDisconnect(ITextComponent reason) {
         callback.callback(false, "", "");
     }
 
     @Override
-    public void onLoginSuccess(LoginSuccessS2CPacket packetIn) {
+    public void handleLoginSuccess(SPacketLoginSuccess packetIn) {
         ((IMixinNetHandlerLoginClient) this).setGameProfile(packetIn.getProfile());
-        ((IMixinNetHandlerLoginClient) this).getNetworkManager().setState(NetworkState.PLAY);
-        ((IMixinNetHandlerLoginClient) this).getNetworkManager().setPacketListener(new OAuthNetHandlerPlayClient(net.minecraft.client.Minecraft.getInstance(), null,
+        ((IMixinNetHandlerLoginClient) this).getNetworkManager().setConnectionState(EnumConnectionState.PLAY);
+        ((IMixinNetHandlerLoginClient) this).getNetworkManager().setNetHandler(new OAuthNetHandlerPlayClient(Minecraft.getInstance(), null,
                 ((IMixinNetHandlerLoginClient) this).getNetworkManager(), ((IMixinNetHandlerLoginClient) this).getGameProfile(), callback));
     }
 

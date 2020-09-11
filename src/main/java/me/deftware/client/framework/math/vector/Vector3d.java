@@ -4,12 +4,9 @@ import me.deftware.client.framework.entity.Entity;
 import me.deftware.client.framework.entity.block.TileEntity;
 import me.deftware.client.framework.math.position.BlockPosition;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.world.RayTraceContext;
-
-import java.util.Objects;
 
 /**
  * @author Deftware
@@ -49,19 +46,19 @@ public class Vector3d {
 	}
 
 	public double getX() {
-		return vec3d.getX();
+		return vec3d.x;
 	}
 
 	public double getY() {
-		return vec3d.getY();
+		return vec3d.y;
 	}
 
 	public double getZ() {
-		return vec3d.getZ();
+		return vec3d.z;
 	}
 
 	public Vector3d multiply(double factor) {
-		vec3d = vec3d.multiply(factor);
+		vec3d = vec3d.scale(factor);
 		return this;
 	}
 
@@ -97,15 +94,13 @@ public class Vector3d {
 		return vec3d.distanceTo(vec.getMinecraftVector());
 	}
 
-	public static boolean rayTraceBlocks(Vector3d start, Vector3d end) {
-		return Objects.requireNonNull(net.minecraft.client.Minecraft.getInstance().world).
-				rayTrace(new RayTraceContext(start.getMinecraftVector(), end.getMinecraftVector(), RayTraceContext.ShapeType.OUTLINE, RayTraceContext.FluidHandling.NONE,
-						Objects.requireNonNull(net.minecraft.client.Minecraft.getInstance().getCameraEntity())))
-				.getType() != HitResult.Type.MISS;
+	public static boolean rayTraceBlocks(Vector3d vec1, Vector3d vec2) {
+		RayTraceResult hitResult_1 = Minecraft.getInstance().world.rayTraceBlocks(vec1.getMinecraftVector(), vec2.getMinecraftVector());
+		return hitResult_1 != null && hitResult_1.type != RayTraceResult.Type.MISS;
 	}
 
 	public double getMagnitude() {
-		return Math.sqrt(vec3d.x*vec3d.x+vec3d.y*vec3d.y+vec3d.z*vec3d.z);
+		return Math.sqrt(vec3d.x * vec3d.x + vec3d.y * vec3d.y + vec3d.z * vec3d.z);
 	}
 
 }

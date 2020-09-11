@@ -18,38 +18,38 @@ public class ChunkBlockPosition extends BlockPosition {
 
 	@Override
 	public double getX() {
-		return chunk.getCenterBlockPos().getX();
+		return getMinecraftBlockPos().getX();
 	}
 
 	@Override
 	public double getY() {
-		return chunk.getCenterBlockPos().getY();
+		return getMinecraftBlockPos().getY();
 	}
 
 	@Override
 	public double getZ() {
-		return chunk.getCenterBlockPos().getZ();
+		return getMinecraftBlockPos().getZ();
 	}
 
 	public double getStartX() {
-		return chunk.getStartX();
+		return chunk.getXStart();
 	}
 
 	public double getEndX() {
-		return chunk.getEndX();
+		return chunk.getXEnd();
 	}
 
 	public double getStartZ() {
-		return chunk.getStartZ();
+		return chunk.getZStart();
 	}
 
 	public double getEndZ() {
-		return chunk.getEndZ();
+		return chunk.getZEnd();
 	}
 
 	@Override
 	public BlockPos getMinecraftBlockPos() {
-		return chunk.getCenterBlockPos();
+		return new BlockPos(chunk.getXStart(), 0, chunk.getZStart());
 	}
 
 	public BlockPosition getCenterBlockPos() {

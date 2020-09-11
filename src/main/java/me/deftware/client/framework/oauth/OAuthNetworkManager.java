@@ -4,53 +4,59 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollSocketChannel;
+import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import net.minecraft.network.*;
-import net.minecraft.util.Lazy;
+import net.minecraft.util.LazyLoadBase;
 
 import java.net.InetAddress;
 
-/**
- * @author Deftware
- */
-public class OAuthNetworkManager extends ClientConnection {
+public class OAuthNetworkManager extends NetworkManager {
 
-    private final OAuth.OAuthCallback callback;
+    private OAuth.OAuthCallback callback;
 
-    public OAuthNetworkManager(NetworkSide packetDirection, OAuth.OAuthCallback callback) {
+    public OAuthNetworkManager(EnumPacketDirection packetDirection, OAuth.OAuthCallback callback) {
         super(packetDirection);
         this.callback = callback;
     }
 
-    public static OAuthNetworkManager connect(InetAddress address, int port, boolean useNativeTransport, OAuth.OAuthCallback callback) {
-        final OAuthNetworkManager connection = new OAuthNetworkManager(NetworkSide.CLIENTBOUND, callback);
-        Class<? extends Channel> socketClass;
-        Lazy<?> lazyGroup;
+    @Override
+    public void exceptionCaught(ChannelHandlerContext p_exceptionCaught_1_, Throwable p_exceptionCaught_2_) {
+        callback.callback(false, "", "");
+    }
+
+    public static OAuthNetworkManager createNetworkManagerAndConnect(InetAddress address, int serverPort,
+                                                                     boolean useNativeTransport, OAuth.OAuthCallback callback) {
+        OAuthNetworkManager networkmanager = new OAuthNetworkManager(EnumPacketDirection.CLIENTBOUND, callback);
+        Class<? extends SocketChannel> oclass;
+        LazyLoadBase<? extends EventLoopGroup> lazyloadbase;
+
         if (Epoll.isAvailable() && useNativeTransport) {
-            socketClass = EpollSocketChannel.class;
-            lazyGroup = CLIENT_IO_GROUP_EPOLL;
+            oclass = EpollSocketChannel.class;
+            lazyloadbase = NetworkManager.CLIENT_EPOLL_EVENTLOOP;
         } else {
-            socketClass = NioSocketChannel.class;
-            lazyGroup = CLIENT_IO_GROUP;
+            oclass = NioSocketChannel.class;
+            lazyloadbase = NetworkManager.CLIENT_NIO_EVENTLOOP;
         }
 
-        (new Bootstrap()).group((EventLoopGroup) lazyGroup.get()).handler(new ChannelInitializer<Channel>() {
-            protected void initChannel(Channel channel) {
+        (new Bootstrap()).group(lazyloadbase.getValue()).handler(new ChannelInitializer<Channel>() {
+            @Override
+            protected void initChannel(Channel p_initChannel_1_) throws Exception {
                 try {
-                    channel.config().setOption(ChannelOption.TCP_NODELAY, true);
+                    p_initChannel_1_.config().setOption(ChannelOption.TCP_NODELAY, Boolean.TRUE);
                 } catch (ChannelException ignored) {
                 }
 
-                channel.pipeline().addLast("timeout", new ReadTimeoutHandler(30)).addLast("splitter", new SplitterHandler()).addLast("decoder", new DecoderHandler(NetworkSide.CLIENTBOUND)).addLast("prepender", new SizePrepender()).addLast("encoder", new PacketEncoder(NetworkSide.SERVERBOUND)).addLast("packet_handler", connection);
+                p_initChannel_1_.pipeline().addLast("timeout", new ReadTimeoutHandler(30))
+                        .addLast("splitter", new NettyVarint21FrameDecoder())
+                        .addLast("decoder", new NettyPacketDecoder(EnumPacketDirection.CLIENTBOUND))
+                        .addLast("prepender", new NettyVarint21FrameEncoder())
+                        .addLast("encoder", new NettyPacketEncoder(EnumPacketDirection.SERVERBOUND))
+                        .addLast("packet_handler", networkmanager);
             }
-        }).channel(socketClass).connect(address, port).syncUninterruptibly();
-        return connection;
-    }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext context, Throwable throwable) {
-        callback.callback(false, "", "");
+        }).channel(oclass).connect(address, serverPort).syncUninterruptibly();
+        return networkmanager;
     }
 
 }

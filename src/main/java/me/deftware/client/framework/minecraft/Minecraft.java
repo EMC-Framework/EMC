@@ -8,15 +8,13 @@ import me.deftware.client.framework.helper.ScreenHelper;
 import me.deftware.client.framework.render.camera.GameCamera;
 import me.deftware.client.framework.util.minecraft.BlockSwingResult;
 import me.deftware.client.framework.util.minecraft.ServerConnectionInfo;
-import net.minecraft.SharedConstants;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ingame.ChatScreen;
-import net.minecraft.client.gui.menu.MultiplayerScreen;
-import net.minecraft.client.gui.menu.ServerConnectingScreen;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.options.ServerEntry;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.hit.HitResult;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.gui.GuiChat;
+import net.minecraft.client.gui.GuiConnecting;
+import net.minecraft.client.gui.GuiMultiplayer;
+import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.realms.RealmsSharedConstants;
+import net.minecraft.util.math.RayTraceResult;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -31,34 +29,34 @@ public class Minecraft {
 
 	public static final Queue<Runnable> RENDER_THREAD = new ConcurrentLinkedQueue<>();
 
-	private static final ComparedConversion<ClientPlayerEntity, MainEntityPlayer> mainPlayer =
+	private static final ComparedConversion<EntityPlayerSP, MainEntityPlayer> mainPlayer =
 			new ComparedConversion<>(() -> net.minecraft.client.Minecraft.getInstance().player, MainEntityPlayer::new);
 
 	private static final ComparedConversion<net.minecraft.entity.Entity, Entity> cameraEntity =
-			new ComparedConversion<>(() -> net.minecraft.client.Minecraft.getInstance().cameraEntity, Entity::newInstance);
+			new ComparedConversion<>(() -> net.minecraft.client.Minecraft.getInstance().getRenderViewEntity(), Entity::newInstance);
 
 	private static final ComparedConversion<net.minecraft.entity.Entity, Entity> hitEntity =
 			new ComparedConversion<>(() -> {
-				if (net.minecraft.client.Minecraft.getInstance().hitResult != null) {
-					if (net.minecraft.client.Minecraft.getInstance().hitResult.getType() == HitResult.Type.ENTITY) {
-						return ((EntityHitResult) net.minecraft.client.Minecraft.getInstance().hitResult).getEntity();
+				if (net.minecraft.client.Minecraft.getInstance().objectMouseOver != null) {
+					if (net.minecraft.client.Minecraft.getInstance().objectMouseOver.type == RayTraceResult.Type.ENTITY) {
+						return net.minecraft.client.Minecraft.getInstance().objectMouseOver.entity;
 					}
 				}
 				return null;
 			}, Entity::newInstance);
 
-	private static final ComparedConversion<HitResult, BlockSwingResult> hitBlock =
+	private static final ComparedConversion<RayTraceResult, BlockSwingResult> hitBlock =
 			new ComparedConversion<>(() -> {
-				if (net.minecraft.client.Minecraft.getInstance().hitResult != null) {
-					if (net.minecraft.client.Minecraft.getInstance().hitResult.getType() == HitResult.Type.BLOCK) {
-						return net.minecraft.client.Minecraft.getInstance().hitResult;
+				if (net.minecraft.client.Minecraft.getInstance().objectMouseOver != null) {
+					if (net.minecraft.client.Minecraft.getInstance().objectMouseOver.type == RayTraceResult.Type.BLOCK) {
+						return net.minecraft.client.Minecraft.getInstance().objectMouseOver;
 					}
 				}
 				return null;
 			}, BlockSwingResult::new);
 
-	private static final ComparedConversion<ServerEntry, ServerConnectionInfo> connectedServer =
-			new ComparedConversion<>(() -> net.minecraft.client.Minecraft.getInstance().getCurrentServerEntry(), ServerConnectionInfo::new);
+	private static final ComparedConversion<ServerData, ServerConnectionInfo> connectedServer =
+			new ComparedConversion<>(() -> net.minecraft.client.Minecraft.getInstance().getCurrentServerData(), ServerConnectionInfo::new);
 
 	public static ServerConnectionInfo lastConnectedServer = null;
 
@@ -79,7 +77,7 @@ public class Minecraft {
 
 	public static int getMinecraftChatScaledYOffset() {
 		if (ScreenHelper.isChatOpen()) {
-			int chatHeight = 24, multiplier = getRealScaledMultiplier(), scaleFactor = (int) net.minecraft.client.Minecraft.getInstance().window.getScaleFactor();
+			int chatHeight = 24, multiplier = getRealScaledMultiplier(), scaleFactor = (int) net.minecraft.client.Minecraft.getInstance().mainWindow.getGuiScaleFactor();
 			if (scaleFactor == 0) return chatHeight;
 			chatHeight *= multiplier;
 			if (scaleFactor % 2 == 0) chatHeight += 5;
@@ -90,7 +88,7 @@ public class Minecraft {
 
 	public static int getMinecraftChatScaledXOffset() {
 		if (ScreenHelper.isChatOpen()) {
-			int chatX = 4, multiplier = getRealScaledMultiplier(), scaleFactor = (int) net.minecraft.client.Minecraft.getInstance().window.getScaleFactor();
+			int chatX = 4, multiplier = getRealScaledMultiplier(), scaleFactor = (int) net.minecraft.client.Minecraft.getInstance().mainWindow.getGuiScaleFactor();
 			if (scaleFactor == 0) return chatX;
 			chatX *= multiplier;
 			return chatX;
@@ -99,7 +97,7 @@ public class Minecraft {
 	}
 
 	public static int getRealScaledMultiplier() {
-		int scaleFactor = (int) net.minecraft.client.Minecraft.getInstance().window.getScaleFactor();
+		int scaleFactor = (int) net.minecraft.client.Minecraft.getInstance().mainWindow.getGuiScaleFactor();
 		if (scaleFactor != 0) {
 			scaleFactor /= scaleFactor % 2 == 0 ? 2 : 1.8;
 		}
@@ -115,17 +113,17 @@ public class Minecraft {
 	}
 
 	public static void connectToServer(ServerConnectionInfo server) {
-		net.minecraft.client.Minecraft.getInstance().openScreen(new ServerConnectingScreen(new MultiplayerScreen(null), net.minecraft.client.Minecraft.getInstance(), server));
+		net.minecraft.client.Minecraft.getInstance().displayGuiScreen(new GuiConnecting(new GuiMultiplayer(null), net.minecraft.client.Minecraft.getInstance(), server));
 	}
 
 	public static void openChat(String originText) {
-		if (net.minecraft.client.Minecraft.getInstance().currentScreen == null && net.minecraft.client.Minecraft.getInstance().overlay == null) {
-			net.minecraft.client.Minecraft.getInstance().openScreen(new ChatScreen(originText));
+		if (net.minecraft.client.Minecraft.getInstance().currentScreen == null) {
+			net.minecraft.client.Minecraft.getInstance().displayGuiScreen(new GuiChat(originText));
 		}
 	}
 
 	public static boolean isSingleplayer() {
-		return net.minecraft.client.Minecraft.getInstance().isInSingleplayer();
+		return net.minecraft.client.Minecraft.getInstance().isSingleplayer();
 	}
 
 	public static boolean isInGame() {
@@ -133,7 +131,7 @@ public class Minecraft {
 	}
 
 	public static File getRunDir() {
-		return net.minecraft.client.Minecraft.getInstance().runDirectory;
+		return net.minecraft.client.Minecraft.getInstance().gameDir;
 	}
 
 	public static GameCamera getCamera() {
@@ -151,25 +149,25 @@ public class Minecraft {
 	}
 
 	public static PlayerPerspective getPerspective() {
-		return net.minecraft.client.Minecraft.getInstance().options.perspective == 0 ?
-				PlayerPerspective.FIRST_PERSON : net.minecraft.client.Minecraft.getInstance().options.perspective == 1 ?
+		return net.minecraft.client.Minecraft.getInstance().gameSettings.thirdPersonView == 0 ?
+				PlayerPerspective.FIRST_PERSON : net.minecraft.client.Minecraft.getInstance().gameSettings.thirdPersonView == 1 ?
 				PlayerPerspective.THIRD_PERSON_BACK : PlayerPerspective.THIRD_PERSON_FRONT;
 	}
 
 	public static void shutdown() {
-		net.minecraft.client.Minecraft.getInstance().stop();
+		net.minecraft.client.Minecraft.getInstance().shutdown();
 	}
 
 	public static String getMinecraftVersion() {
-		return SharedConstants.getGameVersion().getName();
+		return RealmsSharedConstants.VERSION_STRING;
 	}
 
 	public static int getMinecraftProtocolVersion() {
-		return SharedConstants.getGameVersion().getProtocolVersion();
+		return RealmsSharedConstants.NETWORK_PROTOCOL_VERSION;
 	}
 
 	public static boolean isMouseOver() {
-		return net.minecraft.client.Minecraft.getInstance().hitResult != null;
+		return net.minecraft.client.Minecraft.getInstance().objectMouseOver != null;
 	}
 
 	@Nullable
@@ -193,7 +191,7 @@ public class Minecraft {
 	}
 
 	public static float getRenderPartialTicks() {
-		return net.minecraft.client.Minecraft.getInstance().getTickDelta();
+		return net.minecraft.client.Minecraft.getInstance().getRenderPartialTicks();
 	}
 
 }

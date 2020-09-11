@@ -3,7 +3,6 @@ package me.deftware.client.framework.network.packets;
 import me.deftware.client.framework.network.PacketWrapper;
 import me.deftware.mixin.imp.IMixinCPacketPlayer;
 import net.minecraft.network.Packet;
-import net.minecraft.server.network.packet.PlayerMoveC2SPacket;
 
 /**
  * @author Deftware
@@ -15,7 +14,7 @@ public class CPacketPlayer extends PacketWrapper {
     }
 
     public CPacketPlayer() {
-        super(new PlayerMoveC2SPacket());
+        super(new net.minecraft.network.play.client.CPacketPlayer());
     }
 
     public void setOnGround(boolean state) {

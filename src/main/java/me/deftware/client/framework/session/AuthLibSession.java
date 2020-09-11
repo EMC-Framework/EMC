@@ -7,7 +7,7 @@ import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication;
 import me.deftware.mixin.imp.IMixinMinecraft;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.util.Session;
+import net.minecraft.util.Session;
 
 import java.net.Proxy;
 import java.util.UUID;
@@ -71,8 +71,8 @@ public class AuthLibSession {
 	}
 
 	public void setSession(Session session) {
-		((IMixinMinecraft) net.minecraft.client.Minecraft.getInstance()).setSession(buildSession());
-		((IMixinMinecraft) net.minecraft.client.Minecraft.getInstance()).setSessionService(new CustomSessionService(authenticationService));
+		((IMixinMinecraft) Minecraft.getInstance()).setSession(buildSession());
+		((IMixinMinecraft) Minecraft.getInstance()).setSessionService(authenticationService.createMinecraftSessionService());
 	}
 
 	public void setOfflineSession(String username) {

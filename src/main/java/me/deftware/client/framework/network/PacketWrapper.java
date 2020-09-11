@@ -3,13 +3,7 @@ package me.deftware.client.framework.network;
 import me.deftware.client.framework.network.packets.*;
 import me.deftware.mixin.imp.IMixinNetworkManager;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.network.packet.EntityAnimationS2CPacket;
-import net.minecraft.client.network.packet.EntityS2CPacket;
 import net.minecraft.network.Packet;
-import net.minecraft.server.network.packet.ClientStatusC2SPacket;
-import net.minecraft.server.network.packet.GuiCloseC2SPacket;
-import net.minecraft.server.network.packet.KeepAliveC2SPacket;
-import net.minecraft.server.network.packet.PlayerMoveC2SPacket;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -39,18 +33,18 @@ public class PacketWrapper {
     }
 
     public void setPacketBuffer(PacketBuffer buffer) throws IOException {
-        packet.write(buffer.buffer);
+        packet.writePacketData(buffer.buffer);
     }
 
     public void sendPacket() {
-        net.minecraft.client.Minecraft.getInstance().player.networkHandler.sendPacket(packet);
+        Minecraft.getInstance().player.connection.sendPacket(packet);
     }
 
     /**
      * Bypasses this event, and can be used to prevent an infinite loop
      */
     public void sendImmediately() {
-        ((IMixinNetworkManager) net.minecraft.client.Minecraft.getInstance().player.networkHandler.getClientConnection()).sendPacketImmediately(packet);
+        ((IMixinNetworkManager) Minecraft.getInstance().player.connection.getNetworkManager()).sendPacketImmediately(packet);
     }
 
     /**
@@ -59,25 +53,25 @@ public class PacketWrapper {
     @Nullable
     public static PacketWrapper translatePacket(Packet<?> packet) {
         // Client to server packets
-        if (packet instanceof PlayerMoveC2SPacket) {
+        if (packet instanceof net.minecraft.network.play.client.CPacketPlayer) {
             return new CPacketPlayer(packet);
-        } else if (packet instanceof PlayerMoveC2SPacket.Both) {
+        } else if (packet instanceof net.minecraft.network.play.client.CPacketPlayer.PositionRotation) {
             return new CPacketPositionRotation(packet);
-        } else if (packet instanceof PlayerMoveC2SPacket.LookOnly) {
+        } else if (packet instanceof net.minecraft.network.play.client.CPacketPlayer.Rotation) {
             return new CPacketRotation(packet);
-        } else if (packet instanceof PlayerMoveC2SPacket.PositionOnly) {
+        } else if (packet instanceof net.minecraft.network.play.client.CPacketPlayer.Position) {
             return new CPacketPosition(packet);
-        } else if (packet instanceof GuiCloseC2SPacket) {
+        } else if (packet instanceof net.minecraft.network.play.client.CPacketCloseWindow) {
             return new CPacketCloseWindow(packet);
-        } else if (packet instanceof KeepAliveC2SPacket) {
+        } else if (packet instanceof net.minecraft.network.play.client.CPacketKeepAlive) {
             return new CPacketKeepAlive(packet);
-        } else if (packet instanceof ClientStatusC2SPacket) {
+        } else if (packet instanceof net.minecraft.network.play.client.CPacketClientStatus) {
             return new CPacketClientStatus(packet);
         }
         // Server to client packets
-        if (packet instanceof EntityS2CPacket) {
+        if (packet instanceof net.minecraft.network.play.server.SPacketEntity) {
             return new SPacketEntity(packet);
-        } else if (packet instanceof EntityAnimationS2CPacket) {
+        } else if (packet instanceof net.minecraft.network.play.server.SPacketAnimation) {
             return new SPacketAnimation(packet);
         }
         return new PacketWrapper(packet);
