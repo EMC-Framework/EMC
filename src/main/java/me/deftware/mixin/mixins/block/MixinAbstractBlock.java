@@ -5,15 +5,14 @@ import me.deftware.client.framework.event.events.EventCollideCheck;
 import me.deftware.client.framework.maps.SettingsMap;
 import me.deftware.mixin.imp.IMixinAbstractBlock;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.EntityContext;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.BlockView;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.util.registry.IRegistry;
+import net.minecraft.world.IBlockReader;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -26,17 +25,21 @@ public abstract class MixinAbstractBlock implements IMixinAbstractBlock {
 
     @Shadow @Final protected float slipperiness;
 
-    @Inject(method = "getOutlineShape", at = @At("HEAD"), cancellable = true)
-    public void getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context, CallbackInfoReturnable<VoxelShape> ci) {
-        EventCollideCheck event = new EventCollideCheck(me.deftware.client.framework.world.block.Block.newInstance(state.getBlock()));
+    @Shadow
+    @Final
+    protected int lightValue;
+
+    @Inject(method = "getShape", at = @At("HEAD"), cancellable = true)
+    public void getOutlineShape(IBlockState blockState_1, IBlockReader blockView_1, BlockPos blockPos_1, CallbackInfoReturnable<VoxelShape> ci) {
+        EventCollideCheck event = new EventCollideCheck(me.deftware.client.framework.world.block.Block.newInstance(blockState_1.getBlock()));
         event.broadcast();
         if (event.updated) {
             if (event.canCollide) {
                 ci.setReturnValue(VoxelShapes.empty());
             }
         } else {
-            if (SettingsMap.isOverrideMode() || (SettingsMap.isOverwriteMode() && SettingsMap.hasValue(Registry.BLOCK.getRawId(state.getBlock()), "outline"))) {
-                boolean doOutline = (boolean) SettingsMap.getValue(Registry.BLOCK.getRawId(state.getBlock()), "outline", true);
+            if (SettingsMap.isOverrideMode() || (SettingsMap.isOverwriteMode() && SettingsMap.hasValue(IRegistry.BLOCK.getId(blockState_1.getBlock()), "outline"))) {
+                boolean doOutline = (boolean) SettingsMap.getValue(IRegistry.BLOCK.getId(blockState_1.getBlock()), "outline", true);
                 if (!doOutline) {
                     ci.setReturnValue(VoxelShapes.empty());
                 }
@@ -44,26 +47,32 @@ public abstract class MixinAbstractBlock implements IMixinAbstractBlock {
         }
     }
 
+    @Inject(method = "getLightValue", at = @At("HEAD"), cancellable = true)
+    public void getLuminance(IBlockState blockState_1, CallbackInfoReturnable<Integer> callback) {
+        callback.setReturnValue(
+                (int) SettingsMap.getValue(IRegistry.BLOCK.getId(blockState_1.getBlock()), "lightValue", lightValue));
+    }
+
     @Inject(method = "getRenderType", at = @At("HEAD"), cancellable = true)
-    public void renderTypeSet(BlockState state, CallbackInfoReturnable<BlockRenderType> cir) {
-        if (SettingsMap.isOverrideMode() || (SettingsMap.isOverwriteMode() && SettingsMap.hasValue(Registry.BLOCK.getRawId(state.getBlock()), "render"))) {
-            boolean doRender = (boolean) SettingsMap.getValue(Registry.BLOCK.getRawId(state.getBlock()), "render", false);
+    public void renderTypeSet(IBlockState state, CallbackInfoReturnable<EnumBlockRenderType> cir) {
+        if (SettingsMap.isOverrideMode() || (SettingsMap.isOverwriteMode() && SettingsMap.hasValue(IRegistry.BLOCK.getId(state.getBlock()), "render"))) {
+            boolean doRender = (boolean) SettingsMap.getValue(IRegistry.BLOCK.getId(state.getBlock()), "render", false);
             if (!doRender) {
-                cir.setReturnValue(BlockRenderType.INVISIBLE);
+                cir.setReturnValue(EnumBlockRenderType.INVISIBLE);
             }
         }
     }
 
-    @Inject(method = "calcBlockBreakingDelta", at = @At("HEAD"), cancellable = true)
-    public void calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos, CallbackInfoReturnable<Float> ci) {
-        float hardness = state.getHardness(world, pos);
+    @Inject(method = "getPlayerRelativeBlockHardness", at = @At("HEAD"), cancellable = true)
+    public void calcBlockBreakingDelta(IBlockState state, EntityPlayer player, IBlockReader reader, BlockPos pos, CallbackInfoReturnable<Float> ci) {
+        float f = state.getBlockHardness(reader, pos);
         EventBlockhardness event = new EventBlockhardness();
         event.broadcast();
-        if (hardness < 0.0F) {
+        if (f < 0.0F) {
             ci.setReturnValue(0.0F);
         } else {
-            ci.setReturnValue(!player.isUsingEffectiveTool(state) ? player.getBlockBreakingSpeed(state) / hardness / 100.0F
-                    : player.getBlockBreakingSpeed(state) / hardness / 30.0F * event.getMultiplier());
+            ci.setReturnValue(!player.canHarvestBlock(state) ? player.getDigSpeed(state) / f / 100.0F
+                    : player.getDigSpeed(state) / f / 30.0F * event.getMultiplier());
         }
     }
 

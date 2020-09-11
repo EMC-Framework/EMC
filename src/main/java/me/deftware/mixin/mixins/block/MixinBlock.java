@@ -4,13 +4,13 @@ import me.deftware.client.framework.event.events.EventSlowdown;
 import me.deftware.client.framework.maps.SettingsMap;
 import me.deftware.mixin.imp.IMixinAbstractBlock;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.IceBlock;
+import net.minecraft.block.BlockIce;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.BlockView;
+import net.minecraft.util.registry.IRegistry;
+import net.minecraft.world.IBlockReader;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -27,7 +27,7 @@ public abstract class MixinBlock {
         if (((IMixinAbstractBlock) this).getTheSlipperiness() != 0.6f) {
             Block block = Block.getBlockFromItem(this.asItem());
             EventSlowdown event = null;
-            if (block instanceof IceBlock || block.getTranslationKey().contains("blue_ice") || block.getTranslationKey().contains("packed_ice")) {
+            if (block instanceof BlockIce || block.getTranslationKey().contains("blue_ice") || block.getTranslationKey().contains("packed_ice")) {
                 event = new EventSlowdown(EventSlowdown.SlowdownType.Slipperiness, 0.6f);
             }
             if (event != null) {
@@ -39,19 +39,19 @@ public abstract class MixinBlock {
         }
     }
 
-    @Inject(method = "shouldDrawSide", at = @At("HEAD"), cancellable = true)
-    private static void shouldDrawSide(BlockState state, BlockView world, BlockPos pos, Direction facing, CallbackInfoReturnable<Boolean> callback) {
-        if (SettingsMap.isOverrideMode() || (SettingsMap.isOverwriteMode() && SettingsMap.hasValue(Registry.BLOCK.getRawId(state.getBlock()), "render"))) {
+    @Inject(method = "shouldSideBeRendered", at = @At("HEAD"), cancellable = true)
+    private static void shouldDrawSide(IBlockState blockState_1, IBlockReader blockView_1, BlockPos blockPos_1, EnumFacing direction_1, CallbackInfoReturnable<Boolean> callback) {
+        if (SettingsMap.isOverrideMode() || (SettingsMap.isOverwriteMode() && SettingsMap.hasValue(IRegistry.BLOCK.getId(blockState_1.getBlock()), "render"))) {
             callback.setReturnValue(
-                    (boolean) SettingsMap.getValue(Registry.BLOCK.getRawId(state.getBlock()), "render", false));
+                    (boolean) SettingsMap.getValue(IRegistry.BLOCK.getId(blockState_1.getBlock()), "render", false));
         }
     }
 
-    @Inject(method = "isTranslucent", at = @At("HEAD"), cancellable = true)
-    public void getIsTranslucent(BlockState state, BlockView view, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
-        if (SettingsMap.isOverrideMode() || (SettingsMap.isOverwriteMode() && SettingsMap.hasValue(Registry.BLOCK.getRawId(state.getBlock()), "translucent"))) {
+    @Inject(method = "isOpaqueCube", at = @At("HEAD"), cancellable = true)
+    public void getIsTranslucent(IBlockState state, IBlockReader view, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
+        if (SettingsMap.isOverrideMode() || (SettingsMap.isOverwriteMode() && SettingsMap.hasValue(IRegistry.BLOCK.getId(state.getBlock()), "translucent"))) {
             cir.setReturnValue(
-                    (boolean) SettingsMap.getValue(Registry.BLOCK.getRawId(state.getBlock()), "translucent", false));
+                    (boolean) SettingsMap.getValue(IRegistry.BLOCK.getId(state.getBlock()), "translucent", false));
         }
     }
 

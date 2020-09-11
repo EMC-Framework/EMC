@@ -16,25 +16,25 @@ public enum BlockType {
 	public boolean instanceOf(Block emcBlock) {
 		net.minecraft.block.Block block = emcBlock.getMinecraftBlock();
 		if (this.equals(BlockContainer)) {
-			return block instanceof BlockWithEntity;
+			return block instanceof BlockContainer;
 		} else if (this.equals(BlockCrops)) {
-			return block instanceof CropBlock;
+			return block instanceof BlockCrops;
 		} else if (this.equals(BlockPumpkin)) {
-			return block instanceof PumpkinBlock;
+			return block instanceof BlockPumpkin;
 		} else if (this.equals(BlockMelon)) {
-			return block instanceof MelonBlock;
+			return block instanceof BlockMelon;
 		} else if (this.equals(BlockReed)) {
-			return block instanceof SugarCaneBlock;
+			return block instanceof BlockReed;
 		} else if (this.equals(BlockCactus)) {
-			return block instanceof CactusBlock;
+			return block instanceof BlockCactus;
 		} else if (this.equals(BlockNetherWart)) {
-			return block instanceof NetherWartBlock;
+			return block instanceof BlockNetherWart;
 		} else if (this.equals(BlockFarmland)) {
-			return block instanceof FarmlandBlock;
+			return block instanceof BlockFarmland;
 		} else if (this.equals(BlockSoulSand)) {
-			return block instanceof SoulSandBlock;
+			return block instanceof BlockSoulSand;
 		} else if (this.equals(FluidBlock)) {
-			return block instanceof FluidBlock;
+			return block instanceof BlockFlowingFluid;
 		}
 		return false;
 	}

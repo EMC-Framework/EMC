@@ -1,6 +1,5 @@
 package me.deftware.mixin.mixins.block;
 
-import me.deftware.mixin.imp.IMixinSignBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Final;

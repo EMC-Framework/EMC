@@ -2,6 +2,7 @@ package me.deftware.client.framework.world.chunk;
 
 import me.deftware.client.framework.math.position.BlockPosition;
 import me.deftware.client.framework.math.position.ChunkBlockPosition;
+import net.minecraft.world.EnumLightType;
 
 /**
  * @author Deftware
@@ -25,7 +26,7 @@ public class Chunk {
 	}
 
 	public int getLuminanceAt(BlockPosition pos) {
-		return chunk.getLuminance(pos.getMinecraftBlockPos());
+		return chunk.getLightFor(EnumLightType.BLOCK, pos.getMinecraftBlockPos());
 	}
 	
 }

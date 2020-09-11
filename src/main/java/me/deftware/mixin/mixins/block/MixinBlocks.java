@@ -2,18 +2,18 @@ package me.deftware.mixin.mixins.block;
 
 import me.deftware.client.framework.registry.BlockRegistry;
 import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
+import net.minecraft.util.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Blocks.class)
+@Mixin(Block.class)
 public class MixinBlocks {
 
-	@Inject(method = "register", at = @At("HEAD"))
-	private static void register(String id, Block block, CallbackInfoReturnable<Block> ci) {
-		BlockRegistry.INSTANCE.register(id, block);
+	@Inject(method = "register(Lnet/minecraft/util/ResourceLocation;Lnet/minecraft/block/Block;)V", at = @At("HEAD"))
+	private static void register(ResourceLocation key, Block blockIn, CallbackInfo ci) {
+		BlockRegistry.INSTANCE.register(key.toString(), blockIn);
 	}
 
 }

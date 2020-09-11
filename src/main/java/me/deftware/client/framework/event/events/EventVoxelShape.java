@@ -4,8 +4,8 @@ import me.deftware.client.framework.event.Event;
 import me.deftware.client.framework.math.box.BoundingBox;
 import me.deftware.client.framework.math.box.DoubleBoundingBox;
 import me.deftware.client.framework.world.block.Block;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 
 public class EventVoxelShape extends Event {
 
@@ -32,7 +32,7 @@ public class EventVoxelShape extends Event {
 
 	public void setShape(BoundingBox bb) {
 		modified = true;
-		shape = VoxelShapes.cuboid(bb.getMinecraftBox());
+		shape = VoxelShapes.create(bb.getMinecraftBox());
 	}
 
 }

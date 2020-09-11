@@ -17,12 +17,10 @@ public class ContainerScreenInstance extends ScreenInstance {
 
 	public ContainerScreenInstance(GuiScreen screen) {
 		super(screen);
-		GuiContainer
 		if (screen.getTitle() instanceof TranslatableComponent) {
 			String title = ((TranslatableComponent) screen.getTitle()).getKey();
 			type = title.equalsIgnoreCase("container.enderchest") ? Type.ENDER_CHEST : Type.OTHER;
 		}
-		InventoryEnderChest
 	}
 
 	public Slot getHoveredSlot() {

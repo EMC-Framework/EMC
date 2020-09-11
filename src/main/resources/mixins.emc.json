@@ -11,7 +11,6 @@
     "block.MixinBlockSoulSand",
     "block.MixinBlockState",
     "block.MixinSignBlockEntity",
-    "block.MixinSweetBerryBushBlock",
     "entity.MixinAbstractClientPlayer",
     "entity.MixinAbstractHorse",
     "entity.MixinAbstractPig",

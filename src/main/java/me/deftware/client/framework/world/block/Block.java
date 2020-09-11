@@ -9,8 +9,9 @@ import me.deftware.client.framework.world.block.types.CropBlock;
 import me.deftware.client.framework.world.block.types.ShulkerBlock;
 import me.deftware.client.framework.world.block.types.StorageBlock;
 import net.minecraft.block.*;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.IRegistry;
 
 /**
  * @author Deftware
@@ -22,11 +23,11 @@ public class Block implements IItem {
 	private @Setter @Getter BlockState locationBlockState = null;
 
 	public static Block newInstance(net.minecraft.block.Block block) {
-		if (block instanceof net.minecraft.block.CropBlock) {
+		if (block instanceof BlockCrops) {
 			return new CropBlock(block);
-		} else if (block instanceof ShulkerBoxBlock) {
+		} else if (block instanceof BlockShulkerBox) {
 			return new ShulkerBlock(block);
-		} else if (block instanceof ChestBlock || block instanceof BarrelBlock || block instanceof EnderChestBlock) {
+		} else if (block instanceof BlockChest || block instanceof BlockEnderChest) {
 			return StorageBlock.newInstance(block);
 		} else if (InteractableBlock.isInteractable(block)) {
 			return new InteractableBlock(block);
@@ -64,7 +65,7 @@ public class Block implements IItem {
 	}
 
 	public boolean isAir() {
-		return block instanceof AirBlock;
+		return block instanceof BlockAir;
 	}
 
 	public boolean isCaveAir() {
@@ -72,15 +73,15 @@ public class Block implements IItem {
 	}
 
 	public boolean isLiquid() {
-		return block == Blocks.WATER || block == Blocks.LAVA || block instanceof FluidBlock;
+		return block == Blocks.WATER || block == Blocks.LAVA || block instanceof BlockFlowingFluid;
 	}
 
 	public int getID() {
-		return Registry.BLOCK.getRawId(block);
+		return IRegistry.BLOCK.getId(block);
 	}
 
 	public ChatMessage getName() {
-		return new ChatMessage().fromText(block.getTextComponent());
+		return new ChatMessage().fromText(block.getNameTextComponent());
 	}
 
 	public String getIdentifierKey() {

@@ -12,14 +12,13 @@ public class InteractableBlock extends Block {
 	}
 
 	public static boolean isInteractable(net.minecraft.block.Block block) {
-		return block instanceof AbstractButtonBlock || block instanceof BlockWithEntity || block instanceof AnvilBlock ||
-				block instanceof BedBlock || block instanceof CakeBlock || block instanceof CartographyTableBlock ||
-				block instanceof CauldronBlock || block instanceof AbstractRedstoneGateBlock || block instanceof ComposterBlock ||
-				block instanceof CraftingTableBlock || block instanceof DoorBlock || block instanceof DragonEggBlock ||
-				block instanceof FenceBlock || block instanceof FenceGateBlock || block instanceof FlowerPotBlock ||
-				block instanceof GrindstoneBlock || block instanceof JigsawBlock || block instanceof LeverBlock ||
-				block instanceof LoomBlock || block instanceof NoteBlock ||
-				block instanceof StonecutterBlock || block instanceof TrapdoorBlock;
+		return block instanceof BlockButton || block instanceof BlockContainer || block instanceof BlockAnvil ||
+				block instanceof BlockBed || block instanceof BlockCake ||
+				block instanceof BlockRedstoneDiode || block instanceof BlockRedstoneComparator ||
+				block instanceof BlockWorkbench || block instanceof BlockDoor || block instanceof BlockDragonEgg ||
+				block instanceof BlockFence || block instanceof BlockFenceGate || block instanceof BlockFlowerPot ||
+				block instanceof BlockJukebox || block instanceof BlockLever ||
+				block instanceof BlockNote | block instanceof BlockTrapDoor;
 	}
 
 }
