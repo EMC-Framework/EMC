@@ -19,15 +19,15 @@ public class BlockPosition {
 	}
 
 	public double getX() {
-		return entity.getX();
+		return entity.x;
 	}
 
 	public double getY() {
-		return entity.getY();
+		return entity.y;
 	}
 
 	public double getZ() {
-		return entity.getZ();
+		return entity.z;
 	}
 
 	public BlockPos getMinecraftBlockPos() {

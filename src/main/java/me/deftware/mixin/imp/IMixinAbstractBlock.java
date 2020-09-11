@@ -4,6 +4,4 @@ public interface IMixinAbstractBlock {
 
 	float getTheSlipperiness();
 
-	float getTheVelocityMultiplier();
-
 }

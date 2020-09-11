@@ -13,14 +13,14 @@ public class MixinMouseHelper {
 
     @Inject(method = "onMouseButton", at = @At("HEAD"))
     private void mouseButtonCallback(long windowPointer, int button, int action, int modifiers, CallbackInfo ci) {
-        if (windowPointer == MinecraftClient.getInstance().getWindow().getHandle() || MinecraftClient.getInstance().currentScreen != null) {
+        if (windowPointer == MinecraftClient.getInstance().window.getHandle() || MinecraftClient.getInstance().currentScreen != null) {
             new EventMouseClick(button, action, modifiers).broadcast();
         }
     }
 
     @Inject(method = "onMouseScroll", at = @At("HEAD"))
     private void scrollCallback(long windowPointer, double horizontal, double vertical, CallbackInfo ci) {
-        if (windowPointer == MinecraftClient.getInstance().getWindow().getHandle()) {
+        if (windowPointer == MinecraftClient.getInstance().window.getHandle()) {
             me.deftware.client.framework.input.Mouse.onScroll(horizontal, vertical);
         }
     }

@@ -12,7 +12,7 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.player.HungerManager;
-import net.minecraft.server.network.packet.ChatMessageC2SPacket;
+import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -85,7 +85,7 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
 
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
     private void tick(CallbackInfo ci) {
-        EventUpdate event = new EventUpdate(((ClientPlayerEntity) (Object) this).getX(), ((ClientPlayerEntity) (Object) this).getY(), ((ClientPlayerEntity) (Object) this).getZ(), yaw, pitch, onGround);
+        EventUpdate event = new EventUpdate(((ClientPlayerEntity) (Object) this).x, ((ClientPlayerEntity) (Object) this).y, ((ClientPlayerEntity) (Object) this).z, yaw, pitch, onGround);
         event.broadcast();
         if (event.isCanceled()) {
             ci.cancel();
@@ -124,7 +124,7 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
     @Inject(method = "sendMovementPackets", at = @At(value = "HEAD"), cancellable = true)
     private void onSendMovementPackets(CallbackInfo ci) {
         ClientPlayerEntity entity = (ClientPlayerEntity) (Object) this;
-        EventPlayerWalking event = new EventPlayerWalking(entity.getX(), entity.getY(), entity.getZ(), yaw, pitch, onGround);
+        EventPlayerWalking event = new EventPlayerWalking(entity.x, entity.y, entity.z, yaw, pitch, onGround);
         event.broadcast();
         if (event.isCanceled()) {
             ci.cancel();

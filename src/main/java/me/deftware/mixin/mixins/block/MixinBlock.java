@@ -3,7 +3,9 @@ package me.deftware.mixin.mixins.block;
 import me.deftware.client.framework.event.events.EventSlowdown;
 import me.deftware.client.framework.maps.SettingsMap;
 import me.deftware.mixin.imp.IMixinAbstractBlock;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.IceBlock;
 import net.minecraft.item.Item;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -27,25 +29,6 @@ public abstract class MixinBlock {
             EventSlowdown event = null;
             if (block instanceof IceBlock || block.getTranslationKey().contains("blue_ice") || block.getTranslationKey().contains("packed_ice")) {
                 event = new EventSlowdown(EventSlowdown.SlowdownType.Slipperiness, 0.6f);
-            }
-            if (event != null) {
-                event.broadcast();
-                if (event.isCanceled()) {
-                    cir.setReturnValue(event.getMultiplier());
-                }
-            }
-        }
-    }
-
-    @Inject(method = "getVelocityMultiplier", at = @At(value = "TAIL"), cancellable = true)
-    private void onGetVelocityMultiplier(CallbackInfoReturnable<Float> cir) {
-        if (((IMixinAbstractBlock) this).getTheVelocityMultiplier() != 1.0f) {
-            Block block = Block.getBlockFromItem(this.asItem());
-            EventSlowdown event = null;
-            if (block instanceof HoneyBlock) {
-                event = new EventSlowdown(EventSlowdown.SlowdownType.Honey);
-            } else if (block instanceof SoulSandBlock) {
-                event = new EventSlowdown(EventSlowdown.SlowdownType.Soulsand);
             }
             if (event != null) {
                 event.broadcast();

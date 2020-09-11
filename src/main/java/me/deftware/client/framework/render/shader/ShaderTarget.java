@@ -2,11 +2,8 @@ package me.deftware.client.framework.render.shader;
 
 import lombok.Getter;
 import lombok.Setter;
-
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
-import net.minecraft.client.render.OutlineVertexConsumerProvider;
-import net.minecraft.client.render.VertexConsumerProvider;
 
 import java.util.function.Predicate;
 
@@ -17,7 +14,6 @@ public enum ShaderTarget {
 
 	PLAYER, ENTITY, DROPPED, STORAGE;
 
-	private @Getter OutlineVertexConsumerProvider outlineVertexConsumerProvider;
 	private @Setter @Getter Predicate<String> predicate = type -> true;
 	private @Getter @Setter boolean enabled = false;
 	private @Getter Framebuffer framebuffer;
@@ -29,15 +25,14 @@ public enum ShaderTarget {
 			shader.bind();
 			shader.setupUniforms();
 			// Draw buffer
-			framebuffer.draw(MinecraftClient.getInstance().getWindow().getFramebufferWidth(), MinecraftClient.getInstance().getWindow().getFramebufferHeight(), false);
+			framebuffer.drawInternal(MinecraftClient.getInstance().window.getFramebufferWidth(), MinecraftClient.getInstance().window.getFramebufferHeight(), false);
 			// Unbind shader
 			shader.unbind();
 		}
 	}
 
-	public void init(VertexConsumerProvider.Immediate entityVertexConsumers) {
+	public void init() {
 		framebuffer = new Framebuffer(MinecraftClient.getInstance().getFramebuffer().viewportWidth, MinecraftClient.getInstance().getFramebuffer().viewportHeight, true, MinecraftClient.IS_SYSTEM_MAC);
-		outlineVertexConsumerProvider = new OutlineVertexConsumerProvider(entityVertexConsumers);
 	}
 
 	public void clear() {

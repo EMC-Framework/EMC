@@ -1,15 +1,13 @@
 package me.deftware.mixin.mixins.render;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.deftware.client.framework.chat.hud.ChatHud;
-import me.deftware.client.framework.event.events.EventHurtcam;
-import me.deftware.client.framework.event.events.EventRender2D;
-import me.deftware.client.framework.event.events.EventRender3D;
-import me.deftware.client.framework.event.events.EventRender3DNoBobbing;
+import me.deftware.client.framework.event.events.*;
 import me.deftware.client.framework.helper.GlStateHelper;
 import me.deftware.client.framework.helper.WindowHelper;
 import me.deftware.client.framework.maps.SettingsMap;
 import me.deftware.client.framework.minecraft.Minecraft;
+import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
 import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
 import me.deftware.mixin.imp.IMixinEntityRenderer;
 import net.minecraft.client.MinecraftClient;
@@ -17,20 +15,21 @@ import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.Matrix4f;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -49,14 +48,21 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     @Shadow
     protected abstract void loadShader(Identifier identifier);
 
-    // method_22973 -> getBasicProjectionMatrix
-    // method_22709 -> loadProjectionMatrix
-    @Shadow
-    public abstract Matrix4f method_22973(Camera camera, float f, boolean bl);
-
     @Shadow
     @Final
     private Camera camera;
+
+    @Shadow private double field_4005;
+
+    @Shadow private double field_3988;
+
+    @Shadow private double field_4004;
+
+    @Shadow protected abstract double getFov(Camera camera, float tickDelta, boolean changingFov);
+
+    @Shadow @Final private MinecraftClient client;
+
+    @Shadow private float viewDistance;
 
     @Unique
     private final Consumer<Float> renderEvent = partialTicks -> new EventRender3D(partialTicks).broadcast();
@@ -65,37 +71,26 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     private final Consumer<Float> renderEventNoBobbing = partialTicks -> new EventRender3DNoBobbing(partialTicks).broadcast();
 
     @Inject(method = "renderHand", at = @At("HEAD"))
-    private void renderHand(MatrixStack matrixStack, Camera camera, float partialTicks, CallbackInfo ci) {
-       if (!WindowHelper.isMinimized()) {
-           // Normal 3d event
-           loadPushPop(renderEvent, matrixStack, partialTicks);
-           // Camera model stack without bobbing applied
-           MatrixStack matrix = new MatrixStack();
-           matrix.push();
-           matrix.peek().getModel().multiply(this.method_22973(this.camera, partialTicks, true));
-           MinecraftClient.getInstance().gameRenderer.method_22709(matrix.peek().getModel());
-           // Camera transformation stack
-           matrix.pop();
-           matrix.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(this.camera.getPitch()));
-           matrix.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(this.camera.getYaw() + 180f));
-           loadPushPop(renderEventNoBobbing, matrix, partialTicks);
-           // Reset projection
-           MinecraftClient.getInstance().gameRenderer.method_22709(matrixStack.peek().getModel());
-           GlStateHelper.enableLighting();
-       }
-    }
-
-    @Unique
-    private void loadPushPop(Consumer<Float> action, MatrixStack stack, float partialTicks) {
-        RenderSystem.pushMatrix();
-        RenderSystem.loadIdentity();
-        RenderSystem.multMatrix(stack.peek().getModel());
-        action.accept(partialTicks);
-        RenderSystem.popMatrix();
+    private void renderHand(Camera camera, float partialTicks, CallbackInfo ci) {
+        if (!WindowHelper.isMinimized()) {
+            renderEvent.accept(partialTicks);
+            GlStateManager.matrixMode(GL11.GL_PROJECTION);
+            GlStateManager.loadIdentity();
+            if (this.field_4005 != 1.0D) {
+                GlStateManager.translatef((float) this.field_3988, (float) -this.field_4004, 0.0F);
+                GlStateManager.scaled(this.field_4005, this.field_4005, 1.0D);
+            }
+            GlStateManager.multMatrix(Matrix4f.method_4929(this.getFov(this.camera, partialTicks, true), (float) this.client.window.getFramebufferWidth() / (float) this.client.window.getFramebufferHeight(), 0.05F, this.viewDistance * MathHelper.SQUARE_ROOT_OF_TWO));
+            GlStateManager.matrixMode(GL11.GL_MODELVIEW);
+            GlStateManager.loadIdentity();
+            camera.update(this.client.world, this.client.getCameraEntity() == null ? this.client.player : this.client.getCameraEntity(), this.client.options.perspective > 0, this.client.options.perspective == 2, partialTicks);
+            renderEventNoBobbing.accept(partialTicks);
+            GlStateHelper.enableLighting();
+        }
     }
 
     @Inject(method = "bobViewWhenHurt", at = @At("HEAD"), cancellable = true)
-    private void hurtCameraEffect(MatrixStack stack, float partialTicks, CallbackInfo ci) {
+    private void hurtCameraEffect(float partialTicks, CallbackInfo ci) {
         EventHurtcam event = new EventHurtcam();
         event.broadcast();
         if (event.isCanceled()) {
@@ -149,6 +144,30 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     public void updateFovMultiplier(float newFov) {
         lastMovementFovMultiplier = newFov;
         movementFovMultiplier = newFov;
+    }
+
+    @Inject(method = "renderRain", at = @At("HEAD"), cancellable = true)
+    private void renderRain(CallbackInfo ci) {
+        EventWeather event = new EventWeather(EventWeather.WeatherType.Rain);
+        event.broadcast();
+        if (event.isCanceled()) {
+            ci.cancel();
+        }
+    }
+
+    @Inject(method = "renderWeather", at = @At("HEAD"), cancellable = true)
+    private void renderWeather(float tickDelta, CallbackInfo ci) {
+        EventWeather event = new EventWeather(EventWeather.WeatherType.Rain);
+        event.broadcast();
+
+        if (event.isCanceled()) {
+            ci.cancel();
+        }
+    }
+
+    @ModifyArg(method = "renderCenter", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/WorldRenderer;setUpTerrain(Lnet/minecraft/client/render/Camera;Lnet/minecraft/client/render/VisibleRegion;IZ)V"), index = 3)
+    public boolean isSpectator(boolean spectator) {
+        return spectator || CameraEntityMan.isActive();
     }
 
 }

@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(ClientChunkManager.class)
 public abstract class MixinClientChunkManager {
 
-	@Redirect(method = "unload", at = @At(target = "Lnet/minecraft/client/world/ClientChunkManager;positionEquals(Lnet/minecraft/world/chunk/WorldChunk;II)Z", value = "INVOKE", opcode = 180))
+	@Redirect(method = "unload", at = @At(target = "Lnet/minecraft/client/world/ClientChunkManager;method_20181(Lnet/minecraft/world/chunk/WorldChunk;II)Z", value = "INVOKE", opcode = 180))
 	private boolean positionEqualsRedirect(WorldChunk chunk, int x, int y) {
 		if (chunk == null) {
 			return false;

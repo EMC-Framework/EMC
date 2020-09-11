@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 @Mixin(KeyboardInput.class)
 public class MixinMovementInputFromOptions {
 
-    @ModifyVariable(method = "tick", at = @At("HEAD"))
+    @ModifyVariable(method = "tick", at = @At("HEAD"), ordinal = 0)
     public boolean onTick(boolean slowDown) {
         EventSlowdown event = new EventSlowdown(EventSlowdown.SlowdownType.Sneak);
         event.broadcast();

@@ -2,9 +2,7 @@ package me.deftware.mixin.mixins.render;
 
 import me.deftware.client.framework.event.events.EventStructureLocation;
 import me.deftware.client.framework.math.position.DoubleBlockPosition;
-import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.HeldItemRenderer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -35,8 +33,7 @@ public class MixinHeldItemRenderer {
     }
     
     @Inject(method = "renderFirstPersonMap", at = @At("HEAD"))
-    private void renderFirstPersonMap(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int swingProgress,
-        ItemStack stack, CallbackInfo info) {
+    private void renderFirstPersonMap(ItemStack stack, CallbackInfo info) {
         if (copiedStack != null && ItemStack.areTagsEqual(copiedStack, stack)) return;
         copiedStack = stack.copy();
         CompoundTag compoundTag = stack.getTag();

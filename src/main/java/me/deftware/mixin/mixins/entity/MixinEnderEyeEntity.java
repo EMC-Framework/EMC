@@ -40,7 +40,7 @@ public class MixinEnderEyeEntity {
         EnderEyeEntity entity = (EnderEyeEntity) (Object) this;
 
         if (firstThrow == null) {
-            firstThrow = new ThrowData(entity, (entity).getX(), (entity).getZ(), x, z);
+            firstThrow = new ThrowData(entity, (entity).x, (entity).z, x, z);
             return;
         }
         if (firstThrow.sameEntity(entity)) {
@@ -49,7 +49,7 @@ public class MixinEnderEyeEntity {
         }
 
         if (secondThrow == null) {
-            secondThrow = new ThrowData(entity, (entity).getX(), (entity).getZ(), x, z);
+            secondThrow = new ThrowData(entity, (entity).x, (entity).z, x, z);
             return;
         }
         if (secondThrow.sameEntity(entity)) {
@@ -58,7 +58,7 @@ public class MixinEnderEyeEntity {
         }
     }
 
-    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/EnderEyeEntity;setPos(DDD)V"))
+    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;updatePosition(DDD)V"))
     public void setPos(CallbackInfo info) {
         Vec3d vel = ((EnderEyeEntity)(Object)this).getVelocity();
 

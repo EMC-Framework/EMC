@@ -2,7 +2,6 @@ package me.deftware.mixin.mixins.render;
 
 import me.deftware.client.framework.main.EMCMod;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.SplashScreen;
 import net.minecraft.util.Util;
 import org.spongepowered.asm.mixin.Mixin;
@@ -14,8 +13,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(SplashScreen.class)
 public class MixinSplashScreen {
 
-    @Inject(method = "init", at = @At("HEAD"))
-    private static void init(MinecraftClient client, CallbackInfo ci) {
+    @Inject(method = "<init>*", at = @At("RETURN"))
+    private void init(CallbackInfo ci) {
         if (!Bootstrap.initialized) {
             Bootstrap.init();
         }

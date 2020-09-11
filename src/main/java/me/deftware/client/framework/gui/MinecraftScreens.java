@@ -24,7 +24,7 @@ public enum MinecraftScreens {
 	Mods(parent -> {
 		// Important: Change "modmenu" to what's relevant on this mc version
 		if (ResourceUtils.hasSpecificMod("modmenu")) {
-			return Objects.requireNonNull(ScreenHelper.createScreenInstance("io.github.prospector.modmenu.gui.ModsScreen", new Pair<>(Screen.class, parent)));
+			return Objects.requireNonNull(ScreenHelper.createScreenInstance("io.github.prospector.modmenu.gui.ModListScreen", new Pair<>(Screen.class, parent)));
 		}
 		return null;
 	});

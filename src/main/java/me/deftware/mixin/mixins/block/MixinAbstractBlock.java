@@ -26,8 +26,6 @@ public abstract class MixinAbstractBlock implements IMixinAbstractBlock {
 
     @Shadow @Final protected float slipperiness;
 
-    @Shadow @Final protected float velocityMultiplier;
-
     @Inject(method = "getOutlineShape", at = @At("HEAD"), cancellable = true)
     public void getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context, CallbackInfoReturnable<VoxelShape> ci) {
         EventCollideCheck event = new EventCollideCheck(me.deftware.client.framework.world.block.Block.newInstance(state.getBlock()));
@@ -72,11 +70,6 @@ public abstract class MixinAbstractBlock implements IMixinAbstractBlock {
     @Override
     public float getTheSlipperiness() {
         return this.slipperiness;
-    }
-
-    @Override
-    public float getTheVelocityMultiplier() {
-        return this.velocityMultiplier;
     }
 
 }

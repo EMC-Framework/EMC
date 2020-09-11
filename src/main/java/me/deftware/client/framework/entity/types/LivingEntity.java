@@ -29,11 +29,11 @@ public class LivingEntity extends Entity {
 	}
 
 	public void setMovementMultiplier(float multiplier) {
-		getMinecraftEntity().flyingSpeed = multiplier;
+		getMinecraftEntity().field_6281 = multiplier;
 	}
 
 	public float getMovementMultiplier() {
-		return getMinecraftEntity().flyingSpeed;
+		return getMinecraftEntity().field_6281;
 	}
 
 	public int getHurtTime() {
@@ -55,7 +55,7 @@ public class LivingEntity extends Entity {
 	public void setAlive(boolean flag) {
 		getMinecraftEntity().removed = false;
 		getMinecraftEntity().setHealth(20f);
-		getMinecraftEntity().setPosition(getPosX(), getPosY(), getPosZ());
+		getMinecraftEntity().updatePosition(getPosX(), getPosY(), getPosZ());
 	}
 	
 }

@@ -23,7 +23,7 @@ public enum MinecraftKeyBind {
 	private final KeyBinding bind;
 
 	public boolean isHeld() {
-		return InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), ((IMixinKeyBinding) this.bind).getInput().getKeyCode());
+		return InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), ((IMixinKeyBinding) this.bind).getInput().getKeyCode());
 	}
 
 	public boolean isPressed() {
@@ -31,7 +31,7 @@ public enum MinecraftKeyBind {
 	}
 
 	public void setPressed(boolean state) {
-		this.bind.setPressed(state);
+		((IMixinKeyBinding) this.bind).setPressed(state);
 	}
 
 	MinecraftKeyBind(KeyBinding bind) {

@@ -45,7 +45,7 @@ public class CameraEntity extends OtherClientPlayerEntity {
 	public void tickMovement() {
 		this.setVelocity(0, 0, 0);
 
-		input.tick(false);
+		input.tick(false, false);
 
 		float upDown = (this.input.sneaking ? -CameraEntityMan.speed : 0) + (this.input.jumping ? CameraEntityMan.speed : 0);
 
@@ -57,7 +57,7 @@ public class CameraEntity extends OtherClientPlayerEntity {
 		motion = motion.add(strafe.x * input.movementSideways, 0, strafe.z * input.movementSideways);
 		motion = motion.add(forward.x * input.movementForward, 0, forward.z * input.movementForward);
 
-		this.setPos(this.getX() + motion.x, this.getY() + motion.y, this.getZ() + motion.z);
+		this.updatePosition(this.x + motion.x, this.y + motion.y, this.z + motion.z);
 	}
 
 	public void spawn() {

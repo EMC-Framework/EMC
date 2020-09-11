@@ -1,8 +1,7 @@
 package me.deftware.client.framework.helper;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.render.DiffuseLighting;
-import net.minecraft.client.util.math.Matrix4f;
 
 /**
  * @author Deftware
@@ -10,51 +9,51 @@ import net.minecraft.client.util.math.Matrix4f;
 public class GlStateHelper {
 
 	public static void disableAlpha() {
-		RenderSystem.disableAlphaTest();
+		GlStateManager.disableAlphaTest();
 	}
 
 	public static void enableAlpha() {
-		RenderSystem.enableAlphaTest();
+		GlStateManager.enableAlphaTest();
 	}
 
 	public static void enablePolygonOffset() {
-		RenderSystem.enablePolygonOffset();
+		GlStateManager.enablePolygonOffset();
 	}
 
 	public static void enableDepth() {
-		RenderSystem.enableDepthTest();
+		GlStateManager.enableDepthTest();
 	}
 
 	public static void disableDepth() {
-		RenderSystem.disableDepthTest();
+		GlStateManager.disableDepthTest();
 	}
 
 	public static void disableLighting() {
-		RenderSystem.disableLighting();
+		GlStateManager.disableLighting();
 	}
 
 	public static void enableLighting() {
-		RenderSystem.enableLighting();
+		GlStateManager.enableLighting();
 	}
 
 	public static void enableBlend() {
-		RenderSystem.enableBlend();
+		GlStateManager.enableBlend();
 	}
 
 	public static void disableBlend() {
-		RenderSystem.disableBlend();
+		GlStateManager.disableBlend();
 	}
 
 	public static void disableTexture2D() {
-		RenderSystem.disableTexture();
+		GlStateManager.disableTexture();
 	}
 
 	public static void tryBlendFuncSeparate(int srcFactor, int dstFactor, int srcFactorAlpha, int dstFactorAlpha) {
-		RenderSystem.blendFuncSeparate(srcFactor, dstFactor, srcFactorAlpha, dstFactorAlpha);
+		GlStateManager.blendFuncSeparate(srcFactor, dstFactor, srcFactorAlpha, dstFactorAlpha);
 	}
 
 	public static void enableTexture2D() {
-		RenderSystem.enableTexture();
+		GlStateManager.enableTexture();
 	}
 
 	public static void disableStandardItemLighting() {
@@ -66,15 +65,15 @@ public class GlStateHelper {
 	}
 
 	public static void enableGUIStandardItemLighting() {
-		DiffuseLighting.enableForLevel(new Matrix4f());
+		DiffuseLighting.enableForItems();
 	}
 
 	public static void disablePolygonOffset() {
-		RenderSystem.disablePolygonOffset();
+		GlStateManager.disablePolygonOffset();
 	}
 
 	public static void doPolygonOffset(float f, float g) {
-		RenderSystem.polygonOffset(f, g);
+		GlStateManager.polygonOffset(f, g);
 	}
 
 }

@@ -10,6 +10,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.texture.PlayerSkinTexture;
+import net.minecraft.client.texture.SkinRemappingImageFilter;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
@@ -61,9 +62,8 @@ public abstract class MixinAbstractClientPlayer implements IMixinAbstractClientP
 	            } else {
 		            capeIdentifier = new Identifier(String.format("capes/%s.png", uidHash));
 		            PlayerSkinTexture playerSkinTexture = new PlayerSkinTexture(new File(String.format("%s/libraries/EMC/capes/%s.png", Minecraft.getRunDir().getAbsolutePath(), uidHash)),
-				            (String) SettingsMap.getValue(SettingsMap.MapKeys.CAPES_TEXTURE, id, ""), DefaultSkinHelper.getTexture(), false, () -> {
-		            	capeLoaded = true;
-		            });
+				            (String) SettingsMap.getValue(SettingsMap.MapKeys.CAPES_TEXTURE, id, ""), DefaultSkinHelper.getTexture(), new SkinRemappingImageFilter());
+		            capeLoaded = true;
 		            MinecraftClient.getInstance().getTextureManager().registerTexture(capeIdentifier, playerSkinTexture);
 	            }
             }

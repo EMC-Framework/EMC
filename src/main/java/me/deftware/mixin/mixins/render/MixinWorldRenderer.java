@@ -1,20 +1,18 @@
 package me.deftware.mixin.mixins.render;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.deftware.client.framework.FrameworkConstants;
 import me.deftware.client.framework.chat.ChatMessage;
-import me.deftware.client.framework.event.events.EventWeather;
-import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
 import me.deftware.client.framework.render.shader.ShaderTarget;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.EnderChestBlockEntity;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
-import net.minecraft.client.gl.Framebuffer;
-import net.minecraft.client.render.*;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.VisibleRegion;
+import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
-import net.minecraft.client.util.math.Matrix4f;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -24,53 +22,21 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Arrays;
 
 @Mixin(WorldRenderer.class)
 public abstract class MixinWorldRenderer {
 
-	@Shadow
-	@Final
-	private BufferBuilderStorage bufferBuilders;
-
-	@Shadow
-	protected abstract void renderEntity(Entity entity, double cameraX, double cameraY, double cameraZ, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers);
-
-	@Shadow
-	protected abstract boolean canDrawEntityOutlines();
-
-	@Inject(method = "method_22713", at = @At("HEAD"), cancellable = true)
-	private void renderRain(Camera camera, CallbackInfo ci) {
-		EventWeather event = new EventWeather(EventWeather.WeatherType.Rain);
-		event.broadcast();
-		if (event.isCanceled()) {
-			ci.cancel();
-		}
-	}
-
-	@Inject(method = "renderWeather", at = @At("HEAD"), cancellable = true)
-	private void renderWeather(LightmapTextureManager manager, float tickDelta, double posX, double posY, double posZ, CallbackInfo ci) {
-		EventWeather event = new EventWeather(EventWeather.WeatherType.Rain);
-		event.broadcast();
-
-		if (event.isCanceled()) {
-			ci.cancel();
-		}
-	}
-
-	@ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/WorldRenderer;setupTerrain(Lnet/minecraft/client/render/Camera;Lnet/minecraft/client/render/Frustum;ZIZ)V"), index = 4)
-	public boolean isSpectator(boolean spectator) {
-		return spectator || CameraEntityMan.isActive();
-	}
-
     /*
         Shader
      */
+
+	@Shadow protected abstract boolean canDrawEntityOutlines();
+
+	@Shadow @Final private MinecraftClient client;
 
 	@Unique
 	private ShaderTarget shaderTarget;
@@ -86,7 +52,7 @@ public abstract class MixinWorldRenderer {
 	@Inject(method = "loadEntityOutlineShader", at = @At("HEAD"))
 	public void loadEntityOutlineShader(CallbackInfo ci) {
 		if (canDrawCustomBuffers())
-			Arrays.stream(ShaderTarget.values()).forEach(target -> target.init(bufferBuilders.getEntityVertexConsumers()));
+			Arrays.stream(ShaderTarget.values()).forEach(ShaderTarget::init);
 	}
 
 	@Inject(method = "onResized", at = @At("HEAD"))
@@ -99,50 +65,44 @@ public abstract class MixinWorldRenderer {
 	public boolean drawEntityOutlinesFramebuffer(WorldRenderer worldRenderer) {
 		boolean emc = Arrays.stream(ShaderTarget.values()).anyMatch(ShaderTarget::isEnabled);
 		if (emc && canDrawCustomBuffers()) {
-			RenderSystem.enableBlend();
-			RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE);
+			GlStateManager.enableBlend();
+			GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
 			Arrays.stream(ShaderTarget.values()).forEach(ShaderTarget::renderBuffer);
-			RenderSystem.disableBlend();
+			GlStateManager.disableBlend();
 			return false;
 		}
 		return canDrawEntityOutlines();
 	}
 
-	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/WorldRenderer;canDrawEntityOutlines()Z", opcode = 180, ordinal = 0))
-	private boolean onRenderHead(WorldRenderer worldRenderer) {
-		if (canDrawCustomBuffers()) Arrays.stream(ShaderTarget.values()).forEach(ShaderTarget::clear);
-		if (!FrameworkConstants.OPTIFINE) return true;
-		return canDrawEntityOutlines();
+	@Inject(method = "renderEntities", at = @At("HEAD"))
+	private void onRenderHead(Camera camera, VisibleRegion visibleRegion, float tickDelta, CallbackInfo ci) {
+		if (canDrawCustomBuffers()) {
+			Arrays.stream(ShaderTarget.values()).forEach(ShaderTarget::clear);
+			client.getFramebuffer().beginWrite(false);
+		}
 	}
 
-	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/block/entity/BlockEntityRenderDispatcher;render(Lnet/minecraft/block/entity/BlockEntity;FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;)V", opcode = 180, ordinal = 0))
-	private void renderBlocKEntity(BlockEntityRenderDispatcher blockEntityRenderDispatcher, BlockEntity blockEntity, float tickDelta, MatrixStack matrix, VertexConsumerProvider original) {
+	@Redirect(method = "renderEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/block/entity/BlockEntityRenderDispatcher;render(Lnet/minecraft/block/entity/BlockEntity;FI)V", opcode = 180, ordinal = 0))
+	private void renderBlocKEntity(BlockEntityRenderDispatcher blockEntityRenderDispatcher, BlockEntity blockEntity, float tickDelta, int blockBreakStage) {
 		boolean flag;
 		if (flag = canDrawCustomBuffers() && ShaderTarget.STORAGE.isEnabled() && (blockEntity instanceof LootableContainerBlockEntity || blockEntity instanceof EnderChestBlockEntity)) {
 			shaderTarget = ShaderTarget.STORAGE;
 		}
-		BlockEntityRenderDispatcher.INSTANCE.render(blockEntity, tickDelta, matrix,
-				flag ? shaderTarget.getOutlineVertexConsumerProvider() : original
-		);
-	}
-
-	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/OutlineVertexConsumerProvider;draw()V", opcode = 180))
-	private void onRenderOutlineVertexConsumers(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, CallbackInfo ci) {
-		// Draw custom outline vertex, only required for block entities
-		if (canDrawCustomBuffers() && shaderTarget != null && shaderTarget == ShaderTarget.STORAGE)
-			shaderTarget.getOutlineVertexConsumerProvider().draw();
-	}
-
-	@Inject(method = "getEntityOutlinesFramebuffer", at = @At("HEAD"), cancellable = true)
-	public void getEntityOutlinesFramebufferInject(CallbackInfoReturnable<Framebuffer> cir) {
-		if (canDrawCustomBuffers() && shaderTarget != null && shaderTarget.getFramebuffer() != null) {
-			// Return our custom frame buffer
-			cir.setReturnValue(shaderTarget.getFramebuffer());
+		BlockEntityRenderDispatcher.INSTANCE.render(blockEntity, tickDelta, blockBreakStage);
+		if (flag) {
+			shaderTarget.getFramebuffer().beginWrite(false);
+			BlockEntityRenderDispatcher.INSTANCE.render(blockEntity, tickDelta, blockBreakStage);
+			client.getFramebuffer().beginWrite(false);
 		}
 	}
 
-	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/WorldRenderer;renderEntity(Lnet/minecraft/entity/Entity;DDDFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;)V", opcode = 180))
-	private void doRenderEntity(WorldRenderer worldRenderer, Entity entity, double cameraX, double cameraY, double cameraZ, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers) {
+	@Redirect(method = "renderEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;isGlowing()Z", opcode = 180))
+	private boolean outlineRedirect(Entity entity) {
+		return false;
+	}
+
+	@Redirect(method = "renderEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/EntityRenderDispatcher;render(Lnet/minecraft/entity/Entity;FZ)V", opcode = 180, ordinal = 0))
+	private void doRenderEntity(EntityRenderDispatcher entityRenderDispatcher, Entity entity, float tickDelta, boolean bl) {
 		boolean enabled;
 		// Player
 		if (entity instanceof PlayerEntity) {
@@ -163,13 +123,15 @@ public abstract class MixinWorldRenderer {
 					new ChatMessage().fromText(entity.getType().getName()).toString(false)
 			);
 		}
-		renderEntity(entity, cameraX, cameraY, cameraZ, tickDelta, matrices,
-				enabled ? shaderTarget.getOutlineVertexConsumerProvider() : vertexConsumers
-		);
+		entityRenderDispatcher.render(entity, tickDelta, bl);
 		if (enabled) {
-			// Since the target could be different we have to render it now
-			shaderTarget.getOutlineVertexConsumerProvider().draw();
+			shaderTarget.getFramebuffer().beginWrite(false);
+			entityRenderDispatcher.setRenderOutlines(true);
+			entityRenderDispatcher.render(entity, tickDelta, bl);
+			entityRenderDispatcher.setRenderOutlines(false);
+			client.getFramebuffer().beginWrite(false);
 		}
 	}
+
 
 }

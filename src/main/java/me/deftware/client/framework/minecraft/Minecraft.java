@@ -79,7 +79,7 @@ public class Minecraft {
 
 	public static int getMinecraftChatScaledYOffset() {
 		if (ScreenHelper.isChatOpen()) {
-			int chatHeight = 24, multiplier = getRealScaledMultiplier(), scaleFactor = (int) MinecraftClient.getInstance().getWindow().getScaleFactor();
+			int chatHeight = 24, multiplier = getRealScaledMultiplier(), scaleFactor = (int) MinecraftClient.getInstance().window.getScaleFactor();
 			if (scaleFactor == 0) return chatHeight;
 			chatHeight *= multiplier;
 			if (scaleFactor % 2 == 0) chatHeight += 5;
@@ -90,7 +90,7 @@ public class Minecraft {
 
 	public static int getMinecraftChatScaledXOffset() {
 		if (ScreenHelper.isChatOpen()) {
-			int chatX = 4, multiplier = getRealScaledMultiplier(), scaleFactor = (int) MinecraftClient.getInstance().getWindow().getScaleFactor();
+			int chatX = 4, multiplier = getRealScaledMultiplier(), scaleFactor = (int) MinecraftClient.getInstance().window.getScaleFactor();
 			if (scaleFactor == 0) return chatX;
 			chatX *= multiplier;
 			return chatX;
@@ -99,7 +99,7 @@ public class Minecraft {
 	}
 
 	public static int getRealScaledMultiplier() {
-		int scaleFactor = (int) MinecraftClient.getInstance().getWindow().getScaleFactor();
+		int scaleFactor = (int) MinecraftClient.getInstance().window.getScaleFactor();
 		if (scaleFactor != 0) {
 			scaleFactor /= scaleFactor % 2 == 0 ? 2 : 1.8;
 		}

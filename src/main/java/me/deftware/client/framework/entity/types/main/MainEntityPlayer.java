@@ -18,8 +18,8 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.container.SlotActionType;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.packet.CreativeInventoryActionC2SPacket;
-import net.minecraft.server.network.packet.PlayerActionC2SPacket;
+import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -38,8 +38,8 @@ import java.util.Set;
 public class MainEntityPlayer extends RotationLogic {
 
 	private final ConvertedList<Slot, net.minecraft.container.Slot> inventorySlots =
-			new ConvertedList<>(() -> Objects.requireNonNull(MinecraftClient.getInstance().player).container.slotList, pair ->
-					pair.getLeft().getMinecraftSlot() == Objects.requireNonNull(MinecraftClient.getInstance().player).container.slotList.get(pair.getRight())
+			new ConvertedList<>(() -> Objects.requireNonNull(MinecraftClient.getInstance().player).container.slots, pair ->
+					pair.getLeft().getMinecraftSlot() == Objects.requireNonNull(MinecraftClient.getInstance().player).container.slots.get(pair.getRight())
 					, Slot::new);
 
 	public MainEntityPlayer(PlayerEntity entity) {
@@ -140,7 +140,7 @@ public class MainEntityPlayer extends RotationLogic {
 	 * Moves an item from the main inventory into the hotbar
 	 */
 	public void moveToHotBar(int slot, int hotbar, int windowId) {
-		Objects.requireNonNull(MinecraftClient.getInstance().interactionManager).clickSlot(windowId, slot, hotbar, SlotActionType.SWAP,
+		Objects.requireNonNull(MinecraftClient.getInstance().interactionManager).method_2906(windowId, slot, hotbar, SlotActionType.SWAP,
 				MinecraftClient.getInstance().player);
 		Objects.requireNonNull(MinecraftClient.getInstance().interactionManager).tick();
 	}
@@ -161,7 +161,7 @@ public class MainEntityPlayer extends RotationLogic {
 	}
 
 	public void windowClick(int windowID, int id, int next, WindowClickAction type) {
-		Objects.requireNonNull(MinecraftClient.getInstance().interactionManager).clickSlot(windowID, id, next,
+		Objects.requireNonNull(MinecraftClient.getInstance().interactionManager).method_2906(windowID, id, next,
 				type.getMinecraftActionType(), MinecraftClient.getInstance().player);
 	}
 

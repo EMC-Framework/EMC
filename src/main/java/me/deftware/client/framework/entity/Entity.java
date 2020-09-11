@@ -254,7 +254,7 @@ public class Entity {
 	}
 
 	public boolean canBeSeenBy(EntityPlayer entity) {
-		return !this.entity.canSeePlayer(entity.getMinecraftEntity());
+		return !this.entity.isInvisibleTo(entity.getMinecraftEntity());
 	}
 
 	public float distanceToEntity(Entity entity) {
@@ -294,15 +294,15 @@ public class Entity {
 	}
 
 	public double getPosX() {
-		return entity.getX();
+		return entity.x;
 	}
 
 	public double getPosY() {
-		return entity.getY();
+		return entity.y;
 	}
 
 	public double getPosZ() {
-		return entity.getZ();
+		return entity.z;
 	}
 
 	public double getPrevPosX() {
@@ -334,15 +334,15 @@ public class Entity {
 	}
 
 	public void setPosition(double x, double y, double z) {
-		entity.setPosition(x, y, z);
+		entity.updatePosition(x, y, z);
 	}
 
 	public void setPositionAndRotation(double x, double y, double z, float yaw, float pitch) {
-		entity.setPositionAndAngles(x, y, z, yaw, pitch);
+		entity.updatePositionAndAngles(x, y, z, yaw, pitch);
 	}
 
 	public Vector3d getEyesPos() {
-		return new Vector3d(entity.getX(), entity.getY() + entity.getEyeHeight(entity.getPose()), entity.getZ());
+		return new Vector3d(entity.x, entity.y + entity.getEyeHeight(entity.getPose()), entity.z);
 	}
 
 	public boolean getFlag(int id) {

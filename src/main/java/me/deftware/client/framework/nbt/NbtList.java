@@ -19,7 +19,7 @@ public class NbtList {
 	}
 
 	public void appendTag(String tag) {
-		list.add(StringTag.of(tag));
+		list.add(new StringTag(tag));
 	}
 
 	public ListTag getMinecraftListTag() {

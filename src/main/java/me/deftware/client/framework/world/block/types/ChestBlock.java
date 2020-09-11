@@ -5,7 +5,7 @@ import me.deftware.client.framework.math.box.DoubleBoundingBox;
 import me.deftware.client.framework.math.position.BlockPosition;
 import me.deftware.client.framework.world.block.BlockState;
 import net.minecraft.block.Block;
-import net.minecraft.block.DoubleBlockProperties;
+import net.minecraft.block.enums.ChestType;
 
 /**
  * @author Deftware
@@ -42,11 +42,11 @@ public class ChestBlock extends StorageBlock {
 	}
 
 	public boolean isFirst(BlockState state) {
-		return net.minecraft.block.ChestBlock.getDoubleBlockType(state.getMinecraftBlockState()) == DoubleBlockProperties.Type.FIRST;
+		return state.getMinecraftBlockState().get(net.minecraft.block.ChestBlock.CHEST_TYPE) == ChestType.LEFT;
 	}
 
 	public boolean isDouble(BlockState state) {
-		return net.minecraft.block.ChestBlock.getDoubleBlockType(state.getMinecraftBlockState()) != DoubleBlockProperties.Type.SINGLE;
+		return state.getMinecraftBlockState().get(net.minecraft.block.ChestBlock.CHEST_TYPE) != ChestType.SINGLE;
 	}
 
 }

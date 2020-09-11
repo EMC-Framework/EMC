@@ -1,6 +1,6 @@
 package me.deftware.client.framework.render.batching;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.platform.GlStateManager;
 import lombok.Getter;
 import lombok.Setter;
 import me.deftware.client.framework.maps.SettingsMap;
@@ -109,25 +109,25 @@ public abstract class RenderStack<T> {
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-		GL11.glOrtho(0.0D, MinecraftClient.getInstance().getWindow().getWidth(), MinecraftClient.getInstance().getWindow().getHeight(), 0.0D, 1000.0D, 3000.0D);
+		GL11.glOrtho(0.0D, MinecraftClient.getInstance().window.getWidth(), MinecraftClient.getInstance().window.getHeight(), 0.0D, 1000.0D, 3000.0D);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glLoadIdentity();
 		GL11.glTranslatef(0.0F, 0.0F, -2000.0F);
 		GL11.glColor4f(1f, 1f, 1f, 1f);
-		RenderSystem.clear(256, MinecraftClient.IS_SYSTEM_MAC);
+		GlStateManager.clear(256, MinecraftClient.IS_SYSTEM_MAC);
 	}
 
 	public static void reloadMinecraftMatrix() {
 		inCustomMatrix = false;
 		// Revert back to Minecraft
-		RenderSystem.matrixMode(5889);
-		RenderSystem.loadIdentity();
-		RenderSystem.ortho(0.0D, MinecraftClient.getInstance().getWindow().getFramebufferWidth() / MinecraftClient.getInstance().getWindow().getScaleFactor(),
-				MinecraftClient.getInstance().getWindow().getFramebufferHeight() / MinecraftClient.getInstance().getWindow().getScaleFactor(), 0.0D, 1000.0D, 3000.0D);
-		RenderSystem.matrixMode(5888);
-		RenderSystem.loadIdentity();
-		RenderSystem.translatef(0.0F, 0.0F, -2000.0F);
-		RenderSystem.clear(256, MinecraftClient.IS_SYSTEM_MAC);
+		GlStateManager.matrixMode(5889);
+		GlStateManager.loadIdentity();
+		GlStateManager.ortho(0.0D, MinecraftClient.getInstance().window.getFramebufferWidth() / MinecraftClient.getInstance().window.getScaleFactor(),
+				MinecraftClient.getInstance().window.getFramebufferHeight() / MinecraftClient.getInstance().window.getScaleFactor(), 0.0D, 1000.0D, 3000.0D);
+		GlStateManager.matrixMode(5888);
+		GlStateManager.loadIdentity();
+		GlStateManager.translatef(0.0F, 0.0F, -2000.0F);
+		GlStateManager.clear(256, MinecraftClient.IS_SYSTEM_MAC);
 	}
 
 }

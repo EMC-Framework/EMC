@@ -4,7 +4,7 @@ import me.deftware.client.framework.math.position.BlockPosition;
 import me.deftware.client.framework.network.PacketWrapper;
 import me.deftware.client.framework.world.EnumFacing;
 import net.minecraft.network.Packet;
-import net.minecraft.server.network.packet.PlayerActionC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 
 /**
  * @author Deftware

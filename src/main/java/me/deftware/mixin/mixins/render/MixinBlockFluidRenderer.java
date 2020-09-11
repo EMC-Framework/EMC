@@ -1,7 +1,7 @@
 package me.deftware.mixin.mixins.render;
 
 import me.deftware.client.framework.maps.SettingsMap;
-import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.block.FluidRenderer;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.util.math.BlockPos;
@@ -14,8 +14,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(FluidRenderer.class)
 public class MixinBlockFluidRenderer {
 
-    @Inject(method = "render", at = @At("HEAD"), cancellable = true)
-    public void render(BlockRenderView world, BlockPos pos, VertexConsumer vertexConsumer, FluidState state, CallbackInfoReturnable<Boolean> ci) {
+    @Inject(method = "tesselate", at = @At("HEAD"), cancellable = true)
+    public void render(BlockRenderView world, BlockPos pos, BufferBuilder vertexConsumer, FluidState state, CallbackInfoReturnable<Boolean> ci) {
         if (!((boolean) SettingsMap.getValue(SettingsMap.MapKeys.RENDER, "FLUIDS", true))) {
             ci.cancel();
         }

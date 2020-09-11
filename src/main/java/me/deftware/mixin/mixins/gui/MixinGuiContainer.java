@@ -4,7 +4,7 @@ import me.deftware.client.framework.event.events.EventGuiScreenPostDraw;
 import me.deftware.client.framework.gui.GuiScreen;
 import me.deftware.mixin.imp.IMixinGuiContainer;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
+import net.minecraft.client.gui.screen.ingame.ContainerScreen;
 import net.minecraft.container.Slot;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(AbstractContainerScreen.class)
+@Mixin(ContainerScreen.class)
 public class MixinGuiContainer extends MixinGuiScreen implements IMixinGuiContainer {
 
     @Shadow

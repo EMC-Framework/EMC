@@ -2,10 +2,10 @@ package me.deftware.client.framework.entity.block;
 
 import me.deftware.client.framework.math.box.BoundingBox;
 import net.minecraft.block.ChestBlock;
-import net.minecraft.block.DoubleBlockProperties;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.EnderChestBlockEntity;
 import net.minecraft.block.entity.TrappedChestBlockEntity;
+import net.minecraft.block.enums.ChestType;
 
 /**
  * @author Deftware
@@ -22,11 +22,11 @@ public class ChestEntity extends StorageEntity {
 	}
 
 	public boolean isFirst() {
-		return !isEnderChest() && ChestBlock.getDoubleBlockType(entity.getCachedState()) == DoubleBlockProperties.Type.FIRST;
+		return !isEnderChest() && entity.getCachedState().get(ChestBlock.CHEST_TYPE) == ChestType.LEFT;
 	}
 
 	public boolean isDouble() {
-		return !isEnderChest() && ChestBlock.getDoubleBlockType(entity.getCachedState()) != DoubleBlockProperties.Type.SINGLE;
+		return !isEnderChest() && entity.getCachedState().get(ChestBlock.CHEST_TYPE) != ChestType.SINGLE;
 	}
 
 	public boolean isEnderChest() {

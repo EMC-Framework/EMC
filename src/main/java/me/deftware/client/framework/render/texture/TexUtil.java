@@ -1,6 +1,6 @@
 package me.deftware.client.framework.render.texture;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
@@ -24,7 +24,7 @@ public class TexUtil {
     }
 
     public static void deleteTexture(int id) {
-        RenderSystem.deleteTexture(id);
+        GlStateManager.deleteTexture(id);
     }
 
 }

@@ -17,15 +17,15 @@ public class WindowHelper {
 
 	public static void setLimitFramerate(int framerate) {
 		MinecraftClient.getInstance().options.maxFps = framerate;
-		MinecraftClient.getInstance().getWindow().setFramerateLimit(framerate);
+		MinecraftClient.getInstance().window.setFramerateLimit(framerate);
 	}
 
 	public static long getWindowHandle() {
-		return MinecraftClient.getInstance().getWindow().getHandle();
+		return MinecraftClient.getInstance().window.getHandle();
 	}
 
 	public static double getScaleFactor() {
-		return MinecraftClient.getInstance().getWindow().getScaleFactor();
+		return MinecraftClient.getInstance().window.getScaleFactor();
 	}
 
 	public static void setScaleFactor(int factor) {
@@ -38,7 +38,7 @@ public class WindowHelper {
 	}
 
 	public static int getGuiScale() {
-		int factor = MinecraftClient.getInstance().getWindow().calculateScaleFactor(MinecraftClient.getInstance().options.guiScale, MinecraftClient.getInstance().forcesUnicodeFont());
+		int factor = MinecraftClient.getInstance().window.calculateScaleFactor(MinecraftClient.getInstance().options.guiScale, MinecraftClient.getInstance().forcesUnicodeFont());
 		if (factor == 0) {
 			factor = 4;
 		}

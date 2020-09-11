@@ -8,6 +8,7 @@
     "block.MixinBlock",
     "block.MixinBlockCactus",
     "block.MixinBlocks",
+    "block.MixinBlockSoulSand",
     "block.MixinBlockState",
     "block.MixinSignBlockEntity",
     "block.MixinSweetBerryBushBlock",

@@ -1,6 +1,6 @@
 package me.deftware.mixin.mixins.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.deftware.client.framework.event.events.EventAnimation;
 import me.deftware.client.framework.event.events.EventRenderHotbar;
 import me.deftware.client.framework.maps.SettingsMap;
@@ -18,10 +18,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(InGameHud.class)
 public class MixinGuiIngame {
 
-    @Inject(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;blendFuncSeparate(Lcom/mojang/blaze3d/platform/GlStateManager$SrcFactor;Lcom/mojang/blaze3d/platform/GlStateManager$DstFactor;Lcom/mojang/blaze3d/platform/GlStateManager$SrcFactor;Lcom/mojang/blaze3d/platform/GlStateManager$DstFactor;)V"), cancellable = true)
+    @Inject(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;blendFuncSeparate(Lcom/mojang/blaze3d/platform/GlStateManager$SourceFactor;Lcom/mojang/blaze3d/platform/GlStateManager$DestFactor;Lcom/mojang/blaze3d/platform/GlStateManager$SourceFactor;Lcom/mojang/blaze3d/platform/GlStateManager$DestFactor;)V"), cancellable = true)
     private void crosshairEvent(CallbackInfo ci) {
         if (!((boolean) SettingsMap.getValue(SettingsMap.MapKeys.RENDER, "CROSSHAIR", true))) {
-            RenderSystem.enableAlphaTest();
+            GlStateManager.enableAlphaTest();
             ci.cancel();
         }
     }
@@ -49,7 +49,7 @@ public class MixinGuiIngame {
         }
     }
 
-    @Inject(method = "updateVignetteDarkness", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "method_1731", at = @At("HEAD"), cancellable = true)
     private void updateVignetteDarkness(Entity entity, CallbackInfo ci) {
         EventAnimation event = new EventAnimation(EventAnimation.AnimationType.Vignette);
         event.broadcast();

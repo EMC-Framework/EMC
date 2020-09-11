@@ -1,7 +1,7 @@
 package me.deftware.client.framework.gui;
 
 import com.google.common.collect.Iterables;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.platform.GlStateManager;
 import lombok.Getter;
 import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.gui.minecraft.ScreenInstance;
@@ -55,19 +55,19 @@ public abstract class GuiScreen extends Screen {
 	}
 
 	public static int getScaledHeight() {
-		return MinecraftClient.getInstance().getWindow().getScaledHeight();
+		return MinecraftClient.getInstance().window.getScaledHeight();
 	}
 
 	public static int getScaledWidth() {
-		return MinecraftClient.getInstance().getWindow().getScaledWidth();
+		return MinecraftClient.getInstance().window.getScaledWidth();
 	}
 
 	public static int getDisplayHeight() {
-		return MinecraftClient.getInstance().getWindow().getHeight();
+		return MinecraftClient.getInstance().window.getHeight();
 	}
 
 	public static int getDisplayWidth() {
-		return MinecraftClient.getInstance().getWindow().getWidth();
+		return MinecraftClient.getInstance().window.getWidth();
 	}
 
 	@Override
@@ -214,7 +214,7 @@ public abstract class GuiScreen extends Screen {
 
 	protected void drawTexture(MinecraftIdentifier texture, int x, int y, int width, int height) {
 		MinecraftClient.getInstance().getTextureManager().bindTexture(texture);
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		Screen.blit(x, y, 0, 0, width, height, width, height);
 	}
 
