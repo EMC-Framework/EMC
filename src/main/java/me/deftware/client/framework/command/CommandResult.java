@@ -2,12 +2,15 @@ package me.deftware.client.framework.command;
 
 import com.mojang.brigadier.arguments.*;
 import com.mojang.brigadier.context.CommandContext;
-import me.deftware.client.framework.wrappers.entity.IEntity;
+import me.deftware.client.framework.chat.ChatMessage;
+import me.deftware.client.framework.entity.Entity;
 
-@SuppressWarnings("ALL")
+/**
+ * @author Deftware
+ */
 public class CommandResult {
 
-	private CommandContext<?> context;
+	private final CommandContext<?> context;
 
 	public CommandResult(CommandContext<?> context) {
 		this.context = context;
@@ -17,12 +20,12 @@ public class CommandResult {
 		return StringArgumentType.getString(context, node);
 	}
 
-	public IEntity getEntity(String node) throws Exception {
-		// Note: Unavailable in 1.13.2 and below
+	public Entity getEntity(String node) throws Exception {
+		// Note: Unavailable in <= 1.13.2
 		return null;
 	}
 
-	public String getEntityName(String node) throws Exception {
+	public ChatMessage getEntityName(String node) throws Exception {
 		return getEntity(node).getName();
 	}
 

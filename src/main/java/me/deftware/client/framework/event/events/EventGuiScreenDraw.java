@@ -1,17 +1,11 @@
 package me.deftware.client.framework.event.events;
 
 import me.deftware.client.framework.event.Event;
-import me.deftware.client.framework.wrappers.gui.IGuiButton;
-import me.deftware.client.framework.wrappers.gui.imp.GuiContainerInstance;
-import me.deftware.client.framework.wrappers.gui.imp.ScreenInstance;
+import me.deftware.client.framework.gui.minecraft.ScreenInstance;
+import me.deftware.client.framework.gui.widgets.Button;
 import me.deftware.mixin.imp.IMixinGuiScreen;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiDisconnected;
-import net.minecraft.client.gui.GuiIngameMenu;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Triggered every time a gui is drawn on screen.
@@ -19,67 +13,42 @@ import java.util.ArrayList;
  */
 public class EventGuiScreenDraw extends Event {
 
-    private GuiScreen screen;
-    private int x, y;
+    private final ScreenInstance screen;
+    private final int mouseX, mouseY;
 
-    public EventGuiScreenDraw(GuiScreen screen, int x, int y) {
+    public EventGuiScreenDraw(ScreenInstance screen, int mouseX, int mouseY) {
         this.screen = screen;
-        this.x = x;
-        this.y = y;
-    }
-
-    public boolean instanceOf(CommonScreenTypes type) {
-        if (type.equals(CommonScreenTypes.GuiDisconnected)) {
-            return screen instanceof GuiDisconnected;
-        } else if (type.equals(CommonScreenTypes.GuiIngameMenu)) {
-            return screen instanceof GuiIngameMenu;
-        } else if (type.equals(CommonScreenTypes.GuiContainer)) {
-            return screen instanceof GuiContainer;
-        }
-        return false;
+        this.mouseX = mouseX;
+        this.mouseY = mouseY;
     }
 
     public ScreenInstance getInstance() {
-        if (screen instanceof GuiContainer) {
-            return new GuiContainerInstance(screen);
-        }
-        return new ScreenInstance(screen);
+        return screen;
     }
 
-
-    public void addButton(IGuiButton button) {
-        ((IMixinGuiScreen) screen).getButtonList().add(button);
-        ((IMixinGuiScreen) screen).getEventList().add(button);
+    public void addButton(Button button) {
+        ((IMixinGuiScreen) screen.getMinecraftScreen()).getButtonList().add(button);
+        ((IMixinGuiScreen) screen.getMinecraftScreen()).getEventList().add(button);
     }
 
-    public ArrayList<IGuiButton> getIButtonList() {
-        ArrayList<IGuiButton> list = new ArrayList<>();
-        for (GuiButton b : ((IMixinGuiScreen) screen).getButtonList()) {
-            if (b instanceof IGuiButton) {
-                list.add((IGuiButton) b);
-            }
-        }
-        return list;
+    public List<Button> getEmcButtons() {
+        return ((IMixinGuiScreen) screen.getMinecraftScreen()).getEmcButtons();
     }
 
     public int getMouseX() {
-        return x;
+        return mouseX;
     }
 
     public int getMouseY() {
-        return y;
+        return mouseY;
     }
 
     public int getWidth() {
-        return screen.width;
+        return screen.getMinecraftScreen().width;
     }
 
     public int getHeight() {
-        return screen.height;
-    }
-
-    public enum CommonScreenTypes {
-        GuiDisconnected, GuiIngameMenu, GuiContainer
+        return screen.getMinecraftScreen().height;
     }
 
 }

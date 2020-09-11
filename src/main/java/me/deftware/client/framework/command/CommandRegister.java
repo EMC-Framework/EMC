@@ -85,7 +85,7 @@ public class CommandRegister {
      * @return
      */
     public static Map<CommandNode<ISuggestionProvider>, String> getSmartUsage() {
-        return dispatcher.getSmartUsage(dispatcher.getRoot(), Minecraft.getInstance().player.connection.getSuggestionProvider());
+        return dispatcher.getSmartUsage(dispatcher.getRoot(), net.minecraft.client.Minecraft.getInstance().player.connection.getSuggestionProvider());
     }
 
     /**

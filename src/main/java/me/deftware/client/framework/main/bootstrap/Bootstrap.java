@@ -5,16 +5,18 @@ import com.mojang.brigadier.tree.CommandNode;
 import me.deftware.client.framework.FrameworkConstants;
 import me.deftware.client.framework.command.CommandRegister;
 import me.deftware.client.framework.command.commands.*;
+import me.deftware.client.framework.config.Settings;
 import me.deftware.client.framework.event.EventBus;
+import me.deftware.client.framework.input.Keyboard;
 import me.deftware.client.framework.main.EMCMod;
-import me.deftware.client.framework.main.bootstrap.discovery.*;
+import me.deftware.client.framework.main.bootstrap.discovery.AbstractModDiscovery;
+import me.deftware.client.framework.main.bootstrap.discovery.ClasspathModDiscovery;
+import me.deftware.client.framework.main.bootstrap.discovery.DirectoryModDiscovery;
+import me.deftware.client.framework.main.bootstrap.discovery.JVMModDiscovery;
 import me.deftware.client.framework.main.validation.Validator;
 import me.deftware.client.framework.maps.SettingsMap;
-import me.deftware.client.framework.path.LocationUtil;
-import me.deftware.client.framework.path.OSUtils;
-import me.deftware.client.framework.utils.Settings;
-import me.deftware.client.framework.wrappers.IMinecraft;
-import net.minecraft.client.Minecraft;
+import me.deftware.client.framework.minecraft.Minecraft;
+import me.deftware.client.framework.util.path.LocationUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,18 +30,18 @@ import java.util.concurrent.ConcurrentHashMap;
  * This class is responsible for bootstrapping (initialization) process of EMC framework
  * it handles loading all of the mods, connecting with event listeners and checking
  * for available updates
+ *
+ * @author Deftware
  */
 public class Bootstrap {
 
-    public static int CRASH_COUNT = 0;
-    public static boolean initialized = false;
-    public static Logger logger = LogManager.getLogger(String.format("EMC v%s.%s", FrameworkConstants.VERSION, FrameworkConstants.PATCH));
+    public static final Logger logger = LogManager.getLogger("EMC Framework");
     public static ArrayList<JsonObject> modsInfo = new ArrayList<>();
-    public static boolean isRunning = true;
-    public static Settings EMCSettings;
+    public static boolean initialized = false, isRunning = true;
     public static File EMC_ROOT, EMC_CONFIGS;
+    public static Settings EMCSettings;
 
-    private static ConcurrentHashMap<String, EMCMod> mods = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, EMCMod> mods = new ConcurrentHashMap<>();
 
     /**
      * ClasspathModDiscovery should always be the first item
@@ -48,51 +50,47 @@ public class Bootstrap {
 
     public static void init() {
         try {
+            Keyboard.populateCodePoints();
             for (int i = 0; i < 200; i++) {
                 if (System.getProperty("logging" + i, "null").equalsIgnoreCase("null")) break;
                 logger.debug(System.getProperty("logging" + i));
             }
-            File emcJar = LocationUtil.getEMC().toFile(), mcDir = LocationUtil.getMinecraftDir().toFile();
-            if (System.getProperty("EMCDir", "null").equalsIgnoreCase("null")) {
-                System.setProperty("EMCDir", emcJar != null ? emcJar.getParentFile().getAbsolutePath() : "null");
-            }
-            if (System.getProperty("MCDir", "null").equalsIgnoreCase("null")) {
-                System.setProperty("MCDir", mcDir != null ? mcDir.getAbsolutePath() : "null");
-            }
-            File capesCache = new File(String.format("%s/libraries/EMC/capes/", OSUtils.getMCDir()));
+            File capesCache = new File(Minecraft.getRunDir(), "libraries/EMC/capes/");
             if (!capesCache.exists()) {
                 if (!capesCache.mkdirs()) {
-                    Bootstrap.logger.warn("Failed to create EMC capes dir");
+                    logger.warn("Failed to create EMC capes dir");
                 }
             }
-            Bootstrap.logger.info(String.format("Loading EMC v%s.%s", FrameworkConstants.VERSION, FrameworkConstants.PATCH));
-            EMC_ROOT = new File(OSUtils.getMCDir() + "libraries" + File.separator + "EMC" + File.separator + IMinecraft.getMinecraftVersion() + File.separator);
+            logger.info("Loading EMC v{}.{}", FrameworkConstants.VERSION, FrameworkConstants.PATCH);
+            EMC_ROOT = new File(Minecraft.getRunDir(), "libraries" + File.separator + "EMC" + File.separator + Minecraft.getMinecraftVersion() + File.separator);
+            logger.info("EMC root dir is {}", EMC_ROOT.getAbsolutePath());
             EMC_CONFIGS = new File(EMC_ROOT.getAbsolutePath() + File.separator + "configs" + File.separator);
             if (!EMC_ROOT.exists()) {
                 if (!EMC_ROOT.mkdirs()) {
-                    Bootstrap.logger.warn("Failed to create EMC directories");
+                    logger.warn("Failed to create EMC directories");
                 }
             }
             if (!EMC_CONFIGS.exists()) {
                 if (!EMC_CONFIGS.mkdirs()) {
-                    Bootstrap.logger.warn("Failed to create EMC config dir");
+                    logger.warn("Failed to create EMC config dir");
                 }
             }
-            Bootstrap.logger.debug("EMC root is {}", EMC_ROOT.getAbsolutePath());
+            logger.debug("EMC root is {}", EMC_ROOT.getAbsolutePath());
             FrameworkConstants.VALID_EMC_INSTANCE = Validator.isValidInstance();
             if (!FrameworkConstants.VALID_EMC_INSTANCE) {
-                Bootstrap.logger.warn("EMC instance is not up to date! This may cause instability or crashes.");
+                logger.warn("EMC instance is not up to date! This may cause instability or crashes.");
             }
-            FrameworkConstants.SUBSYSTEM_IN_USE = System.getProperty("SUBSYSTEM", "false").equalsIgnoreCase("true");
+            if (FrameworkConstants.OPTIFINE) {
+                logger.info("Running with OptiFine!");
+            }
             EMCSettings = new Settings("EMC");
             EMCSettings.setupShutdownHook();
             SettingsMap.update(SettingsMap.MapKeys.EMC_SETTINGS, "RENDER_SCALE", EMCSettings.getPrimitive("RENDER_SCALE", 1.0f));
-            SettingsMap.update(SettingsMap.MapKeys.EMC_SETTINGS, "RENDER_FONT_SHADOWS", EMCSettings.getPrimitive("RENDER_FONT_SHADOWS", true));
             SettingsMap.update(SettingsMap.MapKeys.EMC_SETTINGS, "COMMAND_TRIGGER", EMCSettings.getPrimitive("commandtrigger", "."));
             modDiscoveries.forEach(discovery -> {
                 discovery.discover();
                 if (discovery.getSize() != 0) {
-                    Bootstrap.logger.info("{} found {} mod{}", discovery.getClass().getSimpleName(), discovery.getSize(), discovery.getSize() != 1 ? "s" : "");
+                    logger.info("{} found {} mod{}", discovery.getClass().getSimpleName(), discovery.getSize(), discovery.getSize() != 1 ? "s" : "");
                 }
                 discovery.getMods().forEach(AbstractModDiscovery.AbstractModEntry::init);
             });
@@ -102,12 +100,16 @@ public class Bootstrap {
                     loadMod(mod);
                 } catch (Exception ex) {
                     ex.printStackTrace();
-                    Bootstrap.logger.error("Failed to load {}", mod.getFile().getName());
+                    logger.error("Failed to load {}", mod.getFile().getName());
                 }
             }));
         } catch (Exception ex) {
-            Bootstrap.logger.warn("Failed to load EMC", ex);
+            logger.warn("Failed to load EMC", ex);
         }
+    }
+
+    public File getEMCJar() {
+        return LocationUtil.getEMC().toFile();
     }
 
     public static void reset() {
@@ -127,7 +129,7 @@ public class Bootstrap {
      * Registers framework commands
      */
     private static void registerFrameworkCommands() {
-        Bootstrap.logger.debug("Loading EMC commands");
+        logger.debug("Loading EMC commands");
         clearChildren(CommandRegister.getDispatcher().getRoot());
         CommandRegister.clearDispatcher();
         CommandRegister.registerCommand(new CommandMods());
@@ -148,20 +150,21 @@ public class Bootstrap {
         // Check compatibility
         String[] minVersion = (entry.getJson().has("minVersion") ? entry.getJson().get("minVersion").getAsString() : String.format("%s.%s", FrameworkConstants.VERSION, FrameworkConstants.PATCH)).split("\\.");
         if (Double.parseDouble(String.format("%s.%s", minVersion[0], minVersion[1])) >= FrameworkConstants.VERSION && Integer.parseInt(minVersion[2]) > FrameworkConstants.PATCH) {
-            Bootstrap.logger.warn("Will not load {}, unsupported EMC version", entry.getFile().getName());
+            logger.warn("Will not load {}, unsupported EMC version", entry.getFile().getName());
             return;
         } else if (!entry.getJson().has("scheme") || entry.getJson().get("scheme").getAsInt() < FrameworkConstants.SCHEME) {
-            Bootstrap.logger.warn("Will not load unsupported mod {}, unsupported scheme", entry.getFile().getName());
+            logger.warn("Will not load unsupported mod {}, unsupported scheme", entry.getFile().getName());
             return;
         }
         // Ensure only one instance is loaded
         if (Bootstrap.mods.containsKey(entry.getJson().get("name").getAsString())) {
+            logger.warn("Tried to load duplicate mod {}", entry.getJson().get("name").getAsString());
             return;
         }
-        Bootstrap.logger.debug("Loading {} v{} by {}", entry.getJson().get("name").getAsString(), entry.getJson().get("version").getAsString(), entry.getJson().get("author").getAsString());
+        logger.debug("Loading {} v{} by {}", entry.getJson().get("name").getAsString(), entry.getJson().get("version").getAsString(), entry.getJson().get("author").getAsString());
         Bootstrap.mods.put(entry.getJson().get("name").getAsString(), mod);
         Bootstrap.mods.get(entry.getJson().get("name").getAsString()).init(entry.getJson());
-        Bootstrap.logger.info("Loaded {}", entry.getJson().get("name").getAsString());
+        logger.info("Loaded {}", entry.getJson().get("name").getAsString());
     }
 
     /**
@@ -173,10 +176,10 @@ public class Bootstrap {
      */
     public static void callMethod(String mod, String method, String caller, Object object) {
         if (Bootstrap.mods.containsKey(mod)) {
-            Bootstrap.logger.debug("Mod {} calling {} in mod {}", caller, method, mod);
+            logger.debug("Mod {} calling {} in mod {}", caller, method, mod);
             Bootstrap.mods.get(mod).callMethod(method, caller, object);
         } else {
-            Bootstrap.logger.error("EMC mod {} tried to call method {} in mod {}", caller, method, mod);
+            logger.error("EMC mod {} tried to call method {} in mod {}", caller, method, mod);
         }
     }
 
@@ -186,7 +189,7 @@ public class Bootstrap {
 
     public static void ejectMods() {
         EventBus.clearEvents();
-        Bootstrap.logger.warn("Ejecting all loaded mods");
+        logger.warn("Ejecting all loaded mods");
         for (EMCMod mod : mods.values()) {
             try {
                 mod.onUnload();
@@ -199,7 +202,7 @@ public class Bootstrap {
         }
         Bootstrap.mods.clear();
         registerFrameworkCommands();
-        Minecraft.getInstance().gameSettings.gammaSetting = 0.5F;
+        net.minecraft.client.Minecraft.getInstance().gameSettings.gammaSetting = 0.5F;
         System.gc();
     }
 

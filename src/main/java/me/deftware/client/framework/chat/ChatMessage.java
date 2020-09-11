@@ -1,11 +1,15 @@
 package me.deftware.client.framework.chat;
 
+import lombok.Getter;
 import me.deftware.client.framework.chat.hud.ChatHud;
 import me.deftware.client.framework.chat.style.ChatStyle;
+import me.deftware.client.framework.fonts.minecraft.FontRenderer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.play.client.CPacketChatMessage;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,8 +17,9 @@ import java.util.List;
  * @author Deftware
  */
 public class ChatMessage {
+
 	private TextComponentString compiledText; /* Cache */
-	protected final List<ChatSection> sectionList = new ArrayList<>();
+	protected @Getter final List<ChatSection> sectionList = new ArrayList<>();
 
 	public String toString(boolean withFormatting) {
 		StringBuilder builder = new StringBuilder();
@@ -34,6 +39,23 @@ public class ChatMessage {
 		return false;
 	}
 
+	public ChatMessage trimToWidth(int width) {
+		String text = toString(true);
+		if (FontRenderer.getStringWidth(text) > width) {
+			StringBuilder builder = new StringBuilder();
+			for (String _char : text.split("")) {
+				if (FontRenderer.getStringWidth(builder.toString() + _char + "...") < width - 6) {
+					builder.append(_char);
+				} else {
+					builder.append("...");
+					break;
+				}
+			}
+			text = builder.toString();
+		}
+		return new ChatMessage().fromString(text);
+	}
+
 	public ChatMessage fromString(String text) {
 		return fromString(text, ChatStyle.getFormattingChar());
 	}
@@ -42,7 +64,6 @@ public class ChatMessage {
 	 * Converts an old style formatted string to a {@link ChatMessage} object
 	 */
 	public ChatMessage fromString(String text, char formattingChar) {
-		if (text == null) return this;
 		if (!text.contains(String.valueOf(formattingChar))) {
 			// No need to parse if the string doesnt have any formatting
 			sectionList.add(new ChatSection(text));
@@ -52,8 +73,7 @@ public class ChatMessage {
 			ChatSection currentSection = new ChatSection("");
 			for (String section : sections) {
 				if (section.length() == 0) continue; // Start of string
-				if (section.length() == 1) {
-					// Only formatting, no text
+				if (section.length() == 1) { // Only formatting, no text
 					currentSection.getStyle().fromCode(section);
 				} else {
 					currentSection.getStyle().fromCode(section.substring(0, 1)); // The first char is always the formatting char
@@ -103,12 +123,13 @@ public class ChatMessage {
 		if (compiledText == null) {
 			compiledText = new TextComponentString("");
 			for (ChatSection section : sectionList) {
-				compiledText.appendSibling(new TextComponentString(section.getText()).setStyle(section.getStyle().getStyle()));
+				compiledText.appendSibling(new TextComponentString(section.getText())
+						.setStyle(section.getStyle().getStyle()));
 			}
 		}
 		return compiledText;
 	}
-
+	
 	public ChatMessage reset() {
 		sectionList.clear();
 		return this;
@@ -118,19 +139,28 @@ public class ChatMessage {
 	 * Prints this message client-side only, must be called in the render thread
 	 */
 	public void print() {
-		ChatHud.getChatMessageQueue().add(() -> ChatHud.addMessage(this));
+		ChatHud.getChatMessageQueue().add(() ->
+			ChatHud.addMessage(this)
+		);
+	}
+
+	public void sendMessage() {
+		sendMessage(true);
 	}
 
 	/**
 	 * Sends this message to the server, without any formatting
 	 */
-	public void sendMessage() {
-		if (Minecraft.getInstance().player != null) {
-			ChatHud.getChatMessageQueue().add(() -> Minecraft.getInstance().player.sendChatMessage(toString(false)));
+	public void sendMessage(boolean packet) {
+		if (net.minecraft.client.Minecraft.getInstance().player != null) {
+			ChatHud.getChatMessageQueue().add(() -> {
+				if (packet) {
+					net.minecraft.client.Minecraft.getInstance().player.connection.sendPacket(new CPacketChatMessage(toString(false)));
+				} else {
+					net.minecraft.client.Minecraft.getInstance().player.sendChatMessage(toString(false));
+				}
+			});
 		}
 	}
-
-	public List<ChatSection> getSectionList() {
-		return this.sectionList;
-	}
+	
 }
