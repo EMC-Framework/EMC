@@ -55,6 +55,13 @@ public class Bootstrap {
                 if (System.getProperty("logging" + i, "null").equalsIgnoreCase("null")) break;
                 logger.debug(System.getProperty("logging" + i));
             }
+            File emcJar = LocationUtil.getEMC().toFile();
+            if (System.getProperty("EMCDir", "null").equalsIgnoreCase("null")) {
+                System.setProperty("EMCDir", emcJar != null ? emcJar.getParentFile().getAbsolutePath() : "null");
+            }
+            if (System.getProperty("MCDir", "null").equalsIgnoreCase("null")) {
+                System.setProperty("MCDir", Minecraft.getRunDir().getAbsolutePath());
+            }
             File capesCache = new File(Minecraft.getRunDir(), "libraries/EMC/capes/");
             if (!capesCache.exists()) {
                 if (!capesCache.mkdirs()) {
