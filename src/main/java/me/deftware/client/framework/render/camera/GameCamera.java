@@ -2,44 +2,44 @@ package me.deftware.client.framework.render.camera;
 
 import me.deftware.client.framework.entity.Entity;
 import me.deftware.client.framework.math.vector.Vector3d;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.render.Camera;
+import me.deftware.mixin.imp.IMixinCamera;
+import net.minecraft.client.renderer.entity.RenderManager;
 
 /**
  * @author Deftware
  */
 public class GameCamera {
 
-	public Camera getMinecraftCamera() {
-		return net.minecraft.client.Minecraft.getInstance().getEntityRenderManager().camera;
+	public RenderManager getMinecraftCamera() {
+		return net.minecraft.client.Minecraft.getInstance().getRenderManager();
 	}
 
 	public Vector3d getCameraPosition() {
-		return new Vector3d(getMinecraftCamera().getPos());
+		return new Vector3d(getRenderPosX(), getRenderPosY(), getRenderPosZ());
 	}
 
 	public float getRotationPitch() {
-		return getMinecraftCamera().getPitch();
+		return getMinecraftCamera().renderViewEntity.rotationPitch;
 	}
 
 	public float getRotationYaw() {
-		return getMinecraftCamera().getYaw();
+		return getMinecraftCamera().renderViewEntity.rotationYaw;
 	}
 
 	public Entity getFocusedEntity() {
-		return Entity.newInstance(getMinecraftCamera().getFocusedEntity());
+		return Entity.newInstance(getMinecraftCamera().pointedEntity);
 	}
 
 	public double getRenderPosX() {
-		return getMinecraftCamera().getPos().x;
+		return ((IMixinCamera) getMinecraftCamera()).getRenderPosX();
 	}
 
 	public double getRenderPosY() {
-		return getMinecraftCamera().getPos().y;
+		return ((IMixinCamera) getMinecraftCamera()).getRenderPosY();
 	}
 
 	public double getRenderPosZ() {
-		return getMinecraftCamera().getPos().z;
+		return((IMixinCamera) getMinecraftCamera()).getRenderPosZ();
 	}
 
 }

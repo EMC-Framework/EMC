@@ -1,7 +1,7 @@
-package me.deftware.client.framework.render.texture;
+package me.deftware.client.framework.utils.render;
 
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.client.renderer.texture.NativeImage;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.image.BufferedImage;
@@ -11,20 +11,17 @@ import java.io.IOException;
 
 import static org.lwjgl.opengl.GL11.*;
 
-/**
- * @author Deftware, Ananas
- */
 public class Texture {
     int width;
     int height;
-    NativeImageBackedTexture dynamicTexture;
+    DynamicTexture dynamicTexture;
     NativeImage nativeImage;
 
     public Texture(int width, int height, boolean clear) {
         this.width = width;
         this.height = height;
-        this.nativeImage = new NativeImage(NativeImage.Format.RGBA, width, height, clear);
-        this.dynamicTexture = new NativeImageBackedTexture(nativeImage);
+        this.nativeImage = new NativeImage(NativeImage.PixelFormat.RGBA, width, height, clear);
+        this.dynamicTexture = new DynamicTexture(nativeImage);
     }
 
     public int getHeight() {
@@ -85,11 +82,11 @@ public class Texture {
         return 0;
     }
 
-    public int fillFromBufferedFormatImage(BufferedImage img, NativeImage.Format pixelFormat) {
+    public int fillFromBufferedFormatImage(BufferedImage img, NativeImage.PixelFormat pixelFormat) {
         byte[] imageBytes = ((DataBufferByte) img.getData().getDataBuffer()).getData();
         try {
-            this.nativeImage = NativeImage.fromInputStream(pixelFormat, new ByteArrayInputStream(imageBytes));
-            this.dynamicTexture.setImage(nativeImage);
+            this.nativeImage = NativeImage.read(pixelFormat, new ByteArrayInputStream(imageBytes));
+            this.dynamicTexture.setTextureData(nativeImage);
             this.refreshParameters();
         } catch (IOException ioe) {
             return 1;
@@ -101,12 +98,12 @@ public class Texture {
     }
 
     public int fillFromBufferedRGBImage(BufferedImage img) {
-        return fillFromBufferedFormatImage(img, NativeImage.Format.RGB);
+        return fillFromBufferedFormatImage(img, NativeImage.PixelFormat.RGB);
     }
 
 
     public int fillFromBufferedRGBAImage(BufferedImage img) {
-        return fillFromBufferedFormatImage(img, NativeImage.Format.RGBA);
+        return fillFromBufferedFormatImage(img, NativeImage.PixelFormat.RGBA);
     }
 
     public int clearPixels() {
@@ -120,7 +117,7 @@ public class Texture {
                     this.setPixel(x, y, rgb);
                 }
             }
-            this.dynamicTexture.setImage(this.nativeImage);
+            this.dynamicTexture.setTextureData(this.nativeImage);
         } catch (Exception e) {
             e.printStackTrace();
             return 1;
@@ -153,12 +150,12 @@ public class Texture {
     }
 
     public byte getAlpha(int x, int y) {
-        return this.nativeImage.getAlphaOrLuminance(x, y);
+        return this.nativeImage.getPixelLuminanceOrAlpha(x, y);
     }
 
     public int updatePixels() {
         try {
-            this.dynamicTexture.setImage(nativeImage);
+            this.dynamicTexture.setTextureData(nativeImage);
         } catch (Exception e) {
             e.printStackTrace();
             return 1;
@@ -167,7 +164,7 @@ public class Texture {
     }
 
     public int updateTexture() {
-        this.dynamicTexture.upload();
+        this.dynamicTexture.updateDynamicTexture();
         return 0;
     }
 
@@ -183,15 +180,18 @@ public class Texture {
         this.bind(GL_ONE);
     }
 
-    public void bind(int dFactor) {
+
+    public void bind(int blendfunc) {
         GL11.glEnable(GL_BLEND);
-        GL11.glBlendFunc(GL_SRC_ALPHA, dFactor);
+        GL11.glBlendFunc(GL_SRC_ALPHA, blendfunc);
         this.blindBind();
     }
+
 
     public void blindBind() {
         this.dynamicTexture.bindTexture();
     }
+
 
     public void unbind() {
         if (GL11.glIsEnabled(GL_BLEND))

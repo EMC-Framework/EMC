@@ -1,21 +1,21 @@
 package me.deftware.client.framework.render.camera.entity;
 
-import net.minecraft.client.input.Input;
+import net.minecraft.util.MovementInput;
 
 /**
  * @author wagyourtail, Deftware
  */
-public class DummyInput  extends Input {
+public class DummyInput extends MovementInput {
 
 	public DummyInput() {
-		this.movementSideways = 0.0F;
-		this.movementForward = 0.0F;
-		this.pressingBack = false;
-		this.pressingForward = false;
-		this.pressingLeft = false;
-		this.pressingRight = false;
-		this.jumping = false;
-		this.sneaking = false;
+		this.moveStrafe = 0.0F;
+		this.moveForward = 0.0F;
+		this.forwardKeyDown = false;
+		this.backKeyDown = false;
+		this.leftKeyDown = false;
+		this.rightKeyDown = false;
+		this.jump = false;
+		this.sneak = false;
 	}
 
 }

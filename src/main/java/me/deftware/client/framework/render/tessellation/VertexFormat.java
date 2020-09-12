@@ -1,23 +1,23 @@
 package me.deftware.client.framework.render.tessellation;
 
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 
 /**
  * @author Deftware
  */
 public enum VertexFormat {
 
-	POSITION_COLOR(VertexFormats.POSITION_COLOR),
-	POSITION_TEX_COLOR(VertexFormats.POSITION_UV_COLOR),
-	POSITION(VertexFormats.POSITION);
+	POSITION_COLOR(DefaultVertexFormats.POSITION_COLOR),
+	POSITION_TEX_COLOR(DefaultVertexFormats.POSITION_TEX_COLOR),
+	POSITION(DefaultVertexFormats.POSITION);
 
-	private final net.minecraft.client.render.VertexFormat format;
+	private final net.minecraft.client.renderer.vertex.VertexFormat format;
 
-	VertexFormat(net.minecraft.client.render.VertexFormat format) {
+	VertexFormat(net.minecraft.client.renderer.vertex.VertexFormat format) {
 		this.format = format;
 	}
 
-	public net.minecraft.client.render.VertexFormat getMinecraftFormat() {
+	public net.minecraft.client.renderer.vertex.VertexFormat getMinecraftFormat() {
 		return format;
 	}
 

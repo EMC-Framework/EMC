@@ -8,21 +8,21 @@ public class Tessellator {
 	private static Tessellator tessellatorInstance;
 
 	public static Tessellator getInstance() {
-		if (tessellatorInstance == null || tessellatorInstance.getMinecraftTessellator() != net.minecraft.client.render.Tessellator.getInstance()) {
+		if (tessellatorInstance == null || tessellatorInstance.getMinecraftTessellator() != net.minecraft.client.renderer.Tessellator.getInstance()) {
 			tessellatorInstance = new Tessellator();
 		}
 		return tessellatorInstance;
 	}
 
-	private final net.minecraft.client.render.Tessellator tessellator;
+	private final net.minecraft.client.renderer.Tessellator tessellator;
 	private final VertexBuilder builder;
 
 	private Tessellator() {
-		this.tessellator = net.minecraft.client.render.Tessellator.getInstance();
-		this.builder = new VertexBuilder(this.tessellator.getBufferBuilder());
+		this.tessellator = net.minecraft.client.renderer.Tessellator.getInstance();
+		this.builder = new VertexBuilder(this.tessellator.getBuffer());
 	}
 
-	public net.minecraft.client.render.Tessellator getMinecraftTessellator() {
+	public net.minecraft.client.renderer.Tessellator getMinecraftTessellator() {
 		return tessellator;
 	}
 

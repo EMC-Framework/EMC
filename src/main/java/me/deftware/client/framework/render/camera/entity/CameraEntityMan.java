@@ -3,7 +3,7 @@ package me.deftware.client.framework.render.camera.entity;
 import me.deftware.client.framework.entity.Entity;
 import me.deftware.client.framework.world.World;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.input.KeyboardInput;
+import net.minecraft.util.MovementInputFromOptions;
 
 import java.util.Objects;
 
@@ -26,14 +26,14 @@ public class CameraEntityMan {
 		if (World.isLoaded()) {
 			fakePlayer = new CameraEntity(Objects.requireNonNull(net.minecraft.client.Minecraft.getInstance().world),
 					Objects.requireNonNull(net.minecraft.client.Minecraft.getInstance().player).getGameProfile(),
-					Objects.requireNonNull(net.minecraft.client.Minecraft.getInstance().player).getHungerManager());
-			fakePlayer.copyPositionAndRotation(Objects.requireNonNull(net.minecraft.client.Minecraft.getInstance().player));
-			fakePlayer.setHeadYaw(Objects.requireNonNull(net.minecraft.client.Minecraft.getInstance().player).headYaw);
+					Objects.requireNonNull(net.minecraft.client.Minecraft.getInstance().player).getFoodStats());
+			fakePlayer.copyLocationAndAnglesFrom(Objects.requireNonNull(net.minecraft.client.Minecraft.getInstance().player));
+			fakePlayer.setRotationYawHead(Objects.requireNonNull(Minecraft.getInstance().player).rotationYawHead);
 			fakePlayer.spawn();
-			savedPerspective = Objects.requireNonNull(net.minecraft.client.Minecraft.getInstance().options).perspective;
-			Objects.requireNonNull(net.minecraft.client.Minecraft.getInstance().options).perspective = 0;
-			net.minecraft.client.Minecraft.getInstance().setCameraEntity(fakePlayer);
-			if (net.minecraft.client.Minecraft.getInstance().player.input instanceof KeyboardInput) net.minecraft.client.Minecraft.getInstance().player.input = new DummyInput();
+			savedPerspective = Objects.requireNonNull(Minecraft.getInstance().gameSettings).thirdPersonView;
+			Objects.requireNonNull(Minecraft.getInstance().gameSettings).thirdPersonView = 0;
+			net.minecraft.client.Minecraft.getInstance().setRenderViewEntity(fakePlayer);
+			if (Minecraft.getInstance().player.movementInput instanceof MovementInputFromOptions) Minecraft.getInstance().player.movementInput = new DummyInput();
 		}
 	}
 
@@ -43,11 +43,11 @@ public class CameraEntityMan {
 
 	public static void disable() {
 		if (World.isLoaded()) {
-			net.minecraft.client.Minecraft.getInstance().options.perspective = savedPerspective;
-			net.minecraft.client.Minecraft.getInstance().setCameraEntity(Objects.requireNonNull(net.minecraft.client.Minecraft.getInstance().player));
+			Minecraft.getInstance().gameSettings.thirdPersonView = savedPerspective;
+			net.minecraft.client.Minecraft.getInstance().setRenderViewEntity(Objects.requireNonNull(net.minecraft.client.Minecraft.getInstance().player));
 			if (fakePlayer != null) fakePlayer.despawn();
 			fakePlayer = null;
-			if (net.minecraft.client.Minecraft.getInstance().player.input instanceof DummyInput) net.minecraft.client.Minecraft.getInstance().player.input = new KeyboardInput(net.minecraft.client.Minecraft.getInstance().options);
+			if (Minecraft.getInstance().player.movementInput instanceof DummyInput) Minecraft.getInstance().player.movementInput = new MovementInputFromOptions(Minecraft.getInstance().gameSettings);
 		}
 	}
 

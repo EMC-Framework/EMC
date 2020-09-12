@@ -1,6 +1,6 @@
 package me.deftware.client.framework.render.tessellation;
 
-import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.renderer.BufferBuilder;
 
 /**
  * @author Deftware
@@ -18,12 +18,12 @@ public class VertexBuilder {
 	}
 
 	public VertexBuilder pos(double x, double y, double z) {
-		builder.vertex(x, y, z);
+		builder.pos(x, y, z);
 		return this;
 	}
 
 	public VertexBuilder tex(float u, float v) {
-		builder.texture(u, v);
+		builder.tex(u, v);
 		return this;
 	}
 
@@ -33,7 +33,7 @@ public class VertexBuilder {
 	}
 
 	public void endVertex() {
-		builder.next();
+		builder.endVertex();
 	}
 
 }

@@ -1,9 +1,8 @@
 package me.deftware.client.framework.render.texture;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -16,7 +15,7 @@ public class TexUtil {
     }
 
     public static void drawModalRectWithCustomSizedTexture(int x, int y, float u, float v, int width, int height, float textureWidth, float textureHeight) {
-        DrawableHelper.blit(x, y, u, v, width, height, (int) textureWidth, (int) textureHeight);
+       Gui.drawModalRectWithCustomSizedTexture(x, y, u, v, width, height, (int) textureWidth, (int) textureHeight);
     }
 
     public static int glGenTextures() {

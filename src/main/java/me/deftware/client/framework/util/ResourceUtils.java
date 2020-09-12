@@ -4,7 +4,6 @@ import me.deftware.client.framework.main.EMCMod;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
 import me.deftware.client.framework.minecraft.Minecraft;
 import me.deftware.client.framework.util.path.OSUtils;
-import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.*;
 import java.net.URISyntaxException;
@@ -82,7 +81,7 @@ public class ResourceUtils {
      * @return Boolean depending on Mod Menu and MC Version/Modloader
      */
     public static boolean hasExternalModMenu() {
-        return hasSpecificMod("modmenu");
+        return hasSpecificMod("riftmodlist");
     }
 
     /**
@@ -91,7 +90,7 @@ public class ResourceUtils {
      * @return Boolean depending on Mod ID and MC Version/Modloader
      */
     public static boolean hasSpecificMod(String modId) {
-        return FabricLoader.getInstance().isModLoaded(modId);
+        return false; // FIXME?
     }
 }
 
