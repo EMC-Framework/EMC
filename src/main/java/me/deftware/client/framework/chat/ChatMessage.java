@@ -1,6 +1,5 @@
 package me.deftware.client.framework.chat;
 
-import lombok.Getter;
 import me.deftware.client.framework.chat.hud.ChatHud;
 import me.deftware.client.framework.chat.style.ChatStyle;
 import me.deftware.client.framework.fonts.minecraft.FontRenderer;
@@ -9,7 +8,6 @@ import net.minecraft.network.play.client.CPacketChatMessage;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,9 +15,8 @@ import java.util.List;
  * @author Deftware
  */
 public class ChatMessage {
-
 	private TextComponentString compiledText; /* Cache */
-	protected @Getter final List<ChatSection> sectionList = new ArrayList<>();
+	protected final List<ChatSection> sectionList = new ArrayList<>();
 
 	public String toString(boolean withFormatting) {
 		StringBuilder builder = new StringBuilder();
@@ -73,7 +70,8 @@ public class ChatMessage {
 			ChatSection currentSection = new ChatSection("");
 			for (String section : sections) {
 				if (section.length() == 0) continue; // Start of string
-				if (section.length() == 1) { // Only formatting, no text
+				if (section.length() == 1) {
+					// Only formatting, no text
 					currentSection.getStyle().fromCode(section);
 				} else {
 					currentSection.getStyle().fromCode(section.substring(0, 1)); // The first char is always the formatting char
@@ -123,13 +121,12 @@ public class ChatMessage {
 		if (compiledText == null) {
 			compiledText = new TextComponentString("");
 			for (ChatSection section : sectionList) {
-				compiledText.appendSibling(new TextComponentString(section.getText())
-						.setStyle(section.getStyle().getStyle()));
+				compiledText.appendSibling(new TextComponentString(section.getText()).setStyle(section.getStyle().getStyle()));
 			}
 		}
 		return compiledText;
 	}
-	
+
 	public ChatMessage reset() {
 		sectionList.clear();
 		return this;
@@ -139,9 +136,7 @@ public class ChatMessage {
 	 * Prints this message client-side only, must be called in the render thread
 	 */
 	public void print() {
-		ChatHud.getChatMessageQueue().add(() ->
-			ChatHud.addMessage(this)
-		);
+		ChatHud.getChatMessageQueue().add(() -> ChatHud.addMessage(this));
 	}
 
 	public void sendMessage() {
@@ -162,5 +157,8 @@ public class ChatMessage {
 			});
 		}
 	}
-	
+
+	public List<ChatSection> getSectionList() {
+		return this.sectionList;
+	}
 }

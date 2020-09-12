@@ -9,7 +9,6 @@ buildscript {
     }
 
     dependencies {
-        classpath "io.freefair.gradle:lombok-plugin:2.5.0"
         classpath "com.github.Chocohead:ForgeGradle:jitpack-SNAPSHOT"
         classpath "org.spongepowered:mixingradle:${project.mixinGradleVersion}"
         classpath "com.github.jengelman.gradle.plugins:shadow:2.0.0"
@@ -38,7 +37,6 @@ if (OperatingSystem.current().isMacOsX()) {
 group = 'me.deftware'
 version = getVersionFromJava()
 
-apply plugin: 'io.freefair.lombok'
 apply plugin: 'maven'
 apply plugin: 'java'
 apply plugin: 'net.minecraftforge.gradle.tweaker-client'

@@ -1,18 +1,14 @@
 package me.deftware.client.framework.event.events;
 
-import lombok.Getter;
 import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.event.Event;
 import me.deftware.client.framework.item.Item;
-
 import java.util.List;
 
 public class EventGetItemToolTip extends Event {
-
-    private final @Getter List<ChatMessage> list;
-    private final @Getter Item item;
-
-    private final @Getter boolean advanced;
+    private final List<ChatMessage> list;
+    private final Item item;
+    private final boolean advanced;
 
     public EventGetItemToolTip(List<ChatMessage> list, Item item, boolean advanced) {
         this.list = list;
@@ -20,5 +16,15 @@ public class EventGetItemToolTip extends Event {
         this.advanced = advanced;
     }
 
-}
+    public List<ChatMessage> getList() {
+        return this.list;
+    }
 
+    public Item getItem() {
+        return this.item;
+    }
+
+    public boolean isAdvanced() {
+        return this.advanced;
+    }
+}

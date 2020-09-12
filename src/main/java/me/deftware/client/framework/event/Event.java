@@ -1,18 +1,15 @@
 package me.deftware.client.framework.event;
 
-import lombok.Getter;
-import lombok.Setter;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
 
 /**
- * This class describes the way events are defined in EMC framework and handles the process of
- * delivering events to all of the loaded mods
- *
+ * This class describes the way events are defined in EMC framework and handles the process of
+ * delivering events to all of the loaded mods
+ *
  * @author Deftware
  */
 public class Event {
-
-    private @Getter @Setter boolean canceled = false;
+    private boolean canceled = false;
 
     /**
      * Broadcasts an event to all registered listeners
@@ -27,4 +24,11 @@ public class Event {
         return (T) this;
     }
 
+    public boolean isCanceled() {
+        return this.canceled;
+    }
+
+    public void setCanceled(final boolean canceled) {
+        this.canceled = canceled;
+    }
 }

@@ -1,32 +1,26 @@
 package me.deftware.client.framework.fonts.legacy;
 
-import lombok.Getter;
-import lombok.Setter;
 import me.deftware.client.framework.registry.font.TTFRegistry;
 import me.deftware.client.framework.render.batching.RenderStack;
 import me.deftware.client.framework.render.texture.GraphicsUtil;
 import org.lwjgl.opengl.GL11;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 
 /**
- * Legacy bitmap font used for now
- *
+ * Legacy bitmap font used for now
+ *
  * @author Deftware, Ananas
  */
-public class  LegacyBitmapFont {
-
+public class LegacyBitmapFont {
 	public final HashMap<Character, Integer> textureIDStore = new HashMap<>();
 	public final HashMap<Character, int[]> textureDimensionsStore = new HashMap<>();
-
 	protected Font stdFont;
 	public String fontName;
 	protected int fontSize;
 	public boolean scaled;
-
-	public @Setter @Getter int shadow = 1;
+	public int shadow = 1;
 
 	public LegacyBitmapFont(String fontName, int fontSize, boolean scaled) {
 		this.fontName = fontName;
@@ -44,8 +38,7 @@ public class  LegacyBitmapFont {
 	}
 
 	public void setupFont() {
-		this.stdFont = TTFRegistry.getFont(this.fontName, new Font(this.fontName, Font.PLAIN, this.fontSize))
-				.deriveFont(Font.PLAIN, fontSize * (scaled ? RenderStack.getScale() : 1f));
+		this.stdFont = TTFRegistry.getFont(this.fontName, new Font(this.fontName, Font.PLAIN, this.fontSize)).deriveFont(Font.PLAIN, fontSize * (scaled ? RenderStack.getScale() : 1.0F));
 	}
 
 	public void initialize() {
@@ -58,12 +51,12 @@ public class  LegacyBitmapFont {
 			characterGenerate(uppercaseAlphabet);
 		}
 		// Numbers
-		for (char numeric = 48; numeric <= 57; numeric++) { // 0 - 9 in ASCII
+		for (char numeric = 48; numeric <= 57; numeric++) {
+			// 0 - 9 in ASCII
 			characterGenerate(numeric);
 		}
 		// Additional and special characters
-		char[] specialCharacters = {'!', '#', '$', '%', '&', '\'', '(', ')', '*', '+', ',', '-', '.', '/',
-				':', ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`', '{', '|', '}', '~', '"'};
+		char[] specialCharacters = {'!', '#', '$', '%', '&', '\'', '(', ')', '*', '+', ',', '-', '.', '/', ':', ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`', '{', '|', '}', '~', '\"'};
 		for (char specialCharacter : specialCharacters) {
 			characterGenerate(specialCharacter);
 		}
@@ -79,7 +72,8 @@ public class  LegacyBitmapFont {
 
 	protected void characterGenerate(char character) {
 		String letterBuffer = String.valueOf(character);
-		int textWidth = getStringWidth(letterBuffer), textHeight = getStringHeight();
+		int textWidth = getStringWidth(letterBuffer);
+		int textHeight = getStringHeight();
 		if (textHeight > 0 && textWidth > 0 && !letterBuffer.isEmpty()) {
 			BufferedImage characterTexture = new BufferedImage(textWidth, textHeight, BufferedImage.TYPE_INT_ARGB);
 			Graphics2D graphics = characterTexture.createGraphics();
@@ -90,7 +84,7 @@ public class  LegacyBitmapFont {
 			graphics.drawString(letterBuffer, 0, textHeight - textHeight / 4);
 			graphics.dispose();
 			textureIDStore.put(character, GraphicsUtil.loadTextureFromBufferedImage(characterTexture));
-			textureDimensionsStore.put(character, new int[]{characterTexture.getWidth(), characterTexture.getHeight()});
+			textureDimensionsStore.put(character, new int[] {characterTexture.getWidth(), characterTexture.getHeight()});
 		}
 	}
 
@@ -101,4 +95,11 @@ public class  LegacyBitmapFont {
 		textureDimensionsStore.clear();
 	}
 
+	public void setShadow(final int shadow) {
+		this.shadow = shadow;
+	}
+
+	public int getShadow() {
+		return this.shadow;
+	}
 }

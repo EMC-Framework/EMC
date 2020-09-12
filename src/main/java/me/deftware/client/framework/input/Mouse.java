@@ -40,7 +40,7 @@ public class Mouse {
 	}
 
 	public static boolean isButtonDown(int button) {
-		return GLFW.glfwGetMouseButton(net.minecraft.client.Minecraft.getInstance().window.getHandle(), button) == 1;
+		return GLFW.glfwGetMouseButton(Minecraft.getInstance().mainWindow.getHandle(), button) == 1;
 	}
 
 	public static double getMouseX() {

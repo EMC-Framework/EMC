@@ -1,12 +1,16 @@
 package me.deftware.client.framework.event.events;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import me.deftware.client.framework.entity.block.TileEntity;
 import me.deftware.client.framework.event.Event;
 
-public @AllArgsConstructor class EventTileBlockRemoved extends Event {
+public class EventTileBlockRemoved extends Event {
+	private final TileEntity blockEntity;
 
-	private final @Getter TileEntity blockEntity;
+	public EventTileBlockRemoved(final TileEntity blockEntity) {
+		this.blockEntity = blockEntity;
+	}
 
+	public TileEntity getBlockEntity() {
+		return this.blockEntity;
+	}
 }

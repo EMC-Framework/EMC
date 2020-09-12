@@ -1,6 +1,5 @@
 package me.deftware.client.framework.render.shader;
 
-import lombok.Getter;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
 import org.lwjgl.opengl.GL20;
 
@@ -8,10 +7,11 @@ import org.lwjgl.opengl.GL20;
  * @author Deftware
  */
 public class Shader {
-
-	private final @Getter IShaderProvider provider;
-	private @Getter boolean bound = false;
-	private @Getter int program, vs, fs;
+	private final IShaderProvider provider;
+	private boolean bound = false;
+	private int program;
+	private int vs;
+	private int fs;
 
 	public Shader(IShaderProvider provider) {
 		this.provider = provider;
@@ -47,7 +47,8 @@ public class Shader {
 		}
 	}
 
-	public void setupUniforms() { }
+	public void setupUniforms() {
+	}
 
 	public int getUniform(String name) {
 		return GL20.glGetUniformLocation(program, name);
@@ -63,4 +64,23 @@ public class Shader {
 		bound = false;
 	}
 
+	public IShaderProvider getProvider() {
+		return this.provider;
+	}
+
+	public boolean isBound() {
+		return this.bound;
+	}
+
+	public int getProgram() {
+		return this.program;
+	}
+
+	public int getVs() {
+		return this.vs;
+	}
+
+	public int getFs() {
+		return this.fs;
+	}
 }

@@ -2,7 +2,6 @@ package me.deftware.mixin.mixins.render;
 
 import me.deftware.client.framework.FrameworkConstants;
 import me.deftware.client.framework.chat.ChatMessage;
-import me.deftware.client.framework.entity.types.EntityPlayer;
 import me.deftware.client.framework.render.shader.ShaderTarget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -12,6 +11,7 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityEnderChest;
 import net.minecraft.tileentity.TileEntityLockableLoot;

@@ -22,7 +22,7 @@ public abstract class MixinNetworkManager implements IMixinNetworkManager {
     protected abstract void dispatchPacket(Packet<?> p_dispatchPacket_1_, GenericFutureListener<? extends Future<? super Void>> p_dispatchPacket_2_);
 
     @Redirect(method = "channelRead0", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/NetworkManager;processPacket(Lnet/minecraft/network/Packet;Lnet/minecraft/network/INetHandler;)V"))
-    private void channelRead0(Packet<INetHandler> packet, INetHandler listener) {
+    private void channelRead0(Packet<?> packet, INetHandler listener) {
         if (packet instanceof SPacketTimeUpdate) {
             World.updateTime();
         }

@@ -1,7 +1,6 @@
 package me.deftware.client.framework.gui;
 
 import com.google.common.collect.Iterables;
-import lombok.Getter;
 import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.gui.minecraft.ScreenInstance;
 import me.deftware.client.framework.gui.widgets.Button;
@@ -18,7 +17,6 @@ import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
-
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -30,14 +28,14 @@ import java.util.Objects;
  * @author Deftware
  */
 public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen {
-
 	public GuiScreen parent;
 	protected boolean escGoesBack = true;
 	protected ScreenInstance parentInstance;
 	protected HashMap<String, Texture> textureHashMap = new HashMap<>();
-	protected @Getter List<Tuple<Integer, Integer, ChatMessage>> compiledText = new ArrayList<>();
+	protected List<Tuple<Integer, Integer, ChatMessage>> compiledText = new ArrayList<>();
 
-	public GuiScreen() { }
+	public GuiScreen() {
+	}
 
 	public GuiScreen(ScreenInstance parent) {
 		this.parentInstance = parent;
@@ -83,7 +81,7 @@ public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen {
 		onDraw(mouseX, mouseY, partialTicks);
 		super.render(mouseX, mouseY, partialTicks);
 		for (Tuple<Integer, Integer, ChatMessage> text : compiledText) {
-			fontRenderer.drawStringWithShadow(text.getRight().toString(true), text.getLeft(), text.getMiddle(), 0xFFFFFF);
+			fontRenderer.drawStringWithShadow(text.getRight().toString(true), text.getLeft(), text.getMiddle(), 16777215);
 		}
 		onPostDraw(mouseX, mouseY, partialTicks);
 	}
@@ -229,19 +227,21 @@ public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen {
 		this.setFocused(listener);
 	}
 
-	protected void onGuiClose() { }
+	protected void onGuiClose() {
+	}
 
 	protected abstract void onInitGui();
 
-	protected void onPostDraw(int mouseX, int mouseY, float partialTicks) { }
+	protected void onPostDraw(int mouseX, int mouseY, float partialTicks) {
+	}
 
 	protected abstract void onDraw(int mouseX, int mouseY, float partialTicks);
 
 	protected abstract void onUpdate();
 
 	/**
-	 * @see GLFW#GLFW_RELEASE
-	 * @see GLFW#GLFW_PRESS
+	 * @see GLFW#GLFW_RELEASE
+	 * @see GLFW#GLFW_PRESS
 	 * @see GLFW#GLFW_REPEAT
 	 */
 	protected abstract void onKeyPressed(int keyCode, int action, int modifiers);
@@ -254,5 +254,9 @@ public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen {
 
 	protected boolean onGoBackRequested() {
 		return false;
+	}
+
+	public List<Tuple<Integer, Integer, ChatMessage>> getCompiledText() {
+		return this.compiledText;
 	}
 }

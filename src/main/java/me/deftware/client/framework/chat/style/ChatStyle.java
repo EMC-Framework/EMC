@@ -1,28 +1,28 @@
 package me.deftware.client.framework.chat.style;
 
-import lombok.Getter;
-import lombok.Setter;
 import me.deftware.client.framework.chat.event.ChatClickEvent;
 import me.deftware.client.framework.chat.event.ChatHoverEvent;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextFormatting;
-
 import java.util.regex.Pattern;
 
 /**
  * @author Deftware
  */
 public class ChatStyle {
-
-	private static @Getter final char formattingChar = 167;
-
-	private @Getter @Setter ChatColors.ChatColor color;
-	private @Getter @Setter boolean bold, underline, italic, obfuscated, strikethrough;
-	private @Getter @Setter ChatClickEvent clickEvent;
-	private @Getter @Setter ChatHoverEvent hoverEvent;
+	private static final char formattingChar = 167;
+	private ChatColors.ChatColor color;
+	private boolean bold;
+	private boolean underline;
+	private boolean italic;
+	private boolean obfuscated;
+	private boolean strikethrough;
+	private ChatClickEvent clickEvent;
+	private ChatHoverEvent hoverEvent;
 
 	public void fromCode(String code) {
-		if (code.equalsIgnoreCase("r")) { // Reset
+		if (code.equalsIgnoreCase("r")) {
+			// Reset
 			color = null;
 			bold = underline = italic = obfuscated = strikethrough = false;
 			return;
@@ -31,12 +31,13 @@ public class ChatStyle {
 			if (formatting.toString().substring(1).equalsIgnoreCase(code)) {
 				// Formatting
 				if (formatting == TextFormatting.BOLD) bold = true;
-				else if (formatting == TextFormatting.UNDERLINE) underline = true;
-				else if (formatting == TextFormatting.ITALIC) italic = true;
-				else if (formatting == TextFormatting.OBFUSCATED) obfuscated = true;
-				else if (formatting == TextFormatting.STRIKETHROUGH) strikethrough = true;
+				 else if (formatting == TextFormatting.UNDERLINE) underline = true;
+				 else if (formatting == TextFormatting.ITALIC) italic = true;
+				 else if (formatting == TextFormatting.OBFUSCATED) obfuscated = true;
+				 else if (formatting == TextFormatting.STRIKETHROUGH) strikethrough = true;
+				 else 
 				// Color
-				else color = new ChatColors.ChatColor(formatting);
+				color = new ChatColors.ChatColor(formatting);
 				break;
 			}
 		}
@@ -44,7 +45,7 @@ public class ChatStyle {
 
 	public void fromStyle(Style style) {
 		// Color
-		if(style.getColor() != null) color = new ChatColors.ChatColor(style.getColor());
+		if (style.getColor() != null) color = new ChatColors.ChatColor(style.getColor());
 		// Formatting
 		bold = style.getBold();
 		underline = style.getUnderlined();
@@ -59,12 +60,7 @@ public class ChatStyle {
 	public Style getStyle() {
 		Style style = new Style();
 		// Formatting
-		style = style
-				.setBold(bold)
-				.setItalic(italic)
-				.setUnderlined(underline)
-				.setObfuscated(obfuscated)
-				.setStrikethrough(strikethrough);
+		style = style.setBold(bold).setItalic(italic).setUnderlined(underline).setObfuscated(obfuscated).setStrikethrough(strikethrough);
 		// Color
 		if (color != null) style = color.applyToStyle(style);
 		// Other
@@ -107,4 +103,71 @@ public class ChatStyle {
 		return Pattern.compile("(?i)" + formattingChar + "[0-9A-FK-OR]").matcher(input).replaceAll("");
 	}
 
+	public static char getFormattingChar() {
+		return ChatStyle.formattingChar;
+	}
+
+	public ChatColors.ChatColor getColor() {
+		return this.color;
+	}
+
+	public void setColor(final ChatColors.ChatColor color) {
+		this.color = color;
+	}
+
+	public boolean isBold() {
+		return this.bold;
+	}
+
+	public boolean isUnderline() {
+		return this.underline;
+	}
+
+	public boolean isItalic() {
+		return this.italic;
+	}
+
+	public boolean isObfuscated() {
+		return this.obfuscated;
+	}
+
+	public boolean isStrikethrough() {
+		return this.strikethrough;
+	}
+
+	public void setBold(final boolean bold) {
+		this.bold = bold;
+	}
+
+	public void setUnderline(final boolean underline) {
+		this.underline = underline;
+	}
+
+	public void setItalic(final boolean italic) {
+		this.italic = italic;
+	}
+
+	public void setObfuscated(final boolean obfuscated) {
+		this.obfuscated = obfuscated;
+	}
+
+	public void setStrikethrough(final boolean strikethrough) {
+		this.strikethrough = strikethrough;
+	}
+
+	public ChatClickEvent getClickEvent() {
+		return this.clickEvent;
+	}
+
+	public void setClickEvent(final ChatClickEvent clickEvent) {
+		this.clickEvent = clickEvent;
+	}
+
+	public ChatHoverEvent getHoverEvent() {
+		return this.hoverEvent;
+	}
+
+	public void setHoverEvent(final ChatHoverEvent hoverEvent) {
+		this.hoverEvent = hoverEvent;
+	}
 }

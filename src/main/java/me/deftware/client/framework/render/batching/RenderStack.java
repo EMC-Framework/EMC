@@ -1,34 +1,30 @@
 package me.deftware.client.framework.render.batching;
 
-import lombok.Getter;
-import lombok.Setter;
 import me.deftware.client.framework.gui.GuiScreen;
 import me.deftware.client.framework.maps.SettingsMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.opengl.GL11;
-
 import java.awt.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * new RenderStackImpl()
- * optional glLineWidth
- * .begin().setupMatrix()
- * optional .glColor(color).
- * call to draw functions
- * .end();
- *
+ * new RenderStackImpl()
+ * optional glLineWidth
+ * .begin().setupMatrix()
+ * optional .glColor(color).
+ * call to draw functions
+ * .end();
+ *
  * @author Deftware
  */
 @SuppressWarnings("unchecked")
 public abstract class RenderStack<T> {
-
-	public static @Getter boolean inCustomMatrix = false;
+	public static boolean inCustomMatrix = false;
 	public static final CopyOnWriteArrayList<Runnable> scaleChangeCallback = new CopyOnWriteArrayList<>();
 
 	public static float getScale() {
-		return (float) SettingsMap.getValue(SettingsMap.MapKeys.EMC_SETTINGS, "RENDER_SCALE", 1.0f);
+		return (float) SettingsMap.getValue(SettingsMap.MapKeys.EMC_SETTINGS, "RENDER_SCALE", 1.0F);
 	}
 
 	public static void setScale(float scale) {
@@ -36,8 +32,14 @@ public abstract class RenderStack<T> {
 		scaleChangeCallback.forEach(Runnable::run);
 	}
 
-	protected @Setter boolean customMatrix = true, locked = false, running = false;
-	protected float red = 1f, green = 1f, blue = 1f, alpha = 1f, lineWidth = 2f;
+	protected boolean customMatrix = true;
+	protected boolean locked = false;
+	protected boolean running = false;
+	protected float red = 1.0F;
+	protected float green = 1.0F;
+	protected float blue = 1.0F;
+	protected float alpha = 1.0F;
+	protected float lineWidth = 2.0F;
 
 	public T setupMatrix() {
 		GL11.glPushMatrix();
@@ -110,11 +112,11 @@ public abstract class RenderStack<T> {
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-		GL11.glOrtho(0.0D, GuiScreen.getDisplayWidth(), GuiScreen.getDisplayHeight(), 0.0D, 1000.0D, 3000.0D);
+		GL11.glOrtho(0.0, GuiScreen.getDisplayWidth(), GuiScreen.getDisplayHeight(), 0.0, 1000.0, 3000.0);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glLoadIdentity();
 		GL11.glTranslatef(0.0F, 0.0F, -2000.0F);
-		GL11.glColor4f(1f, 1f, 1f, 1f);
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
 	public static void reloadMinecraftMatrix() {
@@ -122,10 +124,25 @@ public abstract class RenderStack<T> {
 		// Revert back to Minecraft
 		GlStateManager.matrixMode(5889);
 		GlStateManager.loadIdentity();
-		GlStateManager.ortho(0.0D, Minecraft.getInstance().mainWindow.getFramebufferWidth() / Minecraft.getInstance().mainWindow.getGuiScaleFactor(), Minecraft.getInstance().mainWindow.getFramebufferHeight() / Minecraft.getInstance().mainWindow.getGuiScaleFactor(), 0.0D, 1000.0D, 3000.0D);
+		GlStateManager.ortho(0.0, Minecraft.getInstance().mainWindow.getFramebufferWidth() / Minecraft.getInstance().mainWindow.getGuiScaleFactor(), Minecraft.getInstance().mainWindow.getFramebufferHeight() / Minecraft.getInstance().mainWindow.getGuiScaleFactor(), 0.0, 1000.0, 3000.0);
 		GlStateManager.matrixMode(5888);
 		GlStateManager.loadIdentity();
 		GlStateManager.translatef(0.0F, 0.0F, -2000.0F);
 	}
 
+	public static boolean isInCustomMatrix() {
+		return RenderStack.inCustomMatrix;
+	}
+
+	public void setCustomMatrix(final boolean customMatrix) {
+		this.customMatrix = customMatrix;
+	}
+
+	public void setLocked(final boolean locked) {
+		this.locked = locked;
+	}
+
+	public void setRunning(final boolean running) {
+		this.running = running;
+	}
 }

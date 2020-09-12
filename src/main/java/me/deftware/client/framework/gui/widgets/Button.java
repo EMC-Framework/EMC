@@ -1,7 +1,5 @@
 package me.deftware.client.framework.gui.widgets;
 
-import lombok.Getter;
-import lombok.Setter;
 import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.gui.GuiEventListener;
 import me.deftware.mixin.imp.IMixinGuiButton;
@@ -12,8 +10,7 @@ import net.minecraft.client.gui.GuiButton;
  * @author Deftware
  */
 public abstract class Button extends GuiButton implements GuiEventListener {
-
-	private @Getter @Setter boolean shouldPlaySound = true;
+	private boolean shouldPlaySound = true;
 
 	public Button(int id, int x, int y, ChatMessage buttonText) {
 		super(id, x, y, 200, 20, buttonText.toString(true));
@@ -116,9 +113,17 @@ public abstract class Button extends GuiButton implements GuiEventListener {
 			Thread.currentThread().setName("Button reset thread");
 			try {
 				Thread.sleep(ms);
-			} catch (InterruptedException ignored) { }
+			} catch (InterruptedException ignored) {
+			}
 			setButtonText(text);
 		}).start();
 	}
 
+	public boolean isShouldPlaySound() {
+		return this.shouldPlaySound;
+	}
+
+	public void setShouldPlaySound(final boolean shouldPlaySound) {
+		this.shouldPlaySound = shouldPlaySound;
+	}
 }

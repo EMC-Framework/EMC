@@ -1,17 +1,13 @@
 package me.deftware.client.framework.chat.event;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
 import net.minecraft.util.text.event.ClickEvent;
 
 /**
  * @author Deftware
  */
-public @AllArgsConstructor class ChatClickEvent {
-
-	private @Getter final EventType eventType;
-	private @Setter String data;
+public class ChatClickEvent {
+	private final EventType eventType;
+	private String data;
 
 	@SuppressWarnings("ConstantConditions")
 	public ClickEvent toEvent() {
@@ -29,16 +25,10 @@ public @AllArgsConstructor class ChatClickEvent {
 		return new ChatClickEvent(type, event.getValue());
 	}
 
-	public @AllArgsConstructor enum EventType {
 
-		OPEN_URL("open_url"),
-		OPEN_FILE("open_file"),
-		RUN_COMMAND("run_command"),
-		SUGGEST_COMMAND("suggest_command"),
-		CHANGE_PAGE("change_page"),
-		COPY_TO_CLIPBOARD("copy_to_clipboard");
-
-		private @Getter final String name;
+	public enum EventType {
+		OPEN_URL("open_url"), OPEN_FILE("open_file"), RUN_COMMAND("run_command"), SUGGEST_COMMAND("suggest_command"), CHANGE_PAGE("change_page"), COPY_TO_CLIPBOARD("copy_to_clipboard");
+		private final String name;
 
 		public ClickEvent.Action toAction() {
 			for (ClickEvent.Action action : ClickEvent.Action.values()) {
@@ -49,6 +39,25 @@ public @AllArgsConstructor class ChatClickEvent {
 			return null;
 		}
 
+		private EventType(final String name) {
+			this.name = name;
+		}
+
+		public String getName() {
+			return this.name;
+		}
 	}
 
+	public ChatClickEvent(final EventType eventType, final String data) {
+		this.eventType = eventType;
+		this.data = data;
+	}
+
+	public EventType getEventType() {
+		return this.eventType;
+	}
+
+	public void setData(final String data) {
+		this.data = data;
+	}
 }

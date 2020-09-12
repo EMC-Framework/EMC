@@ -1,23 +1,18 @@
 package me.deftware.client.framework.render.shader;
 
-import lombok.Getter;
-import lombok.Setter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.shader.Framebuffer;
-
 import java.util.function.Predicate;
 
 /**
  * @author Deftware
  */
 public enum ShaderTarget {
-
 	PLAYER, ENTITY, DROPPED, STORAGE;
-
-	private @Setter @Getter Predicate<String> predicate = type -> true;
-	private @Getter @Setter boolean enabled = false;
-	private @Getter Framebuffer framebuffer;
-	private @Setter Shader shader;
+	private Predicate<String> predicate = type -> true;
+	private boolean enabled = false;
+	private Framebuffer framebuffer;
+	private Shader shader;
 
 	public void renderBuffer() {
 		if (framebuffer != null && shader != null && enabled) {
@@ -43,4 +38,27 @@ public enum ShaderTarget {
 		if (framebuffer != null) framebuffer.createBindFramebuffer(width, height);
 	}
 
+	public void setPredicate(final Predicate<String> predicate) {
+		this.predicate = predicate;
+	}
+
+	public Predicate<String> getPredicate() {
+		return this.predicate;
+	}
+
+	public boolean isEnabled() {
+		return this.enabled;
+	}
+
+	public void setEnabled(final boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public Framebuffer getFramebuffer() {
+		return this.framebuffer;
+	}
+
+	public void setShader(final Shader shader) {
+		this.shader = shader;
+	}
 }

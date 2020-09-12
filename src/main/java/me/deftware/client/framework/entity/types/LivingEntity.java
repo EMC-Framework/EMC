@@ -11,13 +11,12 @@ public class LivingEntity extends Entity {
 		super(entity);
 	}
 
-	@Override
-	public net.minecraft.entity.EntityLiving getMinecraftEntity() {
+	public net.minecraft.entity.EntityLiving getLivingEntity() {
 		return (net.minecraft.entity.EntityLiving) entity;
 	}
 
 	public float getHealth() {
-		return getMinecraftEntity().getHealth();
+		return getLivingEntity().getHealth();
 	}
 
 	public float getHealthPercentage() {
@@ -25,37 +24,37 @@ public class LivingEntity extends Entity {
 	}
 
 	public float getMaxHealth() {
-		return getMinecraftEntity().getMaxHealth();
+		return getLivingEntity().getMaxHealth();
 	}
 
 	public void setMovementMultiplier(float multiplier) {
-		getMinecraftEntity().jumpMovementFactor = multiplier;
+		getLivingEntity().jumpMovementFactor = multiplier;
 	}
 
 	public float getMovementMultiplier() {
-		return getMinecraftEntity().jumpMovementFactor;
+		return getLivingEntity().jumpMovementFactor;
 	}
 
 	public int getHurtTime() {
-		return getMinecraftEntity().hurtTime;
+		return getLivingEntity().hurtTime;
 	}
 
 	public boolean isClimbing() {
-		return getMinecraftEntity().isOnLadder();
+		return getLivingEntity().isOnLadder();
 	}
 
 	public float getMoveStrafing() {
-		return getMinecraftEntity().moveStrafing;
+		return getLivingEntity().moveStrafing;
 	}
 
 	public float getMoveForward() {
-		return getMinecraftEntity().moveForward;
+		return getLivingEntity().moveForward;
 	}
 
 	public void setAlive(boolean flag) {
-		getMinecraftEntity().removed = false;
-		getMinecraftEntity().setHealth(20f);
-		getMinecraftEntity().setPosition(getPosX(), getPosY(), getPosZ());
+		getLivingEntity().removed = false;
+		getLivingEntity().setHealth(20f);
+		getLivingEntity().setPosition(getPosX(), getPosY(), getPosZ());
 	}
 	
 }

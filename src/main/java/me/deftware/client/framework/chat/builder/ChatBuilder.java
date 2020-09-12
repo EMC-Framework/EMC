@@ -1,6 +1,5 @@
 package me.deftware.client.framework.chat.builder;
 
-import lombok.Getter;
 import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.chat.ChatSection;
 import me.deftware.client.framework.chat.LiteralChatMessage;
@@ -14,16 +13,13 @@ import net.minecraft.client.resources.I18n;
  * @author Deftware
  */
 public class ChatBuilder {
-
-	private @Getter static final char chevron = 187;
-
+	private static final char chevron = 187;
 	protected ChatMessage message = new ChatMessage();
-	private @Getter ChatSection currentSection = new ChatSection("");
+	private ChatSection currentSection = new ChatSection("");
 
 	/*
 		Functions
 	 */
-
 	public ChatBuilder append() {
 		message.getSectionList().add(currentSection);
 		currentSection = new ChatSection("");
@@ -46,15 +42,13 @@ public class ChatBuilder {
 	}
 
 	public ChatBuilder withPrefix() {
-		message.join(new ChatBuilder().withText("EMC").withColor(ChatColors.AQUA).setBold().append().withSpace()
-				.withChar(chevron).withColor(ChatColors.GRAY).append().withSpace().build());
+		message.join(new ChatBuilder().withText("EMC").withColor(ChatColors.AQUA).setBold().append().withSpace().withChar(chevron).withColor(ChatColors.GRAY).append().withSpace().build());
 		return this;
 	}
 
 	/*
 		Text
 	 */
-
 	public ChatBuilder withCodeFormattedString(String text, char formattingChar) {
 		message.join(new ChatMessage().fromString(text, formattingChar));
 		return this;
@@ -66,7 +60,7 @@ public class ChatBuilder {
 	}
 
 	public ChatBuilder withChar(char _char) {
-		currentSection.setText(new String(new char[]{ _char }));
+		currentSection.setText(new String(new char[] {_char}));
 		return this;
 	}
 
@@ -99,7 +93,6 @@ public class ChatBuilder {
 	/*
 		Color
 	 */
-
 	public ChatBuilder withColor(ChatColors color) {
 		return withColor(color.getChatColor());
 	}
@@ -125,7 +118,6 @@ public class ChatBuilder {
 	/*
 		Style
 	 */
-
 	public ChatBuilder withStyle(ChatStyle style) {
 		currentSection.setStyle(style);
 		return this;
@@ -159,7 +151,6 @@ public class ChatBuilder {
 	/*
 		Event
 	 */
-
 	public ChatBuilder withClickEvent(ChatClickEvent event) {
 		currentSection.getStyle().setClickEvent(event);
 		return this;
@@ -170,4 +161,11 @@ public class ChatBuilder {
 		return this;
 	}
 
+	public static char getChevron() {
+		return ChatBuilder.chevron;
+	}
+
+	public ChatSection getCurrentSection() {
+		return this.currentSection;
+	}
 }

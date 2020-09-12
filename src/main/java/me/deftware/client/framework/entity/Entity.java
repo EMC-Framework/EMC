@@ -99,7 +99,7 @@ public class Entity {
 	}
 
 	public boolean isSpectating() {
-		if (this instanceof net.minecraft.entity.player.EntityPlayer) {
+		if (this instanceof EntityPlayer) {
 			return ((net.minecraft.entity.player.EntityPlayer) entity).isSpectator();
 		}
 		return false;

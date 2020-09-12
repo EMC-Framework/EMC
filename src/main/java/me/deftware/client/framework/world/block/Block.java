@@ -1,7 +1,5 @@
 package me.deftware.client.framework.world.block;
 
-import lombok.Getter;
-import lombok.Setter;
 import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.item.IItem;
 import me.deftware.client.framework.math.position.BlockPosition;
@@ -17,10 +15,9 @@ import net.minecraft.util.registry.IRegistry;
  * @author Deftware
  */
 public class Block implements IItem {
-
 	protected final net.minecraft.block.Block block;
 	protected BlockPosition blockPosition;
-	private @Setter @Getter BlockState locationBlockState = null;
+	private BlockState locationBlockState = null;
 
 	public static Block newInstance(net.minecraft.block.Block block) {
 		if (block instanceof BlockCrops) {
@@ -54,8 +51,7 @@ public class Block implements IItem {
 	@Override
 	public boolean equals(Object object) {
 		if (object instanceof Block) {
-			return ((Block) object).getMinecraftBlock() == getMinecraftBlock() ||
-					((Block) object).getMinecraftBlock().getTranslationKey().equalsIgnoreCase(getMinecraftBlock().getTranslationKey());
+			return ((Block) object).getMinecraftBlock() == getMinecraftBlock() || ((Block) object).getMinecraftBlock().getTranslationKey().equalsIgnoreCase(getMinecraftBlock().getTranslationKey());
 		}
 		return false;
 	}
@@ -101,4 +97,11 @@ public class Block implements IItem {
 		return getMinecraftBlock().asItem();
 	}
 
+	public void setLocationBlockState(final BlockState locationBlockState) {
+		this.locationBlockState = locationBlockState;
+	}
+
+	public BlockState getLocationBlockState() {
+		return this.locationBlockState;
+	}
 }
