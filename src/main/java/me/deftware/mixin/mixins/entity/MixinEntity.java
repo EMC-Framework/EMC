@@ -42,20 +42,19 @@ public abstract class MixinEntity implements IMixinEntity {
     @Shadow
     protected abstract boolean getFlag(int id);
 
-    @Shadow
-    protected Vec3d movementMultiplier;
+    @Shadow protected boolean isInWeb;
 
     @SuppressWarnings("ConstantConditions")
-    @Inject(method = "changeLookDirection", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "rotateTowards", at = @At("HEAD"), cancellable = true)
     public void changeLookDirection(double cursorX, double cursorY, CallbackInfo ci) {
         if ((Object) this == net.minecraft.client.Minecraft.getInstance().player && CameraEntityMan.isActive()) {
-            CameraEntityMan.fakePlayer.changeLookDirection(cursorX, cursorY);
-            CameraEntityMan.fakePlayer.setHeadYaw(CameraEntityMan.fakePlayer.yaw);
+            CameraEntityMan.fakePlayer.rotateTowards(cursorX, cursorY);
+            CameraEntityMan.fakePlayer.setRotationYawHead(CameraEntityMan.fakePlayer.rotationYaw);
             ci.cancel();
         }
     }
 
-    @Redirect(method = "updateMovementInFluid", at = @At(value = "INVOKE",
+    @Redirect(method = "handleFluidAcceleration", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/entity/Entity;setVelocity(Lnet/minecraft/util/math/Vec3d;)V",
             opcode = 182))
     private void applyFluidVelocity(Entity entity, Vec3d velocity) {
@@ -93,41 +92,32 @@ public abstract class MixinEntity implements IMixinEntity {
         return (self instanceof ClientPlayerEntity && self == net.minecraft.client.Minecraft.getInstance().player) && (noClip || noClipCheck);
     }
 
-    @Inject(method = "slowMovement", at = @At(value = "TAIL"), cancellable = true)
-    private void onSlowMovement(BlockState state, Vec3d multiplier, CallbackInfo ci) {
-        if (((Object) this) == net.minecraft.client.Minecraft.getInstance().player) {
-            EventSlowdown event = new EventSlowdown(EventSlowdown.SlowdownType.Web);
-            event.broadcast();
-            if (event.isCanceled()) {
-                Vec3d cobSlowness = new Vec3d(0.25D, 0.05000000074505806D, 0.25D);
-                if (multiplier.x == cobSlowness.x && multiplier.y == cobSlowness.y && multiplier.z == cobSlowness.z) {
-                    this.movementMultiplier = Vec3d.ZERO;
-                    ci.cancel();
-                }
-            }
+    @Redirect(method = "move", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;isInWeb:Z", opcode = 180))
+    private boolean webCheck(Entity self) {
+        EventSlowdown event = new EventSlowdown(EventSlowdown.SlowdownType.Web);
+        event.broadcast();
+        if (event.isCanceled()) {
+            isInWeb = false;
         }
+        return isInWeb;
     }
 
     @Redirect(method = "move", at = @At(value = "INVOKE", target = "net/minecraft/entity/Entity.isSneaking()Z", opcode = 180, ordinal = 0))
     private boolean sneakingCheck(Entity self) {
-        if (self == net.minecraft.client.Minecraft.getInstance().player) {
-            EventSneakingCheck event = new EventSneakingCheck(isSneaking());
-            event.broadcast();
-            if (event.isSneaking()) {
-                return true;
-            }
+        EventSneakingCheck event = new EventSneakingCheck(isSneaking());
+        event.broadcast();
+        if (event.isSneaking()) {
+            return true;
         }
         return getFlag(1);
     }
 
-    @Inject(method = "setVelocityClient", at = @At("HEAD"), cancellable = true)
-    private void onSetVelocityClient(double x, double y, double z, CallbackInfo ci) {
-        if ((Object) this == net.minecraft.client.Minecraft.getInstance().player) {
-            EventKnockback event = new EventKnockback(x, y, z);
-            event.broadcast();
-            if (event.isCanceled()) {
-                ci.cancel();
-            }
+    @Inject(method = "setVelocity", at = @At("HEAD"), cancellable = true)
+    public void setVelocityClient(double double_1, double double_2, double double_3, CallbackInfo ci) {
+        EventKnockback event = new EventKnockback(double_1, double_2, double_3);
+        event.broadcast();
+        if (event.isCanceled()) {
+            ci.cancel();
         }
     }
 

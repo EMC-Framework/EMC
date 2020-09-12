@@ -1,18 +1,23 @@
 package me.deftware.mixin.mixins.input;
 
 import me.deftware.client.framework.event.events.EventSlowdown;
-import net.minecraft.client.input.KeyboardInput;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.MovementInputFromOptions;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
-@Mixin(KeyboardInput.class)
+@Mixin(MovementInputFromOptions.class)
 public class MixinMovementInputFromOptions {
 
-    @ModifyVariable(method = "tick", at = @At("HEAD"), ordinal = 0)
-    public boolean onTick(boolean slowDown) {
+    @Redirect(method = "updatePlayerMoveState", at = @At(value = "FIELD", target = "Lnet/minecraft/util/MovementInputFromOptions;sneak:Z", opcode = 180))
+    private boolean isSneaking(MovementInputFromOptions self) {
         EventSlowdown event = new EventSlowdown(EventSlowdown.SlowdownType.Sneak);
         event.broadcast();
-        return !event.isCanceled() && slowDown;
+        if (event.isCanceled()) {
+            return false;
+        }
+        return Minecraft.getInstance().gameSettings.keyBindSneak.isKeyDown();
     }
+
 }

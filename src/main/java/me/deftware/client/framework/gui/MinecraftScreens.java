@@ -3,12 +3,12 @@ package me.deftware.client.framework.gui;
 import me.deftware.client.framework.helper.ScreenHelper;
 import me.deftware.client.framework.util.ResourceUtils;
 import me.deftware.client.framework.util.types.Pair;
-import me.deftware.mixin.imp.IMixinTitleScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.gui.GuiWorldSelection;
+import net.minecraft.realms.RealmsBridge;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -40,7 +40,7 @@ public enum MinecraftScreens {
 
 	@SuppressWarnings("ConstantConditions")
 	public static void openRealms() {
-		((IMixinTitleScreen) new GuiMainMenu()).switchToRealmsPub();
+		new RealmsBridge().switchToRealms(Minecraft.getInstance().currentScreen);
 	}
 
 }

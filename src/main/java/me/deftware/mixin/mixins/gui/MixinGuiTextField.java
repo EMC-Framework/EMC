@@ -2,13 +2,9 @@ package me.deftware.mixin.mixins.gui;
 
 import me.deftware.client.framework.event.events.EventChatboxType;
 import me.deftware.mixin.imp.IMixinGuiTextField;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiTextField;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -18,12 +14,8 @@ import java.awt.*;
 import java.lang.ref.WeakReference;
 import java.util.function.BiFunction;
 
-@Mixin(TextFieldWidget.class)
-public abstract class MixinGuiTextField extends AbstractButtonWidget implements IMixinGuiTextField {
-
-    public MixinGuiTextField(int x, int y, String message) {
-        super(x, y, 200, 20, message);
-    }
+@Mixin(GuiTextField.class)
+public abstract class MixinGuiTextField  implements IMixinGuiTextField {
 
     @Unique
     private boolean overlay = false, passwordField = false;
@@ -32,37 +24,48 @@ public abstract class MixinGuiTextField extends AbstractButtonWidget implements 
     private String overlayText = "";
 
     @Shadow
-    private int maxLength;
-
-    @Shadow
-    private int focusedTicks;
+    private int maxStringLength;
 
     @Shadow
     private String suggestion;
 
-    @Shadow
-    private boolean focused;
+    @Shadow private int cursorPosition;
 
     @Shadow
-    private int cursorMin;
+    private int cursorCounter;
 
     @Shadow
-    private int cursorMax;
+    private int selectionEnd;
 
     @Shadow
-    private int field_2103;
+    private int lineScrollOffset;
+
+    @Mutable
+    @Final
+    @Shadow
+    private int height;
+
+    @Mutable
+    @Final
+    @Shadow
+    private int width;
+
+    @Shadow
+    public int x;
+
+    @Shadow
+    public int y;
 
     @Shadow
     @Final
-    private TextRenderer textRenderer;
-
-    @Shadow
-    private BiFunction<String, Integer, String> renderTextProvider;
-
-    @Shadow
-    private boolean editable;
+    private FontRenderer fontRenderer;
 
     @Shadow public abstract String getText();
+
+    @Shadow public abstract boolean isFocused();
+
+    @Shadow
+    private BiFunction<String, Integer, String> textFormatter;
 
     @Override
     public int getHeight() {
@@ -75,23 +78,23 @@ public abstract class MixinGuiTextField extends AbstractButtonWidget implements 
     }
 
     @Override
-    public TextRenderer getFontRendererInstance() {
-        return textRenderer;
+    public FontRenderer getFontRendererInstance() {
+        return fontRenderer;
     }
 
     @Override
     public int getCursorCounter() {
-        return focusedTicks;
+        return cursorCounter;
     }
 
     @Override
     public int getSelectionEnd() {
-        return cursorMin;
+        return selectionEnd;
     }
 
     @Override
     public int getLineScrollOffset() {
-        return field_2103;
+        return lineScrollOffset;
     }
 
     @Override
@@ -130,21 +133,21 @@ public abstract class MixinGuiTextField extends AbstractButtonWidget implements 
     }
 
     @SuppressWarnings("ConstantConditions")
-    @Inject(method = "renderButton", at = @At("RETURN"))
+    @Inject(method = "drawTextField", at = @At("RETURN"))
     public void drawTextFieldReturn(int mouseX, int mouseY, float tickDelta, CallbackInfo ci) {
         if (overlay) {
             String currentText = getText();
             int currentWidth = ((IMixinGuiTextField) this).getFontRendererInstance().getStringWidth(currentText);
             int x = isFocused() ? ((IMixinGuiTextField) this).getX() + 4 : ((IMixinGuiTextField) this).getX();
             int y = isFocused() ? ((IMixinGuiTextField) this).getY() + (((IMixinGuiTextField) this).getHeight() - 8) / 2 : ((IMixinGuiTextField) this).getY();
-            ((IMixinGuiTextField) this).getFontRendererInstance().drawWithShadow(overlayText, x + currentWidth - 3, y - 2, Color.GRAY.getRGB());
+            ((IMixinGuiTextField) this).getFontRendererInstance().drawStringWithShadow(overlayText, x + currentWidth - 3, y - 2, Color.GRAY.getRGB());
             WeakReference<EventChatboxType> event = new WeakReference<>(new EventChatboxType(getText(), overlayText));
             event.get().broadcast();
             overlayText = event.get().getOverlay();
         }
     }
 
-    @Redirect(method = "renderButton", at = @At(value = "INVOKE", target = "Ljava/util/function/BiFunction;apply(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"))
+    @Redirect(method = "drawTextField", at = @At(value = "INVOKE", target = "Ljava/util/function/BiFunction;apply(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"))
     public Object render(BiFunction<String, Integer, String> biFunction, Object text, Object index) {
         String data = (String) text;
         if (passwordField) {
@@ -154,26 +157,11 @@ public abstract class MixinGuiTextField extends AbstractButtonWidget implements 
             }
             data = hidden.toString();
         }
-        return renderTextProvider.apply(data, (int) index);
+        return biFunction.apply(data, (int) index);
     }
 
     public int getMaxTextLength() {
-        return maxLength;
-    }
-
-    @Override
-    public boolean getHasBorder() {
-        return focused;
-    }
-
-    @Override
-    public boolean getIsEditable() {
-        return editable;
-    }
-
-    @Override
-    public BiFunction<String, Integer, String> getRenderTextProvider() {
-        return renderTextProvider;
+        return maxStringLength;
     }
 
     @Override
@@ -183,7 +171,7 @@ public abstract class MixinGuiTextField extends AbstractButtonWidget implements 
 
     @Override
     public int getCursorMax() {
-        return cursorMax;
+        return cursorPosition;
     }
 
     @Override

@@ -2,6 +2,7 @@ package me.deftware.client.framework.render.camera.entity;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.input.Input;
 import net.minecraft.client.input.KeyboardInput;
 import net.minecraft.client.network.OtherClientPlayerEntity;
@@ -15,7 +16,7 @@ import java.util.Objects;
  * @author wagyourtail, Deftware
  */
 @SuppressWarnings("EntityConstructor")
-public class CameraEntity extends OtherClientPlayerEntity {
+public class CameraEntity extends EntityOtherPlayerMP {
 
 	public Input input;
 

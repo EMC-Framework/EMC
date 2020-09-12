@@ -1,11 +1,11 @@
 package me.deftware.mixin.mixins.network;
 
 import me.deftware.mixin.imp.IMixinCPacketPlayer;
-import net.minecraft.server.network.packet.PlayerMoveC2SPacket;
+import net.minecraft.network.play.client.CPacketPlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(PlayerMoveC2SPacket.class)
+@Mixin(CPacketPlayer.class)
 public class MixinCPacketPlayer implements IMixinCPacketPlayer {
 
     @Shadow
@@ -15,7 +15,7 @@ public class MixinCPacketPlayer implements IMixinCPacketPlayer {
     protected boolean onGround;
 
     @Shadow
-    protected boolean changePosition;
+    private boolean moving;
 
     @Override
     public boolean isOnGround() {
@@ -29,12 +29,12 @@ public class MixinCPacketPlayer implements IMixinCPacketPlayer {
 
     @Override
     public boolean isMoving() {
-        return changePosition;
+        return moving;
     }
 
     @Override
     public void setMoving(boolean state) {
-        changePosition = state;
+        moving = state;
     }
 
     @Override

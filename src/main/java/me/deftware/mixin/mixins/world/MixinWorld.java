@@ -4,8 +4,7 @@ import me.deftware.client.framework.entity.block.TileEntity;
 import me.deftware.client.framework.event.events.EventTileBlockRemoved;
 import me.deftware.client.framework.world.classifier.BlockClassifier;
 import me.deftware.mixin.imp.IMixinWorld;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,10 +24,10 @@ import java.util.List;
 public abstract class MixinWorld implements IMixinWorld {
 
 	@Shadow
-	public abstract BlockEntity getBlockEntity(BlockPos pos);
+	public abstract net.minecraft.tileentity.TileEntity getTileEntity(BlockPos pos);
 
 	@Unique
-	public final HashMap<BlockEntity, TileEntity> emcTileEntities = new HashMap<>();
+	public final HashMap<net.minecraft.tileentity.TileEntity, TileEntity> emcTileEntities = new HashMap<>();
 
 	@Override
 	@Unique
@@ -36,36 +35,36 @@ public abstract class MixinWorld implements IMixinWorld {
 		return emcTileEntities.values();
 	}
 
-	@Inject(method = "addBlockEntity", at = @At("TAIL"))
-	public void addBlockEntity(BlockEntity blockEntity, CallbackInfoReturnable<Boolean> ci) {
+	@Inject(method = "addTileEntity", at = @At("TAIL"))
+	public void addBlockEntity(net.minecraft.tileentity.TileEntity blockEntity, CallbackInfoReturnable<Boolean> ci) {
 		emcTileEntities.put(blockEntity, TileEntity.newInstance(blockEntity));
 	}
 
-	@Redirect(method = "tickBlockEntities", at = @At(value = "INVOKE", target = "Ljava/util/List;removeAll(Ljava/util/Collection;)Z", ordinal = 1))
-	private boolean onRemoveEntityIf(List<BlockEntity> list, Collection<BlockEntity> entities) {
-		for (BlockEntity entity : entities) {
+	@Redirect(method = "tickEntities", at = @At(value = "INVOKE", target = "Ljava/util/List;removeAll(Ljava/util/Collection;)Z", ordinal = 1))
+	private boolean onRemoveEntityIf(List<net.minecraft.tileentity.TileEntity> list, Collection<net.minecraft.tileentity.TileEntity> entities) {
+		for (net.minecraft.tileentity.TileEntity entity : entities) {
 			new EventTileBlockRemoved(emcTileEntities.remove(entity)).broadcast();
 		}
 		return list.removeAll(entities);
 	}
 
 	@SuppressWarnings("RedundantCast")
-	@Redirect(method = "tickBlockEntities", at = @At(value = "INVOKE", target = "Ljava/util/List;remove(Ljava/lang/Object;)Z"))
-	private boolean onRemoveEntity(List<BlockEntity> list, Object entity) {
-		new EventTileBlockRemoved(emcTileEntities.remove((BlockEntity) entity)).broadcast();
-		return list.remove((BlockEntity) entity);
+	@Redirect(method = "tickEntities", at = @At(value = "INVOKE", target = "Ljava/util/List;remove(Ljava/lang/Object;)Z"))
+	private boolean onRemoveEntity(List<net.minecraft.tileentity.TileEntity> list, Object entity) {
+		new EventTileBlockRemoved(emcTileEntities.remove((net.minecraft.tileentity.TileEntity) entity)).broadcast();
+		return list.remove((net.minecraft.tileentity.TileEntity) entity);
 	}
 
-	@Inject(method = "removeBlockEntity", at = @At("HEAD"))
+	@Inject(method = "removeTileEntity", at = @At("HEAD"))
 	public void removeBlockEntity(BlockPos pos, CallbackInfo info) {
-		BlockEntity blockEntity = this.getBlockEntity(pos);
+		net.minecraft.tileentity.TileEntity blockEntity = this.getTileEntity(pos);
 		if (blockEntity != null) {
 			new EventTileBlockRemoved(emcTileEntities.remove(blockEntity)).broadcast();
 		}
 	}
 
-	@Inject(method = "setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;I)Z", at = @At("TAIL"))
-	public void setBlockState(BlockPos pos, BlockState state, int flags, CallbackInfoReturnable<Boolean> info) {
+	@Inject(method = "setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/state/IBlockState;I)Z", at = @At("TAIL"))
+	public void setBlockState(BlockPos pos, IBlockState state, int flags, CallbackInfoReturnable<Boolean> info) {
 		if (state.isAir()) {
 			BlockClassifier.getClassifiers().forEach(blockClassifier -> {
 				if (blockClassifier.getClassifiedBlocks().containsKey(pos.toLong())) {

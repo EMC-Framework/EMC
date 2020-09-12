@@ -1,13 +1,13 @@
 package me.deftware.mixin.mixins.gui;
 
 import me.deftware.client.framework.event.events.EventDisconnected;
-import net.minecraft.client.gui.menu.DisconnectedScreen;
+import net.minecraft.client.gui.GuiDisconnected;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(DisconnectedScreen.class)
+@Mixin(GuiDisconnected.class)
 public class MixinGuiDisconnected {
 
     @Inject(method = "<init>*", at = @At("RETURN"))
