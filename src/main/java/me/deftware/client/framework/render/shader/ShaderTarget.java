@@ -3,7 +3,7 @@ package me.deftware.client.framework.render.shader;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gl.GlFramebuffer;
+import net.minecraft.client.shader.Framebuffer;
 
 import java.util.function.Predicate;
 
@@ -16,7 +16,7 @@ public enum ShaderTarget {
 
 	private @Setter @Getter Predicate<String> predicate = type -> true;
 	private @Getter @Setter boolean enabled = false;
-	private @Getter GlFramebuffer framebuffer;
+	private @Getter Framebuffer framebuffer;
 	private @Setter Shader shader;
 
 	public void renderBuffer() {
@@ -25,22 +25,22 @@ public enum ShaderTarget {
 			shader.bind();
 			shader.setupUniforms();
 			// Draw buffer
-			framebuffer.draw(net.minecraft.client.Minecraft.getInstance().window.getFramebufferWidth(), net.minecraft.client.Minecraft.getInstance().window.getFramebufferHeight(), false);
+			framebuffer.framebufferRenderExt(Minecraft.getInstance().getFramebuffer().framebufferWidth, Minecraft.getInstance().getFramebuffer().framebufferHeight, false);
 			// Unbind shader
 			shader.unbind();
 		}
 	}
 
 	public void init() {
-		framebuffer = new GlFramebuffer(net.minecraft.client.Minecraft.getInstance().getFramebuffer().viewWidth, net.minecraft.client.Minecraft.getInstance().getFramebuffer().viewHeight, true, Minecraft.IS_SYSTEM_MAC);
+		framebuffer = new Framebuffer(Minecraft.getInstance().getFramebuffer().framebufferWidth, Minecraft.getInstance().getFramebuffer().framebufferHeight, true);
 	}
 
 	public void clear() {
-		if (framebuffer != null) framebuffer.clear(Minecraft.IS_SYSTEM_MAC);
+		if (framebuffer != null) framebuffer.framebufferClear();
 	}
 
 	public void onResized(int width, int height) {
-		if (framebuffer != null) framebuffer.resize(width, height, Minecraft.IS_SYSTEM_MAC);
+		if (framebuffer != null) framebuffer.createBindFramebuffer(width, height);
 	}
 
 }

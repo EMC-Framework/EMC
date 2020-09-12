@@ -1,6 +1,7 @@
 package me.deftware.client.framework.registry;
 
 import me.deftware.client.framework.item.effect.StatusEffect;
+import net.minecraft.potion.Potion;
 
 import java.util.HashMap;
 import java.util.Optional;
@@ -9,7 +10,7 @@ import java.util.stream.Stream;
 /**
  * @author Deftware
  */
-public enum StatusEffectRegistry implements IRegistry<StatusEffect, net.minecraft.entity.effect.StatusEffect> {
+public enum StatusEffectRegistry implements IRegistry<StatusEffect, Potion> {
 
 	INSTANCE;
 
@@ -21,7 +22,7 @@ public enum StatusEffectRegistry implements IRegistry<StatusEffect, net.minecraf
 	}
 
 	@Override
-	public void register(String id, net.minecraft.entity.effect.StatusEffect object) {
+	public void register(String id, Potion object) {
 		items.putIfAbsent(id, new StatusEffect(object));
 	}
 

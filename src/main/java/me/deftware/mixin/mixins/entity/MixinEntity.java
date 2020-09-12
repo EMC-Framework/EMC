@@ -5,6 +5,7 @@ import me.deftware.client.framework.maps.SettingsMap;
 import me.deftware.client.framework.math.vector.Vector3d;
 import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
 import me.deftware.mixin.imp.IMixinEntity;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
@@ -13,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @SuppressWarnings("ConstantConditions")
 @Mixin(Entity.class)
@@ -25,10 +27,10 @@ public abstract class MixinEntity implements IMixinEntity {
     protected boolean onGround;
 
     @Shadow
-    public float pitch;
+    public float rotationPitch;
 
     @Shadow
-    public float yaw;
+    public float rotationYaw;
 
     @Shadow
     protected boolean inPortal;
@@ -54,6 +56,16 @@ public abstract class MixinEntity implements IMixinEntity {
         }
     }
 
+    @Inject(method = "isEntityInsideOpaqueBlock", at = @At(value = "HEAD"), cancellable = true)
+    public void isInWall(CallbackInfoReturnable<Boolean> cir) {
+        EventAnimation event = new EventAnimation(EventAnimation.AnimationType.Wall);
+        event.broadcast();
+        if (event.isCanceled()) {
+            cir.setReturnValue(false);
+        }
+    }
+
+    /* FIXME
     @Redirect(method = "handleFluidAcceleration", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/entity/Entity;setVelocity(Lnet/minecraft/util/math/Vec3d;)V",
             opcode = 182))
@@ -66,9 +78,9 @@ public abstract class MixinEntity implements IMixinEntity {
         } else {
             entity.setVelocity(velocity);
         }
-    }
+    }*/
 
-    @Inject(method = "pushAwayFrom", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "applyEntityCollision", at = @At("HEAD"), cancellable = true)
     public void pushAwayFrom(Entity entity, CallbackInfo info) {
         if (((Object) this) == net.minecraft.client.Minecraft.getInstance().player) {
             if (new EventEntityPush(me.deftware.client.framework.entity.Entity.newInstance(entity)).broadcast().isCanceled()) {
@@ -77,19 +89,10 @@ public abstract class MixinEntity implements IMixinEntity {
         }
     }
 
-    @Inject(method = "getPose", at = @At(value = "TAIL"), cancellable = true)
-    private void onGetPose(CallbackInfoReturnable<EntityPose> cir) {
-        if (((Object) this) == net.minecraft.client.Minecraft.getInstance().player) {
-            if ((boolean) SettingsMap.getValue(SettingsMap.MapKeys.ENTITY_SETTINGS, "SWIMMING_MODE_OVERRIDE", false)) {
-                cir.setReturnValue(EntityPose.SWIMMING);
-            }
-        }
-    }
-
     @Redirect(method = "move", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;noClip:Z", opcode = 180))
     private boolean noClipCheck(Entity self) {
         boolean noClipCheck = (boolean) SettingsMap.getValue(SettingsMap.MapKeys.ENTITY_SETTINGS, "NOCLIP", false);
-        return (self instanceof ClientPlayerEntity && self == net.minecraft.client.Minecraft.getInstance().player) && (noClip || noClipCheck);
+        return noClip || noClipCheck && self instanceof EntityPlayerSP;
     }
 
     @Redirect(method = "move", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;isInWeb:Z", opcode = 180))

@@ -2,10 +2,10 @@ package me.deftware.mixin.mixins.render;
 
 import me.deftware.client.framework.event.events.EventStructureLocation;
 import me.deftware.client.framework.math.position.DoubleBlockPosition;
-import net.minecraft.client.render.FirstPersonRenderer;
+import net.minecraft.client.renderer.FirstPersonRenderer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -32,22 +32,22 @@ public class MixinHeldItemRenderer {
         return EventStructureLocation.StructureType.OtherMapIcon;
     }
     
-    @Inject(method = "renderFirstPersonMap", at = @At("HEAD"))
+    @Inject(method = "renderMapFirstPerson(Lnet/minecraft/item/ItemStack;)V", at = @At("HEAD"))
     private void renderFirstPersonMap(ItemStack stack, CallbackInfo info) {
-        if (copiedStack != null && ItemStack.areTagsEqual(copiedStack, stack)) return;
+        if (copiedStack != null && ItemStack.areItemsEqual(copiedStack, stack)) return;
         copiedStack = stack.copy();
-        CompoundTag compoundTag = stack.getTag();
-        if (compoundTag != null && compoundTag.containsKey("Decorations", 9)) {
+        NBTTagCompound compoundTag = stack.getTag();
+        if (compoundTag != null && compoundTag.contains("Decorations", 9)) {
             // Try and Get Decoration X and Z
             String mapName = compoundTag.getCompound("display").getString("Name");
             final EventStructureLocation.StructureType structure = getStructure(mapName);
-            ListTag icons = compoundTag.getList("Decorations", 10);
+            NBTTagList icons = compoundTag.getList("Decorations", 10);
            
             icons.forEach((icon) -> {
-                if (icon instanceof CompoundTag) {
+                if (icon instanceof NBTTagCompound) {
                     EventStructureLocation event = new EventStructureLocation(
-                        new DoubleBlockPosition(((CompoundTag) icon).getDouble("x"), 0,
-                            ((CompoundTag) icon).getDouble("z")),
+                        new DoubleBlockPosition(((NBTTagCompound) icon).getDouble("x"), 0,
+                            ((NBTTagCompound) icon).getDouble("z")),
                         structure);
                     event.broadcast();
                 }

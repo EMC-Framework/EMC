@@ -2,18 +2,17 @@ package me.deftware.mixin.mixins.item;
 
 import me.deftware.client.framework.registry.EnchantmentRegistry;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Enchantments.class)
+@Mixin(Enchantment.class)
 public class MixinEnchantments {
 
 	@Inject(method = "register", at = @At("HEAD"))
-	private static void register(String name, Enchantment enchantment, CallbackInfoReturnable<Enchantment> ci) {
-		EnchantmentRegistry.INSTANCE.register(name, enchantment);
+	private static void register(String nameIn, Enchantment enchantmentIn, CallbackInfo ci) {
+		EnchantmentRegistry.INSTANCE.register(nameIn, enchantmentIn);
 	}
 
 }

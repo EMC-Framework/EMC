@@ -1,7 +1,7 @@
 package me.deftware.mixin.mixins.render;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import me.deftware.client.framework.maps.SettingsMap;
+import net.minecraft.client.renderer.GlStateManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
