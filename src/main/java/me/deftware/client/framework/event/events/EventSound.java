@@ -2,18 +2,19 @@ package me.deftware.client.framework.event.events;
 
 import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.event.Event;
-import net.minecraft.client.sound.SoundInstance;
+import net.minecraft.client.audio.ISound;
 
 public class EventSound extends Event {
-    private SoundInstance instance;
+
+    private ISound instance;
     private ChatMessage translationVal;
 
-    public EventSound(SoundInstance instance, ChatMessage translationVal) {
+    public EventSound(ISound instance, ChatMessage translationVal) {
         this.instance = instance;
     }
 
     public String getSoundId() {
-        return instance.getId().toString();
+        return instance.getSoundLocation().toString();
     }
 
     public ChatMessage getSoundName() {
@@ -31,4 +32,5 @@ public class EventSound extends Event {
     public double getZ() {
         return instance.getZ();
     }
+
 }

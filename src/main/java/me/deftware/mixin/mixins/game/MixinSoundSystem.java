@@ -2,10 +2,10 @@ package me.deftware.mixin.mixins.game;
 
 import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.event.events.EventSound;
-import net.minecraft.client.sound.SoundInstance;
-import net.minecraft.client.sound.SoundManager;
-import net.minecraft.client.sound.SoundSystem;
-import net.minecraft.network.chat.Component;
+import net.minecraft.client.audio.ISound;
+import net.minecraft.client.audio.SoundHandler;
+import net.minecraft.client.audio.SoundManager;
+import net.minecraft.util.text.ITextComponent;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -13,20 +13,20 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(SoundSystem.class)
+@Mixin(SoundManager.class)
 public class MixinSoundSystem {
 
     @Shadow
     @Final
-    private SoundManager loader;
+    private SoundHandler sndHandler;
 
     /*
     * inject after checks to make sure it's a real sound and is playable,
     * this also means we don't have to worry about getSoundSet being null.
     */
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/sound/SoundInstance;getVolume()F"), method = "play(Lnet/minecraft/client/sound/SoundInstance;)V", cancellable = true)
-    public void onPlay(SoundInstance instance, CallbackInfo info) {
-        Component soundName = instance.getSoundSet(loader).getSubtitle();
+    @Inject(at = @At(value = "INVOKE", target = "Lpaulscode/sound/SoundSystem;getMasterVolume()F"), method = "play(Lnet/minecraft/client/audio/ISound;)V", cancellable = true)
+    public void onPlay(ISound instance, CallbackInfo info) {
+        ITextComponent soundName = instance.createAccessor(sndHandler).getSubtitle();
         EventSound event = new EventSound(instance, soundName == null ? null : new ChatMessage().fromText(soundName));
         event.broadcast();
         if (event.isCanceled()) {
