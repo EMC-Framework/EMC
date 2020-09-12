@@ -47,7 +47,7 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
     private int rightClickDelayTimer;
 
     @Shadow
-    private int fpsCounter;
+    private static int debugFPS;
 
     @Shadow
     @Final
@@ -81,7 +81,7 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
 
     @Override
     public int getFPS() {
-        return fpsCounter;
+        return debugFPS;
     }
 
     @Inject(method = "init()V", at = @At("TAIL"))

@@ -13,6 +13,7 @@ import java.awt.*;
  * @author Deftware
  */
 public class FontRenderStack extends RenderStack<FontRenderStack> {
+
 	private int offset = 0;
 	private boolean scaled;
 	private boolean matrix = true;
@@ -124,4 +125,5 @@ public class FontRenderStack extends RenderStack<FontRenderStack> {
 	public void setMatrix(final boolean matrix) {
 		this.matrix = matrix;
 	}
+
 }

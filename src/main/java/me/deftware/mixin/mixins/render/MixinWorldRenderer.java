@@ -100,7 +100,7 @@ public abstract class MixinWorldRenderer {
 		return false;
 	}
 
-	@Redirect(method = "renderEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/RenderManager;renderEntityStatic(Lnet/minecraft/entity/Entity;FZ)V", opcode = 180, ordinal = 0))
+	@Redirect(method = "renderEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/RenderManager;renderEntityStatic(Lnet/minecraft/entity/Entity;FZ)V", opcode = 180, ordinal = 1))
 	private void doRenderEntity(RenderManager renderManager, Entity entity, float partialTicks, boolean bl) {
 		boolean enabled;
 		// Player
@@ -131,6 +131,5 @@ public abstract class MixinWorldRenderer {
 			mc.getFramebuffer().bindFramebuffer(false);
 		}
 	}
-
 
 }

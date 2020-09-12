@@ -2,12 +2,14 @@ package me.deftware.mixin.mixins.render;
 
 import me.deftware.client.framework.chat.hud.ChatHud;
 import me.deftware.client.framework.event.events.*;
+import me.deftware.client.framework.helper.GlStateHelper;
 import me.deftware.client.framework.helper.WindowHelper;
 import me.deftware.client.framework.minecraft.Minecraft;
 import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
 import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
 import me.deftware.mixin.imp.IMixinEntityRenderer;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -43,6 +45,7 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
             renderEvent.accept(partialTicks);
             // FIXME: Transform camera
             renderEventNoBobbing.accept(partialTicks);
+            GlStateManager.enableLighting();
         }
     }
 

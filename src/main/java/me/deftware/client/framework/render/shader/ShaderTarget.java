@@ -8,6 +8,7 @@ import java.util.function.Predicate;
  * @author Deftware
  */
 public enum ShaderTarget {
+
 	PLAYER, ENTITY, DROPPED, STORAGE;
 	private Predicate<String> predicate = type -> true;
 	private boolean enabled = false;
@@ -20,7 +21,7 @@ public enum ShaderTarget {
 			shader.bind();
 			shader.setupUniforms();
 			// Draw buffer
-			framebuffer.framebufferRenderExt(Minecraft.getInstance().getFramebuffer().framebufferWidth, Minecraft.getInstance().getFramebuffer().framebufferHeight, false);
+			framebuffer.framebufferRenderExt(Minecraft.getInstance().mainWindow.getFramebufferWidth(), Minecraft.getInstance().mainWindow.getFramebufferHeight(), false);
 			// Unbind shader
 			shader.unbind();
 		}
@@ -61,4 +62,5 @@ public enum ShaderTarget {
 	public void setShader(final Shader shader) {
 		this.shader = shader;
 	}
+
 }
