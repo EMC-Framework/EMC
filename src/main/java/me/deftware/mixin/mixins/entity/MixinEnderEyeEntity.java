@@ -21,13 +21,14 @@ public class MixinEnderEyeEntity {
     @Unique
     private static ThrowData secondThrow = null;
 
+    /* FIXME
     @Inject(method = "<init>(Lnet/minecraft/world/World;)V", at = @At("HEAD"))
     public void onInit(CallbackInfo ci) {
         if (firstThrow != null && secondThrow != null) {
             firstThrow = null;
             secondThrow = null;
         }
-    }
+    }*/
 
     @Inject(method = "moveTowards", at = @At("HEAD"))
     public void moveTowards(BlockPos pos, CallbackInfo ci) {
