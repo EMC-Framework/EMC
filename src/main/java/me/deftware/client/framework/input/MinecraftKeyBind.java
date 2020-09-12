@@ -2,28 +2,28 @@ package me.deftware.client.framework.input;
 
 import me.deftware.mixin.imp.IMixinKeyBinding;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.options.KeyBinding;
-import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.client.util.InputMappings;
 
 /**
  * @author Deftware
  */
 public enum MinecraftKeyBind {
 
-	SNEAK(net.minecraft.client.Minecraft.getInstance().options.keySneak),
-	USE_ITEM(net.minecraft.client.Minecraft.getInstance().options.keyUse),
-	JUMP(net.minecraft.client.Minecraft.getInstance().options.keyJump),
-	SPRINT(net.minecraft.client.Minecraft.getInstance().options.keySprint),
-	FORWARD(net.minecraft.client.Minecraft.getInstance().options.keyForward),
-	BACK(net.minecraft.client.Minecraft.getInstance().options.keyBack),
-	LEFT(net.minecraft.client.Minecraft.getInstance().options.keyLeft),
-	RIGHT(net.minecraft.client.Minecraft.getInstance().options.keyRight),
-	ATTACK(net.minecraft.client.Minecraft.getInstance().options.keyAttack);
+	SNEAK(Minecraft.getInstance().gameSettings.keyBindSneak),
+	USEITEM(Minecraft.getInstance().gameSettings.keyBindUseItem),
+	JUMP(Minecraft.getInstance().gameSettings.keyBindJump),
+	SPRINT(Minecraft.getInstance().gameSettings.keyBindSprint),
+	FORWARD(Minecraft.getInstance().gameSettings.keyBindForward),
+	BACK(Minecraft.getInstance().gameSettings.keyBindBack),
+	LEFT(Minecraft.getInstance().gameSettings.keyBindLeft),
+	RIGHT(Minecraft.getInstance().gameSettings.keyBindRight),
+	ATTACK(Minecraft.getInstance().gameSettings.keyBindAttack);
 
 	private final KeyBinding bind;
 
 	public boolean isHeld() {
-		return InputUtil.isKeyPressed(net.minecraft.client.Minecraft.getInstance().window.getHandle(), ((IMixinKeyBinding) this.bind).getInput().getKeyCode());
+		return InputMappings.isKeyDown(((IMixinKeyBinding) this.bind).getInput().getKeyCode());
 	}
 
 	public boolean isPressed() {

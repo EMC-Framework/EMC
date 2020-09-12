@@ -1,9 +1,9 @@
 package me.deftware.client.framework.input;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Screen;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.util.InputMappings;
+import net.minecraft.util.Util;
 import org.lwjgl.glfw.GLFW;
 
 import java.lang.reflect.Field;
@@ -51,28 +51,28 @@ public class Keyboard {
 	}
 
 	public static String getClipboardString() {
-		return net.minecraft.client.Minecraft.getInstance().keyboard.getClipboard();
+		return Minecraft.getInstance().keyboardListener.getClipboardString();
 	}
 
 	public static void setClipboardString(String copyText) {
-		net.minecraft.client.Minecraft.getInstance().keyboard.setClipboard(copyText);
+		Minecraft.getInstance().keyboardListener.setClipboardString(copyText);
 	}
 
 	public static boolean isKeyDown(int key) {
 		if (key <= 2) return false;
-		return InputUtil.isKeyPressed(net.minecraft.client.Minecraft.getInstance().window.getHandle(), key);
+		return InputMappings.isKeyDown(key);
 	}
 
 	public static void openLink(String url) {
-		SystemUtil.getOperatingSystem().open(url);
+		Util.getOSType().openURI(url);
 	}
 
 	public static boolean isCtrlPressed() {
-		return Screen.hasControlDown();
+		return GuiScreen.isCtrlKeyDown();
 	}
 
 	public static boolean isShiftPressed() {
-		return Screen.hasShiftDown();
+		return GuiScreen.isShiftKeyDown();
 	}
 
 }
