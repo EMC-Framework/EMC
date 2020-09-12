@@ -68,6 +68,6 @@ public abstract class MixinGuiChat {
                 }
             }
         }
-
     }
+
 }

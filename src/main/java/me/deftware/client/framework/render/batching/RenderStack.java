@@ -9,13 +9,20 @@ import java.awt.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * new RenderStackImpl()
- * optional glLineWidth
- * .begin().setupMatrix()
- * optional .glColor(color).
- * call to draw functions
- * .end();
- *
+ * new RenderStackImpl()
+
+ * optional glLineWidth
+
+ * .begin().setupMatrix()
+
+ * optional .glColor(color).
+
+ * call to draw functions
+
+ * .end();
+
+ *
+
  * @author Deftware
  */
 @SuppressWarnings("unchecked")
@@ -117,6 +124,7 @@ public abstract class RenderStack<T> {
 		GL11.glLoadIdentity();
 		GL11.glTranslatef(0.0F, 0.0F, -2000.0F);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		GlStateManager.clear(256);
 	}
 
 	public static void reloadMinecraftMatrix() {
@@ -128,6 +136,7 @@ public abstract class RenderStack<T> {
 		GlStateManager.matrixMode(5888);
 		GlStateManager.loadIdentity();
 		GlStateManager.translatef(0.0F, 0.0F, -2000.0F);
+		GlStateManager.clear(256);
 	}
 
 	public static boolean isInCustomMatrix() {

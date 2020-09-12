@@ -77,6 +77,7 @@ public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen {
 
 	@Override
 	public void render(int mouseX, int mouseY, float partialTicks) {
+		GlStateManager.enableBlend();
 		Mouse.updateMousePosition();
 		onDraw(mouseX, mouseY, partialTicks);
 		super.render(mouseX, mouseY, partialTicks);
@@ -240,8 +241,10 @@ public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen {
 	protected abstract void onUpdate();
 
 	/**
-	 * @see GLFW#GLFW_RELEASE
-	 * @see GLFW#GLFW_PRESS
+	 * @see GLFW#GLFW_RELEASE
+
+	 * @see GLFW#GLFW_PRESS
+
 	 * @see GLFW#GLFW_REPEAT
 	 */
 	protected abstract void onKeyPressed(int keyCode, int action, int modifiers);
