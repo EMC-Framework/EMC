@@ -43,6 +43,8 @@ public class CameraEntity extends EntityOtherPlayerMP {
 
 	@Override
 	public void tick() {
+		super.tick();
+
 		this.setVelocity(0, 0, 0);
 
 		input.updatePlayerMoveState();
@@ -55,7 +57,7 @@ public class CameraEntity extends EntityOtherPlayerMP {
 
 		motion = motion.add(0, 2 * upDown, 0);
 		motion = motion.add(strafe.x * input.moveStrafe, 0, strafe.z * input.moveStrafe);
-		motion = motion.add(forward.x * input.moveStrafe, 0, forward.z * input.moveStrafe);
+		motion = motion.add(forward.x * input.moveForward, 0, forward.z * input.moveForward);
 
 		this.setPosition(this.posX + motion.x, this.posY + motion.y, this.posZ + motion.z);
 	}

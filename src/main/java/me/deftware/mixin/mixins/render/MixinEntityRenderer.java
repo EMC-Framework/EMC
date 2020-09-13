@@ -8,6 +8,8 @@ import me.deftware.client.framework.minecraft.Minecraft;
 import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
 import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
 import me.deftware.mixin.imp.IMixinEntityRenderer;
+import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -26,6 +28,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.function.Consumer;
@@ -43,12 +46,15 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     protected abstract void loadShader(ResourceLocation p_loadShader_1_);
 
     @Shadow private double cameraZoom;
+
     @Shadow private double cameraYaw;
+
     @Shadow private double cameraPitch;
 
     @Shadow protected abstract double getFOVModifier(float partialTicks, boolean useFOVSetting);
 
     @Shadow @Final private net.minecraft.client.Minecraft mc;
+
     @Shadow private float farPlaneDistance;
 
     @Shadow protected abstract void orientCamera(float partialTicks);
@@ -111,22 +117,6 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
         loadShader(location);
     }
 
-    /* FIXME
-    @Redirect(method = "updateTargetedEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ProjectileUtil;rayTrace(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/BoundingBox;Ljava/util/function/Predicate;D)Lnet/minecraft/util/hit/EntityHitResult;"))
-    private EntityHitResult onRayTraceDistance(Entity entity, Vec3d vec3d, Vec3d vec3d2, BoundingBox box, Predicate<Entity> predicate, double distance) {
-        return ProjectileUtil.rayTrace(entity, vec3d, vec3d2, box, predicate, (boolean) SettingsMap.getValue(SettingsMap.MapKeys.ENTITY_SETTINGS, "BYPASS_REACH_LIMIT", false) ? 0d : distance);
-    }
-
-    @Redirect(method = "updateTargetedEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/Vec3d;squaredDistanceTo(Lnet/minecraft/util/math/Vec3d;)D", ordinal = 1))
-    private double onDistance(Vec3d self, Vec3d vec3d) {
-        return (boolean) SettingsMap.getValue(SettingsMap.MapKeys.ENTITY_SETTINGS, "BYPASS_REACH_LIMIT", false) ? 2D : self.squaredDistanceTo(vec3d);
-    }
-
-    @Redirect(method = "updateTargetedEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerplayerController;hasExtendedReach()Z"))
-    private boolean onTest(ClientPlayerplayerController clientPlayerplayerController) {
-        return !(boolean) SettingsMap.getValue(SettingsMap.MapKeys.ENTITY_SETTINGS, "BYPASS_REACH_LIMIT", false) && clientPlayerplayerController.hasExtendedReach();
-    }*/
-
     @Override
     public float getFovMultiplier() {
         return fovModifierHand;
@@ -156,9 +146,9 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
         }
     }
 
-    @ModifyArg(method = "updateCameraAndRender(FJ)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/AbstractClientPlayer;isSpectator()Z"))
-    public boolean isSpectator(boolean spectator) {
-        return spectator || CameraEntityMan.isActive();
+    @Redirect(method = "updateCameraAndRender(FJ)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;isSpectator()Z", opcode = 180))
+    public boolean isSpectator(EntityPlayerSP entityPlayerSP) {
+        return entityPlayerSP.isSpectator() || CameraEntityMan.isActive();
     }
 
 }

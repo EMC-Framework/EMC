@@ -90,7 +90,7 @@ public class ResourceUtils {
      * @return Boolean depending on Mod ID and MC Version/Modloader
      */
     public static boolean hasSpecificMod(String modId) {
-        return false; // FIXME?
+        return false;
     }
 }
 
