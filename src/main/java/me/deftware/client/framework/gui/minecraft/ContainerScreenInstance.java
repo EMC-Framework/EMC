@@ -4,8 +4,8 @@ import me.deftware.client.framework.inventory.Slot;
 import me.deftware.mixin.imp.IMixinGuiContainer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.gui.inventory.GuiInventory;
-import net.minecraft.inventory.InventoryEnderChest;
+import net.minecraft.inventory.ContainerChest;
+import net.minecraft.util.text.TextComponentTranslation;
 
 /**
  * @author Deftware
@@ -17,11 +17,12 @@ public class ContainerScreenInstance extends ScreenInstance {
 
 	public ContainerScreenInstance(GuiScreen screen) {
 		super(screen);
-		/* FIXME
-		if (screen.getTitle() instanceof TranslatableComponent) {
-			String title = ((TranslatableComponent) screen.getTitle()).getKey();
-			type = title.equalsIgnoreCase("container.enderchest") ? Type.ENDER_CHEST : Type.OTHER;
-		}*/
+		if (((GuiContainer) screen).inventorySlots instanceof ContainerChest) {
+			TextComponentTranslation component = (TextComponentTranslation) ((ContainerChest) ((GuiContainer) screen).inventorySlots).getLowerChestInventory().getDisplayName();
+			if (component.getKey().equalsIgnoreCase("container.enderchest")) {
+				type = Type.ENDER_CHEST;
+			}
+		}
 	}
 
 	public Slot getHoveredSlot() {
