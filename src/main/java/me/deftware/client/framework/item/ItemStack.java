@@ -12,24 +12,25 @@ import me.deftware.client.framework.registry.EnchantmentRegistry;
 import me.deftware.client.framework.util.types.Pair;
 import me.deftware.client.framework.world.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.init.Enchantments;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.PotionUtils;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author Deftware
@@ -90,8 +91,7 @@ public class ItemStack {
 	}
 
 	public float getStackAttackDamage() {
-		//return EnchantmentHelper.getAttackDamage(itemStack, EntityGroup.DEFAULT); FIXME
-		return 1;
+		return EnchantmentHelper.getEnchantmentModifierDamage(Collections.singleton(itemStack), DamageSource.GENERIC);
 	}
 
 	public boolean isEnchantable() {
@@ -199,18 +199,22 @@ public class ItemStack {
 
 	public void renderItemIntoGUI(int x, int y) {
 		getRenderItem().renderItemIntoGUI(getMinecraftItemStack(), x, y);
+		RenderHelper.disableStandardItemLighting();
 	}
 
 	public void renderItemOverlays(int x, int y) {
 		getRenderItem().renderItemOverlays(Minecraft.getInstance().fontRenderer, getMinecraftItemStack(), x, y);
+		RenderHelper.disableStandardItemLighting();
 	}
 
 	public void renderItemAndEffectIntoGUI(int x, int y) {
 		getRenderItem().renderItemAndEffectIntoGUI(getMinecraftItemStack(), x, y);
+		RenderHelper.disableStandardItemLighting();
 	}
 
 	public void renderItemOverlayIntoGUI(int x, int y, String text) {
 		getRenderItem().renderItemOverlayIntoGUI(net.minecraft.client.Minecraft.getInstance().fontRenderer, getMinecraftItemStack(), x, y, text);
+		RenderHelper.disableStandardItemLighting();
 	}
 
 	public boolean hasNbt() {

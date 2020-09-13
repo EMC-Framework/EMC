@@ -1,5 +1,9 @@
 package me.deftware.client.framework.item.types;
 
+import net.minecraft.inventory.EntityEquipmentSlot;
+
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author Deftware
@@ -11,17 +15,14 @@ public class WeaponItem extends ToolItem {
 	}
 
 	public float getAttackDamage() {
-		/*if (item instanceof MiningToolItem) { FIXME
-			final UUID MODIFIER_DAMAGE = UUID.fromString("CB3F55D3-645C-4F38-A497-9C13A33DB5CF");
-			AtomicReference<Float> attackDamage = new AtomicReference<>((float) 0);
-			item.getAttributeModifiers(EntityEquipmentSlot.MAINHAND).get(SharedMonsterAttributes.ATTACK_DAMAGE).forEach(e -> {
-				if (e.getId().equals(MODIFIER_DAMAGE)) {
-					attackDamage.updateAndGet(v -> (float) (v + e.getAmount()));
-				}
-			});
-			return attackDamage.get();
-		}*/
-		return 0;
+		final UUID MODIFIER_DAMAGE = UUID.fromString("CB3F55D3-645C-4F38-A497-9C13A33DB5CF");
+		AtomicReference<Float> attackDamage = new AtomicReference<>((float) 0);
+		item.getAttributeModifiers(EntityEquipmentSlot.MAINHAND).forEach((key, value) -> {
+			if (value.getID().equals(MODIFIER_DAMAGE)) {
+				attackDamage.updateAndGet(v -> (float) (v + value.getAmount()));
+			}
+		});
+		return attackDamage.get();
 	}
 
 }

@@ -24,7 +24,6 @@
     "game.MixinMinecraft",
     "game.MixinSoundSystem",
     "game.MixinTimer",
-    "gui.MixinCreativeInventoryScreen",
     "gui.MixinDebugHud",
     "gui.MixinGuiButton",
     "gui.MixinGuiChat",

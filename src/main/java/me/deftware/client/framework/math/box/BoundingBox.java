@@ -85,7 +85,6 @@ public class BoundingBox {
 
 	@Nullable
 	public Vector3d rayTrace(Vector3d min, Vector3d max) {
-		// FIXME: Verify this
 		RayTraceResult vec3d = getMinecraftBox().calculateIntercept(min.getMinecraftVector(), max.getMinecraftVector());
 		return vec3d == null ? null : new Vector3d(vec3d.hitVec);
 	}

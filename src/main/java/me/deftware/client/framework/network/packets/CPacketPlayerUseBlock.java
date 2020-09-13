@@ -17,7 +17,6 @@ public class CPacketPlayerUseBlock extends PacketWrapper {
 	}
 
 	public CPacketPlayerUseBlock(BlockSwingResult swingResult) {
-		// FIXME Verify this
 		this(new CPacketPlayerTryUseItemOnBlock(
 				swingResult.getBlockPos(), swingResult.sideHit, EnumHand.MAIN_HAND,
 				(float) Minecraft.getInstance().player.posX, (float) Minecraft.getInstance().player.posY, (float) Minecraft.getInstance().player.posZ
