@@ -6,6 +6,7 @@ import lombok.Getter;
 import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.gui.minecraft.ScreenInstance;
 import me.deftware.client.framework.gui.widgets.Button;
+import me.deftware.client.framework.helper.GlStateHelper;
 import me.deftware.client.framework.input.Mouse;
 import me.deftware.client.framework.main.EMCMod;
 import me.deftware.client.framework.minecraft.Minecraft;
@@ -86,6 +87,7 @@ public abstract class GuiScreen extends Screen {
 
 	@Override
 	public void render(int mouseX, int mouseY, float partialTicks) {
+		GlStateHelper.enableBlend();
 		Mouse.updateMousePosition();
 		onDraw(mouseX, mouseY, partialTicks);
 		super.render(mouseX, mouseY, partialTicks);
