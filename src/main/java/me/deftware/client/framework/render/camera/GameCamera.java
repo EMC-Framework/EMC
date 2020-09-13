@@ -19,11 +19,11 @@ public class GameCamera {
 	}
 
 	public float getRotationPitch() {
-		return getMinecraftCamera().renderViewEntity.rotationPitch;
+		return getMinecraftCamera().playerViewX;
 	}
 
 	public float getRotationYaw() {
-		return getMinecraftCamera().renderViewEntity.rotationYaw;
+		return getMinecraftCamera().playerViewY;
 	}
 
 	public Entity getFocusedEntity() {

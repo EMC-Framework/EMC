@@ -68,7 +68,7 @@ public class LineRenderStack extends RenderStack<LineRenderStack> {
 	}
 
 	public LineRenderStack drawLine(double x, double y, double z) {
-		return drawPoint(eyes.x, eyes.y, eyes.z).drawPoint(x, y, z);
+		return drawPoint(eyes.x, Minecraft.getPlayer().getEyeHeight() + eyes.y, eyes.z).drawPoint(x, y, z);
 	}
 
 }

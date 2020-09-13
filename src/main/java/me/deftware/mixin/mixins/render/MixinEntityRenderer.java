@@ -8,9 +8,18 @@ import me.deftware.client.framework.minecraft.Minecraft;
 import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
 import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
 import me.deftware.mixin.imp.IMixinEntityRenderer;
+import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Matrix4f;
+import net.minecraft.client.renderer.culling.ClippingHelperImpl;
+import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.client.renderer.culling.ICamera;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
+import org.lwjgl.opengl.GL11;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -33,6 +42,17 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     @Shadow
     protected abstract void loadShader(ResourceLocation p_loadShader_1_);
 
+    @Shadow private double cameraZoom;
+    @Shadow private double cameraYaw;
+    @Shadow private double cameraPitch;
+
+    @Shadow protected abstract double getFOVModifier(float partialTicks, boolean useFOVSetting);
+
+    @Shadow @Final private net.minecraft.client.Minecraft mc;
+    @Shadow private float farPlaneDistance;
+
+    @Shadow protected abstract void orientCamera(float partialTicks);
+
     @Unique
     private final Consumer<Float> renderEvent = partialTicks -> new EventRender3D(partialTicks).broadcast();
 
@@ -43,7 +63,18 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     private void renderHand(float partialTicks, CallbackInfo ci) {
         if (!WindowHelper.isMinimized()) {
             renderEvent.accept(partialTicks);
-            // FIXME: Transform camera
+            // Setup matrix
+            GlStateManager.matrixMode(GL11.GL_PROJECTION);
+            GlStateManager.loadIdentity();
+            if (this.cameraZoom != 1.0D) {
+                GlStateManager.translatef((float)this.cameraYaw, (float)(-this.cameraPitch), 0.0F);
+                GlStateManager.scaled(this.cameraZoom, this.cameraZoom, 1.0D);
+            }
+            GlStateManager.multMatrixf(Matrix4f.perspective(this.getFOVModifier(partialTicks, true), (float)this.mc.mainWindow.getFramebufferWidth() / (float)this.mc.mainWindow.getFramebufferHeight(), 0.05F, this.farPlaneDistance * MathHelper.SQRT_2));
+            GlStateManager.matrixMode(GL11.GL_MODELVIEW);
+            GlStateManager.loadIdentity();
+            // Set camera
+            this.orientCamera(partialTicks);
             renderEventNoBobbing.accept(partialTicks);
             GlStateManager.enableLighting();
         }
