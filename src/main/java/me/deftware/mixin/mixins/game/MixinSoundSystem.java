@@ -24,7 +24,7 @@ public class MixinSoundSystem {
     * inject after checks to make sure it's a real sound and is playable,
     * this also means we don't have to worry about getSoundSet being null.
     */
-    @Inject(at = @At(value = "INVOKE", target = "Lpaulscode/sound/SoundSystem;getMasterVolume()F"), method = "play(Lnet/minecraft/client/audio/ISound;)V", cancellable = true)
+    @Inject(at = @At(value = "INVOKE", target = "Lpaulscode/sound/SoundSystem;getMasterVolume()F", opcode = 180), method = "play(Lnet/minecraft/client/audio/ISound;)V", cancellable = true)
     public void onPlay(ISound instance, CallbackInfo info) {
         ITextComponent soundName = instance.createAccessor(sndHandler).getSubtitle();
         EventSound event = new EventSound(instance, soundName == null ? null : new ChatMessage().fromText(soundName));
