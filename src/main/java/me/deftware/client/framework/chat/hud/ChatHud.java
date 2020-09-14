@@ -16,7 +16,7 @@ public class ChatHud {
 
 	static GuiNewChat getHud() {
 		/* Internal only! */
-		return Minecraft.getMinecraft().ingameGUI.getChatGUI();
+		return net.minecraft.client.Minecraft.getMinecraft().ingameGUI.getChatGUI();
 	}
 
 	static IMixinGuiNewChat getMixinHudImpl() {
@@ -28,8 +28,11 @@ public class ChatHud {
 		addMessage(message, 0);
 	}
 
+	/**
+	 * By specifying a line you can override a message in chat
+	 */
 	public static void addMessage(ChatMessage message, int line) {
-		getMixinHudImpl().setTheChatLine(message.build(), line, Minecraft.getMinecraft().ingameGUI.getUpdateCounter(), false);
+		getMixinHudImpl().setTheChatLine(message.build(), line, net.minecraft.client.Minecraft.getMinecraft().ingameGUI.getUpdateCounter(), false);
 	}
 
 	public static List<ChatHudLine> getLines() {

@@ -9,6 +9,7 @@ public class ChatClickEvent {
 	private final EventType eventType;
 	private String data;
 
+	@SuppressWarnings("ConstantConditions")
 	public ClickEvent toEvent() {
 		return new ClickEvent(eventType.toAction(), data);
 	}

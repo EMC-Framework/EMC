@@ -1,37 +1,37 @@
 package me.deftware.client.framework.event.events;
 
 import me.deftware.client.framework.event.Event;
-import me.deftware.client.framework.wrappers.math.IAxisAlignedBB;
-import me.deftware.client.framework.wrappers.world.IBlock;
-import net.minecraft.block.Block;
+import me.deftware.client.framework.math.box.BoundingBox;
+import me.deftware.client.framework.math.box.DoubleBoundingBox;
+import me.deftware.client.framework.world.block.Block;
 import net.minecraft.util.math.AxisAlignedBB;
 
 public class EventVoxelShape extends Event {
 
 	public AxisAlignedBB shape;
 	public boolean modified = false;
-	public IBlock block;
+	public Block block;
 
-	public EventVoxelShape(AxisAlignedBB shape, IBlock block) {
+	public EventVoxelShape(AxisAlignedBB shape, Block block) {
 		this.shape = shape;
 		this.block = block;
 	}
 
-	public IAxisAlignedBB getBoundingBox() {
-		return new IAxisAlignedBB(shape);
+	public BoundingBox getEntityBoundingBox() {
+		return new DoubleBoundingBox(shape);
 	}
 
 	public void setFullCube() {
-		shape = Block.FULL_BLOCK_AABB;
+		shape = net.minecraft.block.Block.FULL_BLOCK_AABB;
 	}
 
 	public void setEmpty() {
-		shape = Block.NULL_AABB;
+		shape = net.minecraft.block.Block.NULL_AABB;
 	}
 
-	public void setShape(IAxisAlignedBB bb) {
+	public void setShape(BoundingBox bb) {
 		modified = true;
-		shape = bb.getAABB();
+		shape = bb.getMinecraftBox();
 	}
 
 }

@@ -1,21 +1,20 @@
 package me.deftware.client.framework.event.events;
 
 import me.deftware.client.framework.event.Event;
-import me.deftware.client.framework.wrappers.gui.IGuiScreen;
+import me.deftware.client.framework.gui.GuiScreen;
 import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiMultiplayer;
-import net.minecraft.client.gui.GuiScreen;
 
 /**
  * Triggered every time a game gui is displayed
  */
 public class EventGuiScreenDisplay extends Event {
 
-    private GuiScreen screen;
-    private ScreenTypes type;
+    private net.minecraft.client.gui.GuiScreen screen;
+    private final ScreenTypes type;
 
-    public EventGuiScreenDisplay(GuiScreen screen) {
+    public EventGuiScreenDisplay(net.minecraft.client.gui.GuiScreen screen) {
         this.screen = screen;
         if (screen instanceof GuiMainMenu) {
             type = ScreenTypes.MainMenu;
@@ -28,11 +27,11 @@ public class EventGuiScreenDisplay extends Event {
         }
     }
 
-    public GuiScreen getScreen() {
+    public net.minecraft.client.gui.GuiScreen getScreen() {
         return screen;
     }
 
-    public void setScreen(IGuiScreen screen) {
+    public void setScreen(GuiScreen screen) {
         this.screen = screen;
     }
 

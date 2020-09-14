@@ -45,7 +45,7 @@ public class ChatStyle {
 
 	public void fromStyle(Style style) {
 		// Color
-		color = new ChatColors.ChatColor(style.getColor());
+		if (style.getColor() != null) color = new ChatColors.ChatColor(style.getColor());
 		// Formatting
 		bold = style.getBold();
 		underline = style.getUnderlined();

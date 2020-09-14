@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+/**
+ * @author Deftware
+ */
 public abstract class AbstractModDiscovery {
 
     List<AbstractModEntry> entries = new ArrayList<>();
@@ -25,7 +28,7 @@ public abstract class AbstractModDiscovery {
     public abstract static class AbstractModEntry {
 
         JsonObject json;
-        private File file;
+        private final File file;
 
         AbstractModEntry(File file, JsonObject json) {
             this.file = file;

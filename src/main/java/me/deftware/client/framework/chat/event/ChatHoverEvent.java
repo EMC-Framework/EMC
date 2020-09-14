@@ -5,10 +5,8 @@ import net.minecraft.util.text.event.HoverEvent;
 import java.util.Objects;
 
 /**
- * Currently only supports text!
-
- *
-
+ * Currently only supports text!
+ *
  * @author Deftware
  */
 public class ChatHoverEvent {
@@ -28,7 +26,7 @@ public class ChatHoverEvent {
 				break;
 			}
 		}
-		ChatMessage message = type == EventType.SHOW_TEXT ? new ChatMessage().fromText(Objects.requireNonNull(hoverEvent.getValue()), false) : null;
+		ChatMessage message = type == EventType.SHOW_TEXT ? new ChatMessage().fromText(Objects.requireNonNull(hoverEvent.getValue())) : null;
 		ChatHoverEvent event = new ChatHoverEvent(type, message);
 		event.rawEvent = hoverEvent;
 		return event;

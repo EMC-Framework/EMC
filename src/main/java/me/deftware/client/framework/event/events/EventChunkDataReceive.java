@@ -1,18 +1,18 @@
 package me.deftware.client.framework.event.events;
 
 import me.deftware.client.framework.event.Event;
-import me.deftware.client.framework.wrappers.world.IChunkPos;
+import me.deftware.client.framework.math.position.ChunkBlockPosition;
 import net.minecraft.network.play.server.SPacketChunkData;
 import net.minecraft.util.math.ChunkPos;
 
 public class EventChunkDataReceive extends Event {
 
-    private ChunkPos rawPos;
-    private IChunkPos pos;
+    private final ChunkPos rawPos;
+    private final ChunkBlockPosition pos;
 
     public boolean isInitialFullChunk, updatedIsFullChunk;
 
-    private SPacketChunkData rootPacket;
+    private final SPacketChunkData rootPacket;
 
     public SPacketChunkData getRootPacket() {
         return rootPacket;
@@ -22,14 +22,14 @@ public class EventChunkDataReceive extends Event {
         return rawPos;
     }
 
-    public IChunkPos getPos() {
+    public ChunkBlockPosition getPos() {
         return pos;
     }
 
     public EventChunkDataReceive(SPacketChunkData rootPacket) {
         this.rootPacket = rootPacket;
         this.rawPos = new ChunkPos(rootPacket.getChunkX(), rootPacket.getChunkZ());
-        this.pos = new IChunkPos(rawPos);
+        this.pos = new ChunkBlockPosition(rawPos);
         isInitialFullChunk = rootPacket.isFullChunk();
         updateFullChunk(rootPacket);
     }
@@ -37,4 +37,5 @@ public class EventChunkDataReceive extends Event {
     private void updateFullChunk(SPacketChunkData rootPacket) {
         updatedIsFullChunk = rootPacket.isFullChunk();
     }
+
 }

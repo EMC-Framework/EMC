@@ -2,8 +2,8 @@ package me.deftware.client.framework.main.bootstrap.discovery;
 
 import me.deftware.client.framework.main.EMCMod;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
-import me.deftware.client.framework.utils.HashUtils;
-import me.deftware.client.framework.utils.WebUtils;
+import me.deftware.client.framework.util.HashUtils;
+import me.deftware.client.framework.util.WebUtils;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.File;
@@ -11,6 +11,9 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URL;
 
+/**
+ * @author Deftware
+ */
 public class JVMModDiscovery extends AbstractModDiscovery {
 
     @Override
@@ -34,7 +37,7 @@ public class JVMModDiscovery extends AbstractModDiscovery {
 
     public static class JVMModEntry extends AbstractModEntry {
 
-        private String[] data;
+        private final String[] data;
 
         JVMModEntry(File file, String... data) {
             super(file, null);

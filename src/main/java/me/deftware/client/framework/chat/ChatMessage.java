@@ -2,7 +2,9 @@ package me.deftware.client.framework.chat;
 
 import me.deftware.client.framework.chat.hud.ChatHud;
 import me.deftware.client.framework.chat.style.ChatStyle;
+import me.deftware.client.framework.fonts.minecraft.FontRenderer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.play.client.CPacketChatMessage;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
@@ -34,6 +36,23 @@ public class ChatMessage {
 		return false;
 	}
 
+	public ChatMessage trimToWidth(int width) {
+		String text = toString(true);
+		if (FontRenderer.getStringWidth(text) > width) {
+			StringBuilder builder = new StringBuilder();
+			for (String _char : text.split("")) {
+				if (FontRenderer.getStringWidth(builder.toString() + _char + "...") < width - 6) {
+					builder.append(_char);
+				} else {
+					builder.append("...");
+					break;
+				}
+			}
+			text = builder.toString();
+		}
+		return new ChatMessage().fromString(text);
+	}
+
 	public ChatMessage fromString(String text) {
 		return fromString(text, ChatStyle.getFormattingChar());
 	}
@@ -42,7 +61,6 @@ public class ChatMessage {
 	 * Converts an old style formatted string to a {@link ChatMessage} object
 	 */
 	public ChatMessage fromString(String text, char formattingChar) {
-		if (text == null) return this;
 		if (!text.contains(String.valueOf(formattingChar))) {
 			// No need to parse if the string doesnt have any formatting
 			sectionList.add(new ChatSection(text));
@@ -76,10 +94,10 @@ public class ChatMessage {
 		return this;
 	}
 
-	public ChatMessage fromText(ITextComponent text, boolean chat) {
+	public ChatMessage fromText(ITextComponent text) {
 		// This function is highly dependant on which Minecraft version this is implemented on
-		for (ITextComponent component : chat ? text.getSiblings() : text) {
-			ChatSection section = new ChatSection(component.getUnformattedComponentText());
+		for (ITextComponent component : text) {
+			ChatSection section = new ChatSection(component.getFormattedText());
 			section.getStyle().fromStyle(component.getStyle());
 			sectionList.add(section);
 		}
@@ -121,12 +139,22 @@ public class ChatMessage {
 		ChatHud.getChatMessageQueue().add(() -> ChatHud.addMessage(this));
 	}
 
+	public void sendMessage() {
+		sendMessage(true);
+	}
+
 	/**
 	 * Sends this message to the server, without any formatting
 	 */
-	public void sendMessage() {
-		if (Minecraft.getMinecraft().player != null) {
-			ChatHud.getChatMessageQueue().add(() -> Minecraft.getMinecraft().player.sendChatMessage(toString(false)));
+	public void sendMessage(boolean packet) {
+		if (net.minecraft.client.Minecraft.getMinecraft().player != null) {
+			ChatHud.getChatMessageQueue().add(() -> {
+				if (packet) {
+					net.minecraft.client.Minecraft.getMinecraft().player.connection.sendPacket(new CPacketChatMessage(toString(false)));
+				} else {
+					net.minecraft.client.Minecraft.getMinecraft().player.sendChatMessage(toString(false));
+				}
+			});
 		}
 	}
 
