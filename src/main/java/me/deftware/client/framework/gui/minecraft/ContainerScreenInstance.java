@@ -18,9 +18,7 @@ public class ContainerScreenInstance extends ScreenInstance {
 		super(screen);
 		if (((GuiContainer) screen).inventorySlots instanceof ContainerChest) {
 			String component = ((ContainerChest) ((GuiContainer) screen).inventorySlots).getLowerChestInventory().getName();
-			System.out.println(component);
 			if (component.toLowerCase().contains("ender")) {
-				System.out.println("Yes");
 				type = Type.ENDER_CHEST;
 			}
 		}
