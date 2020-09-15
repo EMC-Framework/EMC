@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Used to translate between lwjgl2 to lwjgl3
+ * Used to translate static keys between lwjgl2 to lwjgl3
  */
 public class GLFW {
 
@@ -25,6 +25,7 @@ public class GLFW {
 		put(Keyboard.KEY_1, 49);
 		put(Keyboard.KEY_RSHIFT, 344);
 		put(Keyboard.KEY_F3, 292);
+		put(Keyboard.KEY_PERIOD, 46);
 
 		// Arrow keys
 		put(Keyboard.KEY_UP, 265);
@@ -50,6 +51,7 @@ public class GLFW {
 		put(49, Keyboard.KEY_1);
 		put(344, Keyboard.KEY_RSHIFT);
 		put(292, Keyboard.KEY_F3);
+		put(43, Keyboard.KEY_PERIOD);
 
 		// Arrow keys
 		put(265, Keyboard.KEY_UP);

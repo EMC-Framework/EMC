@@ -13,9 +13,6 @@ public class EventRender3D extends Event {
 
 	public EventRender3D(float partialTicks) {
 		this.partialTicks = partialTicks;
-		if (!(this instanceof EventRender3DNoBobbing)) {
-			new EventRender3DNoBobbing(partialTicks).broadcast();
-		}
 	}
 
 	public float getPartialTicks() {

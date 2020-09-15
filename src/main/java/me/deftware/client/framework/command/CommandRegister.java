@@ -17,12 +17,12 @@ public class CommandRegister {
 
     private static CommandDispatcher<SuggestionProvider<?>> dispatcher = new CommandDispatcher<>();
 
-	/**
-	 * @return Brigadier dispatcher object
-	 */
-	public static CommandDispatcher<SuggestionProvider<?>> getDispatcher() {
-		return dispatcher;
-	}
+    /**
+     * @return Brigadier dispatcher object
+     */
+    public static CommandDispatcher<SuggestionProvider<?>> getDispatcher() {
+        return dispatcher;
+    }
 
     /**
      * Clears the Brigadier dispatcher object
@@ -54,19 +54,19 @@ public class CommandRegister {
         registerCommand(modCommand.getCommandBuilder());
     }
 
-	/**
-	 * Returns an array of all registered commands, without any argument usage
-	 *
-	 * @return
-	 */
-	public static ArrayList<String> listCommands() {
-		ArrayList<String> commands = new ArrayList<>();
-		RootCommandNode<?> rootNode = dispatcher.getRoot();
-		for (CommandNode<?> child : rootNode.getChildren()) {
-			commands.add(child.getName());
-		}
-		return commands;
-	}
+    /**
+     * Returns an array of all registered commands, without any argument usage
+     *
+     * @return
+     */
+    public static ArrayList<String> listCommands() {
+        ArrayList<String> commands = new ArrayList<>();
+        RootCommandNode<?> rootNode = dispatcher.getRoot();
+        for (CommandNode<?> child : rootNode.getChildren()) {
+            commands.add(child.getName());
+        }
+        return commands;
+    }
 
     /**
      * Returns an array of all registered commands, with argument usage
@@ -87,13 +87,13 @@ public class CommandRegister {
         return dispatcher.getSmartUsage(dispatcher.getRoot(), null);
     }
 
-	/**
-	 * Returns the command trigger used to trigger commands, default is a .
-	 *
-	 * @return
-	 */
-	public static String getCommandTrigger() {
-		return (String) SettingsMap.getValue(SettingsMap.MapKeys.EMC_SETTINGS, "COMMAND_TRIGGER", ".");
-	}
+    /**
+     * Returns the command trigger used to trigger commands, default is a .
+     *
+     * @return
+     */
+    public static String getCommandTrigger() {
+        return (String) SettingsMap.getValue(SettingsMap.MapKeys.EMC_SETTINGS, "COMMAND_TRIGGER", ".");
+    }
 
 }

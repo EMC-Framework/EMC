@@ -67,24 +67,24 @@ public class CommandBuilder<T> {
         return this;
     }
 
-	/**
-	 * Returns a list of all aliases for this command
-	 *
-	 * @return
-	 */
-	public List<String> getAliases() {
-		return aliases;
-	}
+    /**
+     * Returns a list of all aliases for this command
+     *
+     * @return
+     */
+    public List<String> getAliases() {
+        return aliases;
+    }
 
     protected LiteralArgumentBuilder<SuggestionProvider<?>> build() {
         return builder;
     }
 
-	@FunctionalInterface
-	public interface CommandExecution {
+    @FunctionalInterface
+    public interface CommandExecution {
 
-		void onExecute(CommandResult result);
+        void onExecute(CommandResult result);
 
-	}
+    }
 
 }

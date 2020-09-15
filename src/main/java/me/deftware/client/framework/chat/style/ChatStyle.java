@@ -3,7 +3,6 @@ package me.deftware.client.framework.chat.style;
 import me.deftware.client.framework.chat.event.ChatClickEvent;
 import me.deftware.client.framework.chat.event.ChatHoverEvent;
 import net.minecraft.util.EnumChatFormatting;
-
 import java.util.regex.Pattern;
 
 /**
@@ -35,7 +34,7 @@ public class ChatStyle {
 				 else if (formatting == EnumChatFormatting.ITALIC) italic = true;
 				 else if (formatting == EnumChatFormatting.OBFUSCATED) obfuscated = true;
 				 else if (formatting == EnumChatFormatting.STRIKETHROUGH) strikethrough = true;
-				 else 
+				 else
 				// Color
 				color = new ChatColors.ChatColor(formatting);
 				break;
@@ -45,7 +44,7 @@ public class ChatStyle {
 
 	public void fromStyle(net.minecraft.util.ChatStyle style) {
 		// Color
-		color = new ChatColors.ChatColor(style.getColor());
+		if (style.getColor() != null) color = new ChatColors.ChatColor(style.getColor());
 		// Formatting
 		bold = style.getBold();
 		underline = style.getUnderlined();

@@ -50,6 +50,12 @@ compileJava {
     sourceCompatibility = targetCompatibility = 1.8
 }
 
+gradle.projectsEvaluated {
+    tasks.withType(JavaCompile) {
+        options.compilerArgs << "-Xmaxerrs" << "3000"
+    }
+}
+
 minecraft {
     version = forgeBuild ? project.minecraftVersion + project.forgeVersion : project.minecraftVersion
     runDir = 'run'
@@ -83,6 +89,7 @@ dependencies {
         exclude module: 'commons-io'
     }
     compile 'com.mojang:brigadier:1.0.17'
+    compile 'it.unimi.dsi:fastutil:8.4.1'
 }
 
 mixin {

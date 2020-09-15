@@ -8,9 +8,11 @@ import me.deftware.client.framework.event.Event;
 public class EventChatSend extends Event {
 	private String message;
 	private boolean dispatch = false;
+	private final Class<?> sender;
 
-	public EventChatSend(String message) {
+	public EventChatSend(String message, Class<?> sender) {
 		this.message = message;
+		this.sender = sender;
 	}
 
 	public String getMessage() {
@@ -27,5 +29,9 @@ public class EventChatSend extends Event {
 
 	public void setDispatch(final boolean dispatch) {
 		this.dispatch = dispatch;
+	}
+
+	public Class<?> getSender() {
+		return this.sender;
 	}
 }

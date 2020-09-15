@@ -17,9 +17,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * @author Deftware
+ */
 public class EMCModArgument implements ArgumentType<EMCMod> {
 
-	private DynamicCommandExceptionType modNotFoundException = new DynamicCommandExceptionType(input ->
+	private final DynamicCommandExceptionType modNotFoundException = new DynamicCommandExceptionType(input ->
 			new ArgumentExceptionFunction(String.format("Could not find mod \"%s\"", input))
 	);
 

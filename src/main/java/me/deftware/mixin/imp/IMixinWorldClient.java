@@ -1,11 +1,10 @@
 package me.deftware.mixin.imp;
 
-import me.deftware.client.framework.wrappers.entity.IEntity;
-
-import java.util.HashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import me.deftware.client.framework.entity.Entity;
 
 public interface IMixinWorldClient {
 
-	HashMap<Integer, IEntity> getIEntities();
+    Int2ObjectMap<Entity> getLoadedEntitiesAccessor();
 
 }

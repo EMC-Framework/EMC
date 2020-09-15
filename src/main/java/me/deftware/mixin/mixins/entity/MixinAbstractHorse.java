@@ -1,0 +1,27 @@
+package me.deftware.mixin.mixins.entity;
+
+import me.deftware.client.framework.event.events.EventSaddleCheck;
+import net.minecraft.entity.passive.EntityHorse;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+@Mixin(EntityHorse.class)
+public abstract class MixinAbstractHorse {
+
+    @Inject(method = "isHorseSaddled", at = @At(value = "TAIL"), cancellable = true)
+    private void onIsSaddled(CallbackInfoReturnable<Boolean> cir) {
+        EventSaddleCheck event = new EventSaddleCheck(cir.getReturnValue());
+        event.broadcast();
+        cir.setReturnValue(event.isState());
+    }
+
+   /* @Inject(method = "canBeSteered", at = @At("TAIL"), cancellable = true) FIXME
+    public void canBeControlled(CallbackInfoReturnable<Boolean> cir) {
+        EventSaddleCheck event = new EventSaddleCheck(cir.getReturnValue());
+        event.broadcast();
+        cir.setReturnValue(event.isState());
+    }*/
+
+}
