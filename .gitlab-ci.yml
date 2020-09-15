@@ -5,6 +5,7 @@ build:
   variables:
     GRADLE_OPTS: "-Dorg.gradle.daemon=false"
   script:
+    - ./gradlew setupDecompWorkspace
     - ./gradlew clean
     - ./gradlew build
     - ./gradlew clean
