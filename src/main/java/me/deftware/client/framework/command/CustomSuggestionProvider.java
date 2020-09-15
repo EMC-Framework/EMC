@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
-public class CustomSuggestionProvider implements SuggestionProvider {
+public class CustomSuggestionProvider implements SuggestionProvider<CustomSuggestionProvider> {
 
 	@Override
 	public CompletableFuture<Suggestions> getSuggestions(CommandContext context, SuggestionsBuilder builder) throws CommandSyntaxException {

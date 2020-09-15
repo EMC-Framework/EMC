@@ -3,6 +3,7 @@ package me.deftware.client.framework.input;
 import me.deftware.client.framework.render.batching.RenderStack;
 import me.deftware.mixin.imp.IMixinMinecraft;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.Display;
 
 import java.util.ArrayList;
 import java.util.function.BiConsumer;
@@ -56,7 +57,8 @@ public class Mouse {
 
 	public static void updateMousePosition() {
 		mouseX = org.lwjgl.input.Mouse.getX();
-		mouseY = org.lwjgl.input.Mouse.getY();
+		// Mouse Y is inverted in lwjgl 2
+		mouseY = Display.getHeight() - org.lwjgl.input.Mouse.getY();
 	}
 
 }

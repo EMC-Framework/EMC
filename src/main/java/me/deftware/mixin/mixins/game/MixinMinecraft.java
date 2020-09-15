@@ -9,8 +9,10 @@ import me.deftware.client.framework.main.EMCMod;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
 import me.deftware.mixin.imp.IMixinMinecraft;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiConfirmOpenLink;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.realms.RealmsSharedConstants;
 import net.minecraft.util.Session;
 import net.minecraft.util.Timer;
@@ -69,6 +71,8 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
 
     @Shadow
     public abstract void middleClickMouse();
+
+    @Shadow public WorldClient world;
 
     @ModifyVariable(method = "displayGuiScreen", at = @At("HEAD"))
     private GuiScreen displayGuiScreenModifier(GuiScreen screen) {
@@ -176,6 +180,14 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
     @Override
     public boolean getIsWindowFocused() {
         return inGameHasFocus;
+    }
+
+    @Inject(method = "getLimitFramerate", at = @At("HEAD"), cancellable = true)
+    public void adjustLimitFramerate(CallbackInfoReturnable<Integer> cir) {
+        // Update menu fps to 60 to match > 1.13.2 mc versions
+        if (world == null && this.currentScreen != null) {
+            cir.setReturnValue(60);
+        }
     }
 
 }

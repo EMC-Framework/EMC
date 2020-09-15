@@ -33,6 +33,7 @@
     "gui.MixinGuiEditSign",
     "gui.MixinGuiGameOver",
     "gui.MixinGuiIngame",
+    "gui.MixinSuggestion",
     "gui.MixinGuiMainMenu",
     "gui.MixinGuiNewChat",
     "gui.MixinGuiScreen",

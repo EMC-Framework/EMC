@@ -1,5 +1,6 @@
 package me.deftware.client.framework.input;
 
+import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.Util;
 import org.lwjgl.glfw.GLFW;
@@ -9,6 +10,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.lang.reflect.Field;
+import java.net.URI;
 import java.util.HashMap;
 
 /**
@@ -75,7 +77,13 @@ public class Keyboard {
 	}
 
 	public static void openLink(String url) {
-		// Util.getOSType().openURI(url); FIXME
+		try {
+			Class<?> oclass = Class.forName("java.awt.Desktop");
+			Object object = oclass.getMethod("getDesktop").invoke((Object)null);
+			oclass.getMethod("browse", URI.class).invoke(object, new URI(url));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	public static boolean isCtrlPressed() {

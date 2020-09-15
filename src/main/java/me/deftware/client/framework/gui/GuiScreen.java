@@ -97,6 +97,18 @@ public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen {
 	}
 
 	@Override
+	public void handleMouseInput() throws IOException {
+		super.handleMouseInput();
+		children.forEach(GuiEventListener::doHandleMouse);
+		if (org.lwjgl.input.Mouse.hasWheel()) {
+			int mY = org.lwjgl.input.Mouse.getEventDWheel();
+			if (mY != 0) {
+				Mouse.onScroll(0, mY < 0 ? -1 : 1);
+			}
+		}
+	}
+
+	@Override
 	public void onResize(net.minecraft.client.Minecraft mcIn, int w, int h) {
 		super.onResize(mcIn, w, h);
 		onGuiResize(w, h);
@@ -160,7 +172,7 @@ public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen {
 	}
 
 	protected void renderBackgroundWrap(int offset) {
-		drawBackground(offset);
+		drawGradientRect(0, 0, this.width, this.height, -1072689136, -804253680);
 	}
 
 	protected void renderBackgroundTextureWrap(int offset) {

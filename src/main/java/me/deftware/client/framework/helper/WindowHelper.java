@@ -5,6 +5,7 @@ import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
 import me.deftware.mixin.imp.IMixinEntityRenderer;
 import me.deftware.mixin.imp.IMixinMinecraft;
 import net.minecraft.client.Minecraft;
+import org.lwjgl.opengl.Display;
 
 /**
  * @author Deftware
@@ -44,7 +45,7 @@ public class WindowHelper {
 	}
 
 	public static boolean isFocused() {
-		return ((IMixinMinecraft) net.minecraft.client.Minecraft.getMinecraft()).getIsWindowFocused();
+		return Display.isActive();
 	}
 
 	public static boolean isMinimized() {
