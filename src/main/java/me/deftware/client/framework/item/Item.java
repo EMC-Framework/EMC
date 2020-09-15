@@ -8,6 +8,8 @@ import me.deftware.client.framework.item.types.RangedWeaponItem;
 import me.deftware.client.framework.item.types.ToolItem;
 import me.deftware.client.framework.item.types.TridentItem;
 import me.deftware.client.framework.item.types.*;
+import me.deftware.client.framework.registry.ItemRegistry;
+import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.*;
@@ -54,13 +56,7 @@ public class Item implements IItem {
 	}
 
 	public String getIdentifierKey() {
-		String key = getTranslationKey();
-		if (key.startsWith("item")) {
-			key = key.substring("item.".length());
-		} else if (key.startsWith("block")) {
-			key = key.substring("block.".length());
-		}
-		return key;
+		return ItemRegistry.INSTANCE.namesTranslated.getOrDefault(getTranslationKey(), getTranslationKey());
 	}
 
 	public boolean isAir() {

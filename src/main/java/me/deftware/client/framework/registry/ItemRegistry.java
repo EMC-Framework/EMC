@@ -15,6 +15,7 @@ public enum ItemRegistry implements IRegistry<Item, net.minecraft.item.Item> {
 
 	private final HashMap<String, Item> items = new HashMap<>();
 	private final HashMap<String, String> translatedNames = new HashMap<>();
+	public final HashMap<String, String> namesTranslated = new HashMap<>();
 
 	@Override
 	public Stream<Item> stream() {
@@ -25,6 +26,7 @@ public enum ItemRegistry implements IRegistry<Item, net.minecraft.item.Item> {
 	public void register(String id, net.minecraft.item.Item object) {
 		items.putIfAbsent(id, Item.newInstance(object));
 		translatedNames.put(id.substring("minecraft:".length()), object.getTranslationKey());
+		namesTranslated.put(object.getTranslationKey(), id.substring("minecraft:".length()));
 	}
 
 	@Override

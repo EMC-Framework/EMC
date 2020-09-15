@@ -77,16 +77,19 @@ public abstract class MixinSuggestion {
 	}
 
 	public void updateSuggestions(String text) {
+		int triggerLength = CommandRegister.getCommandTrigger().length();
 		suggestions = null;
-		StringReader reader = new StringReader(text.substring(CommandRegister.getCommandTrigger().length()));
-		if (reader.canRead()) {
-			this.parse = CommandRegister.getDispatcher().parse(reader, new CustomSuggestionProvider());
-			CompletableFuture<Suggestions> pendingSuggestions = CommandRegister.getDispatcher().getCompletionSuggestions(parse);
-			pendingSuggestions.thenRun(() -> {
-				if (pendingSuggestions.isDone()) {
-					suggestions = pendingSuggestions.join();
-				}
-			});
+		if (text.length() > triggerLength) {
+			StringReader reader = new StringReader(text.substring(triggerLength));
+			if (reader.canRead()) {
+				this.parse = CommandRegister.getDispatcher().parse(reader, new CustomSuggestionProvider());
+				CompletableFuture<Suggestions> pendingSuggestions = CommandRegister.getDispatcher().getCompletionSuggestions(parse);
+				pendingSuggestions.thenRun(() -> {
+					if (pendingSuggestions.isDone()) {
+						suggestions = pendingSuggestions.join();
+					}
+				});
+			}
 		}
 	}
 

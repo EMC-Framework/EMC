@@ -37,7 +37,7 @@ public enum ItemType {
 		} else if (this.equals(ItemHoe)) {
 			return item instanceof ItemHoe;
 		} else if (this.equals(ItemShulkerBox)) {
-			return item instanceof ItemBlock && item.getTranslationKey().contains("shulker_box");
+			return item instanceof ItemBlock && item.getTranslationKey().contains("shulker");
 		}
 		return false;
 	}

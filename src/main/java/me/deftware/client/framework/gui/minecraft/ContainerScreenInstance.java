@@ -5,7 +5,6 @@ import me.deftware.mixin.imp.IMixinGuiContainer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.ContainerChest;
-import net.minecraft.util.text.TextComponentTranslation;
 
 /**
  * @author Deftware
@@ -18,8 +17,10 @@ public class ContainerScreenInstance extends ScreenInstance {
 	public ContainerScreenInstance(GuiScreen screen) {
 		super(screen);
 		if (((GuiContainer) screen).inventorySlots instanceof ContainerChest) {
-			TextComponentTranslation component = (TextComponentTranslation) ((ContainerChest) ((GuiContainer) screen).inventorySlots).getLowerChestInventory().getDisplayName();
-			if (component.getKey().equalsIgnoreCase("container.enderchest")) {
+			String component = ((ContainerChest) ((GuiContainer) screen).inventorySlots).getLowerChestInventory().getName();
+			System.out.println(component);
+			if (component.toLowerCase().contains("ender")) {
+				System.out.println("Yes");
 				type = Type.ENDER_CHEST;
 			}
 		}

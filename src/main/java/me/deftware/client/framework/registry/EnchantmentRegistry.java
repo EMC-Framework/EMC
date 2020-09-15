@@ -14,6 +14,7 @@ public enum EnchantmentRegistry implements IRegistry<Enchantment, net.minecraft.
 	INSTANCE;
 
 	private final HashMap<String, Enchantment> enchantments = new HashMap<>();
+	private final HashMap<String, String> translatedNames = new HashMap<>();
 
 	@Override
 	public Stream<Enchantment> stream() {
@@ -23,13 +24,18 @@ public enum EnchantmentRegistry implements IRegistry<Enchantment, net.minecraft.
 	@Override
 	public void register(String id, net.minecraft.enchantment.Enchantment object) {
 		enchantments.putIfAbsent(id, new Enchantment(object));
+		translatedNames.put(id.substring("minecraft:".length()), object.getName());
 	}
 
 	@Override
 	public Optional<Enchantment> find(String id) {
+		if (translatedNames.containsKey(id)) {
+			id = translatedNames.get(id);
+		}
+		String finalId = id;
 		return stream().filter(enchantment ->
-				enchantment.getTranslationKey().equalsIgnoreCase(id) ||
-						enchantment.getTranslationKey().substring("enchantment.minecraft:".length()).equalsIgnoreCase(id)
+				enchantment.getTranslationKey().equalsIgnoreCase(finalId) ||
+						enchantment.getTranslationKey().substring("enchantment:".length()).equalsIgnoreCase(finalId)
 		).findFirst();
 	}
 

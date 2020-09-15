@@ -46,15 +46,15 @@ public abstract class MixinEntity implements IMixinEntity {
 
     @Shadow protected boolean isInWeb;
 
-    /*@SuppressWarnings("ConstantConditions") FIXME
-    @Inject(method = "rotateTowards", at = @At("HEAD"), cancellable = true)
-    public void changeLookDirection(double cursorX, double cursorY, CallbackInfo ci) {
+    @SuppressWarnings("ConstantConditions")
+    @Inject(method = "turn", at = @At("HEAD"), cancellable = true)
+    public void changeLookDirection(float cursorX, float cursorY, CallbackInfo ci) {
         if ((Object) this == net.minecraft.client.Minecraft.getMinecraft().player && CameraEntityMan.isActive()) {
-            CameraEntityMan.fakePlayer.rotateTowards(cursorX, cursorY);
+            CameraEntityMan.fakePlayer.turn(cursorX, cursorY);
             CameraEntityMan.fakePlayer.setRotationYawHead(CameraEntityMan.fakePlayer.rotationYaw);
             ci.cancel();
         }
-    }*/
+    }
 
     @Inject(method = "isEntityInsideOpaqueBlock", at = @At(value = "HEAD"), cancellable = true)
     public void isInWall(CallbackInfoReturnable<Boolean> cir) {
