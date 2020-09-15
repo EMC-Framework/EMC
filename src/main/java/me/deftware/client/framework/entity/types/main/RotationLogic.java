@@ -20,7 +20,7 @@ public class RotationLogic extends EntityPlayer {
 
 	public boolean faceEntityClient(Entity entity) {
 		Vector3d eyesPos = getEyesPos(), lookVec = getServerLookVec();
-		BoundingBox bb = entity.getEntityBoundingBox();
+		BoundingBox bb = entity.getBoundingBox();
 		if (faceVectorClient(bb.getCenter())) {
 			return true;
 		}
@@ -29,7 +29,7 @@ public class RotationLogic extends EntityPlayer {
 
 	public boolean faceEntityPacket(Entity entity) {
 		Vector3d eyesPos = getEyesPos(), lookVec = getServerLookVec();
-		BoundingBox bb = entity.getEntityBoundingBox();
+		BoundingBox bb = entity.getBoundingBox();
 		if (faceVectorPacket(bb.getCenter())) {
 			return true;
 		}
@@ -65,14 +65,14 @@ public class RotationLogic extends EntityPlayer {
 	}
 
 	public float getAngleToClientRotation(Entity entity) {
-		float[] needed = getRotations(entity.getEntityBoundingBox().getCenter());
+		float[] needed = getRotations(entity.getBoundingBox().getCenter());
 		float diffYaw = MathHelper.wrapDegrees(this.entity.rotationYaw) - needed[0];
 		float diffPitch = MathHelper.wrapDegrees(this.entity.rotationPitch) - needed[1];
 		return MathHelper.sqrt(diffYaw * diffYaw + diffPitch * diffPitch);
 	}
 
 	public float getAngleToServerRotation(Entity entity) {
-		float[] needed = getRotations(entity.getEntityBoundingBox().getCenter());
+		float[] needed = getRotations(entity.getBoundingBox().getCenter());
 		float diffYaw = serverYaw - needed[0];
 		float diffPitch = serverPitch - needed[1];
 		return MathHelper.sqrt(diffYaw * diffYaw + diffPitch * diffPitch);

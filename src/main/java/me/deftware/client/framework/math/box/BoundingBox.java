@@ -5,8 +5,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.math.*;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.Optional;
 
 /**
  * @author Deftware

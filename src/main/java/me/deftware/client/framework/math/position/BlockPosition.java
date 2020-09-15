@@ -43,7 +43,7 @@ public class BlockPosition {
 		return entity.getPosition();
 	}
 
-	public BoundingBox getEntityBoundingBox() {
+	public BoundingBox getBoundingBox() {
 		return new DoubleBoundingBox(getX(), getY(), getZ(), getX() + 1.0, getY() + 1.0, getZ() + 1.0);
 	}
 

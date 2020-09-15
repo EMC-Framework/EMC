@@ -17,7 +17,7 @@ public class EventVoxelShape extends Event {
 		this.block = block;
 	}
 
-	public BoundingBox getEntityBoundingBox() {
+	public BoundingBox getBoundingBox() {
 		return new DoubleBoundingBox(shape);
 	}
 

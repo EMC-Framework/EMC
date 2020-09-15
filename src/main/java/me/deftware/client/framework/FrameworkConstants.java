@@ -7,12 +7,17 @@ import me.deftware.client.framework.minecraft.Minecraft;
  */
 public class FrameworkConstants {
 
+    /**
+     * Only applicable in some versions, set at compile time
+     */
+    private static String FORGE_BUILD = "@FORGE@";
+
     public static double VERSION = 16.0;
     public static int PATCH = 0, SCHEME = 4;
 
     public static boolean VALID_EMC_INSTANCE = false, SUBSYSTEM_IN_USE = false, OPTIFINE = false, CAN_RENDER_SHADER = true;
     public static String FRAMEWORK_MAVEN_URL = "https://gitlab.com/EMC-Framework/maven/raw/master/";
-    public static MappingsLoader MAPPING_LOADER = MappingsLoader.Tweaker;
+    public static MappingsLoader MAPPING_LOADER = FORGE_BUILD.equalsIgnoreCase("false") ? MappingsLoader.Tweaker : MappingsLoader.Forge;
     public static MappingSystem MAPPING_SYSTEM = MappingSystem.MCPConfig;
 
     public static String toDataString() {

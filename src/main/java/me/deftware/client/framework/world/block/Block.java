@@ -103,6 +103,7 @@ public class Block implements IItem {
 	}
 
 	public BlockState getLocationBlockState() {
+		this.locationBlockState.pos = blockPosition.getMinecraftBlockPos();
 		return this.locationBlockState;
 	}
 

@@ -22,13 +22,13 @@ public class ChestBlock extends StorageBlock {
 	}
 
 	@Override
-	public BoundingBox getEntityBoundingBox(BlockState state) {
+	public BoundingBox getBoundingBox(BlockState state) {
 		return getChestBoundingBox(isDouble(state), getBlockPosition(), state.getMinecraftBlockState());
 	}
 	
 	public static BoundingBox getChestBoundingBox(boolean isDouble, BlockPosition position, IBlockState state) {
 		if (isDouble) {
-			switch (getChestShape(position)) {
+			switch (getChestShape(position.getMinecraftBlockPos())) {
 				case NORTH:
 					return new DoubleBoundingBox(position.getX(), position.getY(), position.getZ() - 1,
 							position.getX() + 1.0, position.getY() + 1.0, position.getZ() + 1.0);
@@ -43,21 +43,42 @@ public class ChestBlock extends StorageBlock {
 							position.getX() + 2.0, position.getY() + 1.0, position.getZ() + 1.0);
 			}
 		}
-		return position.getEntityBoundingBox();
+		return position.getBoundingBox();
 	}
 
 	public boolean isFirst(BlockState state) {
-		return false;
+		if (state.pos == null) return false;
+		return isFirstChest(state.pos);
 	}
 
 	public boolean isDouble(BlockState state) {
-		return false;
+		if (state.pos == null) return false;
+		return getChestShape(state.pos) != ChestShape.SINGLE;
 	}
 
-	public static ChestShape getChestShape(BlockPosition position) {
-		BlockPos pos = position.getMinecraftBlockPos();
+	public static boolean isFirstChest(BlockPos pos) {
+		ChestShape shape = getChestShape(pos);
+		if (shape == ChestShape.SINGLE) return false;
+		switch (getChestShape(pos)) {
+			case NORTH:
+				return isChest(pos.north());
+			case SOUTH:
+				return isChest(pos.south());
+			case WEST:
+				return isChest(pos.west());
+			default: // EAST
+				return isChest(pos.east());
+		}
+	}
+
+	public static boolean isChest(BlockPos pos) {
+		Block block = Minecraft.getMinecraft().world.getBlockState(pos).getBlock();
+		return block instanceof BlockChest;
+	}
+
+	public static ChestShape getChestShape(BlockPos pos) {
 		WorldClient world = Minecraft.getMinecraft().world;
-		BlockChest block = (BlockChest) world.getBlockState(pos).getBlock();
+		Block block = world.getBlockState(pos).getBlock();
 		if (world.getBlockState(pos.north()).getBlock() == block) {
 			return ChestShape.NORTH;
 		} else if (world.getBlockState(pos.south()).getBlock() == block) {

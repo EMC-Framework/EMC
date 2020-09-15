@@ -56,7 +56,7 @@ public class ChunkBlockPosition extends BlockPosition {
 		return DoubleBlockPosition.fromMinecraftBlockPos(getMinecraftBlockPos());
 	}
 
-	public DoubleBoundingBox getEntityBoundingBox() {
+	public DoubleBoundingBox getBoundingBox() {
 		return new DoubleBoundingBox(getStartX(), 0, getStartZ(), getEndX(), 255, getEndZ());
 	}
 

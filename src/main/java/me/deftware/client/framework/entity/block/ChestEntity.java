@@ -1,6 +1,7 @@
 package me.deftware.client.framework.entity.block;
 
 import me.deftware.client.framework.math.box.BoundingBox;
+import me.deftware.client.framework.world.block.types.ChestBlock;
 import net.minecraft.block.BlockChest;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityEnderChest;
@@ -15,16 +16,16 @@ public class ChestEntity extends StorageEntity {
 	}
 
 	@Override
-	public BoundingBox getEntityBoundingBox() {
+	public BoundingBox getBoundingBox() {
 		return me.deftware.client.framework.world.block.types.ChestBlock.getChestBoundingBox(isDouble(), getBlockPosition(), null);
 	}
 
 	public boolean isFirst() {
-		return false; //return !isEnderChest() && entity.getBlockState().get(BlockChest.TYPE) == ChestType.LEFT;
+		return ChestBlock.isFirstChest(getBlockPosition().getMinecraftBlockPos());
 	}
 
 	public boolean isDouble() {
-		return false; //return !isEnderChest() && entity.getBlockState().get(BlockChest.TYPE) != ChestType.SINGLE;
+		return ChestBlock.getChestShape(getBlockPosition().getMinecraftBlockPos()) != ChestBlock.ChestShape.SINGLE;
 	}
 
 	public boolean isEnderChest() {

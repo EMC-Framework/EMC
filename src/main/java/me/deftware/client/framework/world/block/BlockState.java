@@ -2,12 +2,14 @@ package me.deftware.client.framework.world.block;
 
 import me.deftware.client.framework.math.position.BlockPosition;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.math.BlockPos;
 
 /**
  * @author Deftware
  */
 public class BlockState {
 
+	public BlockPos pos;
 	protected final IBlockState blockState;
 	protected final Material material;
 

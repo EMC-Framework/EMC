@@ -95,7 +95,7 @@ public class Entity {
 		return entity;
 	}
 
-	public BoundingBox getEntityBoundingBox() {
+	public BoundingBox getBoundingBox() {
 		return boundingBox;
 	}
 

@@ -17,8 +17,8 @@ public class StorageBlock extends InteractableBlock {
 		return new StorageBlock(block);
 	}
 
-	public BoundingBox getEntityBoundingBox(BlockState state) {
-		return getBlockPosition().getEntityBoundingBox();
+	public BoundingBox getBoundingBox(BlockState state) {
+		return getBlockPosition().getBoundingBox();
 	}
 	
 	protected StorageBlock(net.minecraft.block.Block block) {

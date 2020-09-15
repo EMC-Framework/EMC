@@ -50,7 +50,6 @@ public class Bootstrap {
 
     public static void init() {
         try {
-            Keyboard.populateCodePoints();
             for (int i = 0; i < 200; i++) {
                 if (System.getProperty("logging" + i, "null").equalsIgnoreCase("null")) break;
                 logger.debug(System.getProperty("logging" + i));

@@ -23,7 +23,7 @@ public class TileEntity {
 		return new TileEntity(entity);
 	}
 
-	public BoundingBox getEntityBoundingBox() {
+	public BoundingBox getBoundingBox() {
 		return SINGLE;
 	}
 
@@ -34,7 +34,7 @@ public class TileEntity {
 	protected TileEntity(net.minecraft.tileentity.TileEntity entity) {
 		this.entity = entity;
 		this.position = new TileBlockPosition(entity);
-		SINGLE = getBlockPosition().getEntityBoundingBox();
+		SINGLE = getBlockPosition().getBoundingBox();
 	}
 	
 	public String getClassName() {
