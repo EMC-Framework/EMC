@@ -61,6 +61,7 @@ public class ChatMessage {
 	 * Converts an old style formatted string to a {@link ChatMessage} object
 	 */
 	public ChatMessage fromString(String text, char formattingChar) {
+		if (text == null) text = "";
 		if (!text.contains(String.valueOf(formattingChar))) {
 			// No need to parse if the string doesnt have any formatting
 			sectionList.add(new ChatSection(text));
