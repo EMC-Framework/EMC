@@ -36,7 +36,7 @@ public abstract class MixinWorld implements IMixinWorld {
 		return emcTileEntities.values();
 	}
 
-	@Inject(method = "addTileEntity", at = @At("TAIL"))
+	@Inject(method = "addTileEntity", at = @At("HEAD"))
 	public void addBlockEntity(net.minecraft.tileentity.TileEntity blockEntity, CallbackInfoReturnable<Boolean> ci) {
 		emcTileEntities.put(blockEntity, TileEntity.newInstance(blockEntity));
 	}

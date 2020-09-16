@@ -36,6 +36,11 @@ public abstract class GuiSlot extends net.minecraft.client.gui.GuiSlot implement
 	}
 
 	@Override
+	public void doHandleMouse() {
+
+	}
+
+	@Override
 	protected void drawSlot(int slotIndex, int xPos, int yPos, int heightIn, int mouseXIn, int mouseYIn, float partialTicks) {
 		drawISlot(slotIndex, xPos, yPos);
 	}

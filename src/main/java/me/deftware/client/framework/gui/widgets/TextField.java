@@ -85,6 +85,7 @@ public class TextField extends GuiTextField implements GuiEventListener {
 	@Override
 	public void doHandleMouse() { }
 
+
 	@Override
 	public void doKeyTyped(char typedChar, int keyCode) {
 		textboxKeyTyped(typedChar, keyCode);

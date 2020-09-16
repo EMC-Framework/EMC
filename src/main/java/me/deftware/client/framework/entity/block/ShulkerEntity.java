@@ -9,11 +9,10 @@ import java.awt.*;
  */
 public class ShulkerEntity extends StorageEntity {
 
-	private final Color color;
+	private Color color;
 
 	public ShulkerEntity(net.minecraft.tileentity.TileEntity entity) {
 		super(entity);
-		color = new Color(getMinecraftEntity().getColor().getColorValue());
 	}
 
 	@Override
@@ -22,6 +21,9 @@ public class ShulkerEntity extends StorageEntity {
 	}
 
 	public Color getColor() {
+		if (color == null) {
+			color = new Color(getMinecraftEntity().getColor().getColorValue());
+		}
 		return color;
 	}
 
