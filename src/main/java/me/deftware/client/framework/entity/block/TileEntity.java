@@ -12,7 +12,7 @@ import net.minecraft.tileentity.TileEntityLockable;
  */
 public class TileEntity {
 
-	protected final BoundingBox SINGLE;
+	private BoundingBox SINGLE;
 	protected final net.minecraft.tileentity.TileEntity entity;
 	protected final BlockPosition position;
 
@@ -24,6 +24,9 @@ public class TileEntity {
 	}
 
 	public BoundingBox getBoundingBox() {
+		if (SINGLE == null) {
+			SINGLE = getBlockPosition().getBoundingBox();
+		}
 		return SINGLE;
 	}
 
@@ -34,7 +37,6 @@ public class TileEntity {
 	protected TileEntity(net.minecraft.tileentity.TileEntity entity) {
 		this.entity = entity;
 		this.position = new TileBlockPosition(entity);
-		SINGLE = getBlockPosition().getBoundingBox();
 	}
 	
 	public String getClassName() {

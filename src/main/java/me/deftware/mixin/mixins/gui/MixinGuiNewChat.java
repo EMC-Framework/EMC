@@ -70,7 +70,7 @@ public abstract class MixinGuiNewChat implements IMixinGuiNewChat {
     @ModifyVariable(method = "printChatMessageWithOptionalDeletion", at = @At("HEAD"))
     public IChatComponent addMessage(IChatComponent chatComponent) {
         event = new EventChatReceive(new ChatMessage().fromText(chatComponent, true)).broadcast();
-        return event.getMessage().build();
+        return chatComponent;
     }
 
     @Inject(method = "printChatMessageWithOptionalDeletion", at = @At("HEAD"), cancellable = true)
