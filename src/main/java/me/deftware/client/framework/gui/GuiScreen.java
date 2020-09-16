@@ -14,6 +14,7 @@ import me.deftware.client.framework.render.texture.Texture;
 import me.deftware.client.framework.util.ResourceUtils;
 import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
 import me.deftware.client.framework.util.types.Tuple;
+import me.deftware.client.framework.world.World;
 import me.deftware.mixin.imp.IMixinGuiScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
@@ -87,7 +88,7 @@ public abstract class GuiScreen extends Screen {
 
 	@Override
 	public void render(int mouseX, int mouseY, float partialTicks) {
-		GlStateHelper.enableBlend();
+		if (World.isLoaded()) GlStateHelper.enableBlend();
 		Mouse.updateMousePosition();
 		onDraw(mouseX, mouseY, partialTicks);
 		super.render(mouseX, mouseY, partialTicks);
