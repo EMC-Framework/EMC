@@ -21,7 +21,7 @@ public class FontRenderer {
 	}
 
 	public static int getFontHeight() {
-		return net.minecraft.client.Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT;
+		return 9;
 	}
 
 	public static int getStringWidth(ChatMessage string) {
