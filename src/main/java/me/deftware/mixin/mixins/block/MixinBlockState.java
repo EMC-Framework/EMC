@@ -88,11 +88,6 @@ public abstract class MixinBlockState {
 
     @Inject(method = "getCollisionShape(Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/entity/EntityContext;)Lnet/minecraft/util/shape/VoxelShape;", at = @At("HEAD"), cancellable = true)
     public void getCollisionShape(BlockView world, BlockPos pos, EntityContext context, CallbackInfoReturnable<VoxelShape> ci) {
-        EventVoxelShape event = new EventVoxelShape(this.getOutlineShape(world, pos), me.deftware.client.framework.world.block.Block.newInstance(this.getBlock()));
-        event.broadcast();
-        if (event.modified) {
-            ci.setReturnValue(event.shape);
-        } else {
             if (!this.getFluidState().isEmpty()) {
                 boolean fullCube = (boolean) SettingsMap.getValue(SettingsMap.MapKeys.BLOCKS, "LIQUID_VOXEL_FULL", false);
                 if (fullCube) {
@@ -101,15 +96,12 @@ public abstract class MixinBlockState {
                         fullCube = false;
                     }
                 }
-                ci.setReturnValue(fullCube
-                        ? VoxelShapes.fullCube()
-                        : event.shape);
+                if (fullCube) ci.setReturnValue(VoxelShapes.fullCube());
             } else if (this.getBlock() instanceof SweetBerryBushBlock) {
                 if ((boolean) SettingsMap.getValue(SettingsMap.MapKeys.BLOCKS, "custom_berry_voxel", false)) {
                     ci.setReturnValue(VoxelShapes.fullCube());
                 }
             }
-        }
     }
 
 }
