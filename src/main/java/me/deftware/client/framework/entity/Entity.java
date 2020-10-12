@@ -11,6 +11,7 @@ import me.deftware.client.framework.entity.types.animals.MobEntity;
 import me.deftware.client.framework.entity.types.animals.WaterEntity;
 import me.deftware.client.framework.entity.types.animals.WolfEntity;
 import me.deftware.client.framework.entity.types.objects.BoatEntity;
+import me.deftware.client.framework.entity.types.objects.EndCrystalEntity;
 import me.deftware.client.framework.entity.types.objects.ItemEntity;
 import me.deftware.client.framework.item.ItemStack;
 import me.deftware.client.framework.math.box.BoundingBox;
@@ -27,6 +28,7 @@ import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.item.EntityBoat;
+import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.IMob;
@@ -53,6 +55,8 @@ public class Entity {
 	public static Entity newInstance(net.minecraft.entity.Entity entity) {
 		if (entity instanceof net.minecraft.entity.player.EntityPlayer) {
 			return new EntityPlayer((net.minecraft.entity.player.EntityPlayer) entity);
+		} else if (entity instanceof EntityEnderCrystal) {
+			return new EndCrystalEntity(entity);
 		} else if (entity instanceof net.minecraft.entity.passive.EntityHorse) {
 			return new HorseEntity(entity);
 		} else if (entity instanceof EntityBoat) {
