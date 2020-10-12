@@ -63,6 +63,10 @@ public class EntityPlayer extends LivingEntity {
 		return ((net.minecraft.entity.player.EntityPlayer) entity).getGameProfile().getId();
 	}
 
+	public float getRotationHeadYaw() {
+		return getMinecraftEntity().rotationYawHead;
+	}
+
 	public String getUsername() {
 		return ((net.minecraft.entity.player.EntityPlayer) entity).getGameProfile().getName();
 	}
