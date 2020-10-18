@@ -124,7 +124,6 @@ public abstract class MixinWorldRenderer {
 			);
 		}
 		boolean result = renderManager.renderEntitySimple(entity, partialTicks);
-		System.out.println("HERE");
 		if (enabled) {
 			shaderTarget.getFramebuffer().bindFramebuffer(false);
 			renderManager.setRenderOutlines(true);
