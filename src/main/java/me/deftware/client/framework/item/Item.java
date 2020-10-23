@@ -1,6 +1,7 @@
 package me.deftware.client.framework.item;
 
 import me.deftware.client.framework.chat.ChatMessage;
+import me.deftware.client.framework.world.block.Block;
 import me.deftware.client.framework.item.types.BlockItem;
 import me.deftware.client.framework.item.types.FishingRodItem;
 import me.deftware.client.framework.item.types.PotionItem;
@@ -94,6 +95,13 @@ public class Item implements IItem {
 	@Override
 	public net.minecraft.item.Item getAsItem() {
 		return item;
+	}
+
+	public Block getAsBlock() {
+		if (instanceOf(ItemType.ItemBlock)) {
+			return Block.newInstance(((net.minecraft.item.ItemBlock) item).getBlock());
+		}
+		return null;
 	}
 
 }
