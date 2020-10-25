@@ -12,6 +12,7 @@ import me.deftware.mixin.imp.IMixinWorld;
 import me.deftware.mixin.imp.IMixinWorldClient;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.util.BlockPos;
@@ -42,6 +43,10 @@ public class World {
 
 	public static Stream<Entity> getLoadedEntities() {
 		return Objects.requireNonNull(((IMixinWorldClient) net.minecraft.client.Minecraft.getMinecraft().theWorld)).getLoadedEntitiesAccessor().values().stream();
+	}
+
+	public static int getDifficulty() {
+		return Objects.requireNonNull(Minecraft.getMinecraft().world).getDifficulty().getId();
 	}
 
 	public static long getWorldTime() {
