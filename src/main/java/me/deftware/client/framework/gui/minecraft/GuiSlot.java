@@ -37,7 +37,7 @@ public abstract class GuiSlot extends net.minecraft.client.gui.GuiSlot implement
 
 	@Override
 	public void doHandleMouse() {
-
+		handleMouseInput();
 	}
 
 	@Override
