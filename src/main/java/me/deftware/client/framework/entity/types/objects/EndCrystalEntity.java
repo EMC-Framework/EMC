@@ -10,7 +10,7 @@ public class EndCrystalEntity extends Entity {
 	}
 
 	public float getEntityDamage(Entity entity) {
-		return Minecraft.getMinecraft().world.getBlockDensity(entity.getMinecraftEntity().getPositionVector(), entity.getMinecraftEntity().getEntityBoundingBox());
+		return Minecraft.getMinecraft().theWorld.getBlockDensity(entity.getMinecraftEntity().getPositionVector(), entity.getMinecraftEntity().getEntityBoundingBox());
 	}
 
 }
