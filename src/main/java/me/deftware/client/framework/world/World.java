@@ -46,7 +46,7 @@ public class World {
 	}
 
 	public static int getDifficulty() {
-		return Objects.requireNonNull(Minecraft.getMinecraft().world).getDifficulty().getDifficultyId();
+		return Objects.requireNonNull(Minecraft.getMinecraft().theWorld).getDifficulty().getDifficultyId();
 	}
 
 	public static long getWorldTime() {
