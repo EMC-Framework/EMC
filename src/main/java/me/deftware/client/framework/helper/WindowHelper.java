@@ -5,6 +5,7 @@ import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
 import me.deftware.mixin.imp.IMixinEntityRenderer;
 import me.deftware.mixin.imp.IMixinMinecraft;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ScaledResolution;
 import org.lwjgl.opengl.Display;
 
 /**
@@ -24,8 +25,12 @@ public class WindowHelper {
 		return 0L;
 	}
 
+	private static ScaledResolution getScaledRes() {
+		return new ScaledResolution(Minecraft.getMinecraft());
+	}
+
 	public static double getScaleFactor() {
-		return Minecraft.getMinecraft().gameSettings.guiScale;
+		return getScaledRes().getScaleFactor();
 	}
 
 	public static void setScaleFactor(int factor) {
