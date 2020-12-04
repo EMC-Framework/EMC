@@ -36,7 +36,7 @@ public class Mouse {
 	}
 
 	public static boolean isButtonDown(int button) {
-		return org.lwjgl.input.Mouse.getEventButton() == button;
+		return org.lwjgl.input.Mouse.isButtonDown(button);
 	}
 
 	public static double getMouseX() {
