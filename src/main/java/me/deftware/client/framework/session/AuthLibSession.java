@@ -88,8 +88,8 @@ public class AuthLibSession {
 		map.put("displayName", username);
 		map.put("uuid", uuid);
 		userAuthentication.loadFromStorage(map);
-		((IMixinMinecraft) Minecraft.getInstance()).setSession(session);
-		((IMixinMinecraft) Minecraft.getInstance()).setSessionService(authenticationService.createMinecraftSessionService());
+		((IMixinMinecraft) Minecraft.getMinecraft()).setSession(session);
+		((IMixinMinecraft) Minecraft.getMinecraft()).setSessionService(authenticationService.createMinecraftSessionService());
 	}
 
 }
