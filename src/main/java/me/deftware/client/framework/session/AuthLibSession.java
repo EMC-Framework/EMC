@@ -10,6 +10,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.Session;
 
 import java.net.Proxy;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -77,6 +79,17 @@ public class AuthLibSession {
 
 	public void setOfflineSession(String username) {
 		((IMixinMinecraft) net.minecraft.client.Minecraft.getMinecraft()).setSession(new Session(username, "", "0", "legacy"));
+	}
+
+	public void setManualSession(String username, String uuid, String accessToken) {
+		Session session = new Session(username, uuid, accessToken, "mojang");
+		Map<String, Object> map = new HashMap<>();
+		map.put("accessToken", accessToken);
+		map.put("displayName", username);
+		map.put("uuid", uuid);
+		userAuthentication.loadFromStorage(map);
+		((IMixinMinecraft) Minecraft.getInstance()).setSession(session);
+		((IMixinMinecraft) Minecraft.getInstance()).setSessionService(authenticationService.createMinecraftSessionService());
 	}
 
 }
