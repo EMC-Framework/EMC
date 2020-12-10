@@ -45,6 +45,25 @@ public abstract class GuiSlot extends net.minecraft.client.gui.GuiSlot implement
 
 	protected abstract void drawISlot(int id, int x, int y);
 
+	@Override
+	public int getListWidth() {
+		return getCustomRowWidth();
+	}
+
+	@Override
+	protected int getScrollBarX() {
+		return getCustomScrollbarPositionX();
+	}
+
+	protected int getCustomRowWidth() {
+		return 220;
+	}
+
+	protected int getCustomScrollbarPositionX() {
+		return this.width / 2 + 124;
+	}
+
+
 	public int getSelectedSlot() {
 		return selectedSlot;
 	}
