@@ -27,7 +27,7 @@ public abstract class GuiSlot extends AlwaysSelectedEntryListWidget<GuiSlot.Cust
 	}
 
 	@Override
-	protected int getScrollbarPositionX() {
+	protected int getScrollbarPosition() {
 		return getCustomScrollbarPositionX();
 	}
 
