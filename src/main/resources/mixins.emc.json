@@ -40,7 +40,7 @@
     "gui.MixinShulkerBoxScreenHandler",
     "input.MixinKeyBinding",
     "input.MixinKeyboardListener",
-    "input.MixinMouseHelper",
+    "input.MixinMouseListener",
     "input.MixinMovementInputFromOptions",
     "item.MixinEnchantments",
     "item.MixinItems",
