@@ -18,13 +18,13 @@ public class Enchantment {
 	}
 
 	public String getTranslationKey() {
-		return enchantment.getName();
+		return net.minecraft.enchantment.Enchantment.REGISTRY.getNameForObject(enchantment).toString();
 	}
 
 	public String getEnchantmentKey() {
 		String key = getTranslationKey();
-		if (key.startsWith("enchantment.minecraft")) {
-			key = key.substring("enchantment.minecraft.".length());
+		if (key.startsWith("minecraft")) {
+			key = key.substring("minecraft.".length());
 		}
 		return key;
 	}

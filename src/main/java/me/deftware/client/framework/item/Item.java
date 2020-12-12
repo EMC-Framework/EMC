@@ -57,7 +57,7 @@ public class Item implements IItem {
 	}
 
 	public String getIdentifierKey() {
-		return ItemRegistry.INSTANCE.namesTranslated.getOrDefault(getTranslationKey(), getTranslationKey());
+		return getTranslationKey().substring("minecraft:".length());
 	}
 
 	public boolean isAir() {
@@ -65,7 +65,7 @@ public class Item implements IItem {
 	}
 
 	public String getTranslationKey() {
-		return item.getTranslationKey();
+		return net.minecraft.item.Item.REGISTRY.getNameForObject(this.item).toString();
 	}
 
 	public int getID() {

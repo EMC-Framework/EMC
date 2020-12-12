@@ -26,7 +26,7 @@ public class StatusEffect {
 	}
 
 	public String getTranslationKey() {
-		return statusEffect.getName();
+		return Potion.REGISTRY.getNameForObject(statusEffect).toString();
 	}
 
 }

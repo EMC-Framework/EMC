@@ -82,11 +82,11 @@ public class Block implements IItem {
 	}
 
 	public String getIdentifierKey() {
-		return getTranslationKey().substring("block.".length());
+		return getTranslationKey().substring("minecraft:".length());
 	}
 
 	public String getTranslationKey() {
-		return block.getTranslationKey();
+		return net.minecraft.block.Block.REGISTRY.getNameForObject(block).toString();
 	}
 
 	public boolean instanceOf(BlockType type) {

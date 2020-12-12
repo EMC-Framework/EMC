@@ -14,8 +14,6 @@ public enum ItemRegistry implements IRegistry<Item, net.minecraft.item.Item> {
 	INSTANCE;
 
 	private final HashMap<String, Item> items = new HashMap<>();
-	private final HashMap<String, String> translatedNames = new HashMap<>();
-	public final HashMap<String, String> namesTranslated = new HashMap<>();
 
 	@Override
 	public Stream<Item> stream() {
@@ -25,21 +23,15 @@ public enum ItemRegistry implements IRegistry<Item, net.minecraft.item.Item> {
 	@Override
 	public void register(String id, net.minecraft.item.Item object) {
 		items.putIfAbsent(id, Item.newInstance(object));
-		translatedNames.put(id.substring("minecraft:".length()), object.getTranslationKey());
-		namesTranslated.put(object.getTranslationKey(), id.substring("minecraft:".length()));
 	}
 
 	@Override
 	public Optional<Item> find(String id) {
-		id = id.replace("enchanted_golden_apple", "golden_apple");
-		if (translatedNames.containsKey(id)) {
-			id = translatedNames.get(id);
-		}
-		String finalId = id;
+		String finalId;
+		if (id.equalsIgnoreCase("enchanted_golden_apple")) finalId = "golden_apple"; else finalId = id;
 		return stream().filter(item ->
 				item.getTranslationKey().equalsIgnoreCase(finalId) ||
-						item.getTranslationKey().substring("item:".length()).equalsIgnoreCase(finalId) ||
-						item.getTranslationKey().substring("block:".length()).equalsIgnoreCase(finalId)
+						item.getTranslationKey().substring("minecraft:".length()).equalsIgnoreCase(finalId)
 		).findFirst();
 	}
 

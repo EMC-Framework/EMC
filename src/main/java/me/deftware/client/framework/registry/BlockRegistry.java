@@ -14,7 +14,6 @@ public enum BlockRegistry implements IRegistry<Block, net.minecraft.block.Block>
 	INSTANCE;
 
 	private final HashMap<String, Block> blocks = new HashMap<>();
-	private final HashMap<String, String> translatedNames = new HashMap<>();
 
 	@Override
 	public Stream<Block> stream() {
@@ -24,18 +23,13 @@ public enum BlockRegistry implements IRegistry<Block, net.minecraft.block.Block>
 	@Override
 	public void register(String id, net.minecraft.block.Block object) {
 		blocks.putIfAbsent(id, Block.newInstance(object));
-		translatedNames.put(id.substring("minecraft:".length()), object.getTranslationKey());
 	}
 
 	@Override
 	public Optional<Block> find(String id) {
-		if (translatedNames.containsKey(id)) {
-			id = translatedNames.get(id);
-		}
-		String finalId = id;
 		return stream().filter(block ->
-			block.getTranslationKey().equalsIgnoreCase(finalId) ||
-					block.getTranslationKey().substring("block:".length()).equalsIgnoreCase(finalId)
+				block.getTranslationKey().equalsIgnoreCase(id) ||
+						block.getTranslationKey().substring("minecraft:".length()).equalsIgnoreCase(id)
 		).findFirst();
 	}
 
