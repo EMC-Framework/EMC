@@ -8,6 +8,7 @@
     "block.MixinBlock",
     "block.MixinBlockCactus",
     "block.MixinBlocks",
+    "block.MixinBlockLiquid",
     "block.MixinBlockSoulSand",
     "entity.MixinAbstractClientPlayer",
     "entity.MixinAbstractHorse",

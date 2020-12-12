@@ -41,12 +41,6 @@ public abstract class MixinBlock {
         event.broadcast();
         if (event.modified) {
             ci.setReturnValue(event.shape);
-        } else {
-            if (p_getShapeForCollision_1_.getBlock() instanceof BlockLiquid) {
-                ci.setReturnValue((boolean) SettingsMap.getValue(SettingsMap.MapKeys.BLOCKS, "LIQUID_VOXEL_FULL", false)
-                        ? Block.FULL_BLOCK_AABB
-                        : Block.NULL_AABB);
-            }
         }
     }
 
