@@ -27,7 +27,7 @@ public enum MinecraftKeyBind {
 	}
 
 	public boolean isPressed() {
-		return this.bind.isPressed();
+		return this.bind.isKeyDown();
 	}
 
 	public void setPressed(boolean state) {
