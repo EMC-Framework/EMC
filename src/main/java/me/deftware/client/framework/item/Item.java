@@ -32,6 +32,8 @@ public class Item implements IItem {
 			return new WeaponItem(item);
 		} else if (item instanceof ItemTool) {
 			return new ToolItem(item);
+		} else if (item.getCreativeTab() == CreativeTabs.tabFood) {
+			return new FoodItem(item);
 		} else if (item instanceof ItemBlock) {
 			return new BlockItem(item);
 		} else if (item instanceof ItemPotion) {
@@ -40,8 +42,6 @@ public class Item implements IItem {
 			return new FishingRodItem(item);
 		} else if (item instanceof ItemBow || item instanceof ItemSnowball) {
 			return new RangedWeaponItem(item);
-		} else if (item.getCreativeTab() == CreativeTabs.tabFood) {
-			return new FoodItem(item);
 		}
 		return new Item(item);
 	}
