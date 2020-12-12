@@ -34,15 +34,25 @@ public abstract class MixinNetworkManager implements IMixinNetworkManager {
         }
     }
 
+    @Redirect(method = "sendPacket(Lnet/minecraft/network/Packet;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/NetworkManager;dispatchPacket(Lnet/minecraft/network/Packet;[Lio/netty/util/concurrent/GenericFutureListener;)V"))
+    private void sendPacket$dispatchPacket2(NetworkManager networkManager, Packet<?> inPacket, GenericFutureListener<? extends Future<? super Void>>[] futureListeners) {
+        handlePacket(inPacket, null);
+    }
+
     @Redirect(method = "sendPacket(Lnet/minecraft/network/Packet;Lio/netty/util/concurrent/GenericFutureListener;[Lio/netty/util/concurrent/GenericFutureListener;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/NetworkManager;dispatchPacket(Lnet/minecraft/network/Packet;[Lio/netty/util/concurrent/GenericFutureListener;)V"))
     private void sendPacket$dispatchPacket(NetworkManager networkManager, Packet<?> packetIn, final GenericFutureListener<? extends Future<? super Void>>[] futureListeners) {
-        EventPacketSend event = new EventPacketSend(packetIn);
+        handlePacket(packetIn, futureListeners);
+    }
+
+    private void handlePacket(Packet<?> packet, GenericFutureListener<? extends Future<? super Void>>[] futureListeners) {
+        EventPacketSend event = new EventPacketSend(packet);
         event.broadcast();
         if (event.isCanceled()) {
             return;
         }
         dispatchPacket(event.getPacket(), futureListeners);
     }
+
 
     public void sendPacketImmediately(Packet<?> packet) {
         dispatchPacket(packet, null);
