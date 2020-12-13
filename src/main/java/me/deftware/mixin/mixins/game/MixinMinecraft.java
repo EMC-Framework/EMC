@@ -117,6 +117,7 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
         if (currentScreen != null) {
             return;
         }
+        if (inGameHasFocus) new EventKeyAction(Mouse.getEventButton()).broadcast();
         new EventMouseClick(Mouse.getEventButton()).broadcast();
     }
 

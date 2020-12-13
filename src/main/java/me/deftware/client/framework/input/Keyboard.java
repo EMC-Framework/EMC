@@ -15,7 +15,9 @@ import java.net.URI;
 public class Keyboard {
 
 	public static String getKeyName(int glfwCodePoint) {
-		return org.lwjgl.input.Keyboard.getKeyName(GLFW.fromGLFW.getOrDefault(glfwCodePoint, glfwCodePoint));
+		String name = org.lwjgl.input.Keyboard.getKeyName(GLFW.fromGLFW.getOrDefault(glfwCodePoint, glfwCodePoint));
+		if (!name.equals("NONE")) return name;
+		return org.lwjgl.input.Mouse.getButtonName(GLFW.fromGLFW.getOrDefault(glfwCodePoint, glfwCodePoint));
 	}
 
 	public static String getClipboardString() {
