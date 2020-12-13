@@ -116,8 +116,8 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
         if (currentScreen != null) {
             return;
         }
-        if (inGameHasFocus) new EventKeyAction(Mouse.getEventButton()).broadcast();
-        new EventMouseClick(Mouse.getEventButton()).broadcast();
+        if (inGameHasFocus && Mouse.getEventButtonState()) new EventKeyAction(Mouse.getEventButton()).broadcast();
+        new EventMouseClick(Mouse.getEventButton(), Mouse.getEventButtonState()).broadcast();
     }
 
     @Inject(method = "runTickKeyboard", at = @At(value = "INVOKE_ASSIGN", target = "org/lwjgl/input/Keyboard.getEventKeyState()Z", remap = false))

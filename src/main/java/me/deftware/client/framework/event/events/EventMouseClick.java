@@ -10,9 +10,9 @@ public class EventMouseClick extends Event {
 
 	private int button, action, modifiers;
 
-	public EventMouseClick(int button) {
+	public EventMouseClick(int button, boolean action) {
 		this.button = button;
-		this.action = 0;
+		this.action = action ? 1 : 0;
 		this.modifiers = 0;
 	}
 
