@@ -105,6 +105,9 @@ shadowJar {
     dependencies {
         include(dependency('org.spongepowered:mixin'))
         include(dependency('com.mojang:brigadier'))
+        if (forgeBuild) {
+            include(dependency('it.unimi.dsi:fastutil'))
+        }
     }
     classifier = null
 }
