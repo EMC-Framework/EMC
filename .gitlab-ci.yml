@@ -24,6 +24,7 @@ build:
 deploy:
   image: node:latest
   stage: deploy
+  resource_group: production
   dependencies:
     - build
   variables:
