@@ -5,6 +5,7 @@ import me.deftware.client.framework.event.events.EventMouseClick;
 import me.deftware.client.framework.input.Mouse;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHelper;
+import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,7 +22,7 @@ public class MixinMouseListener {
 	@Inject(at = @At(value = "FIELD", target = "Lnet/minecraft/client/MouseHelper;mouseGrabbed:Z"), method = "mouseButtonCallback")
 	public void onMouseButton(long window, int button, int action, int mods, CallbackInfo ci) {
 		// if mouse is already locked and button sanity check
-		if (mouseGrabbed && button >= 0 && button <= 7) {
+		if (mouseGrabbed && button >= 0 && button <= 7 && action == GLFW.GLFW_PRESS) {
 			new EventKeyAction(button, action, mods).broadcast();
 		}
 	}
