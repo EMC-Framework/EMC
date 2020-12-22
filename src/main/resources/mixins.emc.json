@@ -20,6 +20,7 @@
     "entity.MixinPlayerControllerMP",
     "entity.MixinPlayerEntity",
     "entity.MixinStatusEffects",
+    "entity.MixinEntityType",
     "game.MixinClientChunkManager",
     "game.MixinMinecraft",
     "game.MixinSoundSystem",
