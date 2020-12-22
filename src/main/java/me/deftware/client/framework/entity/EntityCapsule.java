@@ -27,7 +27,7 @@ public class EntityCapsule {
 
     public me.deftware.client.framework.entity.Entity create() {
         return me.deftware.client.framework.entity.Entity.newInstance(EntityList.createEntityByName(entityName,
-                Objects.requireNonNull(Minecraft.getMinecraft().world)
+                Objects.requireNonNull(Minecraft.getMinecraft().theWorld)
         ));
     }
 
