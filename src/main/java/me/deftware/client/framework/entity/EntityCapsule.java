@@ -15,18 +15,18 @@ import java.util.Objects;
 public class EntityCapsule {
 
     private final Class<? extends Entity> entityType;
-    private final ResourceLocation resourceLocation;
+    private final String entityName;
     private ResourceLocation texture;
     private final String id;
 
-    public <T extends Entity> EntityCapsule(String id, Class<T> entityType, ResourceLocation resourceLocation) {
+    public <T extends Entity> EntityCapsule(String id, Class<T> entityType, String entityName) {
         this.entityType = entityType;
         this.id = id;
-        this.resourceLocation = resourceLocation;
+        this.entityName = entityName;
     }
 
     public me.deftware.client.framework.entity.Entity create() {
-        return me.deftware.client.framework.entity.Entity.newInstance(EntityList.newEntity(entityType,
+        return me.deftware.client.framework.entity.Entity.newInstance(EntityList.createEntityByName(entityName,
                 Objects.requireNonNull(Minecraft.getMinecraft().world)
         ));
     }
@@ -40,7 +40,7 @@ public class EntityCapsule {
     }
 
     public ChatMessage getName() {
-        return new ChatMessage().fromString(getTranslationKey());
+        return new ChatMessage().fromString(entityName);
     }
 
     public void setTexture(ResourceLocation identifier) {
@@ -53,11 +53,11 @@ public class EntityCapsule {
     }
 
     public MinecraftIdentifier getIdentifier() {
-        return new MinecraftIdentifier(resourceLocation);
+        return new MinecraftIdentifier(entityName);
     }
 
     public String getTranslationKey() {
-        return EntityList.getTranslationName(resourceLocation);
+        return entityName;
     }
 
 }

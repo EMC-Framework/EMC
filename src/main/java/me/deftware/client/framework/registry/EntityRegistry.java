@@ -36,8 +36,8 @@ public enum EntityRegistry implements IRegistry<EntityCapsule, Class<? extends E
         throw new UnsupportedOperationException("Unsupport method");
     }
 
-    public void register(String id, Class<? extends Entity> object, ResourceLocation key) {
-        entities.putIfAbsent(id, new EntityCapsule(id, object, key));
+    public void register(String id, Class<? extends Entity> object, String entityName) {
+        entities.putIfAbsent(id, new EntityCapsule(id, object, entityName));
     }
 
 }
