@@ -12,7 +12,7 @@ public class MinecraftIdentifier extends ResourceLocation {
 	}
 
 	public MinecraftIdentifier(ResourceLocation identifier) {
-		super(identifier.getNamespace(), identifier.getPath());
+		super(identifier.getResourceDomain(), identifier.getResourcePath());
 	}
 
 	public MinecraftIdentifier(String namespace, String path) {
