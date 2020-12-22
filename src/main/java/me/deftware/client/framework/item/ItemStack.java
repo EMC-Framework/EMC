@@ -5,6 +5,8 @@ import me.deftware.client.framework.conversion.ConvertedList;
 import me.deftware.client.framework.item.effect.AppliedStatusEffect;
 import me.deftware.client.framework.item.effect.StatusEffect;
 import me.deftware.client.framework.item.enchantment.Enchantment;
+import me.deftware.client.framework.item.types.SwordItem;
+import me.deftware.client.framework.item.types.WeaponItem;
 import me.deftware.client.framework.math.position.BlockPosition;
 import me.deftware.client.framework.nbt.NbtCompound;
 import me.deftware.client.framework.nbt.NbtList;
@@ -15,7 +17,9 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityGroup;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.item.ArmorItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.potion.PotionUtil;
@@ -24,10 +28,7 @@ import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.math.MathHelper;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author Deftware
@@ -87,8 +88,22 @@ public class ItemStack {
 		return enchantments;
 	}
 
+	public int getStackProtectionAmount() {
+		int protection = EnchantmentHelper.getProtectionAmount(Collections.singletonList(itemStack), DamageSource.GENERIC);
+		if (item.getMinecraftItem() instanceof ArmorItem) {
+			protection += ((ArmorItem) item.getMinecraftItem()).getProtection();
+		}
+		return protection;
+	}
+
 	public float getStackAttackDamage() {
-		return EnchantmentHelper.getAttackDamage(itemStack, EntityGroup.DEFAULT);
+		float damage = EnchantmentHelper.getAttackDamage(itemStack, EntityGroup.DEFAULT);
+		if (item instanceof SwordItem) {
+			damage += ((SwordItem) item).getAttackDamage();
+		} else if (item instanceof WeaponItem) {
+			damage += ((WeaponItem) item).getAttackDamage();
+		}
+		return damage;
 	}
 
 	public boolean isEnchantable() {
