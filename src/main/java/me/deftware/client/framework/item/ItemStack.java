@@ -5,6 +5,8 @@ import me.deftware.client.framework.conversion.ConvertedList;
 import me.deftware.client.framework.item.effect.AppliedStatusEffect;
 import me.deftware.client.framework.item.effect.StatusEffect;
 import me.deftware.client.framework.item.enchantment.Enchantment;
+import me.deftware.client.framework.item.types.SwordItem;
+import me.deftware.client.framework.item.types.WeaponItem;
 import me.deftware.client.framework.math.position.BlockPosition;
 import me.deftware.client.framework.nbt.NbtCompound;
 import me.deftware.client.framework.nbt.NbtList;
@@ -15,7 +17,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.EnumCreatureAttribute;
+import net.minecraft.init.Enchantments;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.EnumRarity;
+import net.minecraft.item.ItemArmor;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.potion.PotionEffect;
@@ -86,8 +92,22 @@ public class ItemStack {
 		return enchantments;
 	}
 
+	public int getStackProtectionAmount() {
+		int protection = EnchantmentHelper.getEnchantmentModifierDamage(Collections.singletonList(itemStack), DamageSource.GENERIC);
+		if (item.getMinecraftItem() instanceof ItemArmor) {
+			protection += ((ItemArmor) item.getMinecraftItem()).damageReduceAmount;
+		}
+		return protection;
+	}
+
 	public float getStackAttackDamage() {
-		return EnchantmentHelper.getEnchantmentModifierDamage(Collections.singleton(itemStack), DamageSource.GENERIC);
+		float damage = EnchantmentHelper.getModifierForCreature(itemStack, EnumCreatureAttribute.UNDEFINED);
+		if (item instanceof SwordItem) {
+			damage += ((SwordItem) item).getAttackDamage();
+		} else if (item instanceof WeaponItem) {
+			damage += ((WeaponItem) item).getAttackDamage();
+		}
+		return damage;
 	}
 
 	public boolean isEnchantable() {
