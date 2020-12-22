@@ -19,6 +19,7 @@
     "entity.MixinPlayerControllerMP",
     "entity.MixinPlayerEntity",
     "entity.MixinStatusEffects",
+    "entity.MixinEntityType",
     "game.MixinClientBrandRetriever",
     "game.MixinClientChunkManager",
     "game.MixinMinecraft",
