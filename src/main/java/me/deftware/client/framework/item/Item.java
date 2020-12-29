@@ -32,7 +32,7 @@ public class Item implements IItem {
 			return new WeaponItem(item);
 		} else if (item instanceof ItemTool) {
 			return new ToolItem(item);
-		} else if (item.getCreativeTab() == CreativeTabs.tabFood) {
+		} else if (item.getCreativeTab() == CreativeTabs.tabFood && !(item instanceof ItemBlockSpecial)) {
 			return new FoodItem(item);
 		} else if (item instanceof ItemBlock) {
 			return new BlockItem(item);
@@ -48,6 +48,10 @@ public class Item implements IItem {
 
 	protected Item(net.minecraft.item.Item item) {
 		this.item = item;
+	}
+
+	public String getTranslationKey() {
+		return item.getUnlocalizedName();
 	}
 
 	public net.minecraft.item.Item getMinecraftItem() {
@@ -71,7 +75,7 @@ public class Item implements IItem {
 	}
 
 	public ChatMessage getName() {
-		return new ChatMessage().fromString(item.getUnlocalizedName());
+		return new ChatMessage().fromString(item.getItemStackDisplayName(new ItemStack(item, 1)));
 	}
 
 	@Override

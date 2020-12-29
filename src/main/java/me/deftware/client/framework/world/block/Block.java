@@ -45,6 +45,10 @@ public class Block implements IItem {
 		return block;
 	}
 
+	public String getTranslationKey() {
+		return block.getUnlocalizedName();
+	}
+
 	@Override
 	public boolean equals(Object object) {
 		if (object instanceof Block) {
