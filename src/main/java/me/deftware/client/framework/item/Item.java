@@ -32,7 +32,7 @@ public class Item implements IItem {
 			return new WeaponItem(item);
 		} else if (item instanceof ItemTool) {
 			return new ToolItem(item);
-		} else if (item.getCreativeTab() == CreativeTabs.tabFood && !(item instanceof ItemBlockSpecial)) {
+		} else if (item instanceof ItemFood) {
 			return new FoodItem(item);
 		} else if (item instanceof ItemBlock) {
 			return new BlockItem(item);
