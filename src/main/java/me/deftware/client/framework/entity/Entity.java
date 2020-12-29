@@ -373,7 +373,7 @@ public class Entity {
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof EntityCapsule) {
-			return ((EntityCapsule) o).getTranslationKey().equalsIgnoreCase(entity.getType().getTranslationKey());
+			return ((EntityCapsule) o).getTranslationKey().equalsIgnoreCase(getEntityTypeName());
 		}
 		return super.equals(o);
 	}
