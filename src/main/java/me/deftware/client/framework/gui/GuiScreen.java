@@ -29,10 +29,12 @@ import java.util.Objects;
  * @author Deftware
  */
 public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen {
+
+	private static final HashMap<String, Texture> textureHashMap = new HashMap<>();
+
 	public GuiScreen parent;
 	protected boolean escGoesBack = true;
 	protected ScreenInstance parentInstance;
-	protected HashMap<String, Texture> textureHashMap = new HashMap<>();
 	protected List<Tuple<Integer, Integer, ChatMessage>> compiledText = new ArrayList<>();
 
 	public GuiScreen() {
@@ -181,7 +183,11 @@ public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen {
 		compiledText.clear();
 	}
 
-	protected void drawTexture(EMCMod mod, String texture, int x, int y, int width, int height) {
+	public static void drawTexture(EMCMod mod, String texture, int x, int y, int width, int height) {
+		drawTexture(mod, texture, x, y, 0, 0, width, height, width, height);
+	}
+
+	public static void drawTexture(EMCMod mod, String texture, int x, int y, int u, int v, int width, int height, int textureWidth, int textureHeight) {
 		// TODO: Redo this function
 		GL11.glPushMatrix();
 		if (!textureHashMap.containsKey(texture)) {
@@ -199,14 +205,18 @@ public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen {
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 			textureHashMap.get(texture).updateTexture();
 		}
-		drawModalRectWithCustomSizedTexture(x, y, 0, 0, width, height, width, height);
+		drawModalRectWithCustomSizedTexture(x, y, u, v, width, height, textureWidth, textureHeight);
 		GL11.glPopMatrix();
 	}
 
-	protected void drawTexture(MinecraftIdentifier texture, int x, int y, int width, int height) {
+	public static void drawTexture(MinecraftIdentifier texture, int x, int y, int width, int height) {
+		drawTexture(texture, x, y, 0, 0, width, height, width, height);
+	}
+
+	public static void drawTexture(MinecraftIdentifier texture, int x, int y, int u, int v, int width, int height, int textureWidth, int textureHeight) {
 		net.minecraft.client.Minecraft.getInstance().getTextureManager().bindTexture(texture);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		net.minecraft.client.gui.GuiScreen.drawModalRectWithCustomSizedTexture(x, y, 0, 0, width, height, width, height);
+		net.minecraft.client.gui.GuiScreen.drawModalRectWithCustomSizedTexture(x, y, u, v, width, height, textureWidth, textureHeight);
 	}
 
 	protected void goBack() {
