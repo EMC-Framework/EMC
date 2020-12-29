@@ -373,4 +373,12 @@ public class Entity {
 		return new Vector3d(entity.motionX, entity.motionY, entity.motionZ);
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof EntityCapsule) {
+			return ((EntityCapsule) o).getTranslationKey().equalsIgnoreCase(entity.getType().getTranslationKey());
+		}
+		return super.equals(o);
+	}
+
 }
