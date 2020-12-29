@@ -62,7 +62,7 @@ public class Item implements IItem {
 	}
 
 	public String getTranslationKey() {
-		return net.minecraft.item.Item.REGISTRY.getNameForObject(this.item).toString();
+		return item.getTranslationKey();
 	}
 
 	public int getID() {
