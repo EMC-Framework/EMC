@@ -6,15 +6,12 @@ import me.deftware.client.framework.item.types.FishingRodItem;
 import me.deftware.client.framework.item.types.PotionItem;
 import me.deftware.client.framework.item.types.RangedWeaponItem;
 import me.deftware.client.framework.item.types.ToolItem;
-import me.deftware.client.framework.item.types.TridentItem;
 import me.deftware.client.framework.item.types.*;
-import me.deftware.client.framework.registry.ItemRegistry;
 import me.deftware.client.framework.world.block.Block;
-import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.*;
-import net.minecraft.util.registry.IRegistry;
+import net.minecraft.item.ItemStack;
 
 /**
  * @author Deftware
@@ -34,7 +31,7 @@ public class Item implements IItem {
 			return new WeaponItem(item);
 		} else if (item instanceof ItemTool) {
 			return new ToolItem(item);
-		} else if (item.getCreativeTab() == CreativeTabs.FOOD) {
+		} else if (item.getCreativeTab() == CreativeTabs.FOOD && !(item instanceof ItemBlockSpecial)) {
 			return new FoodItem(item);
 		} else if (item instanceof ItemBlock) {
 			return new BlockItem(item);
@@ -73,7 +70,7 @@ public class Item implements IItem {
 	}
 
 	public ChatMessage getName() {
-		return new ChatMessage().fromString(item.getTranslationKey());
+		return new ChatMessage().fromString(item.getItemStackDisplayName(new ItemStack(item, 1)));
 	}
 
 	@Override
