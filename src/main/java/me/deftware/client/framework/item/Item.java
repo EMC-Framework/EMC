@@ -31,7 +31,7 @@ public class Item implements IItem {
 			return new WeaponItem(item);
 		} else if (item instanceof ItemTool) {
 			return new ToolItem(item);
-		} else if (item.getGroup() == ItemGroup.FOOD) {
+		} else if (item.getGroup() == ItemGroup.FOOD && !(item instanceof ItemBlock)) {
 			return new FoodItem(item);
 		} else if (item instanceof ItemBlock) {
 			return new BlockItem(item);
