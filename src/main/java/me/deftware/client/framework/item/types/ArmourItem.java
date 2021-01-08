@@ -20,6 +20,10 @@ public class ArmourItem extends Item {
 	public int getDamageReduceAmount() {
 		return getMinecraftItem().getDamageReduceAmount();
 	}
+	
+	public float getToughness() {
+		return getMinecraftItem().getArmorMaterial().getToughness();
+	}
 
 	public int getTypeOrdinal() {
 		return getMinecraftItem().getEquipmentSlot().ordinal();
