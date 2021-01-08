@@ -2,6 +2,7 @@ package me.deftware.client.framework.entity.types.main;
 
 import me.deftware.client.framework.conversion.ConvertedList;
 import me.deftware.client.framework.entity.Entity;
+import me.deftware.client.framework.entity.EntityHand;
 import me.deftware.client.framework.inventory.Slot;
 import me.deftware.client.framework.item.ItemStack;
 import me.deftware.client.framework.math.position.BlockPosition;
@@ -44,13 +45,15 @@ public class MainEntityPlayer extends RotationLogic {
 	}
 
 	public boolean processRightClickBlock(BlockPosition pos, EnumFacing facing, Vector3d vector3d) {
+		return processRightClickBlock(pos, facing, vector3d, EntityHand.MainHand);
+	}
+
+	public boolean processRightClickBlock(BlockPosition pos, EnumFacing facing, Vector3d vector3d, EntityHand hand) {
 		return Objects.requireNonNull(net.minecraft.client.Minecraft.getMinecraft().playerController).onPlayerRightClick(net.minecraft.client.Minecraft.getMinecraft().thePlayer,
 				net.minecraft.client.Minecraft.getMinecraft().theWorld, net.minecraft.client.Minecraft.getMinecraft().thePlayer.getHeldItem(), pos.getMinecraftBlockPos(), facing.getFacing(), vector3d.getMinecraftVector());
 	}
 
-	public void swapHands() {
-
-	}
+	public void swapHands() { }
 
 	public void setRightClickDelayTimer(int delay) {
 		((IMixinMinecraft) net.minecraft.client.Minecraft.getMinecraft()).setRightClickDelayTimer(delay);
@@ -81,6 +84,10 @@ public class MainEntityPlayer extends RotationLogic {
 	}
 
 	public void swingArmClientSide() {
+		swingArmClientSide(EntityHand.MainHand);
+	}
+
+	public void swingArmClientSide(EntityHand hand) {
 		getMinecraftEntity().swingItem();
 	}
 
