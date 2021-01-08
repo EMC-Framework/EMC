@@ -2,6 +2,7 @@ package me.deftware.client.framework.entity.types.main;
 
 import me.deftware.client.framework.conversion.ConvertedList;
 import me.deftware.client.framework.entity.Entity;
+import me.deftware.client.framework.entity.EntityHand;
 import me.deftware.client.framework.inventory.Slot;
 import me.deftware.client.framework.item.ItemStack;
 import me.deftware.client.framework.math.position.BlockPosition;
@@ -49,8 +50,12 @@ public class MainEntityPlayer extends RotationLogic {
 	}
 
 	public boolean processRightClickBlock(BlockPosition pos, EnumFacing facing, Vector3d vector3d) {
+		return processRightClickBlock(pos, facing, vector3d, EntityHand.MainHand);
+	}
+
+	public boolean processRightClickBlock(BlockPosition pos, EnumFacing facing, Vector3d vector3d, EntityHand hand) {
 		return Objects.requireNonNull(net.minecraft.client.Minecraft.getMinecraft().playerController).processRightClickBlock(net.minecraft.client.Minecraft.getMinecraft().player,
-				net.minecraft.client.Minecraft.getMinecraft().world, pos.getMinecraftBlockPos(), facing.getFacing(), vector3d.getMinecraftVector(), EnumHand.MAIN_HAND) == EnumActionResult.SUCCESS;
+				net.minecraft.client.Minecraft.getMinecraft().world, pos.getMinecraftBlockPos(), facing.getFacing(), vector3d.getMinecraftVector(), hand.getMinecraftHand()) == EnumActionResult.SUCCESS;
 	}
 
 	public void swapHands() {
@@ -83,7 +88,11 @@ public class MainEntityPlayer extends RotationLogic {
 	}
 
 	public void swingArmClientSide() {
-		getMinecraftEntity().swingArm(EnumHand.MAIN_HAND);
+		swingArmClientSide(EntityHand.MainHand);
+	}
+
+	public void swingArmClientSide(EntityHand hand) {
+		getMinecraftEntity().swingArm(hand.getMinecraftHand());
 	}
 
 	public void attackEntity(Entity entity) {
