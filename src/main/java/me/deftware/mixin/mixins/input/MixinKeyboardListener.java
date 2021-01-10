@@ -15,7 +15,7 @@ public class MixinKeyboardListener {
 
     @Inject(method = "onKey", at = @At("HEAD"))
     private void onKeyEventRaw(long windowPointer, int keyCode, int scanCode, int action, int modifiers, CallbackInfo ci) {
-        if (windowPointer == MinecraftClient.getInstance().getWindow().getHandle())
+        if (windowPointer == MinecraftClient.getInstance().window.getHandle())
             new EventKeyActionRaw(keyCode, action, modifiers).broadcast();
     }
 
