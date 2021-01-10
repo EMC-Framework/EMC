@@ -9,6 +9,7 @@ import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
 import me.deftware.mixin.imp.IMixinEntityRenderer;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.EntityRenderer;
+import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
@@ -89,8 +90,8 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
         }
     }
 
-    @Inject(method = "updateCameraAndRender", at = @At(value = "INVOKE", target = "net/minecraft/client/gui/GuiIngame.renderGameOverlay(F)V"))
-    private void onRender2D(CallbackInfo cb) {
+    @Redirect(method = "updateCameraAndRender", at = @At(value = "INVOKE", opcode = 180, target = "net/minecraft/client/gui/GuiIngame.renderGameOverlay(F)V"))
+    private void onRender2D(GuiIngame guiIngame, float partialTicks) {
         if (!WindowHelper.isMinimized()) {
             // Chat queue
             Runnable operation = ChatHud.getChatMessageQueue().poll();
@@ -102,8 +103,9 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
             if (operation != null) {
                 operation.run();
             }
-            new EventRender2D(0f).broadcast();
+            new EventRender2D(partialTicks).broadcast();
         }
+        guiIngame.renderGameOverlay(partialTicks);
     }
 
     @Override
