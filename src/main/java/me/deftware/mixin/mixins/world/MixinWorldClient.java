@@ -3,11 +3,7 @@ package me.deftware.mixin.mixins.world;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import me.deftware.client.framework.entity.Entity;
-<<<<<<< HEAD
-=======
-import me.deftware.client.framework.entity.types.EntityPlayer;
 import me.deftware.client.framework.event.events.EventEntityUpdated;
->>>>>>> c47452b6... Sync
 import me.deftware.client.framework.event.events.EventWorldLoad;
 import me.deftware.client.framework.maps.SettingsMap;
 import me.deftware.client.framework.world.classifier.BlockClassifier;
