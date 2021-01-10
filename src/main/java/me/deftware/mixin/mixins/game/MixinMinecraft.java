@@ -1,10 +1,7 @@
 package me.deftware.mixin.mixins.game;
 
 import com.mojang.authlib.minecraft.MinecraftSessionService;
-import me.deftware.client.framework.event.events.EventGuiScreenDisplay;
-import me.deftware.client.framework.event.events.EventKeyAction;
-import me.deftware.client.framework.event.events.EventMouseClick;
-import me.deftware.client.framework.event.events.EventShutdown;
+import me.deftware.client.framework.event.events.*;
 import me.deftware.client.framework.main.EMCMod;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
 import me.deftware.mixin.imp.IMixinMinecraft;
@@ -124,6 +121,7 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
     private void onKeyEvent(CallbackInfo ci) {
         if (Keyboard.getEventKeyState()) {
             new EventKeyAction(Keyboard.getEventKey()).broadcast();
+            new EventKeyActionRaw(Keyboard.getEventKey()).broadcast();
         }
     }
 
