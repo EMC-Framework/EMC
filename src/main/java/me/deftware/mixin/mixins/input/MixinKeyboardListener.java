@@ -12,6 +12,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Keyboard.class)
 public class MixinKeyboardListener {
 
+    @Inject(method = "onKey", at = @At("HEAD"))
+    private void onKeyEventRaw(long windowPointer, int keyCode, int scanCode, int action, int modifiers, CallbackInfo ci) {
+        if (windowPointer == MinecraftClient.getInstance().getWindow().getHandle())
+            new EventKeyActionRaw(keyCode, action, modifiers).broadcast();
+    }
+
     @Inject(method = "onKey", at = @At(value = "INVOKE", target = "net/minecraft/client/util/InputUtil.isKeyPressed(JI)Z", ordinal = 5))
     private void onKeyEvent(long windowPointer, int keyCode, int scanCode, int action, int modifiers, CallbackInfo ci) {
         if (keyCode >= 32 && keyCode <= 348) {
