@@ -53,7 +53,9 @@ public class PacketWrapper {
     @Nullable
     public static PacketWrapper translatePacket(Packet<?> packet) {
         // Client to server packets
-        if (packet instanceof net.minecraft.network.play.client.CPacketPlayer) {
+        if (packet instanceof net.minecraft.network.play.client.CPacketUseEntity) {
+            return new CPacketUseEntity(packet);
+        } else if (packet instanceof net.minecraft.network.play.client.CPacketPlayer) {
             return new CPacketPlayer(packet);
         } else if (packet instanceof net.minecraft.network.play.client.CPacketPlayer.PositionRotation) {
             return new CPacketPositionRotation(packet);
