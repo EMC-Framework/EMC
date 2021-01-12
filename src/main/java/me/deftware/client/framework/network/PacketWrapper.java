@@ -4,10 +4,7 @@ import me.deftware.client.framework.network.packets.*;
 import me.deftware.mixin.imp.IMixinNetworkManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.Packet;
-import net.minecraft.network.play.client.C00PacketKeepAlive;
-import net.minecraft.network.play.client.C03PacketPlayer;
-import net.minecraft.network.play.client.C0DPacketCloseWindow;
-import net.minecraft.network.play.client.C16PacketClientStatus;
+import net.minecraft.network.play.client.*;
 import net.minecraft.network.play.server.S0BPacketAnimation;
 import net.minecraft.network.play.server.S14PacketEntity;
 
@@ -59,7 +56,9 @@ public class PacketWrapper {
     @Nullable
     public static PacketWrapper translatePacket(Packet<?> packet) {
         // Client to server packets
-        if (packet instanceof C03PacketPlayer) {
+        if (packet instanceof C02PacketUseEntity) {
+            return new CPacketUseEntity(packet);
+        } else if (packet instanceof C03PacketPlayer) {
             return new CPacketPlayer(packet);
         } else if (packet instanceof C03PacketPlayer.C06PacketPlayerPosLook) {
             return new CPacketPositionRotation(packet);
