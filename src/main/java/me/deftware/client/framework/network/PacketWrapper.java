@@ -16,7 +16,6 @@ import java.io.IOException;
  *
  * @author Deftware
  */
-@SuppressWarnings("ConstantConditions")
 public class PacketWrapper {
 
     protected Packet<?> packet;
@@ -53,19 +52,12 @@ public class PacketWrapper {
     /**
      * Converts a packet into the EMC Packet wrapper
      */
-    @Nullable
     public static PacketWrapper translatePacket(Packet<?> packet) {
         // Client to server packets
         if (packet instanceof PlayerInteractEntityC2SPacket) {
             return new CPacketUseEntity(packet);
         } else if (packet instanceof PlayerMoveC2SPacket) {
             return new CPacketPlayer(packet);
-        } else if (packet instanceof PlayerMoveC2SPacket.Both) {
-            return new CPacketPositionRotation(packet);
-        } else if (packet instanceof PlayerMoveC2SPacket.LookOnly) {
-            return new CPacketRotation(packet);
-        } else if (packet instanceof PlayerMoveC2SPacket.PositionOnly) {
-            return new CPacketPosition(packet);
         } else if (packet instanceof GuiCloseC2SPacket) {
             return new CPacketCloseWindow(packet);
         } else if (packet instanceof KeepAliveC2SPacket) {
