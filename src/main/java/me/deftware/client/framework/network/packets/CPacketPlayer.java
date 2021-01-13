@@ -3,6 +3,7 @@ package me.deftware.client.framework.network.packets;
 import me.deftware.client.framework.network.PacketWrapper;
 import me.deftware.mixin.imp.IMixinCPacketPlayer;
 import net.minecraft.network.Packet;
+import net.minecraft.network.play.client.C03PacketPlayer;
 
 /**
  * @author Deftware
@@ -26,7 +27,9 @@ public class CPacketPlayer extends PacketWrapper {
     }
 
     public double getY(double currentPosY) {
-        return ((IMixinCPacketPlayer) getPacket()).getY();
+        if (((C03PacketPlayer) packet).isMoving())
+            return ((IMixinCPacketPlayer) getPacket()).getY();
+        return currentPosY;
     }
 
     public void setMoving(boolean state) {
