@@ -25,8 +25,8 @@ public class CPacketPlayer extends PacketWrapper {
         ((IMixinCPacketPlayer) getPacket()).setY(y);
     }
 
-    public double getY() {
-        return ((IMixinCPacketPlayer) getPacket()).getY();
+    public double getY(double currentPosY) {
+        return ((net.minecraft.network.play.client.CPacketPlayer) getPacket()).getY(currentPosY);
     }
 
     public void setMoving(boolean state) {
