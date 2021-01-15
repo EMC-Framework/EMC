@@ -5,10 +5,10 @@ import me.deftware.mixin.imp.IMixinNetworkManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.c2s.play.*;
+import net.minecraft.network.packet.s2c.play.CloseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityS2CPacket;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 
 /**
@@ -58,7 +58,7 @@ public class PacketWrapper {
             return new CPacketUseEntity(packet);
         } else if (packet instanceof PlayerMoveC2SPacket) {
             return new CPacketPlayer(packet);
-        } else if (packet instanceof GuiCloseC2SPacket) {
+        } else if (packet instanceof CloseScreenS2CPacket) {
             return new CPacketCloseWindow(packet);
         } else if (packet instanceof KeepAliveC2SPacket) {
             return new CPacketKeepAlive(packet);
@@ -73,6 +73,5 @@ public class PacketWrapper {
         }
         return new PacketWrapper(packet);
     }
-
 
 }
