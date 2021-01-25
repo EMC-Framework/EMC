@@ -19,7 +19,7 @@ public class GLFW {
 		put(Keyboard.KEY_BACK, 259);
 		put(Keyboard.KEY_TAB, 258);
 		put(Keyboard.KEY_SPACE, 32);
-		put(Keyboard.KEY_NUMPADENTER, 257);
+		put(Keyboard.KEY_RETURN, 257);
 		put(Keyboard.KEY_MINUS, 45);
 		put(Keyboard.KEY_SLASH, 47);
 		put(Keyboard.KEY_1, 49);
@@ -45,7 +45,7 @@ public class GLFW {
 		put(259, Keyboard.KEY_BACK);
 		put(258, Keyboard.KEY_TAB);
 		put(32, Keyboard.KEY_SPACE);
-		put(257, Keyboard.KEY_NUMPADENTER);
+		put(257, Keyboard.KEY_RETURN);
 		put(45, Keyboard.KEY_MINUS);
 		put(47, Keyboard.KEY_SLASH);
 		put(49, Keyboard.KEY_1);

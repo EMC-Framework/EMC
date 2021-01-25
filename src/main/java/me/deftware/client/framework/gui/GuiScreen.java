@@ -17,9 +17,12 @@ import me.deftware.mixin.imp.IMixinGuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.util.ChatAllowedCharacters;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -137,7 +140,7 @@ public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen {
 	@Override
 	@SuppressWarnings("OptionalGetWithoutIsPresent")
 	protected void keyTyped(char typedChar, int keyCode) throws IOException {
-		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+		if (keyCode == Keyboard.KEY_ESCAPE) {
 			if (escGoesBack) {
 				goBack();
 				return;
@@ -151,7 +154,7 @@ public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen {
 				}
 			});
 			keyPressed(GLFW.toGLFW.getOrDefault(keyCode, keyCode), 0, 0);
-			if (keyCode == GLFW.GLFW_KEY_TAB && children.stream().anyMatch(e -> e instanceof GuiTextField)) {
+			if (keyCode == Keyboard.KEY_TAB && children.stream().anyMatch(e -> e instanceof GuiTextField)) {
 				int i = Iterables.indexOf(children, e -> e instanceof GuiTextField && ((GuiTextField) e).isFocused());
 				int newIndex = i == Iterables.indexOf(children, e -> e == children.stream().filter(t -> t instanceof GuiTextField).reduce((first, second) -> second).get()) || i == -1 ? Iterables.indexOf(children, e -> e == children.stream().filter(t -> t instanceof GuiTextField).findFirst().get()) : i + 1;
 				if (i != -1 && ((GuiTextField) children.get(i)).isFocused()) {
@@ -161,11 +164,22 @@ public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen {
 			}
 			super.keyTyped(typedChar, keyCode);
 		}
-		GLFW.callbacks.forEach((c) -> c.invoke(0L, typedChar));
+        if (ChatAllowedCharacters.isAllowedCharacter(typedChar))
+		    GLFW.callbacks.forEach((c) -> c.invoke(0L, typedChar));
 	}
 
+    private int getModifier() {
+        if (isShiftKeyDown())
+            return 0x1;
+        if (isCtrlKeyDown())
+            return 0x2;
+        if (isAltKeyDown())
+            return 0x4;
+        return 0;
+    }
+
 	public boolean keyPressed(int keyCode, int action, int modifiers) {
-		onKeyPressed(keyCode, action, modifiers);
+		onKeyPressed(keyCode, action, getModifier());
 		return true;
 	}
 
