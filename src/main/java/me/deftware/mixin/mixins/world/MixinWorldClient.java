@@ -2,7 +2,6 @@ package me.deftware.mixin.mixins.world;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import me.deftware.aristois.modules.loaders.ModLoader;
 import me.deftware.client.framework.entity.Entity;
 import me.deftware.client.framework.entity.types.EntityPlayer;
 import me.deftware.client.framework.event.events.EventEntityUpdated;

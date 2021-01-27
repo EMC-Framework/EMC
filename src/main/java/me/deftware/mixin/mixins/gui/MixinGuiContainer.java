@@ -1,6 +1,5 @@
 package me.deftware.mixin.mixins.gui;
 
-import me.deftware.aristois.modules.loaders.ModLoader;
 import me.deftware.client.framework.event.events.EventGuiScreenPostDraw;
 import me.deftware.client.framework.gui.GuiScreen;
 import me.deftware.mixin.imp.IMixinGuiContainer;
