@@ -2,6 +2,7 @@ package me.deftware.client.framework.fonts.legacy;
 
 import lombok.Getter;
 import lombok.Setter;
+import me.deftware.client.framework.main.bootstrap.Bootstrap;
 import me.deftware.client.framework.registry.font.TTFRegistry;
 import me.deftware.client.framework.render.batching.RenderStack;
 import me.deftware.client.framework.render.texture.GraphicsUtil;
@@ -15,6 +16,7 @@ import java.io.FileInputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Legacy bitmap font used for now
@@ -67,25 +69,12 @@ public class  LegacyBitmapFont {
 		this.metrics = new Canvas().getFontMetrics(this.stdFont);
 	}
 
+	public boolean canRender(char c) {
+		return stdFont.canDisplay(c);
+	}
+
 	public void initialize() {
-		// Lowercase alphabet
-		for (char lowercaseAlphabet = 'a'; lowercaseAlphabet <= 'z'; lowercaseAlphabet++) {
-			characterGenerate(lowercaseAlphabet);
-		}
-		// Uppercase alphabet
-		for (char uppercaseAlphabet = 'A'; uppercaseAlphabet <= 'Z'; uppercaseAlphabet++) {
-			characterGenerate(uppercaseAlphabet);
-		}
-		// Numbers
-		for (char numeric = 48; numeric <= 57; numeric++) { // 0 - 9 in ASCII
-			characterGenerate(numeric);
-		}
-		// Additional and special characters
-		char[] specialCharacters = {'!', '#', '$', '%', '&', '\'', '(', ')', '*', '+', ',', '-', '.', '/',
-				':', ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`', '{', '|', '}', '~', '"'};
-		for (char specialCharacter : specialCharacters) {
-			characterGenerate(specialCharacter);
-		}
+		destroy();
 	}
 
 	public int getStringWidth(String text) {
@@ -96,7 +85,7 @@ public class  LegacyBitmapFont {
 		return metrics.getHeight();
 	}
 
-	protected void characterGenerate(char character) {
+	public void characterGenerate(char character) {
 		String letterBuffer = String.valueOf(character);
 		int textWidth = getStringWidth(letterBuffer), textHeight = getStringHeight();
 		if (textHeight > 0 && textWidth > 0 && !letterBuffer.isEmpty()) {

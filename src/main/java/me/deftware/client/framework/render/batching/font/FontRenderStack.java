@@ -86,7 +86,13 @@ public class FontRenderStack extends RenderStack<FontRenderStack> {
 				offset += font.getStringWidth(" ");
 				continue;
 			}
-			if (!font.textureIDStore.containsKey(buffer[character])) buffer[character] = '?';
+			if (!font.textureIDStore.containsKey(buffer[character])) {
+				if (font.canRender(buffer[character])) {
+					font.characterGenerate(buffer[character]);
+				} else {
+					buffer[character] = '?';
+				}
+			}
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, font.textureIDStore.get(buffer[character]));
 			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 			int width = font.textureDimensionsStore.get(buffer[character])[0],
