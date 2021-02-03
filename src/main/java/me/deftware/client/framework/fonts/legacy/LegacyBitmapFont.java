@@ -75,6 +75,24 @@ public class  LegacyBitmapFont {
 
 	public void initialize() {
 		destroy();
+		// Lowercase alphabet
+		for (char lowercaseAlphabet = 'a'; lowercaseAlphabet <= 'z'; lowercaseAlphabet++) {
+			characterGenerate(lowercaseAlphabet);
+		}
+		// Uppercase alphabet
+		for (char uppercaseAlphabet = 'A'; uppercaseAlphabet <= 'Z'; uppercaseAlphabet++) {
+			characterGenerate(uppercaseAlphabet);
+		}
+		// Numbers
+		for (char numeric = 48; numeric <= 57; numeric++) { // 0 - 9 in ASCII
+			characterGenerate(numeric);
+		}
+		// Additional and special characters
+		char[] specialCharacters = {'!', '#', '$', '%', '&', '\'', '(', ')', '*', '+', ',', '-', '.', '/',
+				':', ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`', '{', '|', '}', '~', '"'};
+		for (char specialCharacter : specialCharacters) {
+			characterGenerate(specialCharacter);
+		}
 	}
 
 	public int getStringWidth(String text) {
