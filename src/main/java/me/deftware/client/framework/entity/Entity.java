@@ -27,6 +27,7 @@ import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityBoat;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.item.EntityItem;
@@ -69,7 +70,7 @@ public class Entity {
 			return new MobEntity(entity);
 		} else if (entity instanceof EntityItem) {
 			return new ItemEntity(entity);
-		} else if (entity instanceof EntityLiving) {
+		} else if (entity instanceof EntityLivingBase) {
 			NBTTagCompound nbt = new NBTTagCompound();
 			entity.writeToNBT(nbt);
 			if (nbt.hasKey("Owner")) {

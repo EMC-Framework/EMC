@@ -19,11 +19,10 @@ public enum EntityRegistry implements IRegistry<EntityCapsule, Class<? extends E
 
     @Override
     public Optional<EntityCapsule> find(String id) {
-        return stream().filter(item ->
-                item.getTranslationKey().equalsIgnoreCase(id) ||
-                        item.getTranslationKey().substring("minecraft:".length()).equalsIgnoreCase(id) ||
-                        item.getTranslationKey().substring("entity.minecraft:".length()).equalsIgnoreCase(id)
-        ).findFirst();
+        return stream().filter(item -> {
+            return  item.getTranslationKey().equalsIgnoreCase(id) ||
+                    item.getTranslationKey().startsWith("minecraft:") && item.getTranslationKey().substring("minecraft:".length()).equalsIgnoreCase(id);
+        }).findFirst();
     }
 
     @Override
