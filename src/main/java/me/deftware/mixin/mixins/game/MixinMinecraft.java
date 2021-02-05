@@ -106,6 +106,8 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
             if (!(event.getScreen() instanceof GuiMainMenu)) {
                 displayGuiScreen(event.getScreen());
             }
+        } else if (Keyboard.getEventKeyState()) {
+            new EventKeyActionRaw(Keyboard.getEventKey()).broadcast();
         }
     }
 
@@ -122,7 +124,6 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
     private void onKeyEvent(CallbackInfo ci) {
         if (Keyboard.getEventKeyState()) {
             new EventKeyAction(Keyboard.getEventKey()).broadcast();
-            new EventKeyActionRaw(Keyboard.getEventKey()).broadcast();
         }
     }
 
