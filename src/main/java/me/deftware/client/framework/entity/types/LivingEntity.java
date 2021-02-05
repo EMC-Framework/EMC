@@ -11,8 +11,8 @@ public class LivingEntity extends Entity {
 		super(entity);
 	}
 
-	public net.minecraft.entity.EntityLiving getLivingEntity() {
-		return (net.minecraft.entity.EntityLiving) entity;
+	public net.minecraft.entity.EntityLivingBase getLivingEntity() {
+		return (net.minecraft.entity.EntityLivingBase) entity;
 	}
 
 	public float getHealth() {
