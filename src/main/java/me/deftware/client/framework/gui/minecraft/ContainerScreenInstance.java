@@ -5,6 +5,7 @@ import me.deftware.mixin.imp.IMixinGuiContainer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.ContainerChest;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 
 /**
@@ -18,8 +19,8 @@ public class ContainerScreenInstance extends ScreenInstance {
 	public ContainerScreenInstance(GuiScreen screen) {
 		super(screen);
 		if (((GuiContainer) screen).inventorySlots instanceof ContainerChest) {
-			TextComponentTranslation component = (TextComponentTranslation) ((ContainerChest) ((GuiContainer) screen).inventorySlots).getLowerChestInventory().getDisplayName();
-			if (component.getKey().equalsIgnoreCase("container.enderchest")) {
+			ITextComponent component = ((ContainerChest) ((GuiContainer) screen).inventorySlots).getLowerChestInventory().getDisplayName();
+			if (component instanceof TextComponentTranslation && ((TextComponentTranslation) component).getKey().equalsIgnoreCase("container.enderchest")) {
 				type = Type.ENDER_CHEST;
 			}
 		}
