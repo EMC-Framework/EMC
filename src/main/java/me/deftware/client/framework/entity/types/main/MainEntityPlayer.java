@@ -57,7 +57,7 @@ public class MainEntityPlayer extends RotationLogic {
 	}
 
 	public boolean processRightClickBlock(BlockPosition pos, EnumFacing facing, Vector3d vector3d, EntityHand hand) {
-		BlockHitResult customHitResult = new BlockHitResult(vector3d.getMinecraftVector(), facing.getFacing(), pos.getMinecraftBlockPos().down(), false);
+		BlockHitResult customHitResult = new BlockHitResult(vector3d.getMinecraftVector(), facing.getFacing(), pos.getMinecraftBlockPos(), false);
 		return Objects.requireNonNull(MinecraftClient.getInstance().interactionManager).interactBlock(MinecraftClient.getInstance().player,
 				MinecraftClient.getInstance().world, hand.getMinecraftHand(), customHitResult) == ActionResult.SUCCESS;
 	}
