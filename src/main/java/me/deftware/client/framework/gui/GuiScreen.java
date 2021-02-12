@@ -209,6 +209,9 @@ public abstract class GuiScreen extends Screen {
 				tex.bind();
 				textureHashMap.put(texture, tex);
 			} catch (Exception ex) {
+				// Disable IO cache
+				if (ex.getMessage().equalsIgnoreCase("Can't create cache file!"))
+					ImageIO.setUseCache(false);
 				ex.printStackTrace();
 			}
 		} else {
