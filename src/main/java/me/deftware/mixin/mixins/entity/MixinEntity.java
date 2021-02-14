@@ -46,6 +46,11 @@ public abstract class MixinEntity implements IMixinEntity {
 
     @Shadow protected boolean isInWeb;
 
+    @Redirect(method = "move", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;stepHeight:F", opcode = 180))
+    private float modifyStepHeight(Entity self) {
+        return self == net.minecraft.client.Minecraft.getMinecraft().player ? 0.6f : self.stepHeight;
+    }
+
     @SuppressWarnings("ConstantConditions")
     @Inject(method = "turn", at = @At("HEAD"), cancellable = true)
     public void changeLookDirection(float cursorX, float cursorY, CallbackInfo ci) {
