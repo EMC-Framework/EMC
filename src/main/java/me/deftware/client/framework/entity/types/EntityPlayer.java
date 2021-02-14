@@ -60,7 +60,7 @@ public class EntityPlayer extends LivingEntity {
 	}
 
 	public void removeStatusEffect(StatusEffect effect) {
-		getMinecraftEntity().removePotionEffect(effect.getMinecraftStatusEffect());
+		getMinecraftEntity().removePotionEffect(effect.getMinecraftStatusEffect().getId());
 	}
 
 	public boolean hasStatusEffect(StatusEffect effect) {
