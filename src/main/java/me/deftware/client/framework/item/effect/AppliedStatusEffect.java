@@ -19,7 +19,7 @@ public class AppliedStatusEffect {
 	public AppliedStatusEffect(StatusEffect effect, int duration, int amplifier, boolean ambient, boolean showParticles, boolean showIcon) {
 		this.effect = effect;
 		this.instance = new PotionEffect(
-				effect.getMinecraftStatusEffect(), duration, amplifier, ambient, showParticles
+				effect.getMinecraftStatusEffect().getId(), duration, amplifier, ambient, showParticles
 		);
 	}
 
