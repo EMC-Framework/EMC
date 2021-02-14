@@ -1,16 +1,20 @@
 package me.deftware.mixin.mixins.entity;
 
-import net.minecraft.entity.Entity;
+import net.minecraft.block.state.IBlockState;
+import me.deftware.client.framework.event.events.EventBlockBreakingSpeed;
+import net.minecraft.entity.player.EntityPlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(Entity.class)
+@Mixin(EntityPlayer.class)
 public class MixinPlayerEntity {
 
-    @Redirect(method = "moveEntity", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;stepHeight:F", opcode = 180))
-    private float modifyStepHeight(Entity self) {
-        return self == net.minecraft.client.Minecraft.getMinecraft().thePlayer ? 0.6f : self.stepHeight;
+    @Inject(method = "getDigSpeed", at = @At(value = "RETURN"), cancellable = true)
+    public void onGetBlockBreakingSpeed(IBlockState block, CallbackInfoReturnable<Float> cir) {
+        EventBlockBreakingSpeed event = new EventBlockBreakingSpeed().broadcast();
+        cir.setReturnValue(cir.getReturnValue() * event.getMultiplier());
     }
 
 }

@@ -1,6 +1,5 @@
 package me.deftware.mixin.mixins.block;
 
-import me.deftware.client.framework.event.events.EventBlockhardness;
 import me.deftware.client.framework.maps.SettingsMap;
 import me.deftware.mixin.imp.IMixinAbstractBlock;
 import net.minecraft.block.Block;
@@ -61,19 +60,6 @@ public abstract class MixinAbstractBlock implements IMixinAbstractBlock {
             if (!doRender) {
                 cir.setReturnValue(0);
             }
-        }
-    }
-
-    @Inject(method = "getPlayerRelativeBlockHardness", at = @At("HEAD"), cancellable = true)
-    public void calcBlockBreakingDelta(EntityPlayer player, World reader, BlockPos pos, CallbackInfoReturnable<Float> ci) {
-        float f = blockState.getBlock().getBlockHardness(reader, pos);
-        EventBlockhardness event = new EventBlockhardness();
-        event.broadcast();
-        if (f < 0.0F) {
-            ci.setReturnValue(0.0F);
-        } else {
-            ci.setReturnValue(!player.canHarvestBlock(blockState.getBlock()) ? player.getToolDigEfficiency(blockState.getBlock()) / f / 100.0F
-                    : player.getToolDigEfficiency(blockState.getBlock()) / f / 30.0F * event.getMultiplier());
         }
     }
 
