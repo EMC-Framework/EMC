@@ -50,6 +50,11 @@ public abstract class MixinEntity implements IMixinEntity {
     @Shadow
     protected Vec3d movementMultiplier;
 
+    @Redirect(method = "adjustMovementForSneaking", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;stepHeight:F", opcode = 180))
+    private float modifyStepHeight(Entity self) {
+        return self == MinecraftClient.getInstance().player ? 0.6f : self.stepHeight;
+    }
+
     @SuppressWarnings("ConstantConditions")
     @Inject(method = "changeLookDirection", at = @At("HEAD"), cancellable = true)
     public void changeLookDirection(double cursorX, double cursorY, CallbackInfo ci) {

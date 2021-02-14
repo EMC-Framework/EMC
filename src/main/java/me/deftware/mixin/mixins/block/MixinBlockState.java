@@ -1,6 +1,5 @@
 package me.deftware.mixin.mixins.block;
 
-import me.deftware.client.framework.event.events.EventBlockhardness;
 import me.deftware.client.framework.event.events.EventCollideCheck;
 import me.deftware.client.framework.event.events.EventVoxelShape;
 import me.deftware.client.framework.maps.SettingsMap;
@@ -71,19 +70,6 @@ public abstract class MixinBlockState {
     public void getLuminance(CallbackInfoReturnable<Integer> callback) {
         callback.setReturnValue(
                 (int) SettingsMap.getValue(Registry.BLOCK.getRawId(this.getBlock()), "lightValue", luminance));
-    }
-
-    @Inject(method = "calcBlockBreakingDelta", at = @At("HEAD"), cancellable = true)
-    public void calcBlockBreakingDelta(PlayerEntity player, BlockView world, BlockPos pos, CallbackInfoReturnable<Float> ci) {
-        float float_1 = this.getHardness(world, pos);
-        EventBlockhardness event = new EventBlockhardness();
-        event.broadcast();
-        if (float_1 < 0.0F) {
-            ci.setReturnValue(0.0F);
-        } else {
-            ci.setReturnValue(!player.isUsingEffectiveTool(this.getBlock().getDefaultState()) ? player.getBlockBreakingSpeed(this.getBlock().getDefaultState()) / float_1 / 100.0F
-                    : player.getBlockBreakingSpeed(this.getBlock().getDefaultState()) / float_1 / 30.0F * event.getMultiplier());
-        }
     }
 
     @Inject(method = "getCollisionShape(Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/entity/EntityContext;)Lnet/minecraft/util/shape/VoxelShape;", at = @At("HEAD"), cancellable = true)
