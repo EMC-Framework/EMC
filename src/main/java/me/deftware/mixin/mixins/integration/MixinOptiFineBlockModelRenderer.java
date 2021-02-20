@@ -1,7 +1,6 @@
 package me.deftware.mixin.mixins.integration;
 
 import me.deftware.client.framework.FrameworkConstants;
-import me.deftware.client.framework.maps.SettingsMap;
 import me.deftware.client.framework.world.World;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.BufferBuilder;
@@ -38,24 +37,11 @@ public abstract class MixinOptiFineBlockModelRenderer {
 
     @ModifyArg(method = {"renderModel"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/block/BlockModelRenderer;tesselateFlat(Lnet/minecraft/world/BlockRenderView;Lnet/minecraft/client/render/model/BakedModel;Lnet/minecraft/block/BlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/render/BufferBuilder;ZLjava/util/Random;J)Z"))
     private boolean renderModelFlat1(boolean checkSides) {
-        FrameworkConstants.CAN_RENDER_SHADER = !Config.isShaders();
-        try {
-            if (SettingsMap.isOverrideMode()) {
-                return false;
-            }
-        } catch (Exception exception) {}
-
         return checkSides;
     }
 
     @ModifyArg(method = {"renderModel"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/block/BlockModelRenderer;tesselateSmooth(Lnet/minecraft/world/BlockRenderView;Lnet/minecraft/client/render/model/BakedModel;Lnet/minecraft/block/BlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/render/BufferBuilder;ZLjava/util/Random;J)Z"))
     private boolean renderModelSmooth1(boolean checkSides) {
-        try {
-            if (SettingsMap.isOverrideMode()) {
-                return false;
-            }
-        } catch (Exception exception) {}
-
         return checkSides;
     }
 
