@@ -2,7 +2,8 @@ package me.deftware.mixin.mixins.entity;
 
 import me.deftware.client.framework.event.events.EventFovModifier;
 import me.deftware.client.framework.event.events.EventSpectator;
-import me.deftware.client.framework.maps.SettingsMap;
+import me.deftware.client.framework.global.GameCategory;
+import me.deftware.client.framework.global.GameMap;
 import me.deftware.client.framework.util.HashUtils;
 import me.deftware.mixin.imp.IMixinAbstractClientPlayer;
 import net.minecraft.client.Minecraft;
@@ -40,7 +41,7 @@ public abstract class MixinAbstractClientPlayer implements IMixinAbstractClientP
 		cir.setReturnValue(event.isSpectator());
 	}
 
-	@ModifyVariable(method = "getFovModifier", ordinal = 0, at = @At(value = "INVOKE", ordinal = 0, target = "Lnet/minecraft/entity/EntityLivingBase;getAttribute(Lnet/minecraft/entity/ai/attributes/IAttribute;)Lnet/minecraft/entity/ai/attributes/IAttributeInstance;"))
+	@ModifyVariable(method = "getFovModifier", ordinal = 0, at = @At(value = "INVOKE", ordinal = 0, target = "Lnet/minecraft/entity/EntityLivingBase;getEntityAttribute(Lnet/minecraft/entity/ai/attributes/IAttribute;)Lnet/minecraft/entity/ai/attributes/IAttributeInstance;"))
 	private float onGetSpeed(float f) {
 		EventFovModifier event = new EventFovModifier(f);
 		event.broadcast();
@@ -52,16 +53,16 @@ public abstract class MixinAbstractClientPlayer implements IMixinAbstractClientP
 		try {
 			String uuid = ((AbstractClientPlayer) (Object) this).getUniqueID().toString();
 			String uidHash = HashUtils.getSHA(uuid.replace("-", "")).toLowerCase();
-			String id = SettingsMap.hasValue(SettingsMap.MapKeys.CAPES_TEXTURE, ((AbstractClientPlayer) (Object) this).getGameProfile().getName())
-					? ((AbstractClientPlayer) (Object) this).getGameProfile().getName() : SettingsMap.hasValue(SettingsMap.MapKeys.CAPES_TEXTURE, uuid.replace("-", ""))
-					? uuid.replace("-", "") : SettingsMap.hasValue(SettingsMap.MapKeys.CAPES_TEXTURE, uidHash) ? uidHash : null;
+			String id = GameMap.INSTANCE.contains(GameCategory.CapeTexture, ((AbstractClientPlayer) (Object) this).getGameProfile().getName())
+					? ((AbstractClientPlayer) (Object) this).getGameProfile().getName() : GameMap.INSTANCE.contains(GameCategory.CapeTexture, uuid.replace("-", ""))
+					? uuid.replace("-", "") : GameMap.INSTANCE.contains(GameCategory.CapeTexture, uidHash) ? uidHash : null;
 			if (id != null) {
 				if (capeLoaded) {
 					ci.setReturnValue(capeIdentifier);
 				} else {
 					capeIdentifier = new ResourceLocation(String.format("capes/%s.png", uidHash));
 					ThreadDownloadImageData playerSkinTexture = new ThreadDownloadImageData(new File(String.format("%s/libraries/EMC/capes/%s.png", me.deftware.client.framework.minecraft.Minecraft.getRunDir(), uidHash)),
-							(String) SettingsMap.getValue(SettingsMap.MapKeys.CAPES_TEXTURE, id, ""), DefaultPlayerSkin.getDefaultSkinLegacy(), new ImageBufferDownload());
+							GameMap.INSTANCE.get(GameCategory.CapeTexture, id, ""), DefaultPlayerSkin.getDefaultSkinLegacy(), new ImageBufferDownload());
 					capeLoaded = true;
 					Minecraft.getMinecraft().getTextureManager().loadTexture(capeIdentifier, playerSkinTexture);
 				}

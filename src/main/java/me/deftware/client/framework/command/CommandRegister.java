@@ -5,7 +5,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
-import me.deftware.client.framework.maps.SettingsMap;
+import me.deftware.client.framework.main.bootstrap.Bootstrap;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -93,7 +93,7 @@ public class CommandRegister {
      * @return
      */
     public static String getCommandTrigger() {
-        return (String) SettingsMap.getValue(SettingsMap.MapKeys.EMC_SETTINGS, "COMMAND_TRIGGER", ".");
+        return Bootstrap.EMCSettings.getPrimitive("commandtrigger", ".");
     }
 
 }

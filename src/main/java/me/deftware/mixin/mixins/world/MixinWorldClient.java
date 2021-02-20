@@ -5,7 +5,8 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import me.deftware.client.framework.entity.Entity;
 import me.deftware.client.framework.event.events.EventEntityUpdated;
 import me.deftware.client.framework.event.events.EventWorldLoad;
-import me.deftware.client.framework.maps.SettingsMap;
+import me.deftware.client.framework.global.GameKeys;
+import me.deftware.client.framework.global.GameMap;
 import me.deftware.client.framework.world.classifier.BlockClassifier;
 import me.deftware.mixin.imp.IMixinWorldClient;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -29,9 +30,12 @@ public class MixinWorldClient implements IMixinWorldClient {
 
     /*@ModifyVariable(method = "showBarrierParticles", at = @At("HEAD")) FIXME
     public boolean isHoldingBarrierBlock(boolean holdingBarrier) {
+<<<<<<< HEAD
         if ((boolean) SettingsMap.getValue(SettingsMap.MapKeys.BLOCKS, "render_barrier_blocks", false)) {
+=======
+        if (GameMap.INSTANCE.get(GameKeys.FULL_BARRIER_TEXTURE, false))
+>>>>>>> 2029f71d... EMC 16.1.0
             return true;
-        }
         return holdingBarrier;
     }*/
 

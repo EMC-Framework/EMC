@@ -49,7 +49,6 @@
     "network.MixinNetHandlerPlayClient",
     "network.MixinNetworkManager",
     "network.MixinNetworkPlayerInfo",
-    "network.MixinPlayerListEntry",
     "network.MixinServerListEntryNormal",
     "render.MixinBlockFluidRenderer",
     "render.MixinBlockModelRenderer",

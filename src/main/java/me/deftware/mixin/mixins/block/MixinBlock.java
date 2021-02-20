@@ -1,15 +1,22 @@
 package me.deftware.mixin.mixins.block;
 
 import me.deftware.client.framework.event.events.EventVoxelShape;
-import me.deftware.client.framework.maps.SettingsMap;
 import me.deftware.client.framework.math.box.VoxelShape;
+import me.deftware.client.framework.global.GameKeys;
+import me.deftware.client.framework.global.GameMap;
+import me.deftware.mixin.imp.IMixinAbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
+import me.deftware.client.framework.global.types.BlockPropertyManager;
+import me.deftware.client.framework.main.bootstrap.Bootstrap;
+import me.deftware.mixin.shared.BlockManagement;
+import net.minecraft.item.Item;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumWorldBlockLayer;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
@@ -30,18 +37,7 @@ public abstract class MixinBlock {
 
     @Inject(method = "shouldSideBeRendered", at = @At("HEAD"), cancellable = true)
     private void shouldDrawSide(IBlockAccess blockView_1, BlockPos blockPos_1, EnumFacing direction_1, CallbackInfoReturnable<Boolean> callback) {
-        if (SettingsMap.isOverrideMode() || (SettingsMap.isOverwriteMode() && SettingsMap.hasValue(Block.blockRegistry.getIDForObject(blockState.getBlock()), "render"))) {
-            callback.setReturnValue(
-                    (boolean) SettingsMap.getValue(Block.blockRegistry.getIDForObject(blockState.getBlock()), "render", false));
-        }
-    }
-
-    @Inject(method = "isOpaqueCube", at = @At("HEAD"), cancellable = true)
-    public void getIsTranslucent(CallbackInfoReturnable<Boolean> cir) {
-        if (SettingsMap.isOverrideMode() || (SettingsMap.isOverwriteMode() && SettingsMap.hasValue(Block.blockRegistry.getIDForObject(blockState.getBlock()), "translucent"))) {
-            cir.setReturnValue(
-                    (boolean) SettingsMap.getValue(Block.blockRegistry.getIDForObject(blockState.getBlock()), "translucent", false));
-        }
+        BlockManagement.shouldDrawSide(blockView_1, blockPos_1, direction_1, callback);
     }
 
     @Inject(method = "getCollisionBoundingBox", at = @At("HEAD"), cancellable = true)
@@ -49,14 +45,20 @@ public abstract class MixinBlock {
         me.deftware.client.framework.world.block.Block block = me.deftware.client.framework.world.block.Block.newInstance((Block) (Object) this);
         EventVoxelShape event = new EventVoxelShape(blocksMovement ? block.getMinecraftBlock().getCollisionBoundingBox(p_getShapeForCollision_1_, p_getShapeForCollision_2_, p_getShapeForCollision_3_) : VoxelShape.EMPTY.getMinecraftVoxelShape(), block);
         event.broadcast();
-        if (event.modified) {
+        if (event.modified)
             ci.setReturnValue(event.shape);
-        } else {
-            if (blockState.getBlock() instanceof BlockLiquid) {
-                ci.setReturnValue((boolean) SettingsMap.getValue(SettingsMap.MapKeys.BLOCKS, "LIQUID_VOXEL_FULL", false)
-                        ? VoxelShape.SOLID.getMinecraftVoxelShape()
-                        : VoxelShape.EMPTY.getMinecraftVoxelShape());
-            }
+    }
+
+    @Inject(method = "getBlockLayer", at = @At("HEAD"), cancellable = true)
+    private void getBlockLayer(CallbackInfoReturnable<EnumWorldBlockLayer> cir) {
+        BlockPropertyManager blockProperties = Bootstrap.blockProperties;
+        if (blockProperties.isActive()) {
+            int id = Block.blockRegistry.getIDForObject(
+                    (Block) (Object) this
+            );
+            if (!blockProperties.contains(id) && blockProperties.isOpacityMode())
+                // If the block is not supposed to be rendered then make it transparent
+                cir.setReturnValue(EnumWorldBlockLayer.TRANSLUCENT);
         }
     }
 

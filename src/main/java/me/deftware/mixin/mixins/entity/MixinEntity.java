@@ -1,7 +1,9 @@
 package me.deftware.mixin.mixins.entity;
 
 import me.deftware.client.framework.event.events.*;
-import me.deftware.client.framework.maps.SettingsMap;
+import me.deftware.client.framework.global.GameKeys;
+import me.deftware.client.framework.global.GameMap;
+import me.deftware.client.framework.math.vector.Vector3d;
 import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
 import me.deftware.mixin.imp.IMixinEntity;
 import net.minecraft.client.Minecraft;
@@ -95,7 +97,7 @@ public abstract class MixinEntity implements IMixinEntity {
 
     @Redirect(method = "moveEntity", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;noClip:Z", opcode = 180))
     private boolean noClipCheck(Entity self) {
-        boolean noClipCheck = (boolean) SettingsMap.getValue(SettingsMap.MapKeys.ENTITY_SETTINGS, "NOCLIP", false);
+        boolean noClipCheck = GameMap.INSTANCE.get(GameKeys.NOCLIP, false);
         return noClip || noClipCheck && self instanceof EntityPlayerSP;
     }
 

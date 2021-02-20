@@ -1,10 +1,10 @@
 package me.deftware.client.framework.render.batching;
 
 import me.deftware.client.framework.gui.GuiScreen;
-import me.deftware.client.framework.maps.SettingsMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import me.deftware.client.framework.main.bootstrap.Bootstrap;
 import org.lwjgl.opengl.GL11;
 import java.awt.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -30,13 +30,18 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public abstract class RenderStack<T> {
 	public static boolean inCustomMatrix = false;
 	public static final CopyOnWriteArrayList<Runnable> scaleChangeCallback = new CopyOnWriteArrayList<>();
+	public static float scale = 1;
 
 	public static float getScale() {
-		return (float) SettingsMap.getValue(SettingsMap.MapKeys.EMC_SETTINGS, "RENDER_SCALE", 1.0F);
+		return scale;
 	}
 
 	public static void setScale(float scale) {
-		SettingsMap.update(SettingsMap.MapKeys.EMC_SETTINGS, "RENDER_SCALE", scale);
+		if (scale < 0.5f)
+			scale = 0.5f;
+		if (scale > 4)
+			scale = 4;
+		Bootstrap.EMCSettings.putPrimitive("RENDER_SCALE", RenderStack.scale = scale);
 		scaleChangeCallback.forEach(Runnable::run);
 	}
 

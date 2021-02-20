@@ -1,9 +1,10 @@
 package me.deftware.mixin.mixins.gui;
 
 import me.deftware.client.framework.FrameworkConstants;
-import me.deftware.client.framework.maps.SettingsMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
+import me.deftware.client.framework.global.GameKeys;
+import me.deftware.client.framework.global.GameMap;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -14,9 +15,8 @@ public class MixinGuiMainMenu {
 
     @Inject(method = "drawScreen", at = @At("RETURN"))
     public void render(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-        if ((boolean) SettingsMap.getValue(SettingsMap.MapKeys.RENDER, "MAIN_MENU_OVERLAY", true)) {
+        if (GameMap.INSTANCE.get(GameKeys.EMC_MAIN_MENU_OVERLAY, true))
             Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(FrameworkConstants.toDataString(), 2, 2, 0xFFFFFF);
-        }
     }
 
 }

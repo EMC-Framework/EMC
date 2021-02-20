@@ -2,7 +2,8 @@ package me.deftware.mixin.mixins.entity;
 
 import me.deftware.client.framework.event.events.EventIsPotionActive;
 import me.deftware.client.framework.event.events.EventSlowdown;
-import me.deftware.client.framework.maps.SettingsMap;
+import me.deftware.client.framework.global.GameKeys;
+import me.deftware.client.framework.global.GameMap;
 import me.deftware.mixin.imp.IMixinEntityLivingBase;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -48,7 +49,7 @@ public class MixinEntityLivingBase implements IMixinEntityLivingBase {
 
     @Inject(method = "getJumpUpwardsMotion", at = @At(value = "TAIL"), cancellable = true)
     private void onGetJumpVelocity(CallbackInfoReturnable<Float> cir) {
-        cir.setReturnValue((float) SettingsMap.getValue(SettingsMap.MapKeys.ENTITY_SETTINGS, "JUMP_HEIGHT", cir.getReturnValue()));
+        cir.setReturnValue(GameMap.INSTANCE.get(GameKeys.JUMP_HEIGHT, cir.getReturnValue()));
     }
 
     @Override

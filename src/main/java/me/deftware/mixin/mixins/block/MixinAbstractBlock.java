@@ -1,6 +1,10 @@
 package me.deftware.mixin.mixins.block;
 
-import me.deftware.client.framework.maps.SettingsMap;
+import me.deftware.client.framework.event.events.EventCollideCheck;
+import me.deftware.client.framework.global.types.BlockProperty;
+import me.deftware.client.framework.global.types.PropertyManager;
+import me.deftware.client.framework.main.bootstrap.Bootstrap;
+import me.deftware.client.framework.math.position.DoubleBlockPosition;
 import me.deftware.mixin.imp.IMixinAbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.BlockState;
@@ -17,49 +21,30 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Block.class)
 public abstract class MixinAbstractBlock implements IMixinAbstractBlock {
 
-    @Shadow @Final protected float slipperiness;
+    @Shadow @Final
+    public float slipperiness;
 
-    @Shadow
-    @Final
-    private BlockState blockState;
-
-    @Shadow
-    @Final
-    protected int lightValue;
-
-    // FIXME
-    /*
+    /* FIXMEW
     @Inject(method = "getBoundingBox", at = @At("HEAD"), cancellable = true)
     public void getOutlineShape(IBlockState blockState_1, IBlockAccess blockView_1, BlockPos blockPos_1, CallbackInfoReturnable<AxisAlignedBB> ci) {
-        EventCollideCheck event = new EventCollideCheck(me.deftware.client.framework.world.block.Block.newInstance(blockState_1.getBlock()));
-        event.broadcast();
+        EventCollideCheck event = new EventCollideCheck(
+                me.deftware.client.framework.world.block.Block.newInstance(blockState_1.getBlock()),
+                DoubleBlockPosition.fromMinecraftBlockPos(blockPos_1)
+        ).broadcast();
         if (event.updated) {
             if (event.canCollide) {
                 ci.setReturnValue(Block.NULL_AABB);
-            }
-        } else {
-            if (SettingsMap.isOverrideMode() || (SettingsMap.isOverwriteMode() && SettingsMap.hasValue(Block.blockRegistry.getIDForObject(blockState_1.getBlock()), "outline"))) {
-                boolean doOutline = (boolean) SettingsMap.getValue(Block.blockRegistry.getIDForObject(blockState_1.getBlock()), "outline", true);
-                if (!doOutline) {
-                    ci.setReturnValue(Block.NULL_AABB);
-                }
             }
         }
     }*/
 
     @Inject(method = "getLightValue", at = @At("HEAD"), cancellable = true)
     public void getLuminance(CallbackInfoReturnable<Integer> callback) {
-        callback.setReturnValue(
-                (int) SettingsMap.getValue(Block.blockRegistry.getIDForObject(blockState.getBlock()), "lightValue", lightValue));
-    }
-
-    @Inject(method = "getRenderType", at = @At("HEAD"), cancellable = true)
-    public void renderTypeSet(CallbackInfoReturnable<Integer> cir) {
-        if (SettingsMap.isOverrideMode() || (SettingsMap.isOverwriteMode() && SettingsMap.hasValue(Block.blockRegistry.getIDForObject(blockState.getBlock()), "render"))) {
-            boolean doRender = (boolean) SettingsMap.getValue(Block.blockRegistry.getIDForObject(blockState.getBlock()), "render", false);
-            if (!doRender) {
-                cir.setReturnValue(0);
-            }
+        PropertyManager<BlockProperty> blockProperties = Bootstrap.blockProperties;
+        if (blockProperties.isActive()) {
+            int id = Block.blockRegistry.getIDForObject(((Block) (Object) this));
+            if (blockProperties.contains(id))
+                callback.setReturnValue(blockProperties.get(id).getLuminance());
         }
     }
 
