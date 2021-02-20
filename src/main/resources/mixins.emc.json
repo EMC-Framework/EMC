@@ -56,7 +56,6 @@
     "network.MixinNetHandlerPlayClient",
     "network.MixinNetworkManager",
     "network.MixinNetworkPlayerInfo",
-    "network.MixinPlayerListEntry",
     "network.MixinServerListEntryNormal",
     "render.MixinBackgroundRenderer",
     "render.MixinBlockFluidRenderer",
@@ -77,6 +76,8 @@
     "render.MixinVisGraph",
     "render.MixinWindow",
     "render.MixinWorldRenderer",
+    "render.MixinBufferBuilder",
+    "render.MixinRenderLayers",
     "world.MixinWorld",
     "world.MixinWorldChunk",
     "world.MixinWorldClient"
