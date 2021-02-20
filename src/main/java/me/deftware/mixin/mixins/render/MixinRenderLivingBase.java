@@ -1,11 +1,12 @@
 package me.deftware.mixin.mixins.render;
 
 import me.deftware.client.framework.event.events.EventRenderPlayerModel;
-import me.deftware.client.framework.maps.SettingsMap;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLivingBase;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import me.deftware.client.framework.global.GameKeys;
+import me.deftware.client.framework.global.GameMap;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -30,7 +31,7 @@ public abstract class MixinRenderLivingBase<T extends EntityLivingBase> {
             return;
         }
         String s = ((EntityPlayer) entity).getGameProfile().getName(); //TextFormatting.getTextWithoutFormattingCodes(((EntityPlayer) entityLivingBaseIn).getGameProfile().getName());
-        String names = (String) SettingsMap.getValue(SettingsMap.MapKeys.RENDER, "FLIP_USERNAMES", "");
+        String names = GameMap.INSTANCE.get(GameKeys.FLIP_USERNAMES, "");
         if (s != null && !names.equals("")) {
             boolean flip = false;
             if (names.contains(",")) {

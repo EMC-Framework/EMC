@@ -2,7 +2,8 @@ package me.deftware.mixin.mixins.gui;
 
 import me.deftware.client.framework.event.events.EventAnimation;
 import me.deftware.client.framework.event.events.EventRenderHotbar;
-import me.deftware.client.framework.maps.SettingsMap;
+import me.deftware.client.framework.global.GameKeys;
+import me.deftware.client.framework.global.GameMap;
 import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
@@ -20,10 +21,16 @@ public class MixinGuiIngame {
 
     @Inject(method = "renderAttackIndicator", at = @At(value = "INVOKE", target = "net/minecraft/client/renderer/GlStateManager.enableAlpha()V"), cancellable = true)
     private void crosshairEvent(float partialTicks, ScaledResolution p_renderAttackIndicator_2_, CallbackInfo ci) {
-        if (!((boolean) SettingsMap.getValue(SettingsMap.MapKeys.RENDER, "CROSSHAIR", true))) {
+        if (!GameMap.INSTANCE.get(GameKeys.CROSSHAIR, true)) {
             GlStateManager.enableAlpha();
             ci.cancel();
         }
+    }
+
+    @Inject(method = "renderPotionEffects", at = @At("HEAD"), cancellable = true)
+    private void renderStatusEffectOverlay(CallbackInfo ci) {
+        if (!GameMap.INSTANCE.get(GameKeys.EFFECT_OVERLAY, true))
+            ci.cancel();
     }
 
     @Inject(method = "renderHotbar", at = @At("HEAD"))

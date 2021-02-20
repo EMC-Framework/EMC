@@ -1,7 +1,8 @@
 package me.deftware.mixin.mixins.block;
 
 import me.deftware.client.framework.event.events.EventVoxelShape;
-import me.deftware.client.framework.maps.SettingsMap;
+import me.deftware.client.framework.global.GameKeys;
+import me.deftware.client.framework.global.GameMap;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
@@ -22,10 +23,8 @@ public class MixinBlockLiquid {
 		event.broadcast();
 		if (event.modified) {
 			ci.setReturnValue(event.shape);
-		} else {
-			ci.setReturnValue((boolean) SettingsMap.getValue(SettingsMap.MapKeys.BLOCKS, "LIQUID_VOXEL_FULL", false)
-					? Block.FULL_BLOCK_AABB
-					: Block.NULL_AABB);
+		} else  if (GameMap.INSTANCE.get(GameKeys.FULL_LIQUID_VOXEL, false)) {
+			ci.setReturnValue(Block.FULL_BLOCK_AABB);
 		}
 	}
 

@@ -38,6 +38,10 @@ public class AppliedStatusEffect {
 		return instance.getAmplifier();
 	}
 
+	public boolean isPermanent() {
+		return instance.getIsPotionDurationMax();
+	}
+
 	public boolean isAmbient() {
 		return instance.getIsAmbient();
 	}
