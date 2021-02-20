@@ -55,6 +55,10 @@ public abstract class GuiSlot extends net.minecraft.client.gui.GuiSlot implement
 		return getCustomScrollbarPositionX();
 	}
 
+	public void resetScrollPosition() {
+		this.scrollBy(-getAmountScrolled());
+	}
+
 	protected int getCustomRowWidth() {
 		return 220;
 	}

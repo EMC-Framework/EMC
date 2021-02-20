@@ -1,8 +1,9 @@
 package me.deftware.mixin.mixins.block;
 
-import me.deftware.client.framework.maps.SettingsMap;
 import net.minecraft.block.BlockCactus;
 import net.minecraft.block.state.IBlockState;
+import me.deftware.client.framework.global.GameKeys;
+import me.deftware.client.framework.global.GameMap;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
@@ -17,9 +18,8 @@ public class MixinBlockCactus {
 
     @Inject(method = "getCollisionShape", at = @At(value = "TAIL"), cancellable = true)
     private void onGetCollisionShape(IBlockState state, IBlockReader view, BlockPos pos, CallbackInfoReturnable<VoxelShape> cir) {
-        if ((boolean) SettingsMap.getValue(SettingsMap.MapKeys.BLOCKS, "custom_cactus_voxel", false)) {
+        if (GameMap.INSTANCE.get(GameKeys.FULL_CACTUS_VOXEL, false))
             cir.setReturnValue(VoxelShapes.fullCube());
-        }
     }
 
 }
