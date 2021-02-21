@@ -3,6 +3,7 @@ package me.deftware.mixin.shared;
 import me.deftware.client.framework.global.types.BlockPropertyManager;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
@@ -15,10 +16,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  */
 public class BlockManagement {
 
-    public static void shouldDrawSide(IBlockAccess worldIn, BlockPos pos, EnumFacing side, CallbackInfoReturnable<Boolean> callback) {
+    public static void shouldDrawSide(BlockState state, IBlockAccess worldIn, BlockPos pos, EnumFacing side, CallbackInfoReturnable<Boolean> callback) {
         BlockPropertyManager blockProperties = Bootstrap.blockProperties;
         if (blockProperties.isActive()) {
-            int id = Block.blockRegistry.getIDForObject(worldIn.getBlockState(pos).getBlock());
+            int id = Block.blockRegistry.getIDForObject(state.getBlock());
             if (blockProperties.contains(id) && blockProperties.get(id).isRender()) {
                 if (!blockProperties.isExposedOnly() || isAnySideTouchingBlock(pos, worldIn, Blocks.air))
                     callback.setReturnValue(true);

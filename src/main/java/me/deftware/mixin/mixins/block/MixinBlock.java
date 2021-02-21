@@ -31,13 +31,13 @@ public abstract class MixinBlock {
 
     @Shadow
     @Final
-    private BlockState blockState;
+    protected BlockState blockState;
 
     protected boolean blocksMovement;
 
     @Inject(method = "shouldSideBeRendered", at = @At("HEAD"), cancellable = true)
     private void shouldDrawSide(IBlockAccess blockView_1, BlockPos blockPos_1, EnumFacing direction_1, CallbackInfoReturnable<Boolean> callback) {
-        BlockManagement.shouldDrawSide(blockView_1, blockPos_1, direction_1, callback);
+        BlockManagement.shouldDrawSide(blockState, blockView_1, blockPos_1, direction_1, callback);
     }
 
     @Inject(method = "getCollisionBoundingBox", at = @At("HEAD"), cancellable = true)
