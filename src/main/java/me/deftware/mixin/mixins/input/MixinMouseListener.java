@@ -2,6 +2,7 @@ package me.deftware.mixin.mixins.input;
 
 import me.deftware.client.framework.event.events.EventKeyAction;
 import me.deftware.client.framework.event.events.EventMouseClick;
+import me.deftware.client.framework.input.MinecraftKeyBind;
 import me.deftware.client.framework.input.Mouse;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHelper;
