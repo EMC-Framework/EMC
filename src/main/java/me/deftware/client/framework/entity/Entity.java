@@ -13,6 +13,7 @@ import me.deftware.client.framework.entity.types.animals.WolfEntity;
 import me.deftware.client.framework.entity.types.objects.BoatEntity;
 import me.deftware.client.framework.entity.types.objects.EndCrystalEntity;
 import me.deftware.client.framework.entity.types.objects.ItemEntity;
+import me.deftware.client.framework.entity.types.objects.ProjectileEntity;
 import me.deftware.client.framework.item.ItemStack;
 import me.deftware.client.framework.math.box.BoundingBox;
 import me.deftware.client.framework.math.position.BlockPosition;
@@ -55,6 +56,8 @@ public class Entity {
 			return new EntityPlayer((PlayerEntity) entity);
 		} else if (entity instanceof EnderCrystalEntity) {
 			return new EndCrystalEntity(entity);
+		} else if (entity instanceof net.minecraft.entity.projectile.ProjectileEntity) {
+			return new ProjectileEntity(entity);
 		} else if (entity instanceof net.minecraft.entity.passive.HorseEntity) {
 			return new HorseEntity(entity);
 		} else if (entity instanceof net.minecraft.entity.vehicle.BoatEntity) {
@@ -302,6 +305,14 @@ public class Entity {
 
 	public double getLastTickPosZ() {
 		return entity.lastRenderZ;
+	}
+
+	public Vector3d getRotationVector() {
+		return new Vector3d(getMinecraftEntity().getRotationVector());
+	}
+
+	public Vector3d getPosition() {
+		return new Vector3d(getPosX(), getPosY(), getPosZ());
 	}
 
 	public double getPosX() {
