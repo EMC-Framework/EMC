@@ -11,20 +11,22 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(GuiIngame.class)
-public class MixinGuiIngame {
+public abstract class MixinGuiIngame {
 
-    @Inject(method = "renderStreamIndicator", at = @At(value = "INVOKE", target = "net/minecraft/client/renderer/GlStateManager.enableAlpha()V"), cancellable = true)
-    private void crosshairEvent(ScaledResolution scaledRes, CallbackInfo ci) {
-        if (!GameMap.INSTANCE.get(GameKeys.CROSSHAIR, true)) {
-            GlStateManager.enableAlpha();
-            ci.cancel();
-        }
+    @Shadow
+    protected abstract boolean showCrosshair();
+
+    @Redirect(method = "renderGameOverlay", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiIngame;showCrosshair()Z", opcode = 180))
+    private boolean shouldDrawCrosshair(GuiIngame guiIngame) {
+        return GameMap.INSTANCE.get(GameKeys.CROSSHAIR, showCrosshair());
     }
 
     /*@Inject(method = "renderPotionEffects", at = @At("HEAD"), cancellable = true)
