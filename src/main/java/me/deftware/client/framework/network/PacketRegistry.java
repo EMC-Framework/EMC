@@ -2,11 +2,7 @@ package me.deftware.client.framework.network;
 
 import me.deftware.client.framework.network.packets.*;
 import net.minecraft.network.Packet;
-import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
-import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
-import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
-import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
-import net.minecraft.network.packet.s2c.play.CloseScreenS2CPacket;
+import net.minecraft.network.packet.c2s.play.*;
 import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityS2CPacket;
 
@@ -25,7 +21,7 @@ public class PacketRegistry {
 
     private PacketRegistry() {
         register(PlayerInteractEntityC2SPacket.class, CPacketUseEntity.class);
-        register(CloseScreenS2CPacket.class, CPacketCloseWindow.class);
+        register(GuiCloseC2SPacket.class, CPacketCloseWindow.class);
         register(KeepAliveC2SPacket.class, CPacketKeepAlive.class);
         register(ClientStatusC2SPacket.class, CPacketClientStatus.class);
         // Move packets
