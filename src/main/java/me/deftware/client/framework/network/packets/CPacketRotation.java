@@ -7,7 +7,7 @@ import net.minecraft.network.play.client.C03PacketPlayer;
 /**
  * @author Deftware
  */
-public class CPacketRotation extends PacketWrapper {
+public class CPacketRotation extends CPacketPlayer {
 
     public CPacketRotation(Packet<?> packet) {
         super(packet);
