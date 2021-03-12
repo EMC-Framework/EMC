@@ -3,7 +3,7 @@ package me.deftware.client.framework.network.packets;
 import me.deftware.client.framework.entity.Entity;
 import me.deftware.client.framework.network.PacketWrapper;
 import net.minecraft.network.Packet;
-import net.minecraft.network.play.client.CPacketEntityAction;
+import net.minecraft.network.play.client.C0BPacketEntityAction;
 
 public class CPacketCommand extends PacketWrapper {
 
@@ -12,7 +12,7 @@ public class CPacketCommand extends PacketWrapper {
     }
 
     public CPacketCommand(Entity entity, Modes mode) {
-        super(new CPacketEntityAction(entity.getMinecraftEntity(), mode.getMinecraftMode()));
+        super(new C0BPacketEntityAction(entity.getMinecraftEntity(), mode.getMinecraftMode()));
     }
 
     public enum Modes {
@@ -26,8 +26,8 @@ public class CPacketCommand extends PacketWrapper {
         OPEN_INVENTORY,
         START_FALL_FLYING;
 
-        CPacketEntityAction.Action getMinecraftMode() {
-            return CPacketEntityAction.Action.valueOf(name());
+        C0BPacketEntityAction.Action getMinecraftMode() {
+            return C0BPacketEntityAction.Action.valueOf(name());
         }
     }
 
