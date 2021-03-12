@@ -1,11 +1,9 @@
 package me.deftware.client.framework.network;
 
-import me.deftware.client.framework.network.packets.*;
 import me.deftware.mixin.imp.IMixinNetworkManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.Packet;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 
 /**
@@ -16,7 +14,6 @@ import java.io.IOException;
 public class PacketWrapper {
 
     protected Packet<?> packet;
-
     private PacketBuffer packetBuffer;
 
     public PacketWrapper(Packet<?> packet) {
@@ -28,6 +25,8 @@ public class PacketWrapper {
     }
 
     public PacketBuffer getPacketBuffer() {
+        if (packetBuffer == null)
+            packetBuffer = new PacketBuffer();
         return packetBuffer;
     }
 
@@ -45,31 +44,5 @@ public class PacketWrapper {
     public void sendImmediately() {
         ((IMixinNetworkManager) Minecraft.getMinecraft().player.connection.getNetworkManager()).sendPacketImmediately(packet);
     }
-
-    /**
-     * Converts a packet into the EMC Packet wrapper
-     */
-    public static PacketWrapper translatePacket(Packet<?> packet) {
-        // Client to server packets
-        if (packet instanceof net.minecraft.network.play.client.CPacketUseEntity) {
-            return new CPacketUseEntity(packet);
-        } else if (packet instanceof net.minecraft.network.play.client.CPacketPlayer) {
-            return new CPacketPlayer(packet);
-        } else if (packet instanceof net.minecraft.network.play.client.CPacketCloseWindow) {
-            return new CPacketCloseWindow(packet);
-        } else if (packet instanceof net.minecraft.network.play.client.CPacketKeepAlive) {
-            return new CPacketKeepAlive(packet);
-        } else if (packet instanceof net.minecraft.network.play.client.CPacketClientStatus) {
-            return new CPacketClientStatus(packet);
-        }
-        // Server to client packets
-        if (packet instanceof net.minecraft.network.play.server.SPacketEntity) {
-            return new SPacketEntity(packet);
-        } else if (packet instanceof net.minecraft.network.play.server.SPacketAnimation) {
-            return new SPacketAnimation(packet);
-        }
-        return new PacketWrapper(packet);
-    }
-
 
 }
