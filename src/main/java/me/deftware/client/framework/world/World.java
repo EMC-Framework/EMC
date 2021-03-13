@@ -171,8 +171,8 @@ public class World {
 	}
 
 	public static Map<UUID, PlayerEntry> getPlayerList() {
-		if (Minecraft.getMinecraft().getConnection() != null) {
-			return ((IMixinNetworkHandler) Minecraft.getMinecraft().getConnection()).getPlayerEntryMap();
+		if (Minecraft.getMinecraft().getNetHandler() != null) {
+			return ((IMixinNetworkHandler) Minecraft.getMinecraft().getNetHandler()).getPlayerEntryMap();
 		}
 		return null;
 	}
