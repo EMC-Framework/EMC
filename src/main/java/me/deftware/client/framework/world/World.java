@@ -12,6 +12,8 @@ import me.deftware.client.framework.math.position.BlockPosition;
 import me.deftware.client.framework.util.WebUtils;
 import me.deftware.client.framework.world.block.Block;
 import me.deftware.client.framework.world.block.BlockState;
+import me.deftware.client.framework.world.player.PlayerEntry;
+import me.deftware.mixin.imp.IMixinNetworkHandler;
 import me.deftware.mixin.imp.IMixinWorld;
 import me.deftware.mixin.imp.IMixinWorldClient;
 import net.minecraft.block.BlockLiquid;
@@ -23,8 +25,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
@@ -47,6 +48,10 @@ public class World {
 
 	public static Stream<Entity> getLoadedEntities() {
 		return Objects.requireNonNull(((IMixinWorldClient) net.minecraft.client.Minecraft.getMinecraft().world)).getLoadedEntitiesAccessor().values().stream();
+	}
+
+	public static Entity getEntityById(int id) {
+		return Objects.requireNonNull(((IMixinWorldClient) Minecraft.getMinecraft().world)).getLoadedEntitiesAccessor().getOrDefault(id, null);
 	}
 
 	public static int getDifficulty() {
@@ -163,6 +168,13 @@ public class World {
 			}
 			return null;
 		});
+	}
+
+	public static Map<UUID, PlayerEntry> getPlayerList() {
+		if (Minecraft.getMinecraft().getConnection() != null) {
+			return ((IMixinNetworkHandler) Minecraft.getMinecraft().getConnection()).getPlayerEntryMap();
+		}
+		return null;
 	}
 
 	private static class PlayerData {
