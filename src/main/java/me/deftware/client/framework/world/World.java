@@ -51,7 +51,7 @@ public class World {
 	}
 
 	public static Entity getEntityById(int id) {
-		return Objects.requireNonNull(((IMixinWorldClient) Minecraft.getMinecraft().world)).getLoadedEntitiesAccessor().getOrDefault(id, null);
+		return Objects.requireNonNull(((IMixinWorldClient) Minecraft.getMinecraft().theWorld)).getLoadedEntitiesAccessor().getOrDefault(id, null);
 	}
 
 	public static int getDifficulty() {
