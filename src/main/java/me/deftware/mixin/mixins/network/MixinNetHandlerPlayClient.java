@@ -1,10 +1,14 @@
 package me.deftware.mixin.mixins.network;
 
+import com.google.common.collect.Maps;
 import io.netty.buffer.Unpooled;
 import me.deftware.client.framework.event.events.EventAnimation;
 import me.deftware.client.framework.event.events.EventChunkDataReceive;
 import me.deftware.client.framework.event.events.EventKnockback;
+import me.deftware.client.framework.world.player.PlayerEntry;
+import me.deftware.mixin.imp.IMixinNetworkHandler;
 import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
@@ -14,13 +18,37 @@ import net.minecraft.network.play.server.SPacketEntityStatus;
 import net.minecraft.network.play.server.SPacketEntityVelocity;
 import net.minecraft.network.play.server.SPacketExplosion;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Map;
+import java.util.UUID;
+
 @Mixin(NetHandlerPlayClient.class)
-public class MixinNetHandlerPlayClient {
+public class MixinNetHandlerPlayClient implements IMixinNetworkHandler {
+
+    @Unique
+    private final Map<UUID, PlayerEntry> playerEntryMap = Maps.newHashMap();
+
+    @Redirect(method = "handlePlayerListItem", at = @At(value = "INVOKE", target = "Ljava/util/Map;remove(Ljava/lang/Object;)Ljava/lang/Object;"))
+    private Object onPlayerListUpdate(Map<UUID, NetworkPlayerInfo> map, Object key) {
+        playerEntryMap.remove((UUID) key);
+        return map.remove((UUID) key);
+    }
+
+    @Redirect(method = "handlePlayerListItem", at = @At(value = "INVOKE", target = "Ljava/util/Map;put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"))
+    private Object onPlayerListAdd(Map<UUID, NetworkPlayerInfo> map, Object key, Object value) {
+        playerEntryMap.put((UUID) key, new PlayerEntry((NetworkPlayerInfo) value));
+        return map.put((UUID) key, (NetworkPlayerInfo) value);
+    }
+
+    @Override
+    public Map<UUID, PlayerEntry> getPlayerEntryMap() {
+        return playerEntryMap;
+    }
 
     @Redirect(method = "handleJoinGame", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/NetworkManager;sendPacket(Lnet/minecraft/network/Packet;)V"))
     private void handleJoinGame(NetworkManager connection, Packet<?> packet) {
