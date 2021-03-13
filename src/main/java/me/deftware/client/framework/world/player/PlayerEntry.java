@@ -15,7 +15,7 @@ public class PlayerEntry {
         this.uuid = entry.getGameProfile().getId();
         this.name = entry.getGameProfile().getName();
         if (entry.getDisplayName() != null)
-            this.displayName = new ChatMessage().fromText(entry.getDisplayName());
+            this.displayName = new ChatMessage().fromText(entry.getDisplayName(), false);
     }
 
     public PlayerEntry(UUID uuid, String name, ChatMessage displayName) {
