@@ -1,10 +1,11 @@
 package me.deftware.client.framework.gui.toast;
 
 import me.deftware.client.framework.chat.ChatMessage;
-import me.deftware.client.framework.render.texture.Texture;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.toasts.GuiToast;
 import net.minecraft.client.gui.toasts.IToast;
+import me.deftware.client.framework.render.gl.GLX;
+import me.deftware.client.framework.render.texture.GlTexture;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -14,7 +15,7 @@ import org.lwjgl.opengl.GL11;
  */
 public class ToastImpl implements IToast {
 
-	public Texture icon;
+	public GlTexture icon;
 	public ChatMessage title;
 	public ChatMessage[] text;
 	public long transitionTime = 2000L, visibilityTime = transitionTime;
@@ -25,7 +26,7 @@ public class ToastImpl implements IToast {
 		this(null, title, text);
 	}
 
-	public ToastImpl(Texture icon, ChatMessage title, ChatMessage... text) {
+	public ToastImpl(GlTexture icon, ChatMessage title, ChatMessage... text) {
 		this.text = text;
 		this.title = title;
 		this.icon = icon;
@@ -38,7 +39,7 @@ public class ToastImpl implements IToast {
 	public Visibility draw(GuiToast manager, long startTime) {
 		// Texture
 		manager.getMinecraft().getTextureManager().bindTexture(TEXTURE_TOASTS);
-		GL11.glColor3f(1.0F, 1.0F, 1.0F);
+		GLX.INSTANCE.color(1, 1, 1, 1);
 		manager.drawTexturedModalRect(0, 0, 0, 0, width, height);
 
 		// Title
@@ -56,11 +57,8 @@ public class ToastImpl implements IToast {
 
 		// Icon
 		if (icon != null) {
-			GL11.glPushMatrix();
-			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-			icon.updateTexture();
-			Gui.drawModalRectWithCustomSizedTexture(4, 4, 0, 0, iconWidth, iconHeight, iconWidth, iconHeight);
-			GL11.glPopMatrix();
+			GLX.INSTANCE.color(1, 1, 1, 1);
+			icon.bind().draw(4, 4, iconWidth, iconHeight);
 		}
 		return startTime >= visibilityTime ? Visibility.HIDE : Visibility.SHOW;
 	}

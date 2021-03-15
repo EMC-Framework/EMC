@@ -4,6 +4,7 @@ import me.deftware.client.framework.chat.hud.ChatHud;
 import me.deftware.client.framework.event.events.*;
 import me.deftware.client.framework.helper.WindowHelper;
 import me.deftware.client.framework.minecraft.Minecraft;
+import me.deftware.client.framework.render.batching.RenderStack;
 import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
 import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
 import me.deftware.mixin.imp.IMixinEntityRenderer;
@@ -102,6 +103,12 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
                 operation.run();
             }
             new EventRender2D(partialTicks).broadcast();
+            // Render with custom matrix
+            RenderStack.reloadCustomMatrix();
+            RenderStack.setupGl();
+            new EventMatrixRender(partialTicks).broadcast();
+            RenderStack.restoreGl();
+            RenderStack.reloadMinecraftMatrix();
         }
         guiIngame.renderGameOverlay(partialTicks);
     }
