@@ -2,7 +2,7 @@ package me.deftware.client.framework.gui.toast;
 
 import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.chat.builder.ChatBuilder;
-import me.deftware.client.framework.render.texture.Texture;
+import me.deftware.client.framework.render.texture.GlTexture;
 
 /**
  * A custom toast implementation that can be used by EMC mods
@@ -11,7 +11,7 @@ import me.deftware.client.framework.render.texture.Texture;
  */
 public class ToastImpl {
 
-	public Texture icon;
+	public GlTexture icon;
 	public ChatMessage title;
 	public ChatMessage[] text;
 	public long transitionTime = 2000L, visibilityTime = transitionTime;
@@ -27,7 +27,7 @@ public class ToastImpl {
 		}
 	}
 
-	public ToastImpl(Texture icon, ChatMessage title, ChatMessage... text) {
+	public ToastImpl(GlTexture icon, ChatMessage title, ChatMessage... text) {
 		this.text = text;
 		this.title = title;
 		this.icon = icon;

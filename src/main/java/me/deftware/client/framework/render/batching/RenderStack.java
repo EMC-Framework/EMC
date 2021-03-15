@@ -1,10 +1,15 @@
 package me.deftware.client.framework.render.batching;
 
-import me.deftware.client.framework.gui.GuiScreen;
+import me.deftware.client.framework.render.gl.GLX;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.vertex.VertexFormat;
+import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import java.awt.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -13,9 +18,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * new RenderStackImpl()
 
  * optional glLineWidth
+<<<<<<< HEAD
 
  * .begin().setupMatrix()
 
+=======
+ * .begin()
+>>>>>>> fef22fd0... Add GLX
  * optional .glColor(color).
 
  * call to draw functions
@@ -28,9 +37,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 @SuppressWarnings("unchecked")
 public abstract class RenderStack<T> {
-	public static boolean inCustomMatrix = false;
-	public static final CopyOnWriteArrayList<Runnable> scaleChangeCallback = new CopyOnWriteArrayList<>();
+
 	public static float scale = 1;
+	public static final CopyOnWriteArrayList<Runnable> scaleChangeCallback = new CopyOnWriteArrayList<>();
 
 	public static float getScale() {
 		return scale;
@@ -45,30 +54,26 @@ public abstract class RenderStack<T> {
 		scaleChangeCallback.forEach(Runnable::run);
 	}
 
-	protected boolean customMatrix = true;
-	protected boolean locked = false;
-	protected boolean running = false;
-	protected float red = 1.0F;
-	protected float green = 1.0F;
-	protected float blue = 1.0F;
-	protected float alpha = 1.0F;
-	protected float lineWidth = 2.0F;
+	protected float red = 1f, green = 1f, blue = 1f, alpha = 1f, lineWidth = 2f;
+	protected Color lastColor = Color.white;
 
-	public T setupMatrix() {
-		GL11.glPushMatrix();
-		if (customMatrix) reloadCustomMatrix();
-		// Setup gl
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glLineWidth(lineWidth);
-		GL11.glDisable(GL11.GL_TEXTURE_2D);
-		GL11.glDisable(GL11.GL_DEPTH_TEST);
-		GL11.glDepthMask(false);
+	protected WorldRenderer builder = Tessellator.getInstance().getWorldRenderer();
+	private boolean building = false;
+	protected int mode = -1;
+
+	public T push() {
+		GLX.INSTANCE.push();
 		return (T) this;
 	}
 
-	public T glLineWidth(float width) {
+	public T pop() {
+		GLX.INSTANCE.pop();
+		return (T) this;
+	}
+
+	public T lineWidth(float width) {
 		this.lineWidth = width;
+		GL11.glLineWidth(lineWidth);
 		return (T) this;
 	}
 
@@ -76,70 +81,99 @@ public abstract class RenderStack<T> {
 		return glColor(color, color.getAlpha());
 	}
 
-	public T glOverrideMatrix(boolean flag) {
-		this.customMatrix = flag;
-		return (T) this;
-	}
-
 	public T glColor(Color color, float alpha) {
 		this.red = color.getRed() / 255.0F;
 		this.green = color.getGreen() / 255.0F;
 		this.blue = color.getBlue() / 255.0F;
 		this.alpha = alpha / 255.0F;
-		GL11.glColor4f(this.red, this.green, this.blue, this.alpha);
+		lastColor = color;
 		return (T) this;
 	}
 
 	public abstract T begin();
 
 	public T begin(int mode) {
-		GL11.glBegin(mode);
-		running = true;
-		GL11.glColor4f(this.red, this.green, this.blue, this.alpha);
+		building = true;
+		GL11.glLineWidth(lineWidth);
+		builder.begin(this.mode = mode, getFormat());
 		return (T) this;
 	}
 
 	public void end() {
-		if (running) {
-			running = false;
-			GL11.glEnd();
-		}
-		if (!locked) {
-			GL11.glDepthMask(true);
-			GL11.glEnable(GL11.GL_DEPTH_TEST);
-			GL11.glEnable(GL11.GL_TEXTURE_2D);
-			GL11.glPopMatrix();
-			if (customMatrix) reloadMinecraftMatrix();
-		}
+		drawBuffer();
 	}
+
+	public boolean isBuilding() {
+		return building;
+	}
+
+	protected void drawBuffer() {
+		building = false;
+		Tessellator.getInstance().draw();
+	}
+
+	public static void blend() {
+		GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GlStateManager.enableBlend();
+	}
+
+	public static void noBlend() {
+		GlStateManager.disableBlend();
+	}
+
+	public static void setupGl() {
+		blend();
+		GlStateManager.disableTexture2D();
+		GlStateManager.disableDepth();
+		GlStateManager.depthMask(false);
+	}
+
+	public static void restoreGl() {
+		noBlend();
+		GlStateManager.depthMask(true);
+		GlStateManager.enableTexture2D();
+		GlStateManager.enableDepth();
+	}
+
+	protected WorldRenderer vertex(double x, double y, double z) {
+		return builder.pos(x,y, z).color(red, green, blue, alpha);
+	}
+
+	protected VertexFormat getFormat() {
+		return DefaultVertexFormats.POSITION_COLOR;
+	}
+
+	private static boolean inCustomMatrix = false;
 
 	/**
 	 * Creates a 1 to 1 pixel matrix
 	 */
 	public static void reloadCustomMatrix() {
+		if (inCustomMatrix)
+			throw new IllegalStateException("Already in custom matrix!");
 		inCustomMatrix = true;
 		// Change matrix
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glLoadIdentity();
-		GL11.glOrtho(0.0, GuiScreen.getDisplayWidth(), GuiScreen.getDisplayHeight(), 0.0, 1000.0, 3000.0);
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glLoadIdentity();
-		GL11.glTranslatef(0.0F, 0.0F, -2000.0F);
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		GlStateManager.clear(256);
+		setMatrix(
+				Display.getWidth(),
+				Display.getHeight()
+		);
 	}
 
 	public static void reloadMinecraftMatrix() {
+		if (!inCustomMatrix)
+			throw new IllegalStateException("Already in Minecraft matrix!");
 		ScaledResolution sc = new ScaledResolution(Minecraft.getMinecraft());
 		inCustomMatrix = false;
-		// Revert back to Minecraft
+		setMatrix(
+				(float) sc.getScaledWidth_double(),
+				(float) sc.getScaledHeight_double()
+		);
+	}
+
+	protected static void setMatrix(float width, float height) {
 		GlStateManager.matrixMode(5889);
 		GlStateManager.loadIdentity();
-		GlStateManager.ortho(0.0D, sc.getScaledWidth_double(), sc.getScaledHeight_double(), 0.0D, 1000.0D, 3000.0D);
+		GlStateManager.ortho(0.0D, width, height, 0.0D, 1000.0D, 3000.0D);
 		GlStateManager.matrixMode(5888);
 		GlStateManager.loadIdentity();
 		GlStateManager.translate(0.0F, 0.0F, -2000.0F);
@@ -150,15 +184,4 @@ public abstract class RenderStack<T> {
 		return RenderStack.inCustomMatrix;
 	}
 
-	public void setCustomMatrix(final boolean customMatrix) {
-		this.customMatrix = customMatrix;
-	}
-
-	public void setLocked(final boolean locked) {
-		this.locked = locked;
-	}
-
-	public void setRunning(final boolean running) {
-		this.running = running;
-	}
 }

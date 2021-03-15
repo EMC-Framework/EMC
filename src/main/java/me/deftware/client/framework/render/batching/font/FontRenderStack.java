@@ -6,8 +6,14 @@ import me.deftware.client.framework.chat.style.ChatStyle;
 import me.deftware.client.framework.fonts.legacy.LegacyBitmapFont;
 import me.deftware.client.framework.registry.font.IFontProvider;
 import me.deftware.client.framework.render.batching.RenderStack;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.vertex.VertexFormat;
 import org.lwjgl.opengl.GL11;
+
 import java.awt.*;
+import java.util.Map;
 
 /**
  * @author Deftware
@@ -16,7 +22,6 @@ public class FontRenderStack extends RenderStack<FontRenderStack> {
 
 	private int offset = 0;
 	private boolean scaled;
-	private boolean matrix = true;
 	private final LegacyBitmapFont font;
 
 	public FontRenderStack(IFontProvider font) {
@@ -24,29 +29,34 @@ public class FontRenderStack extends RenderStack<FontRenderStack> {
 		this.scaled = this.font.scaled;
 	}
 
-	@Override
-	public FontRenderStack begin() {
-		glColor(Color.white, 255.0F); // Default text color
-		return this; /* Not used in this stack */
+	public void setScaled(boolean scaled) {
+		this.scaled = scaled;
 	}
 
 	@Override
-	public FontRenderStack setupMatrix() {
-		GL11.glPushMatrix();
-		if (matrix) reloadCustomMatrix();
-		return this;
+	public FontRenderStack begin() {
+		// Bind texture
+		GlStateManager.enableTexture2D();
+		int glId = font.getGlId();
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, glId);
+		// Set up buffer
+		return super.begin(GL11.GL_QUADS);
 	}
 
 	@Override
 	public void end() {
-		GL11.glPopMatrix();
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		if (matrix) reloadMinecraftMatrix();
+		super.end();
+		GlStateManager.disableTexture2D();
 	}
 
-	public FontRenderStack glMatrix(boolean flag) {
-		this.matrix = flag;
-		return this;
+	@Override
+	protected VertexFormat getFormat() {
+		return DefaultVertexFormats.POSITION_TEX_COLOR;
+	}
+
+	@Override
+	protected WorldRenderer vertex(double x, double y, double z) {
+		return builder.pos((float) x,  (float) y,  (float) z);
 	}
 
 	public FontRenderStack drawString(double x, double y, String message) {
@@ -54,7 +64,7 @@ public class FontRenderStack extends RenderStack<FontRenderStack> {
 	}
 
 	public FontRenderStack drawString(int x, int y, String message) {
-		renderCharBuffer(message.toCharArray(), x, y);
+		renderCharBuffer(message.toCharArray(), x, y, lastColor);
 		offset = 0;
 		return this;
 	}
@@ -67,71 +77,86 @@ public class FontRenderStack extends RenderStack<FontRenderStack> {
 		for (ChatSection section : message.getSectionList()) {
 			ChatStyle style = section.getStyle();
 			Color color = Color.white;
-			if (style.getColor() != null) color = style.getColor().getColor();
-			glColor(color, 255.0F);
-			renderCharBuffer(section.getText().toCharArray(), x, y);
+			if (style.getColor() != null)
+				color = style.getColor().getColor();
+			renderCharBuffer(section.getText().toCharArray(), x, y, color);
 		}
 		offset = 0;
 		return this;
 	}
 
-	private void renderCharBuffer(char[] buffer, int x, int y) {
+	private void renderCharBuffer(char[] buffer, int x, int y, Color color) {
+		// Scale position
 		if (scaled) {
 			x *= RenderStack.getScale();
 			y *= RenderStack.getScale();
 		}
+
+		// Get font data
+		int shadow = font.getShadow();
+		Map<Character, LegacyBitmapFont.CharData> characterMap = font.getCharacterMap();
+
 		for (int character = 0; character < buffer.length; character++) {
+			// Skip spaces
 			if (buffer[character] == ' ') {
 				offset += font.getStringWidth(" ");
 				continue;
 			}
-			if (!font.textureIDStore.containsKey(buffer[character])) buffer[character] = '?';
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, font.textureIDStore.get(buffer[character]));
-			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-			int width = font.textureDimensionsStore.get(buffer[character])[0];
-			int height = font.textureDimensionsStore.get(buffer[character])[1];
-			int shadow = font.getShadow();
+
+			// Replace unknown characters with a question mark
+			if (!font.characterMap.containsKey(buffer[character]))
+				buffer[character] = '?';
+
+			// Get character data
+			LegacyBitmapFont.CharData data = characterMap.get(buffer[character]);
+
+			// Draw shadow
 			if (shadow > 0) {
-				GL11.glColor4f(0.0F, 0.0F, 0.0F, this.alpha);
-				drawQuads(x + offset + shadow, y + shadow, width, height);
+				glColor(Color.black);
+				drawCharacter(x + offset + shadow, y + shadow, data);
 			}
-			GL11.glColor4f(this.red, this.green, this.blue, this.alpha);
-			drawQuads(x + offset, y, width, height);
-			offset += width;
+
+			// Draw text
+			glColor(color, 255f);
+			drawCharacter(x + offset, y, data);
+			offset += data.getWidth();
 		}
 	}
 
-	private void drawQuads(int x, int y, int width, int height) {
-		GL11.glBegin(GL11.GL_QUADS);
-		GL11.glTexCoord2f(0, 0);
-		GL11.glVertex2d(x, y);
-		GL11.glTexCoord2f(0, 1);
-		GL11.glVertex2d(x, y + height);
-		GL11.glTexCoord2f(1, 1);
-		GL11.glVertex2d(x + width, y + height);
-		GL11.glTexCoord2f(1, 0);
-		GL11.glVertex2d(x + width, y);
-		GL11.glEnd();
-	}
-
 	public int getFontHeight() {
-		return (int) (font.getStringHeight() / (scaled ? RenderStack.getScale() : 1.0F));
+		return (int) (font.getStringHeight() / (scaled ? RenderStack.getScale() : 1f));
 	}
 
 	public int getStringWidth(String text) {
-		return (int) (font.getStringWidth(text) / (scaled ? RenderStack.getScale() : 1.0F));
+		return (int) (font.getStringWidth(text) / (scaled ? RenderStack.getScale() : 1f));
 	}
 
 	public int getStringWidth(ChatMessage text) {
 		return getStringWidth(text.toString(false));
 	}
 
-	public void setScaled(final boolean scaled) {
-		this.scaled = scaled;
+	private void drawCharacter(int x, int y, LegacyBitmapFont.CharData data) {
+		// Size
+		int width = data.getWidth(), height = data.getHeight();
+		// Offsets
+		int u = data.getU(), v = data.getV();
+		// Draw
+		drawTexture(x, x + width, y, y + height, 0, width, height, u, v, font.getTextureWidth(), font.getTextureHeight());
 	}
 
-	public void setMatrix(final boolean matrix) {
-		this.matrix = matrix;
+	/*
+		Draw
+	 */
+
+	private void drawTexture(int x0, int x1, int y0, int y1, int z, int regionWidth, int regionHeight, float u, float v, int textureWidth, int textureHeight) {
+		drawTexturedQuad(x0, x1, y0, y1, z, u / textureWidth, (u + regionWidth) / textureWidth, v / textureHeight, (v + regionHeight) / textureHeight);
+	}
+
+	private void drawTexturedQuad(int x0, int x1, int y0, int y1, int z, float u0, float u1, float v0, float v1) {
+		vertex(x0, y1, z).tex(u0, v1).color(red, green, blue, alpha).endVertex();
+		vertex(x1, y1, z).tex(u1, v1).color(red, green, blue, alpha).endVertex();
+		vertex(x1, y0, z).tex(u1, v0).color(red, green, blue, alpha).endVertex();
+		vertex(x0, y0, z).tex(u0, v0).color(red, green, blue, alpha).endVertex();
 	}
 
 }
