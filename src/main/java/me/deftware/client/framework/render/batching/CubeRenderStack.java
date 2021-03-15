@@ -2,128 +2,118 @@ package me.deftware.client.framework.render.batching;
 
 import me.deftware.client.framework.math.box.BoundingBox;
 import me.deftware.client.framework.minecraft.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.AxisAlignedBB;
+import org.lwjgl.opengl.GL11;
 
 /**
  * @author Deftware
  */
 public class CubeRenderStack extends RenderStack<CubeRenderStack> {
 
-	public CubeRenderStack() {
-		customMatrix = false;
-	}
+	private boolean lines = false;
 
 	@Override
 	public CubeRenderStack begin() {
-		return this; /* Not used in this stack */
+		return begin(false);
 	}
 
-	public CubeRenderStack ESPBox(BoundingBox box) {
-		if (box == null) return this;
-		drawColorBox(box.getOffsetMinecraftBox(-Minecraft.getCamera().getRenderPosX(), -Minecraft.getCamera().getRenderPosY(), -Minecraft.getCamera().getRenderPosZ()));
-		return this;
+	public CubeRenderStack begin(boolean lines) {
+		return begin(
+				(this.lines = lines) ? GL11.GL_LINE_STRIP : GL11.GL_QUADS
+		);
 	}
 
-	public CubeRenderStack emptyESPBox(BoundingBox box) {
-		drawSelectionBoundingBox(box.getOffsetMinecraftBox(-Minecraft.getCamera().getRenderPosX(), -Minecraft.getCamera().getRenderPosY(), -Minecraft.getCamera().getRenderPosZ()));
+	public CubeRenderStack draw(BoundingBox box) {
+		if (box == null)
+			return this;
+		AxisAlignedBB minecraftBox = box.getOffsetMinecraftBox(-Minecraft.getCamera().getRenderPosX(), -Minecraft.getCamera().getRenderPosY(), -Minecraft.getCamera().getRenderPosZ());
+		if (lines)
+			drawSelectionBoundingBox(minecraftBox);
+		else
+			drawColorBox(minecraftBox);
 		return this;
 	}
 
 	private void drawColorBox(AxisAlignedBB box) {
-		Tessellator ts = Tessellator.getInstance();
-		BufferBuilder vb = ts.getBuffer();
-		vb.begin(7, DefaultVertexFormats.POSITION_TEX);
-		vb.pos(box.minX, box.minY, box.minZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.minX, box.maxY, box.minZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.maxX, box.minY, box.minZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.maxX, box.maxY, box.minZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.maxX, box.minY, box.maxZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.maxX, box.maxY, box.maxZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.minX, box.minY, box.maxZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.minX, box.maxY, box.maxZ).color(0, 0, 0, 0).endVertex();
-		ts.draw();
-		vb.begin(7, DefaultVertexFormats.POSITION_TEX);
-		vb.pos(box.maxX, box.maxY, box.minZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.maxX, box.minY, box.minZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.minX, box.maxY, box.minZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.minX, box.minY, box.minZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.minX, box.maxY, box.maxZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.minX, box.minY, box.maxZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.maxX, box.maxY, box.maxZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.maxX, box.minY, box.maxZ).color(0, 0, 0, 0).endVertex();
-		ts.draw();
-		vb.begin(7, DefaultVertexFormats.POSITION_TEX);
-		vb.pos(box.minX, box.maxY, box.minZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.maxX, box.maxY, box.minZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.maxX, box.maxY, box.maxZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.minX, box.maxY, box.maxZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.minX, box.maxY, box.minZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.minX, box.maxY, box.maxZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.maxX, box.maxY, box.maxZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.maxX, box.maxY, box.minZ).color(0, 0, 0, 0).endVertex();
-		ts.draw();
-		vb.begin(7, DefaultVertexFormats.POSITION_TEX);
-		vb.pos(box.minX, box.minY, box.minZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.maxX, box.minY, box.minZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.maxX, box.minY, box.maxZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.minX, box.minY, box.maxZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.minX, box.minY, box.minZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.minX, box.minY, box.maxZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.maxX, box.minY, box.maxZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.maxX, box.minY, box.minZ).color(0, 0, 0, 0).endVertex();
-		ts.draw();
-		vb.begin(7, DefaultVertexFormats.POSITION_TEX);
-		vb.pos(box.minX, box.minY, box.minZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.minX, box.maxY, box.minZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.minX, box.minY, box.maxZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.minX, box.maxY, box.maxZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.maxX, box.minY, box.maxZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.maxX, box.maxY, box.maxZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.maxX, box.minY, box.minZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.maxX, box.maxY, box.minZ).color(0, 0, 0, 0).endVertex();
-		ts.draw();
-		vb.begin(7, DefaultVertexFormats.POSITION_TEX);
-		vb.pos(box.minX, box.maxY, box.maxZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.minX, box.minY, box.maxZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.minX, box.maxY, box.minZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.minX, box.minY, box.minZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.maxX, box.maxY, box.minZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.maxX, box.minY, box.minZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.maxX, box.maxY, box.maxZ).color(0, 0, 0, 0).endVertex();
-		vb.pos(box.maxX, box.minY, box.maxZ).color(0, 0, 0, 0).endVertex();
-		ts.draw();
+		vertex(box.minX, box.minY, box.minZ).endVertex();
+		vertex(box.minX, box.maxY, box.minZ).endVertex();
+		vertex(box.maxX, box.minY, box.minZ).endVertex();
+		vertex(box.maxX, box.maxY, box.minZ).endVertex();
+		vertex(box.maxX, box.minY, box.maxZ).endVertex();
+		vertex(box.maxX, box.maxY, box.maxZ).endVertex();
+		vertex(box.minX, box.minY, box.maxZ).endVertex();
+		vertex(box.minX, box.maxY, box.maxZ).endVertex();
+
+		vertex(box.maxX, box.maxY, box.minZ).endVertex();
+		vertex(box.maxX, box.minY, box.minZ).endVertex();
+		vertex(box.minX, box.maxY, box.minZ).endVertex();
+		vertex(box.minX, box.minY, box.minZ).endVertex();
+		vertex(box.minX, box.maxY, box.maxZ).endVertex();
+		vertex(box.minX, box.minY, box.maxZ).endVertex();
+		vertex(box.maxX, box.maxY, box.maxZ).endVertex();
+		vertex(box.maxX, box.minY, box.maxZ).endVertex();
+
+		vertex(box.minX, box.maxY, box.minZ).endVertex();
+		vertex(box.maxX, box.maxY, box.minZ).endVertex();
+		vertex(box.maxX, box.maxY, box.maxZ).endVertex();
+		vertex(box.minX, box.maxY, box.maxZ).endVertex();
+		vertex(box.minX, box.maxY, box.minZ).endVertex();
+		vertex(box.minX, box.maxY, box.maxZ).endVertex();
+		vertex(box.maxX, box.maxY, box.maxZ).endVertex();
+		vertex(box.maxX, box.maxY, box.minZ).endVertex();
+
+		vertex(box.minX, box.minY, box.minZ).endVertex();
+		vertex(box.maxX, box.minY, box.minZ).endVertex();
+		vertex(box.maxX, box.minY, box.maxZ).endVertex();
+		vertex(box.minX, box.minY, box.maxZ).endVertex();
+		vertex(box.minX, box.minY, box.minZ).endVertex();
+		vertex(box.minX, box.minY, box.maxZ).endVertex();
+		vertex(box.maxX, box.minY, box.maxZ).endVertex();
+		vertex(box.maxX, box.minY, box.minZ).endVertex();
+
+		vertex(box.minX, box.minY, box.minZ).endVertex();
+		vertex(box.minX, box.maxY, box.minZ).endVertex();
+		vertex(box.minX, box.minY, box.maxZ).endVertex();
+		vertex(box.minX, box.maxY, box.maxZ).endVertex();
+		vertex(box.maxX, box.minY, box.maxZ).endVertex();
+		vertex(box.maxX, box.maxY, box.maxZ).endVertex();
+		vertex(box.maxX, box.minY, box.minZ).endVertex();
+		vertex(box.maxX, box.maxY, box.minZ).endVertex();
+
+		vertex(box.minX, box.maxY, box.maxZ).endVertex();
+		vertex(box.minX, box.minY, box.maxZ).endVertex();
+		vertex(box.minX, box.maxY, box.minZ).endVertex();
+		vertex(box.minX, box.minY, box.minZ).endVertex();
+		vertex(box.maxX, box.maxY, box.minZ).endVertex();
+		vertex(box.maxX, box.minY, box.minZ).endVertex();
+		vertex(box.maxX, box.maxY, box.maxZ).endVertex();
+		vertex(box.maxX, box.minY, box.maxZ).endVertex();
 	}
 
 	private void drawSelectionBoundingBox(AxisAlignedBB box) {
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder vertexbuffer = tessellator.getBuffer();
-		vertexbuffer.begin(3, DefaultVertexFormats.POSITION);
-		vertexbuffer.pos(box.minX, box.minY, box.minZ).endVertex();
-		vertexbuffer.pos(box.maxX, box.minY, box.minZ).endVertex();
-		vertexbuffer.pos(box.maxX, box.minY, box.maxZ).endVertex();
-		vertexbuffer.pos(box.minX, box.minY, box.maxZ).endVertex();
-		vertexbuffer.pos(box.minX, box.minY, box.minZ).endVertex();
-		tessellator.draw();
-		vertexbuffer.begin(3, DefaultVertexFormats.POSITION);
-		vertexbuffer.pos(box.minX, box.maxY, box.minZ).endVertex();
-		vertexbuffer.pos(box.maxX, box.maxY, box.minZ).endVertex();
-		vertexbuffer.pos(box.maxX, box.maxY, box.maxZ).endVertex();
-		vertexbuffer.pos(box.minX, box.maxY, box.maxZ).endVertex();
-		vertexbuffer.pos(box.minX, box.maxY, box.minZ).endVertex();
-		tessellator.draw();
-		vertexbuffer.begin(1, DefaultVertexFormats.POSITION);
-		vertexbuffer.pos(box.minX, box.minY, box.minZ).endVertex();
-		vertexbuffer.pos(box.minX, box.maxY, box.minZ).endVertex();
-		vertexbuffer.pos(box.maxX, box.minY, box.minZ).endVertex();
-		vertexbuffer.pos(box.maxX, box.maxY, box.minZ).endVertex();
-		vertexbuffer.pos(box.maxX, box.minY, box.maxZ).endVertex();
-		vertexbuffer.pos(box.maxX, box.maxY, box.maxZ).endVertex();
-		vertexbuffer.pos(box.minX, box.minY, box.maxZ).endVertex();
-		vertexbuffer.pos(box.minX, box.maxY, box.maxZ).endVertex();
-		tessellator.draw();
+		vertex(box.minX, box.minY, box.minZ).endVertex();
+		vertex(box.maxX, box.minY, box.minZ).endVertex();
+		vertex(box.maxX, box.minY, box.maxZ).endVertex();
+		vertex(box.minX, box.minY, box.maxZ).endVertex();
+		vertex(box.minX, box.minY, box.minZ).endVertex();
+
+		vertex(box.minX, box.maxY, box.minZ).endVertex();
+		vertex(box.maxX, box.maxY, box.minZ).endVertex();
+		vertex(box.maxX, box.maxY, box.maxZ).endVertex();
+		vertex(box.minX, box.maxY, box.maxZ).endVertex();
+		vertex(box.minX, box.maxY, box.minZ).endVertex();
+
+		drawBuffer();
+		builder.begin(GL11.GL_LINES, getFormat());
+
+		vertex(box.minX, box.minY, box.minZ).endVertex();
+		vertex(box.minX, box.maxY, box.minZ).endVertex();
+		vertex(box.maxX, box.minY, box.minZ).endVertex();
+		vertex(box.maxX, box.maxY, box.minZ).endVertex();
+		vertex(box.maxX, box.minY, box.maxZ).endVertex();
+		vertex(box.maxX, box.maxY, box.maxZ).endVertex();
+		vertex(box.minX, box.minY, box.maxZ).endVertex();
+		vertex(box.minX, box.maxY, box.maxZ).endVertex();
 	}
 
 }

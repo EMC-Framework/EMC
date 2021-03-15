@@ -6,9 +6,7 @@ import me.deftware.client.framework.gui.minecraft.ScreenInstance;
 import me.deftware.client.framework.gui.widgets.Button;
 import me.deftware.client.framework.gui.widgets.TextField;
 import me.deftware.client.framework.input.Mouse;
-import me.deftware.client.framework.main.EMCMod;
 import me.deftware.client.framework.minecraft.Minecraft;
-import me.deftware.client.framework.render.texture.Texture;
 import me.deftware.client.framework.util.ResourceUtils;
 import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
 import me.deftware.client.framework.util.types.Tuple;
@@ -25,18 +23,16 @@ import org.lwjgl.opengl.GL11;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author Deftware
  */
 public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen {
-
-	private static final HashMap<String, Texture> textureHashMap = new HashMap<>();
 
 	public GuiScreen parent;
 	protected boolean escGoesBack = true;
@@ -222,32 +218,6 @@ public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen {
 
 	protected void clearTexts() {
 		compiledText.clear();
-	}
-
-	public static void drawTexture(EMCMod mod, String texture, int x, int y, int width, int height) {
-		drawTexture(mod, texture, x, y, 0, 0, width, height, width, height);
-	}
-
-	public static void drawTexture(EMCMod mod, String texture, int x, int y, int u, int v, int width, int height, int textureWidth, int textureHeight) {
-		// TODO: Redo this function
-		GL11.glPushMatrix();
-		if (!textureHashMap.containsKey(texture)) {
-			try {
-				BufferedImage img = ImageIO.read(Objects.requireNonNull(ResourceUtils.getStreamFromModResources(mod, texture)));
-				Texture tex = new Texture(img.getWidth(), img.getHeight(), true);
-				tex.fillFromBufferedImageFlip(img);
-				tex.update();
-				tex.bind();
-				textureHashMap.put(texture, tex);
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		} else {
-			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-			textureHashMap.get(texture).updateTexture();
-		}
-		drawModalRectWithCustomSizedTexture(x, y, u, v, width, height, textureWidth, textureHeight);
-		GL11.glPopMatrix();
 	}
 
 	public static void drawTexture(MinecraftIdentifier texture, int x, int y, int width, int height) {
