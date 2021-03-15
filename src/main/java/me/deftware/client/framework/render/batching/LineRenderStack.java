@@ -20,12 +20,12 @@ public class LineRenderStack extends RenderStack<LineRenderStack> {
 	}
 
 	@Override
-	public LineRenderStack setupMatrix() {
-		super.setupMatrix();
-		eyes = new Vec3d(0.0D, 0.0D, 1.0D)
-				.rotateX(-(float) Math.toRadians(Minecraft.getCamera().getRotationPitch()))
+	public LineRenderStack begin(int mode) {
+		eyes = new Vec3d(0.0D, 0.0D, 1.0D);
+		if (Minecraft.getCamera().getMinecraftCamera() != null)
+			eyes = eyes.rotateX(-(float) Math.toRadians(Minecraft.getCamera().getRotationPitch()))
 				.rotateY(-(float) Math.toRadians(Minecraft.getCamera().getRotationYaw()));
-		return this;
+		return super.begin(mode);
 	}
 
 	public LineRenderStack drawLine(float x1, float y1, float x2, float y2, boolean scaling) {
@@ -37,9 +37,13 @@ public class LineRenderStack extends RenderStack<LineRenderStack> {
 			y2 *= getScale();
 		}
 		// Draw
-		GL11.glVertex2f(x1, y1);
-		GL11.glVertex2f(x2, y2);
+		vertex(x1, y1, 0).next();
+		vertex(x2, y2, 0).next();
 		return this;
+	}
+
+	public void vertex(double x, double y) {
+		vertex(x, y, 0).next();
 	}
 
 	public LineRenderStack lineToBlockPosition(BlockPosition pos) {
@@ -63,7 +67,7 @@ public class LineRenderStack extends RenderStack<LineRenderStack> {
 	}
 
 	public LineRenderStack drawPoint(double x, double y, double z) {
-		GL11.glVertex3d(x, y, z);
+		vertex(x, y, z).next();
 		return this;
 	}
 

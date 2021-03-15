@@ -20,20 +20,7 @@ public class QuadRenderStack extends RenderStack<QuadRenderStack> {
 	}
 
 	public QuadRenderStack drawRect(double x, double y, double xx, double yy, boolean scaling, Shader shader) {
-		// Apply scaling
-		if (scaling) {
-			x *= getScale();
-			y *= getScale();
-			xx *= getScale();
-			yy *= getScale();
-		}
-		if (shader != null) setupUniforms((float) x, (float) y, (float) (xx - x), (float) (yy - y), shader);
-		// Draw
-		GL11.glVertex2d(xx, y);
-		GL11.glVertex2d(x, y);
-		GL11.glVertex2d(x, yy);
-		GL11.glVertex2d(xx, yy);
-		return this;
+		return drawRect((float) x, (float) y, (float) xx, (float) yy, scaling, shader);
 	}
 
 	public QuadRenderStack drawRect(float x, float y, float xx, float yy, boolean scaling) {
@@ -48,12 +35,13 @@ public class QuadRenderStack extends RenderStack<QuadRenderStack> {
 			xx *= getScale();
 			yy *= getScale();
 		}
-		if (shader != null) setupUniforms(x, y, xx - x, yy - y, shader);
+		if (shader != null)
+			setupUniforms(x, y, xx - x, yy - y, shader);
 		// Draw
-		GL11.glVertex2f(xx, y);
-		GL11.glVertex2f(x, y);
-		GL11.glVertex2f(x, yy);
-		GL11.glVertex2f(xx, yy);
+		vertex(xx, y, 0).next();
+		vertex(x, y, 0).next();
+		vertex(x, yy, 0).next();
+		vertex(xx, yy, 0).next();
 		return this;
 	}
 	
@@ -62,8 +50,6 @@ public class QuadRenderStack extends RenderStack<QuadRenderStack> {
 			coordinates = GL20.glGetUniformLocation(shader.getProgram(), "coordinates");
 		GL20.glUniform4f(resolution, width, height, GuiScreen.getDisplayWidth(), GuiScreen.getDisplayHeight());
 		GL20.glUniform2f(coordinates, x, y);
-		GL11.glBegin(GL11.GL_QUADS);
-		running = true;
 	}
 
 }
