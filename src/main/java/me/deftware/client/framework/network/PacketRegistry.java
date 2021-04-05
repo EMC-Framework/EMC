@@ -26,6 +26,8 @@ public class PacketRegistry {
         register(net.minecraft.network.play.client.CPacketPlayer.PositionRotation.class, CPacketPositionRotation.class);
         register(net.minecraft.network.play.client.CPacketPlayer.Rotation.class, CPacketRotation.class);
         register(net.minecraft.network.play.client.CPacketPlayer.Position.class, CPacketPosition.class);
+        // Player Actions
+        register(net.minecraft.network.play.client.CPacketEntityAction.class, CPacketEntityAction.class);
         // Server bound
         register(net.minecraft.network.play.server.SPacketEntity.class, SPacketEntity.class);
         register(net.minecraft.network.play.server.SPacketAnimation.class, SPacketAnimation.class);
