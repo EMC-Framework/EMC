@@ -29,6 +29,8 @@ public class PacketRegistry {
         register(PlayerMoveC2SPacket.Both.class, CPacketPositionRotation.class);
         register(PlayerMoveC2SPacket.LookOnly.class, CPacketRotation.class);
         register(PlayerMoveC2SPacket.PositionOnly.class, CPacketPosition.class);
+        // Player Actions
+        register(ClientCommandC2SPacket.class, CPacketEntityAction.class);
         // Server bound
         register(EntityS2CPacket.class, SPacketEntity.class);
         register(EntityAnimationS2CPacket.class, SPacketAnimation.class);
