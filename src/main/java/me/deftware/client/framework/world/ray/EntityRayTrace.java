@@ -31,7 +31,7 @@ public class EntityRayTrace extends RayTrace<EntitySwingResult> {
 
         net.minecraft.entity.Entity entity = in.getMinecraftEntity();
 
-        RayTraceResult hitResult = entity.rayTrace(maxDistance, 1f, RayTraceFluidMode.NEVER);
+        RayTraceResult hitResult = raycast(start, end);
 
         double distance = maxDistance * maxDistance;
         if (hitResult != null && hitResult.type == RayTraceResult.Type.BLOCK)
@@ -76,6 +76,10 @@ public class EntityRayTrace extends RayTrace<EntitySwingResult> {
         }
 
         return null;
+    }
+
+    public RayTraceResult raycast(Vector3d start, Vector3d end) {
+        return Minecraft.getInstance().world.rayTraceBlocks(start.getMinecraftVector(), end.getMinecraftVector(), RayTraceFluidMode.NEVER, false, false);
     }
 
 }
