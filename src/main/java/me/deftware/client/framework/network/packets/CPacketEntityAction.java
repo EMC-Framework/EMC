@@ -2,7 +2,7 @@ package me.deftware.client.framework.network.packets;
 
 import me.deftware.client.framework.network.PacketWrapper;
 import net.minecraft.network.Packet;
-import net.minecraft.server.network.packet.ClientCommandC2SPacket;
+import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 
 public class CPacketEntityAction extends PacketWrapper {
     
