@@ -176,7 +176,11 @@ public class Minecraft {
 	public static ServerConnectionInfo getConnectedServer() {
 		return connectedServer.get();
 	}
-
+	
+	public static boolean isOnRealms() {
+		return MinecraftClient.getInstance().isConnectedToRealms();
+	}
+	
 	@Nullable
 	public static ServerConnectionInfo getLastConnectedServer() {
 		return lastConnectedServer;
