@@ -37,7 +37,7 @@ public class ChatStyle {
 				 else if (formatting == TextFormatting.STRIKETHROUGH) strikethrough = true;
 				 else 
 				// Color
-				color = new ChatColors.ChatColor(formatting);
+				color = new ChatColors.MinecraftColor(formatting);
 				break;
 			}
 		}
@@ -45,7 +45,7 @@ public class ChatStyle {
 
 	public void fromStyle(Style style) {
 		// Color
-		if (style.getColor() != null) color = new ChatColors.ChatColor(style.getColor());
+		if (style.getColor() != null) color = new ChatColors.MinecraftColor(style.getColor());
 		// Formatting
 		bold = style.getBold();
 		underline = style.getUnderlined();
@@ -62,7 +62,7 @@ public class ChatStyle {
 		// Formatting
 		style = style.setBold(bold).setItalic(italic).setUnderlined(underline).setObfuscated(obfuscated).setStrikethrough(strikethrough);
 		// Color
-		if (color != null) style = color.applyToStyle(style);
+		if (color != null && color instanceof ChatColors.MinecraftColor) style = ((ChatColors.MinecraftColor) color).applyToStyle(style);
 		// Other
 		if (clickEvent != null) style = style.setClickEvent(clickEvent.toEvent());
 		if (hoverEvent != null) style = style.setHoverEvent(hoverEvent.toEvent());
