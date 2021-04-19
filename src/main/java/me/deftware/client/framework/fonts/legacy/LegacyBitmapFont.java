@@ -3,6 +3,7 @@ package me.deftware.client.framework.fonts.legacy;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
 import me.deftware.client.framework.registry.font.TTFRegistry;
 import me.deftware.client.framework.render.batching.RenderStack;
+import me.deftware.client.framework.render.texture.GlTexture;
 import me.deftware.client.framework.render.texture.GraphicsUtil;
 import me.deftware.client.framework.util.path.OSUtils;
 import org.lwjgl.opengl.GL11;
@@ -34,7 +35,9 @@ public class LegacyBitmapFont {
     public boolean scaled;
 
     public int shadow = 1;
-    public int glId = -1;
+
+    private GlTexture textureAtlas;
+
     public int textureWidth, textureHeight;
 
     private FontMetrics metrics;
@@ -52,6 +55,30 @@ public class LegacyBitmapFont {
 
     public LegacyBitmapFont(String fontName, int fontSize) {
         this(fontName, fontSize, true);
+    }
+
+    public void setShadow(int shadow) {
+        this.shadow = shadow;
+    }
+
+    public Map<Character, CharData> getCharacterMap() {
+        return characterMap;
+    }
+
+    public int getShadow() {
+        return shadow;
+    }
+
+    public GlTexture getTextureAtlas() {
+        return textureAtlas;
+    }
+
+    public int getTextureWidth() {
+        return textureWidth;
+    }
+
+    public int getTextureHeight() {
+        return textureHeight;
     }
 
     public void setupFont() {
@@ -93,34 +120,10 @@ public class LegacyBitmapFont {
             characters.add(specialCharacter);
         }
 
-        glId = characterGenerate(characters);
+        textureAtlas = characterGenerate(characters);
     }
 
-    public void setShadow(int shadow) {
-        this.shadow = shadow;
-    }
-
-    public Map<Character, CharData> getCharacterMap() {
-        return characterMap;
-    }
-
-    public int getShadow() {
-        return shadow;
-    }
-
-    public int getGlId() {
-        return glId;
-    }
-
-    public int getTextureWidth() {
-        return textureWidth;
-    }
-
-    public int getTextureHeight() {
-        return textureHeight;
-    }
-
-    protected int characterGenerate(List<Character> characters) {
+    protected GlTexture characterGenerate(List<Character> characters) {
         // Calculate size of texture
         // fixedWidth must be more than the width of the widest character
         int width = 0, height = 0, fixedWidth = getStringWidth('W') * 2;
@@ -164,10 +167,9 @@ public class LegacyBitmapFont {
         long sizeBytes = ((long) dataBuffer.getSize()) * 4L;
         long sizeMB = sizeBytes / (1024L * 1024L);
 
-        Bootstrap.logger.info("Font atlas {}x{}, {} megabytes", textureWidth, textureHeight, sizeMB);
+        Bootstrap.logger.debug("Font atlas {}x{}, {} megabytes", textureWidth, textureHeight, sizeMB);
 
-        // Upload to gpu
-        return GraphicsUtil.loadTextureFromBufferedImage(characterTexture);
+        return new GlTexture(characterTexture);
     }
 
     public int getStringWidth(char... chars) {
@@ -183,11 +185,10 @@ public class LegacyBitmapFont {
     }
 
     public void destroy() {
-        if (glId != -1) {
-            GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
-            GL11.glDeleteTextures(glId);
+        if (textureAtlas != null) {
+            textureAtlas.destroy();
             characterMap.clear();
-            glId = -1;
+            textureAtlas = null;
         }
     }
 
