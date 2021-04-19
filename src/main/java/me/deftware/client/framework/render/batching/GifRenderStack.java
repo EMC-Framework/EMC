@@ -1,12 +1,11 @@
 package me.deftware.client.framework.render.batching;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import me.deftware.client.framework.render.texture.GraphicsUtil;
+import me.deftware.client.framework.render.texture.GlTexture;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import org.apache.logging.log4j.LogManager;
@@ -42,7 +41,7 @@ public class GifRenderStack extends RenderStack<GifRenderStack> {
     private final Map<Integer, Frame> frames = new HashMap<>();
 
     @Getter
-    private int glId = -1;
+    private GlTexture texture;
 
     @Getter
     private int frameIndex = 0;
@@ -60,15 +59,15 @@ public class GifRenderStack extends RenderStack<GifRenderStack> {
             this.height = gif.getHeight();
 
             // Allocate image
-            glId = GraphicsUtil.loadTextureFromBufferedImage(gif.getFrame(0));
-            logger.debug("Allocated texture with id {}", glId);
+            texture = new GlTexture(gif.getFrame(0));
+            logger.debug("Allocated texture with id {}", texture.getGlId());
 
             // Loop all frames after the first frame
             for (int i = 0; i < gif.getFrameCount(); i++) {
                 BufferedImage image = gif.getFrame(i);
                 if (image.getWidth() != width || image.getHeight() != height)
                     throw new IOException("Target frame is not the same size as the first one");
-                frames.put(i, new Frame(image.getWidth(), image.getHeight(), gif.getDelay(i), GraphicsUtil.getImageBuffer(image)));
+                frames.put(i, new Frame(image.getWidth(), image.getHeight(), gif.getDelay(i), GlTexture.getImageBuffer(image)));
             }
 
             logger.debug("Successfully loaded gif");
@@ -87,7 +86,7 @@ public class GifRenderStack extends RenderStack<GifRenderStack> {
                 frameIndex = 0;
             Frame frame = frames.get(this.frameIndex);
             // Update texture
-            frame.upload();
+            frame.upload(texture);
             this.frameIndex++;
             // Update delay
             lastFrame = System.currentTimeMillis() + frame.getDelay();
@@ -99,7 +98,7 @@ public class GifRenderStack extends RenderStack<GifRenderStack> {
         if (!isAvailable)
             throw new RuntimeException("Cannot render unavailable gif!");
         RenderSystem.enableTexture();
-        GlStateManager.bindTexture(glId);
+        texture.bind();
         return begin(GL11.GL_QUADS);
     }
 
@@ -127,9 +126,8 @@ public class GifRenderStack extends RenderStack<GifRenderStack> {
     }
 
     public void destroy() {
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, glId);
-        GL11.glDeleteTextures(glId);
-        glId = -1;
+        texture.destroy();
+        texture = null;
     }
 
     @Data
@@ -154,14 +152,8 @@ public class GifRenderStack extends RenderStack<GifRenderStack> {
         /**
          * Uploads the frame to the gpu
          */
-        public void upload() {
-            // Minecraft modifies these
-            GL11.glPixelStorei(GL11.GL_UNPACK_ROW_LENGTH, 0);
-            GL11.glPixelStorei(GL11.GL_UNPACK_SKIP_PIXELS, 0);
-            GL11.glPixelStorei(GL11.GL_UNPACK_SKIP_ROWS, 0);
-            GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 4);
-            // Upload texture to gpu
-            GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, width, height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
+        public void upload(GlTexture texture) {
+            texture.upload(buffer, true);
         }
 
     }
