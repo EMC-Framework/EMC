@@ -5,11 +5,11 @@ buildscript {
         maven { url = 'https://repo.spongepowered.org/maven' }
         maven { url = 'https://plugins.gradle.org/m2/' }
         maven { url 'https://gitlab.com/EMC-Framework/maven/raw/master/' }
-        maven { url 'https://files.minecraftforge.net/maven' }
+        maven { url 'https://jitpack.io' }
     }
 
     dependencies {
-        classpath "com.github.Chocohead:ForgeGradle:jitpack-SNAPSHOT"
+        classpath "com.github.Aristois:ForgeGradle:jitpack-SNAPSHOT"
         classpath "org.spongepowered:mixingradle:${project.mixinGradleVersion}"
         classpath "com.github.jengelman.gradle.plugins:shadow:2.0.0"
     }
