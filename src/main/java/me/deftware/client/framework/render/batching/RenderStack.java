@@ -54,12 +54,19 @@ public abstract class RenderStack<T> {
 		scaleChangeCallback.forEach(Runnable::run);
 	}
 
+	protected boolean scaled = true;
+
 	protected float red = 1f, green = 1f, blue = 1f, alpha = 1f, lineWidth = 2f;
 	protected Color lastColor = Color.white;
 
 	protected BufferBuilder builder = Tessellator.getInstance().getBuffer();
 	private boolean building = false;
 	protected int mode = -1;
+
+	public T setScaled(boolean scaling) {
+		this.scaled = scaling;
+		return (T) this;
+	}
 
 	public T push() {
 		GLX.INSTANCE.push();
@@ -182,6 +189,10 @@ public abstract class RenderStack<T> {
 
 	public static boolean isInCustomMatrix() {
 		return RenderStack.inCustomMatrix;
+	}
+
+	public boolean isScaled() {
+		return scaled;
 	}
 
 }
