@@ -10,6 +10,7 @@ import org.lwjgl.opengl.GL11;
 /**
  * @author Deftware
  */
+@Deprecated
 public class TexUtil {
 
     private static final MatrixStack stack = new MatrixStack();
