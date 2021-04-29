@@ -21,16 +21,11 @@ import java.util.Map;
 public class FontRenderStack extends RenderStack<FontRenderStack> {
 
 	private int offset = 0;
-	private boolean scaled;
 	private final LegacyBitmapFont font;
 
 	public FontRenderStack(IFontProvider font) {
 		this.font = font.getFont();
 		this.scaled = this.font.scaled;
-	}
-
-	public void setScaled(boolean scaled) {
-		this.scaled = scaled;
 	}
 
 	@Override

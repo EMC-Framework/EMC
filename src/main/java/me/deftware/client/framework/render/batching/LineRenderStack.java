@@ -28,9 +28,9 @@ public class LineRenderStack extends RenderStack<LineRenderStack> {
 		return super.begin(mode);
 	}
 
-	public LineRenderStack drawLine(float x1, float y1, float x2, float y2, boolean scaling) {
+	public LineRenderStack drawLine(float x1, float y1, float x2, float y2) {
 		// Scale
-		if (scaling) {
+		if (scaled) {
 			x1 *= getScale();
 			y1 *= getScale();
 			x2 *= getScale();
