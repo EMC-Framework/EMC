@@ -4,6 +4,8 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import lombok.Getter;
 import me.deftware.client.framework.main.EMCMod;
 import me.deftware.client.framework.util.ResourceUtils;
+import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -26,7 +28,7 @@ public class GlTexture {
     private int glId;
 
     @Getter
-    private final int textureWidth, textureHeight, scaling;
+    private int textureWidth, textureHeight, scaling;
 
     public GlTexture(EMCMod mod, String asset) throws IOException {
         this(
@@ -44,6 +46,10 @@ public class GlTexture {
 
     public GlTexture(BufferedImage image) {
         this(image, GL11.GL_LINEAR);
+    }
+
+    public GlTexture() {
+        // Intended for classes extending this class
     }
 
     public GlTexture(BufferedImage image, int scaling) {
@@ -119,6 +125,10 @@ public class GlTexture {
         }
         buffer.flip();
         return buffer;
+    }
+
+    public static void bindTexture(MinecraftIdentifier texture) {
+        MinecraftClient.getInstance().getTextureManager().bindTexture(texture);
     }
 
 }

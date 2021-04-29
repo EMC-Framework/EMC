@@ -9,6 +9,7 @@ import org.lwjgl.opengl.GL11;
 /**
  * @author Deftware
  */
+@Deprecated
 public class TexUtil {
 
     public static void bindTexture(MinecraftIdentifier texture) {
