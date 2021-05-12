@@ -141,7 +141,7 @@ public class GlTexture {
     }
 
     public static void bindTexture(MinecraftIdentifier texture) {
-        Minecraft.getInstance().getTextureManager().bindTexture(texture);
+        Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
     }
 
 }
