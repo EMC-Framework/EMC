@@ -14,6 +14,7 @@ import net.minecraft.world.BlockRenderView;
 import net.minecraftforge.client.model.data.IModelData;
 import net.optifine.Config;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -28,6 +29,7 @@ import java.util.Random;
  *
  * @author Deftware
  */
+@Pseudo
 @SuppressWarnings("ALL")
 @Mixin(BlockModelRenderer.class)
 public abstract class MixinOptiFineBlockModelRenderer {
