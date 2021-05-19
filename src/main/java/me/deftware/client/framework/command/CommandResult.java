@@ -8,6 +8,7 @@ import me.deftware.client.framework.entity.Entity;
 /**
  * @author Deftware
  */
+@Deprecated
 public class CommandResult {
 
 	private final CommandContext<?> context;

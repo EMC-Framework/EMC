@@ -148,6 +148,10 @@ public class Minecraft {
 		return null;
 	}
 
+	public static int getViewDistance() {
+		return net.minecraft.client.Minecraft.getInstance().gameSettings.renderDistanceChunks;
+	}
+
 	public static PlayerPerspective getPerspective() {
 		return net.minecraft.client.Minecraft.getInstance().gameSettings.thirdPersonView == 0 ?
 				PlayerPerspective.FIRST_PERSON : net.minecraft.client.Minecraft.getInstance().gameSettings.thirdPersonView == 1 ?

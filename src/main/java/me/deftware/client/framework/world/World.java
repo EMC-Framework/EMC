@@ -23,6 +23,7 @@ import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.IRegistry;
+import net.minecraft.world.EnumLightType;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.*;
@@ -72,6 +73,10 @@ public class World {
 
 	public static int getWorldHeight() {
 		return Objects.requireNonNull(net.minecraft.client.Minecraft.getInstance().world).getHeight();
+	}
+
+	public static int getBlockLightLevel(BlockPosition position) {
+		return Objects.requireNonNull(Minecraft.getInstance().world).getLightFor(EnumLightType.BLOCK, position.getMinecraftBlockPos());
 	}
 
 	public static BlockState getStateFromBlockPos(BlockPosition position) {

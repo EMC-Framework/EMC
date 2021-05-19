@@ -4,6 +4,7 @@ import me.deftware.client.framework.event.events.EventSlowdown;
 import me.deftware.client.framework.event.events.EventVoxelShape;
 import me.deftware.client.framework.global.GameKeys;
 import me.deftware.client.framework.global.GameMap;
+import me.deftware.client.framework.global.types.BlockProperty;
 import me.deftware.mixin.imp.IMixinAbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFlowingFluid;
@@ -61,6 +62,18 @@ public abstract class MixinBlock {
 
     @Inject(method = "getCollisionShape", at = @At("HEAD"), cancellable = true)
     public void getShapeForCollision(IBlockState p_getShapeForCollision_1_, IBlockReader p_getShapeForCollision_2_, BlockPos p_getShapeForCollision_3_, CallbackInfoReturnable<VoxelShape> ci) {
+        int id = IRegistry.BLOCK.getId(
+                (Block) (Object) this
+        );
+        BlockPropertyManager blockProperties = Bootstrap.blockProperties;
+        if (blockProperties.contains(id)) {
+            BlockProperty property = blockProperties.get(id);
+            if (property.getVoxelShape() != null) {
+                ci.setReturnValue(property.getVoxelShape().getMinecraftVoxelShape());
+                return;
+            }
+        }
+        // Deprecated
         EventVoxelShape event = new EventVoxelShape(blocksMovement ? p_getShapeForCollision_1_.getShape(p_getShapeForCollision_2_, p_getShapeForCollision_3_) : VoxelShapes.empty(), me.deftware.client.framework.world.block.Block.newInstance((Block) (Object) this));
         event.broadcast();
         if (event.modified) {

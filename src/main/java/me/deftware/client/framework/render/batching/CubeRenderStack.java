@@ -35,85 +35,85 @@ public class CubeRenderStack extends RenderStack<CubeRenderStack> {
 	}
 
 	private void drawColorBox(AxisAlignedBB box) {
-		vertex(box.minX, box.minY, box.minZ).endVertex();
-		vertex(box.minX, box.maxY, box.minZ).endVertex();
-		vertex(box.maxX, box.minY, box.minZ).endVertex();
-		vertex(box.maxX, box.maxY, box.minZ).endVertex();
-		vertex(box.maxX, box.minY, box.maxZ).endVertex();
-		vertex(box.maxX, box.maxY, box.maxZ).endVertex();
-		vertex(box.minX, box.minY, box.maxZ).endVertex();
-		vertex(box.minX, box.maxY, box.maxZ).endVertex();
+		vertex(box.minX, box.minY, box.minZ).next();
+		vertex(box.minX, box.maxY, box.minZ).next();
+		vertex(box.maxX, box.minY, box.minZ).next();
+		vertex(box.maxX, box.maxY, box.minZ).next();
+		vertex(box.maxX, box.minY, box.maxZ).next();
+		vertex(box.maxX, box.maxY, box.maxZ).next();
+		vertex(box.minX, box.minY, box.maxZ).next();
+		vertex(box.minX, box.maxY, box.maxZ).next();
 
-		vertex(box.maxX, box.maxY, box.minZ).endVertex();
-		vertex(box.maxX, box.minY, box.minZ).endVertex();
-		vertex(box.minX, box.maxY, box.minZ).endVertex();
-		vertex(box.minX, box.minY, box.minZ).endVertex();
-		vertex(box.minX, box.maxY, box.maxZ).endVertex();
-		vertex(box.minX, box.minY, box.maxZ).endVertex();
-		vertex(box.maxX, box.maxY, box.maxZ).endVertex();
-		vertex(box.maxX, box.minY, box.maxZ).endVertex();
+		vertex(box.maxX, box.maxY, box.minZ).next();
+		vertex(box.maxX, box.minY, box.minZ).next();
+		vertex(box.minX, box.maxY, box.minZ).next();
+		vertex(box.minX, box.minY, box.minZ).next();
+		vertex(box.minX, box.maxY, box.maxZ).next();
+		vertex(box.minX, box.minY, box.maxZ).next();
+		vertex(box.maxX, box.maxY, box.maxZ).next();
+		vertex(box.maxX, box.minY, box.maxZ).next();
 
-		vertex(box.minX, box.maxY, box.minZ).endVertex();
-		vertex(box.maxX, box.maxY, box.minZ).endVertex();
-		vertex(box.maxX, box.maxY, box.maxZ).endVertex();
-		vertex(box.minX, box.maxY, box.maxZ).endVertex();
-		vertex(box.minX, box.maxY, box.minZ).endVertex();
-		vertex(box.minX, box.maxY, box.maxZ).endVertex();
-		vertex(box.maxX, box.maxY, box.maxZ).endVertex();
-		vertex(box.maxX, box.maxY, box.minZ).endVertex();
+		vertex(box.minX, box.maxY, box.minZ).next();
+		vertex(box.maxX, box.maxY, box.minZ).next();
+		vertex(box.maxX, box.maxY, box.maxZ).next();
+		vertex(box.minX, box.maxY, box.maxZ).next();
+		vertex(box.minX, box.maxY, box.minZ).next();
+		vertex(box.minX, box.maxY, box.maxZ).next();
+		vertex(box.maxX, box.maxY, box.maxZ).next();
+		vertex(box.maxX, box.maxY, box.minZ).next();
 
-		vertex(box.minX, box.minY, box.minZ).endVertex();
-		vertex(box.maxX, box.minY, box.minZ).endVertex();
-		vertex(box.maxX, box.minY, box.maxZ).endVertex();
-		vertex(box.minX, box.minY, box.maxZ).endVertex();
-		vertex(box.minX, box.minY, box.minZ).endVertex();
-		vertex(box.minX, box.minY, box.maxZ).endVertex();
-		vertex(box.maxX, box.minY, box.maxZ).endVertex();
-		vertex(box.maxX, box.minY, box.minZ).endVertex();
+		vertex(box.minX, box.minY, box.minZ).next();
+		vertex(box.maxX, box.minY, box.minZ).next();
+		vertex(box.maxX, box.minY, box.maxZ).next();
+		vertex(box.minX, box.minY, box.maxZ).next();
+		vertex(box.minX, box.minY, box.minZ).next();
+		vertex(box.minX, box.minY, box.maxZ).next();
+		vertex(box.maxX, box.minY, box.maxZ).next();
+		vertex(box.maxX, box.minY, box.minZ).next();
 
-		vertex(box.minX, box.minY, box.minZ).endVertex();
-		vertex(box.minX, box.maxY, box.minZ).endVertex();
-		vertex(box.minX, box.minY, box.maxZ).endVertex();
-		vertex(box.minX, box.maxY, box.maxZ).endVertex();
-		vertex(box.maxX, box.minY, box.maxZ).endVertex();
-		vertex(box.maxX, box.maxY, box.maxZ).endVertex();
-		vertex(box.maxX, box.minY, box.minZ).endVertex();
-		vertex(box.maxX, box.maxY, box.minZ).endVertex();
+		vertex(box.minX, box.minY, box.minZ).next();
+		vertex(box.minX, box.maxY, box.minZ).next();
+		vertex(box.minX, box.minY, box.maxZ).next();
+		vertex(box.minX, box.maxY, box.maxZ).next();
+		vertex(box.maxX, box.minY, box.maxZ).next();
+		vertex(box.maxX, box.maxY, box.maxZ).next();
+		vertex(box.maxX, box.minY, box.minZ).next();
+		vertex(box.maxX, box.maxY, box.minZ).next();
 
-		vertex(box.minX, box.maxY, box.maxZ).endVertex();
-		vertex(box.minX, box.minY, box.maxZ).endVertex();
-		vertex(box.minX, box.maxY, box.minZ).endVertex();
-		vertex(box.minX, box.minY, box.minZ).endVertex();
-		vertex(box.maxX, box.maxY, box.minZ).endVertex();
-		vertex(box.maxX, box.minY, box.minZ).endVertex();
-		vertex(box.maxX, box.maxY, box.maxZ).endVertex();
-		vertex(box.maxX, box.minY, box.maxZ).endVertex();
+		vertex(box.minX, box.maxY, box.maxZ).next();
+		vertex(box.minX, box.minY, box.maxZ).next();
+		vertex(box.minX, box.maxY, box.minZ).next();
+		vertex(box.minX, box.minY, box.minZ).next();
+		vertex(box.maxX, box.maxY, box.minZ).next();
+		vertex(box.maxX, box.minY, box.minZ).next();
+		vertex(box.maxX, box.maxY, box.maxZ).next();
+		vertex(box.maxX, box.minY, box.maxZ).next();
 	}
 
 	private void drawSelectionBoundingBox(AxisAlignedBB box) {
-		vertex(box.minX, box.minY, box.minZ).endVertex();
-		vertex(box.maxX, box.minY, box.minZ).endVertex();
-		vertex(box.maxX, box.minY, box.maxZ).endVertex();
-		vertex(box.minX, box.minY, box.maxZ).endVertex();
-		vertex(box.minX, box.minY, box.minZ).endVertex();
+		vertex(box.minX, box.minY, box.minZ).next();
+		vertex(box.maxX, box.minY, box.minZ).next();
+		vertex(box.maxX, box.minY, box.maxZ).next();
+		vertex(box.minX, box.minY, box.maxZ).next();
+		vertex(box.minX, box.minY, box.minZ).next();
 
-		vertex(box.minX, box.maxY, box.minZ).endVertex();
-		vertex(box.maxX, box.maxY, box.minZ).endVertex();
-		vertex(box.maxX, box.maxY, box.maxZ).endVertex();
-		vertex(box.minX, box.maxY, box.maxZ).endVertex();
-		vertex(box.minX, box.maxY, box.minZ).endVertex();
+		vertex(box.minX, box.maxY, box.minZ).next();
+		vertex(box.maxX, box.maxY, box.minZ).next();
+		vertex(box.maxX, box.maxY, box.maxZ).next();
+		vertex(box.minX, box.maxY, box.maxZ).next();
+		vertex(box.minX, box.maxY, box.minZ).next();
 
 		drawBuffer();
 		builder.begin(GL11.GL_LINES, getFormat());
 
-		vertex(box.minX, box.minY, box.minZ).endVertex();
-		vertex(box.minX, box.maxY, box.minZ).endVertex();
-		vertex(box.maxX, box.minY, box.minZ).endVertex();
-		vertex(box.maxX, box.maxY, box.minZ).endVertex();
-		vertex(box.maxX, box.minY, box.maxZ).endVertex();
-		vertex(box.maxX, box.maxY, box.maxZ).endVertex();
-		vertex(box.minX, box.minY, box.maxZ).endVertex();
-		vertex(box.minX, box.maxY, box.maxZ).endVertex();
+		vertex(box.minX, box.minY, box.minZ).next();
+		vertex(box.minX, box.maxY, box.minZ).next();
+		vertex(box.maxX, box.minY, box.minZ).next();
+		vertex(box.maxX, box.maxY, box.minZ).next();
+		vertex(box.maxX, box.minY, box.maxZ).next();
+		vertex(box.maxX, box.maxY, box.maxZ).next();
+		vertex(box.minX, box.minY, box.maxZ).next();
+		vertex(box.minX, box.maxY, box.maxZ).next();
 	}
 
 }
