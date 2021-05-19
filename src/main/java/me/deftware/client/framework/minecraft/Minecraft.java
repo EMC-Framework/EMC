@@ -150,6 +150,10 @@ public class Minecraft {
 		return null;
 	}
 
+	public static int getViewDistance() {
+		return MinecraftClient.getInstance().options.viewDistance;
+	}
+
 	public static PlayerPerspective getPerspective() {
 		return MinecraftClient.getInstance().options.perspective == 0 ?
 				PlayerPerspective.FIRST_PERSON : MinecraftClient.getInstance().options.perspective == 1 ?

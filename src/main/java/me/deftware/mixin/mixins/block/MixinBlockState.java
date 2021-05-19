@@ -7,6 +7,7 @@ import net.minecraft.block.SweetBerryBushBlock;
 import me.deftware.client.framework.global.GameKeys;
 import me.deftware.client.framework.global.GameMap;
 import me.deftware.client.framework.global.types.BlockProperty;
+import me.deftware.client.framework.global.types.BlockPropertyManager;
 import me.deftware.client.framework.global.types.PropertyManager;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
 import me.deftware.client.framework.math.position.DoubleBlockPosition;
@@ -59,6 +60,16 @@ public abstract class MixinBlockState {
 
     @Inject(method = "getCollisionShape(Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/entity/EntityContext;)Lnet/minecraft/util/shape/VoxelShape;", at = @At("HEAD"), cancellable = true)
 	public void getCollisionShape(BlockView world, BlockPos pos, EntityContext context, CallbackInfoReturnable<VoxelShape> ci) {
+		int id = Registry.BLOCK.getRawId(this.getBlock());
+		BlockPropertyManager blockProperties = Bootstrap.blockProperties;
+		if (blockProperties.contains(id)) {
+			BlockProperty property = blockProperties.get(id);
+			if (property.getVoxelShape() != null) {
+				ci.setReturnValue(property.getVoxelShape().getMinecraftVoxelShape());
+				return;
+			}
+		}
+		// Deprecated
 		if (!this.getFluidState().isEmpty()) {
 			boolean fullCube = GameMap.INSTANCE.get(GameKeys.FULL_LIQUID_VOXEL, false);
 			if (fullCube) {
