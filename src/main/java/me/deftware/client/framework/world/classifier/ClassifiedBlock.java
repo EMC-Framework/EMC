@@ -1,12 +1,14 @@
 package me.deftware.client.framework.world.classifier;
 
 import me.deftware.client.framework.math.box.BoundingBox;
+import me.deftware.client.framework.math.position.BlockPosition;
 import net.minecraft.block.Block;
 
 /**
  * @author Deftware
  */
 public class ClassifiedBlock {
+	private final BlockPosition position;
 	private final BoundingBox box;
 	private final Block block;
 
@@ -16,6 +18,10 @@ public class ClassifiedBlock {
 
 	public Block getBlock() {
 		return this.block;
+	}
+
+	public BlockPosition getPosition() {
+		return position;
 	}
 
 	@Override
@@ -53,7 +59,8 @@ public class ClassifiedBlock {
 		return "ClassifiedBlock(box=" + this.getBox() + ", block=" + this.getBlock() + ")";
 	}
 
-	public ClassifiedBlock(final BoundingBox box, final Block block) {
+	public ClassifiedBlock(final BlockPosition position, final BoundingBox box, final Block block) {
+		this.position = position;
 		this.box = box;
 		this.block = block;
 	}
