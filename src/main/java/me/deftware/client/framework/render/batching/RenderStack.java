@@ -2,7 +2,6 @@ package me.deftware.client.framework.render.batching;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import lombok.Getter;
-import lombok.Setter;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
 import me.deftware.client.framework.render.gl.GLX;
 import net.minecraft.client.MinecraftClient;
@@ -24,7 +23,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author Deftware
  */
 @SuppressWarnings("unchecked")
-public abstract class RenderStack<T> {
+public abstract class RenderStack<T> implements VertexConstructor {
 
 	public static float scale = 1;
 	public static final CopyOnWriteArrayList<Runnable> scaleChangeCallback = new CopyOnWriteArrayList<>();
@@ -131,8 +130,27 @@ public abstract class RenderStack<T> {
 		GlStateManager.enableDepthTest();
 	}
 
-	protected BufferBuilder vertex(double x, double y, double z) {
-		return builder.vertex(x,y, z).color(red, green, blue, alpha);
+	@Override
+	public void next() {
+		builder.next();
+	}
+
+	@Override
+	public VertexConstructor color(float r, float g, float b, float alpha) {
+		builder.color(r, g, b, alpha);
+		return this;
+	}
+
+	@Override
+	public VertexConstructor texture(float u, float v) {
+		builder.texture(u, v);
+		return this;
+	}
+
+	@Override
+	public VertexConstructor vertex(double x, double y, double z) {
+		builder.vertex(x,y, z).color(red, green, blue, alpha);
+		return this;
 	}
 
 	protected VertexFormat getFormat() {
