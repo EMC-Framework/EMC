@@ -1,5 +1,6 @@
 package me.deftware.client.framework.chat;
 
+import com.mojang.brigadier.Message;
 import me.deftware.client.framework.chat.hud.ChatHud;
 import me.deftware.client.framework.chat.style.ChatStyle;
 import me.deftware.client.framework.fonts.minecraft.FontRenderer;
@@ -14,10 +15,32 @@ import java.util.List;
 /**
  * @author Deftware
  */
-public class ChatMessage {
+public class ChatMessage implements Message {
 
 	private ChatComponentText compiledText; /* Cache */
 	protected final List<ChatSection> sectionList = new ArrayList<>();
+
+	public static ChatMessage join(ChatMessage... messages) {
+		ChatMessage message = null;
+		if (messages.length != 0) {
+			message = messages[0];
+			if (messages.length > 1) {
+				for (int i = 1; i < messages.length; i++) {
+					message.join(messages[i]);
+				}
+			}
+		}
+		return message;
+	}
+
+	@Override
+	public String getString() {
+		return this.toString();
+	}
+
+	public String toString() {
+		return this.toString(false);
+	}
 
 	public String toString(boolean withFormatting) {
 		StringBuilder builder = new StringBuilder();

@@ -71,7 +71,7 @@ public class GifRenderStack extends RenderStack<GifRenderStack> {
     /**
      * Uploads the next frame in the gif
      */
-    private void next() {
+    private void nextFrame() {
         if (lastFrame < System.currentTimeMillis()) {
             if (frameIndex >= frames.size())
                 frameIndex = 0;
@@ -105,19 +105,20 @@ public class GifRenderStack extends RenderStack<GifRenderStack> {
     }
 
     @Override
-    protected WorldRenderer vertex(double x, double y, double z) {
-        return builder.pos(x,y, z);
+    public VertexConstructor vertex(double x, double y, double z) {
+        builder.pos(x,y, z);
+        return this;
     }
 
     public GifRenderStack draw(int x0, int y0, int x1, int y1) {
         // Draw frame
         int u0 = 0, u1 = 1, v0 = 0, v1 = 1;
-        vertex(x0, y1, 0).tex(u0, v1).endVertex();
-        vertex(x1, y1, 0).tex(u1, v1).endVertex();
-        vertex(x1, y0, 0).tex(u1, v0).endVertex();
-        vertex(x0, y0, 0).tex(u0, v0).endVertex();
+        vertex(x0, y1, 0).texture(u0, v1).next();
+        vertex(x1, y1, 0).texture(u1, v1).next();
+        vertex(x1, y0, 0).texture(u1, v0).next();
+        vertex(x0, y0, 0).texture(u0, v0).next();
         // Update texture
-        next();
+        nextFrame();
         return this;
     }
 

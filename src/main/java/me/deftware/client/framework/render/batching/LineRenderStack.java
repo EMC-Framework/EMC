@@ -37,13 +37,13 @@ public class LineRenderStack extends RenderStack<LineRenderStack> {
 			y2 *= getScale();
 		}
 		// Draw
-		vertex(x1, y1, 0).endVertex();
-		vertex(x2, y2, 0).endVertex();
+		vertex(x1, y1, 0).next();
+		vertex(x2, y2, 0).next();
 		return this;
 	}
 
 	public void vertex(double x, double y) {
-		vertex(x, y, 0).endVertex();
+		vertex(x, y, 0).next();
 	}
 
 	public LineRenderStack lineToBlockPosition(BlockPosition pos) {
@@ -67,7 +67,7 @@ public class LineRenderStack extends RenderStack<LineRenderStack> {
 	}
 
 	public LineRenderStack drawPoint(double x, double y, double z) {
-		vertex(x, y, z).endVertex();
+		vertex(x, y, z).next();
 		return this;
 	}
 

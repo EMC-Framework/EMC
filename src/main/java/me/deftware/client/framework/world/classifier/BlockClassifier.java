@@ -2,6 +2,8 @@ package me.deftware.client.framework.world.classifier;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectArrayMap;
 import me.deftware.client.framework.math.box.DoubleBoundingBox;
+import me.deftware.client.framework.math.position.BlockPosition;
+import me.deftware.client.framework.math.position.DoubleBlockPosition;
 import net.minecraft.block.Block;
 import net.minecraft.util.BlockPos;
 import java.util.ArrayList;
@@ -31,7 +33,7 @@ public class BlockClassifier {
 
 	public void classify(Block block, BlockPos pos, int id) {
 		if (running && validator.test(id, pos.getY())) {
-			classifiedBlocks.computeIfAbsent(pos.toLong(), key -> new ClassifiedBlock(new DoubleBoundingBox(pos), block));
+			classifiedBlocks.computeIfAbsent(pos.toLong(), key -> new ClassifiedBlock(DoubleBlockPosition.fromMinecraftBlockPos(pos), new DoubleBoundingBox(pos), block));
 		}
 	}
 

@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
+import me.deftware.client.framework.render.batching.VertexConstructor;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -49,8 +50,9 @@ public class FontRenderStack extends RenderStack<FontRenderStack> {
 	}
 
 	@Override
-	protected WorldRenderer vertex(double x, double y, double z) {
-		return builder.pos((float) x,  (float) y,  (float) z);
+	public VertexConstructor vertex(double x, double y, double z) {
+		builder.pos((float) x,  (float) y,  (float) z);
+		return this;
 	}
 
 	public FontRenderStack drawString(double x, double y, String message) {
@@ -147,10 +149,10 @@ public class FontRenderStack extends RenderStack<FontRenderStack> {
 	}
 
 	private void drawTexturedQuad(int x0, int x1, int y0, int y1, int z, float u0, float u1, float v0, float v1) {
-		vertex(x0, y1, z).tex(u0, v1).color(red, green, blue, alpha).endVertex();
-		vertex(x1, y1, z).tex(u1, v1).color(red, green, blue, alpha).endVertex();
-		vertex(x1, y0, z).tex(u1, v0).color(red, green, blue, alpha).endVertex();
-		vertex(x0, y0, z).tex(u0, v0).color(red, green, blue, alpha).endVertex();
+		vertex(x0, y1, z).texture(u0, v1).color(red, green, blue, alpha).next();
+		vertex(x1, y1, z).texture(u1, v1).color(red, green, blue, alpha).next();
+		vertex(x1, y0, z).texture(u1, v0).color(red, green, blue, alpha).next();
+		vertex(x0, y0, z).texture(u0, v0).color(red, green, blue, alpha).next();
 	}
 
 }
