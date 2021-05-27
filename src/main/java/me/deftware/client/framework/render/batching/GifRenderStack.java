@@ -115,8 +115,9 @@ public class GifRenderStack extends RenderStack<GifRenderStack> {
     }
 
     @Override
-    protected BufferBuilder vertex(double x, double y, double z) {
-        return builder.vertex(x,y, z);
+    public VertexConstructor vertex(double x, double y, double z) {
+        builder.vertex(x,y, z);
+        return this;
     }
 
     public GifRenderStack draw(int x0, int y0, int x1, int y1) {
