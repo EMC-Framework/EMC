@@ -46,8 +46,8 @@ public class TextField extends GuiTextField implements GuiEventListener {
 		setFocused(state);
 	}
 
-	public void onKeyPressed(int keyCode, int action, int modifiers) {
-		textboxKeyTyped(Keyboard.getEventCharacter(), keyCode);
+	public boolean onKeyPressed(int keyCode, int scanCode, int modifiers) {
+		return textboxKeyTyped(Keyboard.getEventCharacter(), keyCode);
 	}
 
 	public void onMouseClicked(int mouseX, int mouseY, int mouseButton) {

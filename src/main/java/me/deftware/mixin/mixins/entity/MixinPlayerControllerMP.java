@@ -1,6 +1,7 @@
 package me.deftware.mixin.mixins.entity;
 
 import me.deftware.client.framework.event.events.EventAttackEntity;
+import me.deftware.client.framework.event.events.EventBlockBreakingCooldown;
 import me.deftware.client.framework.global.GameKeys;
 import me.deftware.client.framework.global.GameMap;
 import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
@@ -12,6 +13,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -20,6 +22,8 @@ public class MixinPlayerControllerMP implements IMixinPlayerControllerMP {
 
     @Shadow
     private boolean isHittingBlock;
+
+    @Shadow private int blockHitDelay;
 
     @Inject(method = "getBlockReachDistance", at = @At(value = "RETURN"), cancellable = true)
     private void onGetReachDistance(CallbackInfoReturnable<Float> cir) {
@@ -32,7 +36,7 @@ public class MixinPlayerControllerMP implements IMixinPlayerControllerMP {
         cir.setReturnValue(GameMap.INSTANCE.get(GameKeys.EXTENDED_REACH, cir.getReturnValue()));
     }
 
-    @Inject(method = "attackEntity", at = @At("HEAD"))
+    @Inject(method = "attackEntity", at = @At("HEAD"), cancellable = true)
     public void attackEntity(EntityPlayer player, Entity target, CallbackInfo ci) {
         if (target == null || target == player || (CameraEntityMan.isActive() && target == CameraEntityMan.fakePlayer)) {
             ci.cancel();
@@ -57,6 +61,12 @@ public class MixinPlayerControllerMP implements IMixinPlayerControllerMP {
             ci.cancel();
         }
     }*/
+
+    @Redirect(method = "onPlayerDamageBlock", at = @At(value = "FIELD", target = "Lnet/minecraft/client/multiplayer/PlayerControllerMP;blockHitDelay:I", opcode = 181))
+    private void onUpdateBlockBreaking(PlayerControllerMP clientPlayerInteractionManager, int value) {
+        EventBlockBreakingCooldown event = new EventBlockBreakingCooldown(value).broadcast();
+        blockHitDelay = event.getCooldown();
+    }
 
     @Override
     public void setPlayerHittingBlock(boolean state) {
