@@ -1,6 +1,7 @@
 package me.deftware.mixin.mixins.entity;
 
 import me.deftware.client.framework.event.events.EventAttackEntity;
+import me.deftware.client.framework.event.events.EventBlockBreakingCooldown;
 import me.deftware.client.framework.global.GameKeys;
 import me.deftware.client.framework.global.GameMap;
 import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
@@ -15,6 +16,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -23,6 +25,8 @@ public class MixinPlayerControllerMP implements IMixinPlayerControllerMP {
 
     @Shadow
     private boolean breakingBlock;
+
+    @Shadow private int field_3716;
 
     @Inject(method = "getReachDistance", at = @At(value = "RETURN"), cancellable = true)
     private void onGetReachDistance(CallbackInfoReturnable<Float> cir) {
@@ -59,6 +63,12 @@ public class MixinPlayerControllerMP implements IMixinPlayerControllerMP {
             ci.setReturnValue(ActionResult.FAIL);
             ci.cancel();
         }
+    }
+
+    @Redirect(method = "method_2902", at = @At(value = "FIELD", target = "Lnet/minecraft/client/network/ClientPlayerInteractionManager;field_3716:I", opcode = 181))
+    private void onUpdateBlockBreaking(ClientPlayerInteractionManager clientPlayerInteractionManager, int value) {
+        EventBlockBreakingCooldown event = new EventBlockBreakingCooldown(value).broadcast();
+        field_3716 = event.getCooldown();
     }
 
     @Override
