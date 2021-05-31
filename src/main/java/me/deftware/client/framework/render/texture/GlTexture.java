@@ -23,9 +23,9 @@ import java.nio.ByteBuffer;
  */
 public class GlTexture {
 
-    private int glId;
+    protected int glId;
 
-    private int textureWidth, textureHeight, scaling;
+    protected int textureWidth, textureHeight, scaling;
 
     public GlTexture(EMCMod mod, String asset) throws IOException {
         this(
@@ -50,6 +50,10 @@ public class GlTexture {
     }
 
     public GlTexture(BufferedImage image, int scaling) {
+        this.init(image, scaling);
+    }
+
+    protected void init(BufferedImage image, int scaling) {
         this.scaling = scaling;
         this.textureWidth = image.getWidth();
         this.textureHeight = image.getHeight();
@@ -59,18 +63,31 @@ public class GlTexture {
         this.upload(getImageBuffer(image), false);
     }
 
-    public void draw(int x, int y, int width, int height) {
-        draw(x, y, width, height, 0, 0, width, height);
+    public GlTexture draw(int x, int y, int width, int height) {
+        return draw(x, y, width, height, 0, 0, width, height);
     }
 
-    public void draw(int x, int y, int width, int height, int u, int v, int textureWidth, int textureHeight) {
+    public GlTexture draw(int x, int y, int width, int height, int u, int v, int textureWidth, int textureHeight) {
+        drawTexture(x, y, width, height, u, v, textureWidth, textureHeight);
+        return this;
+    }
+
+    public static void drawTexture(int x, int y, int width, int height, int u, int v, int textureWidth, int textureHeight) {
         GlStateManager.enableBlend();
         GuiScreen.drawModalRectWithCustomSizedTexture(x, y, u, v, width, height, textureWidth, textureHeight);
     }
 
     public GlTexture bind() {
-        GlStateManager.bindTexture(glId);
+        bindTexture(glId);
         return this;
+    }
+
+    public boolean isReady() {
+        return glId != 0;
+    }
+
+    public void unbind() {
+        bindTexture(0);
     }
 
     public void upload(BufferedImage image) {
@@ -138,6 +155,10 @@ public class GlTexture {
         }
         buffer.flip();
         return buffer;
+    }
+
+    public static void bindTexture(int id) {
+        GlStateManager.bindTexture(id);
     }
 
     public static void bindTexture(MinecraftIdentifier texture) {

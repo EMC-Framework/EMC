@@ -62,16 +62,16 @@ public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen {
 
 	@Override
 	public boolean mouseReleased(double x, double y, int button) {
-		onMouseReleased((int) Math.round(x), (int) Math.round(y), button);
-		super.mouseReleased(x, y, button);
-		return false;
+		if (onMouseReleased((int) Math.round(x), (int) Math.round(y), button))
+			return true;
+		return super.mouseReleased(x, y, button);
 	}
 
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-		onMouseClicked((int) Math.round(mouseX), (int) Math.round(mouseY), mouseButton);
-		super.mouseClicked(mouseX, mouseY, mouseButton);
-		return false;
+		if (onMouseClicked((int) Math.round(mouseX), (int) Math.round(mouseY), mouseButton))
+			return true;
+		return super.mouseClicked(mouseX, mouseY, mouseButton);
 	}
 
 	@Override
@@ -111,8 +111,7 @@ public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen {
 	}
 
 	@Override
-	@SuppressWarnings("OptionalGetWithoutIsPresent")
-	public boolean keyPressed(int keyCode, int action, int modifiers) {
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
 			if (escGoesBack) {
 				goBack();
@@ -120,18 +119,17 @@ public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen {
 			}
 			return onGoBackRequested();
 		} else {
-			onKeyPressed(keyCode, action, modifiers);
-			if (keyCode == GLFW.GLFW_KEY_TAB && children.stream().anyMatch(e -> e instanceof GuiTextField)) {
-				int i = Iterables.indexOf(children, e -> e instanceof GuiTextField && ((GuiTextField) e).isFocused());
-				int newIndex = i == Iterables.indexOf(children, e -> e == children.stream().filter(t -> t instanceof GuiTextField).reduce((first, second) -> second).get()) || i == -1 ? Iterables.indexOf(children, e -> e == children.stream().filter(t -> t instanceof GuiTextField).findFirst().get()) : i + 1;
-				if (i != -1 && ((GuiTextField) children.get(i)).isFocused()) {
-					children.get(newIndex).focusChanged(true);
-				}
-				children.get(newIndex).focusChanged(true);
-			}
-			super.keyPressed(keyCode, action, modifiers);
+			if (onKeyPressed(keyCode, scanCode, modifiers))
+				return true;
+			return super.keyPressed(keyCode, scanCode, modifiers);
 		}
-		return false;
+	}
+
+	@Override
+	public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+		if (onKeyReleased(keyCode, scanCode, modifiers))
+			return true;
+		return super.keyReleased(keyCode, scanCode, modifiers);
 	}
 
 	public void addEventListener(GuiEventListener listener) {
@@ -219,7 +217,7 @@ public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen {
 
 	protected abstract void onDraw(int mouseX, int mouseY, float partialTicks);
 
-	protected abstract void onUpdate();
+	protected void onUpdate() { }
 
 	/**
 	 * @see GLFW#GLFW_RELEASE
@@ -228,13 +226,15 @@ public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen {
 
 	 * @see GLFW#GLFW_REPEAT
 	 */
-	protected abstract void onKeyPressed(int keyCode, int action, int modifiers);
+	protected boolean onKeyPressed(int keyCode, int scanCode, int modifiers) { return false; }
 
-	protected abstract void onMouseReleased(int mouseX, int mouseY, int mouseButton);
+	protected boolean onKeyReleased(int keyCode, int scanCode, int modifiers) { return false; }
 
-	protected abstract void onMouseClicked(int mouseX, int mouseY, int mouseButton);
+	protected boolean onMouseReleased(int mouseX, int mouseY, int mouseButton) { return false; }
 
-	protected abstract void onGuiResize(int w, int h);
+	protected boolean onMouseClicked(int mouseX, int mouseY, int mouseButton) { return false; }
+
+	protected void onGuiResize(int w, int h) { }
 
 	protected boolean onGoBackRequested() {
 		return false;
