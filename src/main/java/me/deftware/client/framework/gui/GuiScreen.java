@@ -70,13 +70,15 @@ public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen {
 
 	@Override
 	public void mouseReleased(int x, int y, int button) {
-		onMouseReleased(x, y, button);
+		if (onMouseReleased(x, y, button))
+			return;
 		super.mouseReleased(x, y, button);
 	}
 
 	@Override
 	public void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-		onMouseClicked(mouseX, mouseY, mouseButton);
+		if (onMouseClicked(mouseX, mouseY, mouseButton))
+			return;
 		children.forEach(c -> {
 			if (c instanceof TextField) {
 				c.doMouseClicked(mouseX, mouseY, mouseButton);
@@ -134,34 +136,31 @@ public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen {
 	}
 
 	@Override
-	@SuppressWarnings("OptionalGetWithoutIsPresent")
-	protected void keyTyped(char typedChar, int keyCode) throws IOException {
-		if (keyCode == Keyboard.KEY_ESCAPE) {
-			if (escGoesBack) {
-				goBack();
-				return;
+	public void handleKeyboardInput() throws IOException {
+		char typedChar = Keyboard.getEventCharacter();
+		int keyCode = Keyboard.getEventKey();
+		if (Keyboard.getEventKeyState()) {
+			if (keyCode == Keyboard.KEY_ESCAPE) {
+				if (escGoesBack) {
+					goBack();
+					return;
+				}
+				onGoBackRequested();
+			} else {
+				children.forEach(c -> {
+					if (c instanceof TextField) {
+						c.doKeyTyped(typedChar, keyCode);
+					}
+				});
+				if (!onKeyPressed(GLFW.toGLFW.getOrDefault(keyCode, keyCode), 0, getModifier()))
+					super.keyTyped(typedChar, keyCode);
+				if (ChatAllowedCharacters.isAllowedCharacter(typedChar))
+					GLFW.callbacks.forEach((c) -> c.invoke(0L, typedChar));
 			}
-			onGoBackRequested();
-			return;
 		} else {
-			children.forEach(c -> {
-				if (c instanceof TextField) {
-					c.doKeyTyped(typedChar, keyCode);
-				}
-			});
-			keyPressed(GLFW.toGLFW.getOrDefault(keyCode, keyCode), 0, 0);
-			if (keyCode == Keyboard.KEY_TAB && children.stream().anyMatch(e -> e instanceof GuiTextField)) {
-				int i = Iterables.indexOf(children, e -> e instanceof GuiTextField && ((GuiTextField) e).isFocused());
-				int newIndex = i == Iterables.indexOf(children, e -> e == children.stream().filter(t -> t instanceof GuiTextField).reduce((first, second) -> second).get()) || i == -1 ? Iterables.indexOf(children, e -> e == children.stream().filter(t -> t instanceof GuiTextField).findFirst().get()) : i + 1;
-				if (i != -1 && ((GuiTextField) children.get(i)).isFocused()) {
-					children.get(newIndex).focusChanged(true);
-				}
-				children.get(newIndex).focusChanged(true);
-			}
-			super.keyTyped(typedChar, keyCode);
+			// Released
+			onKeyReleased(GLFW.toGLFW.getOrDefault(keyCode, keyCode), 0, getModifier());
 		}
-        if (ChatAllowedCharacters.isAllowedCharacter(typedChar))
-		    GLFW.callbacks.forEach((c) -> c.invoke(0L, typedChar));
 	}
 
     private int getModifier() {
@@ -173,11 +172,6 @@ public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen {
             return 0x4;
         return 0;
     }
-
-	public boolean keyPressed(int keyCode, int action, int modifiers) {
-		onKeyPressed(keyCode, action, getModifier());
-		return true;
-	}
 
 	public void addEventListener(GuiEventListener listener) {
 		this.children.add(listener);
@@ -258,15 +252,17 @@ public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen {
 
 	protected abstract void onDraw(int mouseX, int mouseY, float partialTicks);
 
-	protected abstract void onUpdate();
+	protected void onUpdate() { }
 
-	protected abstract void onKeyPressed(int keyCode, int action, int modifiers);
+	protected boolean onKeyPressed(int keyCode, int scanCode, int modifiers) { return false; }
 
-	protected abstract void onMouseReleased(int mouseX, int mouseY, int mouseButton);
+	protected boolean onKeyReleased(int keyCode, int scanCode, int modifiers) { return false; }
 
-	protected abstract void onMouseClicked(int mouseX, int mouseY, int mouseButton);
+	protected boolean onMouseReleased(int mouseX, int mouseY, int mouseButton) { return false; }
 
-	protected abstract void onGuiResize(int w, int h);
+	protected boolean onMouseClicked(int mouseX, int mouseY, int mouseButton) { return false; }
+
+	protected void onGuiResize(int w, int h) { }
 
 	protected boolean onGoBackRequested() {
 		return false;
