@@ -66,9 +66,10 @@
     "render.MixinRenderSystem",
     "render.MixinTextureManager",
     "render.MixinVisGraph",
-    "render.MixinWorldRenderer",
     "world.MixinWorld",
     "world.MixinWorldChunk",
-    "world.MixinWorldClient"
+    "world.MixinWorldClient",
+    "shader.MixinShaderEffect",
+    "shader.MixinWorldRenderer"
   ]
 }
