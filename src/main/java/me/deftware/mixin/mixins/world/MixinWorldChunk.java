@@ -16,7 +16,7 @@ public abstract class MixinWorldChunk {
 	/*
 			This function is called every time a chunk is built
 	*/
-	@Redirect(method = "getBlockState", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/Chunk;getBlockState(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/block/state/IBlockState;", opcode = 180))
+	@Redirect(method = "getBlockState", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/Chunk;getBlockState(Lnet/minecraft/util/BlockPos;)Lnet/minecraft/block/state/IBlockState;", opcode = 180))
 	private IBlockState getBlockState(Chunk chunk, BlockPos p_getBlockState_1_) {
 		IBlockState blockState = chunk.getBlockState(p_getBlockState_1_);
 		Block block = blockState.getBlock();

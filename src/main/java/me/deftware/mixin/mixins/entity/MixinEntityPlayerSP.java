@@ -10,6 +10,7 @@ import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
 import me.deftware.mixin.imp.IMixinEntityPlayerSP;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.play.client.C01PacketChatMessage;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.FoodStats;
@@ -52,8 +53,8 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
         }
     }
 
-    @Redirect(method = "onLivingUpdate", at = @At(value = "INVOKE", target = "net/minecraft/client/entity/EntityPlayerSP.isHandActive()Z", ordinal = 0))
-    private boolean itemUseSlowdownEvent(EntityPlayerSP self) {
+    @Redirect(method = "onLivingUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/EntityPlayer;isUsingItem()Z", ordinal = 0))
+    private boolean itemUseSlowdownEvent(EntityPlayer self) {
         EventSlowdown event = new EventSlowdown(EventSlowdown.SlowdownType.Item_Use);
         event.broadcast();
         if (event.isCanceled()) {

@@ -34,13 +34,13 @@ public class MixinNetHandlerPlayClient implements IMixinNetworkHandler {
     @Unique
     private final Map<UUID, PlayerEntry> playerEntryMap = Maps.newHashMap();
 
-    @Redirect(method = "handlePlayerListItem", at = @At(value = "INVOKE", target = "Ljava/util/Map;remove(Ljava/lang/Object;)Ljava/lang/Object;"))
+    @Redirect(method = "handlePlayerListItem", at = @At(value = "INVOKE", target = "Ljava/util/Map;remove(Ljava/lang/Object;)Ljava/lang/Object;", remap = false))
     private Object onPlayerListUpdate(Map<UUID, NetworkPlayerInfo> map, Object key) {
         playerEntryMap.remove((UUID) key);
         return map.remove((UUID) key);
     }
 
-    @Redirect(method = "handlePlayerListItem", at = @At(value = "INVOKE", target = "Ljava/util/Map;put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"))
+    @Redirect(method = "handlePlayerListItem", at = @At(value = "INVOKE", target = "Ljava/util/Map;put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", remap = false))
     private Object onPlayerListAdd(Map<UUID, NetworkPlayerInfo> map, Object key, Object value) {
         playerEntryMap.put((UUID) key, new PlayerEntry((NetworkPlayerInfo) value));
         return map.put((UUID) key, (NetworkPlayerInfo) value);

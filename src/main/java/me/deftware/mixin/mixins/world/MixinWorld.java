@@ -41,7 +41,7 @@ public abstract class MixinWorld implements IMixinWorld {
 		emcTileEntities.put(blockEntity, TileEntity.newInstance(blockEntity));
 	}
 
-	@Redirect(method = "updateEntities", at = @At(value = "INVOKE", target = "Ljava/util/List;removeAll(Ljava/util/Collection;)Z", ordinal = 1))
+	@Redirect(method = "updateEntities", at = @At(value = "INVOKE", target = "Ljava/util/List;removeAll(Ljava/util/Collection;)Z", remap = false, ordinal = 1))
 	private boolean onRemoveEntityIf(List<net.minecraft.tileentity.TileEntity> list, Collection<net.minecraft.tileentity.TileEntity> entities) {
 		for (net.minecraft.tileentity.TileEntity entity : entities) {
 			new EventTileBlockRemoved(emcTileEntities.remove(entity)).broadcast();
@@ -50,7 +50,7 @@ public abstract class MixinWorld implements IMixinWorld {
 	}
 
 	@SuppressWarnings("RedundantCast")
-	@Redirect(method = "updateEntities", at = @At(value = "INVOKE", target = "Ljava/util/List;remove(Ljava/lang/Object;)Z"))
+	@Redirect(method = "updateEntities", at = @At(value = "INVOKE", target = "Ljava/util/List;remove(Ljava/lang/Object;)Z", remap = false))
 	private boolean onRemoveEntity(List<net.minecraft.tileentity.TileEntity> list, Object entity) {
 		new EventTileBlockRemoved(emcTileEntities.remove((net.minecraft.tileentity.TileEntity) entity)).broadcast();
 		return list.remove((net.minecraft.tileentity.TileEntity) entity);
