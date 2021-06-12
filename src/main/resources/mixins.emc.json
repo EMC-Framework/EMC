@@ -70,10 +70,11 @@
     "render.MixinTextureManager",
     "render.MixinVisGraph",
     "render.MixinWindow",
-    "render.MixinWorldRenderer",
     "world.MixinWorld",
     "world.MixinWorldChunk",
     "world.MixinWorldClient",
-    "world.MixinEntry"
+    "world.MixinEntry",
+    "shader.MixinShaderEffect",
+    "shader.MixinWorldRenderer"
   ]
 }
