@@ -116,7 +116,7 @@ public abstract class MixinWorldRenderer {
         }
     }
 
-    @Redirect(method = "renderEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/RenderManager;renderEntitySimple(Lnet/minecraft/entity/Entity;F)Z", opcode = 180, ordinal = 1))
+    @Redirect(method = "renderEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/RenderManager;renderEntitySimple(Lnet/minecraft/entity/Entity;F)Z", opcode = 180, ordinal = 2))
     private boolean doRenderEntity(RenderManager renderManager, Entity entityIn, float partialTicks) {
         boolean state = renderManager.renderEntitySimple(entityIn, partialTicks);
         if (canUseShaders()) {
