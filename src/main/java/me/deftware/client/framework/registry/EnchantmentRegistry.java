@@ -23,8 +23,10 @@ public enum EnchantmentRegistry implements IRegistry<Enchantment, net.minecraft.
 
 	@Override
 	public void register(String id, net.minecraft.enchantment.Enchantment object) {
-		enchantments.putIfAbsent(id, new Enchantment(object));
-		translatedNames.put(id.substring("minecraft:".length()), object.getName());
+		try {
+			enchantments.putIfAbsent(id, new Enchantment(object));
+			translatedNames.put(id.substring("minecraft:".length()), object.getName());
+		} catch (Throwable ignored) { }
 	}
 
 	@Override
