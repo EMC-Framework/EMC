@@ -3,7 +3,6 @@ package me.deftware.client.framework.resource;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
 import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,7 +40,6 @@ public class ModResource implements Resource {
         stream.close();
     }
 
-    @Nullable
     @Override
     public <T> T getMetadata(ResourceMetadataReader<T> metaReader) {
         return null;
