@@ -81,8 +81,6 @@
     "world.MixinWorld",
     "world.MixinWorldChunk",
     "world.MixinWorldClient",
-    "world.MixinWorldClient",
-    "world.MixinWorldChunk",
     "shader.MixinShaderEffect",
     "shader.MixinWorldRenderer"
   ]
