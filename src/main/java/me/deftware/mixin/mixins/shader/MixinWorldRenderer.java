@@ -117,8 +117,8 @@ public abstract class MixinWorldRenderer {
     }
 
     @Redirect(method = "renderEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/RenderManager;renderEntitySimple(Lnet/minecraft/entity/Entity;F)Z", opcode = 180, ordinal = 1))
-    private boolean doRenderEntity(RenderManager renderManager, Entity entityIn, float partialTicks, boolean bl) {
-        boolean state = renderManager.renderEntityStatic(entityIn, partialTicks, bl);
+    private boolean doRenderEntity(RenderManager renderManager, Entity entityIn, float partialTicks) {
+        boolean state = renderManager.renderEntitySimple(entityIn, partialTicks);
         if (canUseShaders()) {
             me.deftware.client.framework.entity.Entity emcEntity = World.getEntityById(entityIn.getEntityId());
             Shader shader = getShader(emcEntity);
@@ -127,7 +127,7 @@ public abstract class MixinWorldRenderer {
                 shader.getFramebuffer().bindFramebuffer(false);
                 RenderHelper.disableStandardItemLighting();
                 renderManager.setRenderOutlines(true);
-                renderManager.renderEntityStatic(entityIn, partialTicks, bl);
+                renderManager.renderEntitySimple(entityIn, partialTicks);
                 renderManager.setRenderOutlines(false);
                 RenderHelper.enableStandardItemLighting();
                 mc.getFramebuffer().bindFramebuffer(false);
