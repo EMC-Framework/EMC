@@ -89,7 +89,7 @@ public abstract class MixinWorldRenderer {
             GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
             for (Shader shader : Shader.SHADERS) {
                 if (shader.isRender()) {
-                    shader.getFramebuffer().framebufferRenderExt(this.mc.displayWidth, this.mc.displayHeight, Minecraft.IS_RUNNING_ON_MAC);
+                    shader.getFramebuffer().framebufferRenderExt(this.mc.displayWidth, this.mc.displayHeight, false);
                     shader.setRender(false);
                 }
             }
