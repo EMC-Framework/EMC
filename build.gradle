@@ -81,15 +81,6 @@ tasks.withType(GenerateMavenPom).all {
 	destination = layout.buildDirectory.file("../maven/me/deftware/EMC-F-v2/${version}-${project.minecraftVersion}/EMC-F-v2-${version}-${project.minecraftVersion}.pom").get().asFile
 }
 
-tasks.withType(JavaCompile) {
-	options.encoding = "UTF-8"
-
-	def targetVersion = 8
-	if (JavaVersion.current().isJava9Compatible()) {
-		it.options.release = targetVersion
-	}
-}
-
 task generateApiDocumentation(type: Javadoc) {
 	source = ['src/main/java/me/deftware/client']
 	title = "EMC Framework Documentation"
