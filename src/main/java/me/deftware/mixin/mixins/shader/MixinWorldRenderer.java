@@ -88,10 +88,8 @@ public abstract class MixinWorldRenderer {
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(770, 771, 0, 1);
             for (Shader shader : Shader.SHADERS) {
-                if (shader.isRender()) {
                     shader.getFramebuffer().framebufferRenderExt(this.mc.displayWidth, this.mc.displayHeight, false);
                     shader.setRender(false);
-                }
             }
             GlStateManager.disableBlend();
             mc.getFramebuffer().bindFramebuffer(false);
