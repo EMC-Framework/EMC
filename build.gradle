@@ -3,14 +3,13 @@ import org.gradle.internal.os.OperatingSystem
 
 buildscript {
 	repositories {
-		jcenter()
-		mavenCentral()
 		maven { url = "https://maven.fabricmc.net/" }
 		maven { url = "https://plugins.gradle.org/m2/" }
+		mavenCentral()
 	}
 	dependencies {
 		classpath "io.freefair.gradle:lombok-plugin:5.1.1"
-		classpath "net.fabricmc:fabric-loom:0.4-SNAPSHOT"
+		classpath "net.fabricmc:fabric-loom:0.7-SNAPSHOT"
 	}
 }
 
@@ -45,10 +44,9 @@ def mappingsVer = "${mcVersion}${project.mappingsVer}"
 version = getVersionFromJava()
 
 repositories {
-	mavenCentral()
-	jcenter()
 	maven { url = 'https://maven.fabricmc.net' }
 	maven { url = 'https://gitlab.com/EMC-Framework/maven/raw/master/' }
+	mavenCentral()
 }
 
 dependencies {
