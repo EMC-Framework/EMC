@@ -137,11 +137,11 @@ public abstract class MixinWorldRenderer {
         blockEntityRenderDispatcher.render(blockEntity, tickDelta, matrix, vertexConsumerProvider);
     }
 
-    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;hasOutline(Lnet/minecraft/entity/Entity;)Z", opcode = 180))
-    private boolean hasOutline(MinecraftClient client, Entity entity) {
+    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;isGlowing()Z", opcode = 180))
+    private boolean hasOutline(Entity entity) {
         if (canUseShaders())
             return false;
-        return client.hasOutline(entity);
+        return entity.isGlowing();
     }
 
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/WorldRenderer;renderEntity(Lnet/minecraft/entity/Entity;DDDFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;)V", opcode = 180))
