@@ -116,6 +116,13 @@ public abstract class MixinWorldRenderer {
         }
     }
 
+    @Redirect(method = "renderEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;isGlowing()Z", opcode = 180))
+    private boolean hasOutline(Entity entity) {
+        if (canUseShaders())
+            return false;
+        return entity.isGlowing();
+    }
+
     @Redirect(method = "renderEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/EntityRenderDispatcher;render(Lnet/minecraft/entity/Entity;FZ)V", opcode = 180, ordinal = 0))
     private void doRenderEntity(EntityRenderDispatcher entityRenderDispatcher, Entity entity, float tickDelta, boolean bl) {
         entityRenderDispatcher.render(entity, tickDelta, bl);
