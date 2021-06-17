@@ -21,6 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Mixin(World.class)
 public abstract class MixinWorld implements IMixinWorld {
@@ -28,14 +29,17 @@ public abstract class MixinWorld implements IMixinWorld {
 	@Shadow
 	public abstract BlockEntity getBlockEntity(BlockPos pos);
 
-	@Shadow @Final protected List<BlockEntity> unloadedBlockEntities;
+	@Shadow
+	@Final
+	protected List<BlockEntity> unloadedBlockEntities;
+
 	@Unique
 	public final HashMap<BlockEntity, TileEntity> emcTileEntities = new HashMap<>();
 
 	@Override
 	@Unique
-	public Collection<TileEntity> getLoadedTilesAccessor() {
-		return emcTileEntities.values();
+	public Map<BlockEntity, TileEntity> getLoadedTilesAccessor() {
+		return emcTileEntities;
 	}
 
 	@Inject(method = "addBlockEntity", at = @At("HEAD"))
@@ -50,7 +54,6 @@ public abstract class MixinWorld implements IMixinWorld {
 		}
 	}
 
-	@SuppressWarnings("RedundantCast")
 	@Redirect(method = "tickBlockEntities", at = @At(value = "INVOKE", target = "Ljava/util/List;remove(Ljava/lang/Object;)Z"))
 	private boolean onRemoveEntity(List<BlockEntity> list, Object entity) {
 		new EventTileBlockRemoved(emcTileEntities.remove((BlockEntity) entity)).broadcast();
