@@ -43,6 +43,8 @@ public abstract class MixinWorldRenderer {
     @Final
     private MinecraftClient client;
 
+    @Shadow protected abstract boolean canDrawEntityOutlines();
+
     @Unique
     private boolean canUseShaders() {
         if (!FrameworkConstants.OPTIFINE) {
@@ -105,14 +107,20 @@ public abstract class MixinWorldRenderer {
 
     @Redirect(method = "drawEntityOutlinesFramebuffer", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/WorldRenderer;canDrawEntityOutlines()Z", opcode = 180))
     private boolean onDrawEntityFramebuffer(WorldRenderer worldRenderer) {
-        if (canUseShaders()) {
+        boolean anyMatch = Shader.SHADERS.stream().anyMatch(Shader::isRender);
+        if (canUseShaders() && anyMatch) {
             RenderSystem.enableBlend();
             RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE);
             for (Shader shader : Shader.SHADERS) {
-                targetBuffer = shader.getFramebuffer();
-                shader.getFramebuffer().draw(this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight(), false);
+                if (shader.isRender()) {
+                    targetBuffer = shader.getFramebuffer();
+                    shader.getFramebuffer().draw(this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight(), false);
+                    shader.setRender(false);
+                }
             }
             RenderSystem.disableBlend();
+        } else {
+            GlStateManager.disableLighting();
         }
         return false;
     }
