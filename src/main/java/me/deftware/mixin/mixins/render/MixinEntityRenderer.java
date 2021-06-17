@@ -12,11 +12,13 @@ import me.deftware.client.framework.global.GameMap;
 import me.deftware.client.framework.helper.GlStateHelper;
 import me.deftware.client.framework.helper.WindowHelper;
 import me.deftware.client.framework.minecraft.Minecraft;
+import me.deftware.client.framework.render.Shader;
 import me.deftware.client.framework.render.batching.RenderStack;
 import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
 import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
 import me.deftware.mixin.imp.IMixinEntityRenderer;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.ShaderEffect;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.render.Camera;
@@ -70,6 +72,12 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     @Shadow @Final private MinecraftClient client;
 
     @Shadow private float viewDistance;
+
+    @Shadow
+    private ShaderEffect shader;
+
+    @Shadow
+    private boolean shadersEnabled;
 
     @Unique
     private final Consumer<Float> renderEvent = partialTicks -> new EventRender3D(partialTicks).broadcast();
@@ -132,6 +140,23 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     @Override
     public void loadCustomShader(MinecraftIdentifier location) {
         loadShader(location);
+    }
+
+    @Override
+    public void loadShader(Shader shader) {
+        if (shader == null) {
+            this.shader = null;
+            this.shadersEnabled = false;
+            return;
+        }
+        if (this.shader != null)
+            this.shader.close();
+        if (shader.getShaderEffect() == null)
+            shader.init(client);
+        else
+            shader.getShaderEffect().setupDimensions(client.window.getFramebufferWidth(), client.window.getFramebufferHeight());
+        this.shader = shader.getShaderEffect();
+        this.shadersEnabled = true;
     }
 
     @Redirect(method = "updateTargetedEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ProjectileUtil;rayTrace(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Box;Ljava/util/function/Predicate;D)Lnet/minecraft/util/hit/EntityHitResult;"))
