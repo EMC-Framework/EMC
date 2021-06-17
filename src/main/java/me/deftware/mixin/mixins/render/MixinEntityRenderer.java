@@ -4,6 +4,7 @@ import me.deftware.client.framework.chat.hud.ChatHud;
 import me.deftware.client.framework.event.events.*;
 import me.deftware.client.framework.helper.WindowHelper;
 import me.deftware.client.framework.minecraft.Minecraft;
+import me.deftware.client.framework.render.Shader;
 import me.deftware.client.framework.render.batching.RenderStack;
 import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
 import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
@@ -13,6 +14,7 @@ import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Matrix4f;
+import net.minecraft.client.shader.ShaderGroup;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
@@ -53,6 +55,12 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     @Shadow protected abstract void orientCamera(float partialTicks);
 
     @Shadow protected abstract float getFOVModifier(float partialTicks, boolean useFOVSetting);
+
+    @Shadow
+    private ShaderGroup shaderGroup;
+
+    @Shadow
+    private boolean useShader;
 
     @Unique
     private final Consumer<Float> renderEvent = partialTicks -> new EventRender3D(partialTicks).broadcast();
@@ -119,6 +127,23 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     @Override
     public void loadCustomShader(MinecraftIdentifier location) {
         loadShader(location);
+    }
+
+    @Override
+    public void loadShader(Shader shader) {
+        if (shader == null) {
+            this.shaderGroup = null;
+            this.useShader = false;
+            return;
+        }
+        if (this.shaderGroup != null)
+            this.shaderGroup.deleteShaderGroup();
+        if (shader.getShaderEffect() == null)
+            shader.init(mc);
+        else
+            shader.getShaderEffect().createBindFramebuffers(this.mc.displayWidth, this.mc.displayHeight);
+        this.shaderGroup = shader.getShaderEffect();
+        this.useShader = true;
     }
 
     @Override
