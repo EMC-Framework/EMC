@@ -19,6 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Mixin(World.class)
 public abstract class MixinWorld implements IMixinWorld {
@@ -31,8 +32,8 @@ public abstract class MixinWorld implements IMixinWorld {
 
 	@Override
 	@Unique
-	public Collection<TileEntity> getLoadedTilesAccessor() {
-		return emcTileEntities.values();
+	public Map<net.minecraft.tileentity.TileEntity, TileEntity> getLoadedTilesAccessor() {
+		return emcTileEntities;
 	}
 
 	@Inject(method = "addTileEntity", at = @At("TAIL"))

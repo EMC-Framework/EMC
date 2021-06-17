@@ -2,10 +2,10 @@ package me.deftware.mixin.imp;
 
 import me.deftware.client.framework.entity.block.TileEntity;
 
-import java.util.Collection;
+import java.util.Map;
 
 public interface IMixinWorld {
 
-	Collection<TileEntity> getLoadedTilesAccessor();
+	Map<net.minecraft.tileentity.TileEntity, TileEntity> getLoadedTilesAccessor();
 	
 }
