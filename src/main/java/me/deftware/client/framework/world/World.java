@@ -44,7 +44,7 @@ public class World {
 	}
 
 	public static Stream<TileEntity> getLoadedTileEntities() {
-		return Objects.requireNonNull(((IMixinWorld) net.minecraft.client.Minecraft.getMinecraft().theWorld)).getLoadedTilesAccessor().stream();
+		return Objects.requireNonNull(((IMixinWorld) net.minecraft.client.Minecraft.getMinecraft().theWorld)).getLoadedTilesAccessor().values().stream();
 	}
 
 	public static Stream<Entity> getLoadedEntities() {
@@ -53,6 +53,10 @@ public class World {
 
 	public static Entity getEntityById(int id) {
 		return Objects.requireNonNull(((IMixinWorldClient) Minecraft.getMinecraft().theWorld)).getLoadedEntitiesAccessor().getOrDefault(id, null);
+	}
+
+	public static TileEntity getTileEntityFromEntity(net.minecraft.tileentity.TileEntity entity) {
+		return Objects.requireNonNull(((IMixinWorld) net.minecraft.client.Minecraft.getMinecraft().theWorld)).getLoadedTilesAccessor().get(entity);
 	}
 
 	public static int getDifficulty() {
