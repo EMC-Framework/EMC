@@ -75,7 +75,7 @@ public class WindowHelper {
 	}
 
 	public static void loadShader(Shader shader) {
-		((IMixinEntityRenderer) MinecraftClient.getInstance().gameRenderer).loadShader(shader);
+		((IMixinEntityRenderer) net.minecraft.client.Minecraft.getInstance().gameRenderer).loadShader(shader);
 	}
 
 	public static void disableShader() {
