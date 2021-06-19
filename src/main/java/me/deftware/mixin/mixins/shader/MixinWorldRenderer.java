@@ -2,6 +2,7 @@ package me.deftware.mixin.mixins.shader;
 
 import me.deftware.client.framework.FrameworkConstants;
 import me.deftware.client.framework.entity.block.TileEntity;
+import me.deftware.client.framework.registry.BlockRegistry;
 import me.deftware.client.framework.render.Shader;
 import me.deftware.client.framework.world.World;
 import me.deftware.client.framework.world.block.Block;
@@ -103,10 +104,12 @@ public abstract class MixinWorldRenderer {
             for (Shader shader : Shader.SHADERS) {
                 if (shader.isEnabled()) {
                     if (block == null) {
-                        TileEntity tileEntity = World.getTileEntityFromEntity(tileentityIn);
-                        if (tileEntity == null)
+                        Optional<Block> blockOptional = BlockRegistry.INSTANCE.find(
+                                tileentityIn.getBlockType().getTranslationKey()
+                        );
+                        if (!blockOptional.isPresent())
                             break;
-                        block = tileEntity.getBlock();
+                        block = blockOptional.get();
                     }
                     if (shader.getTargetPredicate().test(block)) {
                         shader.setRender(true);

@@ -6,10 +6,6 @@ import me.deftware.client.framework.math.position.BlockPosition;
 import me.deftware.client.framework.math.position.TileBlockPosition;
 import net.minecraft.tileentity.TileEntityEnderChest;
 import net.minecraft.tileentity.TileEntityLockableLoot;
-import me.deftware.client.framework.registry.BlockRegistry;
-import me.deftware.client.framework.world.block.Block;
-
-import java.util.Optional;
 
 /**
  * @author Deftware
@@ -19,8 +15,6 @@ public class TileEntity {
 	private BoundingBox SINGLE;
 	protected final net.minecraft.tileentity.TileEntity entity;
 	protected final BlockPosition position;
-
-	protected Block block;
 
 	public static TileEntity newInstance(net.minecraft.tileentity.TileEntity entity) {
 		if (entity instanceof TileEntityLockableLoot || entity instanceof TileEntityEnderChest) {
@@ -43,20 +37,10 @@ public class TileEntity {
 	protected TileEntity(net.minecraft.tileentity.TileEntity entity) {
 		this.entity = entity;
 		this.position = new TileBlockPosition(entity);
-		if (entity != null && entity.getBlockType() != null && entity.getBlockType().getTranslationKey() != null) {
-			Optional<Block> block = BlockRegistry.INSTANCE.find(
-					entity.getBlockType().getTranslationKey()
-			);
-			block.ifPresent(value -> this.block = value);
-		}
 	}
 
 	public String getClassName() {
 		return this.getClass().getSimpleName().substring(0, this.getClass().getSimpleName().length() - "Entity".length());
-	}
-
-	public Block getBlock() {
-		return block;
 	}
 
 	public BlockPosition getBlockPosition() {
