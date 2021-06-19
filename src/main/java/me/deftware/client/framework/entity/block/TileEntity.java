@@ -43,10 +43,12 @@ public class TileEntity {
 	protected TileEntity(net.minecraft.tileentity.TileEntity entity) {
 		this.entity = entity;
 		this.position = new TileBlockPosition(entity);
-		Optional<Block> block = BlockRegistry.INSTANCE.find(
-		        entity.getBlockType().getTranslationKey()
-        );
-		block.ifPresent(value -> this.block = value);
+		if (entity != null && entity.getBlockType() != null && entity.getBlockType().getTranslationKey() != null) {
+			Optional<Block> block = BlockRegistry.INSTANCE.find(
+					entity.getBlockType().getTranslationKey()
+			);
+			block.ifPresent(value -> this.block = value);
+		}
 	}
 
 	public String getClassName() {
