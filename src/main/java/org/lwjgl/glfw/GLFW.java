@@ -37,6 +37,11 @@ public class GLFW {
 		put(Keyboard.KEY_V, 86);
 		put(Keyboard.KEY_C, 67);
 		put(Keyboard.KEY_X, 88);
+
+		// Modifier keys
+		put(Keyboard.KEY_LCONTROL, 341);
+		put(Keyboard.KEY_RCONTROL, 345);
+		put(Keyboard.KEY_LSHIFT, 340);
 	}};
 
 	public static HashMap<Integer, Integer> fromGLFW = new HashMap<Integer, Integer>() {{
@@ -63,6 +68,11 @@ public class GLFW {
 		put(86, Keyboard.KEY_V);
 		put(67, Keyboard.KEY_C);
 		put(88, Keyboard.KEY_X);
+
+		// Modifier keys
+		put(341, Keyboard.KEY_LCONTROL);
+		put(345, Keyboard.KEY_RCONTROL);
+		put(340, Keyboard.KEY_LSHIFT);
 	}};
 
 	/*
