@@ -98,6 +98,9 @@ shadowJar {
     dependencies {
         include(dependency('org.spongepowered:mixin'))
         include(dependency('com.mojang:brigadier'))
+        if (forgeBuild) {
+            include(dependency('com.thealtening.auth:auth:3.0.2'))
+        }
     }
     classifier = null
 }
