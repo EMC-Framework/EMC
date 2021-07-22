@@ -3,7 +3,7 @@ package me.deftware.mixin.mixins.shader;
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.deftware.client.framework.FrameworkConstants;
 import me.deftware.client.framework.entity.block.TileEntity;
-import me.deftware.client.framework.render.Shader;
+import me.deftware.client.framework.render.shader.EntityShader;
 import me.deftware.client.framework.world.World;
 import me.deftware.client.framework.world.block.Block;
 import net.minecraft.block.entity.BlockEntity;
@@ -39,17 +39,8 @@ public abstract class MixinWorldRenderer {
 
     @Unique
     private void initShaders() {
-        for (Shader shader : Shader.SHADERS)
-            shader.init(MinecraftClient.getInstance());
-    }
-
-    @Unique
-    private Shader getShader(Object obj) {
-        for (Shader shader : Shader.SHADERS) {
-            if (shader.isEnabled() && shader.getTargetPredicate().test(obj))
-                return shader;
-        }
-        return null;
+        for (EntityShader shader : EntityShader.SHADERS)
+            shader.init();
     }
 
     @Inject(method = "loadEntityOutlineShader", at = @At("RETURN"))
@@ -59,7 +50,7 @@ public abstract class MixinWorldRenderer {
 
     @Inject(method = "onResized", at = @At("HEAD"))
     private void onResized(int width, int height, CallbackInfo ci) {
-        for (Shader shader : Shader.SHADERS)
+        for (EntityShader shader : EntityShader.SHADERS)
             if (shader.getShaderEffect() != null)
                 shader.getShaderEffect().setupDimensions(width, height);
     }
@@ -69,26 +60,26 @@ public abstract class MixinWorldRenderer {
 
     @Inject(method = "renderEntities", at = @At("HEAD"))
     private void onRender(Camera camera, VisibleRegion visibleRegion, float tickDelta, CallbackInfo ci) {
-        this.anyShaderEnabled = Shader.SHADERS.stream().anyMatch(Shader::isEnabled);
-        for (Shader shader : Shader.SHADERS) {
+        this.anyShaderEnabled = EntityShader.SHADERS.stream().anyMatch(EntityShader::isEnabled);
+        for (EntityShader shader : EntityShader.SHADERS) {
             if (shader.getFramebuffer() == null) {
                 // Not initialised?
-                shader.init(MinecraftClient.getInstance());
+                shader.init();
             }
-            shader.getFramebuffer().clear(MinecraftClient.IS_SYSTEM_MAC);
+            shader.getFramebuffer().clear();
         }
         this.client.getFramebuffer().beginWrite(false);
     }
 
     @Redirect(method = "drawEntityOutlinesFramebuffer", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/WorldRenderer;canDrawEntityOutlines()Z", opcode = 180))
     private boolean onDrawEntityFramebuffer(WorldRenderer worldRenderer) {
-        boolean anyMatch = Shader.SHADERS.stream().anyMatch(Shader::isRender);
+        boolean anyMatch = EntityShader.SHADERS.stream().anyMatch(EntityShader::isRender);
         if (canUseShaders() && anyMatch) {
             GlStateManager.enableBlend();
             GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
-            for (Shader shader : Shader.SHADERS) {
+            for (EntityShader shader : EntityShader.SHADERS) {
                 if (shader.isRender()) {
-                    shader.getFramebuffer().drawInternal(this.client.window.getFramebufferWidth(), this.client.window.getFramebufferHeight(), false);
+                    shader.getFramebuffer().draw(this.client.window.getFramebufferWidth(), this.client.window.getFramebufferHeight(), false);
                     shader.setRender(false);
                 }
             }
@@ -105,7 +96,7 @@ public abstract class MixinWorldRenderer {
         blockEntityRenderDispatcher.render(blockEntity, tickDelta, blockBreakStage);
         if (canUseShaders() && anyShaderEnabled) {
             Block block = null;
-            for (Shader shader : Shader.SHADERS) {
+            for (EntityShader shader : EntityShader.SHADERS) {
                 if (shader.isEnabled()) {
                     if (block == null) {
                         TileEntity tileEntity = World.getTileEntityFromEntity(blockEntity);
@@ -115,7 +106,7 @@ public abstract class MixinWorldRenderer {
                     }
                     if (shader.getTargetPredicate().test(block)) {
                         shader.setRender(true);
-                        shader.getFramebuffer().beginWrite(false);
+                        shader.getFramebuffer().bind(false);
                         blockEntityRenderDispatcher.render(blockEntity, tickDelta, blockBreakStage);
                         client.getFramebuffer().beginWrite(false);
                     }
@@ -136,13 +127,13 @@ public abstract class MixinWorldRenderer {
         entityRenderDispatcher.render(entity, tickDelta, bl);
         if (canUseShaders() && anyShaderEnabled) {
             me.deftware.client.framework.entity.Entity emcEntity = null;
-            for (Shader shader : Shader.SHADERS) {
+            for (EntityShader shader : EntityShader.SHADERS) {
                 if (shader.isEnabled()) {
                     if (emcEntity == null)
                         emcEntity = World.getEntityById(entity.getEntityId());
                     if (shader.getTargetPredicate().test(emcEntity)) {
                         shader.setRender(true);
-                        shader.getFramebuffer().beginWrite(false);
+                        shader.getFramebuffer().bind(false);
                         DiffuseLighting.disable();
                         entityRenderDispatcher.setRenderOutlines(true);
                         entityRenderDispatcher.render(entity, tickDelta, bl);
@@ -159,9 +150,9 @@ public abstract class MixinWorldRenderer {
     private void onDrawShader(Camera camera, VisibleRegion visibleRegion, float tickDelta, CallbackInfo ci) {
         GlStateManager.depthFunc(GL11.GL_ALWAYS);
         GlStateManager.disableFog();
-        for (Shader shader : Shader.SHADERS) {
+        for (EntityShader shader : EntityShader.SHADERS) {
             if (shader.isRender()) {
-                shader.getFramebuffer().beginWrite(false);
+                shader.getFramebuffer().bind(false);
                 shader.getShaderEffect().render(tickDelta);
             }
         }

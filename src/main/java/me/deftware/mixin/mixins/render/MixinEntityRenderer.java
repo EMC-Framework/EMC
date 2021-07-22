@@ -12,7 +12,7 @@ import me.deftware.client.framework.global.GameMap;
 import me.deftware.client.framework.helper.GlStateHelper;
 import me.deftware.client.framework.helper.WindowHelper;
 import me.deftware.client.framework.minecraft.Minecraft;
-import me.deftware.client.framework.render.Shader;
+import me.deftware.client.framework.render.shader.Shader;
 import me.deftware.client.framework.render.batching.RenderStack;
 import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
 import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
@@ -152,7 +152,7 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
         if (this.shader != null)
             this.shader.close();
         if (shader.getShaderEffect() == null)
-            shader.init(client);
+            shader.init();
         else
             shader.getShaderEffect().setupDimensions(client.window.getFramebufferWidth(), client.window.getFramebufferHeight());
         this.shader = shader.getShaderEffect();
