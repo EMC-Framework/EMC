@@ -4,7 +4,7 @@ import me.deftware.client.framework.chat.hud.ChatHud;
 import me.deftware.client.framework.event.events.*;
 import me.deftware.client.framework.helper.WindowHelper;
 import me.deftware.client.framework.minecraft.Minecraft;
-import me.deftware.client.framework.render.Shader;
+import me.deftware.client.framework.render.shader.Shader;
 import me.deftware.client.framework.render.batching.RenderStack;
 import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
 import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
@@ -139,7 +139,7 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
         if (this.shaderGroup != null)
             this.shaderGroup.deleteShaderGroup();
         if (shader.getShaderEffect() == null)
-            shader.init(mc);
+            shader.init();
         else
             shader.getShaderEffect().createBindFramebuffers(this.mc.displayWidth, this.mc.displayHeight);
         this.shaderGroup = shader.getShaderEffect();

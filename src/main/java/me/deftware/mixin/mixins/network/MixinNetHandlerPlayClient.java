@@ -8,6 +8,7 @@ import me.deftware.client.framework.event.events.EventKnockback;
 import net.minecraft.client.ClientBrandRetriever;
 import me.deftware.client.framework.world.player.PlayerEntry;
 import me.deftware.mixin.imp.IMixinNetworkHandler;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.network.NetworkManager;
@@ -19,6 +20,7 @@ import net.minecraft.network.play.server.SPacketEntityStatus;
 import net.minecraft.network.play.server.SPacketEntityVelocity;
 import net.minecraft.network.play.server.SPacketExplosion;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -30,6 +32,9 @@ import java.util.UUID;
 
 @Mixin(NetHandlerPlayClient.class)
 public class MixinNetHandlerPlayClient implements IMixinNetworkHandler {
+
+    @Shadow
+    private Minecraft client;
 
     @Unique
     private final Map<UUID, PlayerEntry> playerEntryMap = Maps.newHashMap();
@@ -76,9 +81,12 @@ public class MixinNetHandlerPlayClient implements IMixinNetworkHandler {
     private void onExplosion(SPacketExplosion packet, CallbackInfo ci) {
         EventKnockback event = new EventKnockback(packet.getMotionX(), packet.getMotionY(), packet.getMotionZ());
         event.broadcast();
-        if (event.isCanceled()) {
-            ci.cancel();
+        if (!event.isCanceled()) {
+            this.client.player.motionX += event.getX();
+            this.client.player.motionY += event.getY();
+            this.client.player.motionZ += event.getZ();
         }
+        ci.cancel();
     }
 
     @Inject(method = "handleEntityVelocity", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;setVelocity(DDD)V"), cancellable = true)
