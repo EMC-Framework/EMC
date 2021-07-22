@@ -8,7 +8,10 @@ import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -22,10 +25,16 @@ public class ModResourceManager implements IResourceManager {
     private final ZipFile zipFile;
     private final String type;
 
+    private BiFunction<String, InputStream, InputStream> transformer = (path, stream) -> stream;
+
     public ModResourceManager(EMCMod mod, String type) throws IOException {
         this.zipFile = getZipFile(mod);
         this.namespaces.add(mod.getMeta().getName().toLowerCase());
         this.type = type;
+    }
+
+    public void setTransformer(BiFunction<String, InputStream, InputStream> transformer) {
+        this.transformer = transformer;
     }
 
     public ZipFile getZipFile(EMCMod mod) throws IOException {
@@ -57,7 +66,7 @@ public class ModResourceManager implements IResourceManager {
         if (entry == null) {
             return Minecraft.getInstance().getResourceManager().getResource(id);
         }
-        return new ModResource(zipFile.getInputStream(entry), id);
+        return new ModResource(transformer.apply(id.getPath(), zipFile.getInputStream(entry)), id);
     }
 
 }

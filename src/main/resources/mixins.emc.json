@@ -70,6 +70,7 @@
     "render.MixinTextureManager",
     "render.MixinVisGraph",
     "render.MixinWindow",
+    "render.MixinParticleManager",
     "world.MixinWorld",
     "world.MixinWorldChunk",
     "world.MixinWorldClient",
