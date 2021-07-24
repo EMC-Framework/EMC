@@ -86,9 +86,9 @@ public enum EntityType {
 		} else if (type.equals(EntityType.ENTITY_VILLAGER)) {
 			return entity instanceof EntityVillager;
 		} else if (type.equals(EntityType.ENTITY_DONKEY)) {
-			return ((EntityHorse)entity).getHorseType() == 1;
+			return entity instanceof EntityHorse && ((EntityHorse)entity).getHorseType() == 1;
 		} else if (type.equals(EntityType.ENTITY_MULE)) {
-			return ((EntityHorse)entity).getHorseType() == 2;
+			return entity instanceof EntityHorse && ((EntityHorse)entity).getHorseType() == 2;
 		} else if (type.equals(EntityType.ENTITY_HORSE)) {
 			return entity instanceof EntityHorse;
 		}

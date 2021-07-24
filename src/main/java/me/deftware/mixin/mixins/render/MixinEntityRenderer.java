@@ -101,6 +101,7 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
 
     @Redirect(method = "updateCameraAndRender", at = @At(value = "INVOKE", opcode = 180, target = "net/minecraft/client/gui/GuiIngame.renderGameOverlay(F)V"))
     private void onRender2D(GuiIngame guiIngame, float partialTicks) {
+        guiIngame.renderGameOverlay(partialTicks);
         if (!WindowHelper.isMinimized()) {
             // Chat queue
             Runnable operation = ChatHud.getChatMessageQueue().poll();
@@ -120,7 +121,6 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
             RenderStack.restoreGl();
             RenderStack.reloadMinecraftMatrix();
         }
-        guiIngame.renderGameOverlay(partialTicks);
     }
 
     @Override
