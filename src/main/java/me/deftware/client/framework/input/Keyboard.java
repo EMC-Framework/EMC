@@ -15,6 +15,8 @@ import java.net.URI;
 public class Keyboard {
 
 	public static String getKeyName(int glfwCodePoint) {
+		if (glfwCodePoint < 0 || glfwCodePoint >= org.lwjgl.input.Keyboard.KEYBOARD_SIZE)
+			return "NONE";
 		String name = org.lwjgl.input.Keyboard.getKeyName(GLFW.fromGLFW.getOrDefault(glfwCodePoint, glfwCodePoint));
 		if (!name.equals("NONE")) return name;
 		return org.lwjgl.input.Mouse.getButtonName(GLFW.fromGLFW.getOrDefault(glfwCodePoint, glfwCodePoint));
