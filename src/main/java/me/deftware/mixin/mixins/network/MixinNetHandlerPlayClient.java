@@ -82,9 +82,9 @@ public class MixinNetHandlerPlayClient implements IMixinNetworkHandler {
         EventKnockback event = new EventKnockback(packet.func_149149_c(), packet.func_149144_d(), packet.func_149147_e());
         event.broadcast();
         if (!event.isCanceled()) {
-            this.gameController.player.motionX += event.getX();
-            this.gameController.player.motionY += event.getY();
-            this.gameController.player.motionZ += event.getZ();
+            this.gameController.thePlayer.motionX += event.getX();
+            this.gameController.thePlayer.motionY += event.getY();
+            this.gameController.thePlayer.motionZ += event.getZ();
         }
         ci.cancel();
     }
