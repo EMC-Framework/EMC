@@ -1,71 +1,39 @@
 package me.deftware.client.framework.gui;
 
-import com.google.common.collect.Iterables;
 import me.deftware.client.framework.chat.ChatMessage;
-import me.deftware.client.framework.gui.minecraft.ScreenInstance;
-import me.deftware.client.framework.gui.widgets.Button;
 import me.deftware.client.framework.gui.widgets.TextField;
+import me.deftware.client.framework.gui.widgets.GenericComponent;
 import me.deftware.client.framework.input.Mouse;
-import me.deftware.client.framework.minecraft.Minecraft;
-import me.deftware.client.framework.util.ResourceUtils;
-import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
-import me.deftware.client.framework.util.types.Tuple;
-import me.deftware.client.framework.world.World;
-import me.deftware.mixin.imp.IMixinGuiScreen;
+import net.minecraft.client.Minecraft;
+import me.deftware.client.framework.gui.screens.GenericScreen;
+import me.deftware.client.framework.gui.screens.MinecraftScreen;
+import me.deftware.client.framework.gui.widgets.Label;
+import me.deftware.client.framework.helper.GlStateHelper;
+
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ChatAllowedCharacters;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 /**
  * @author Deftware
  */
-public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen {
+public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen implements GenericScreen {
 
-	public GuiScreen parent;
-	protected boolean escGoesBack = true;
-	protected ScreenInstance parentInstance;
-	protected List<Tuple<Integer, Integer, ChatMessage>> compiledText = new ArrayList<>();
-	private List<GuiEventListener> children = new ArrayList<>();
+	public GenericScreen parent;
 
-	public GuiScreen() { }
+	private BackgroundType backgroundType = BackgroundType.Textured;
 
-	public GuiScreen(ScreenInstance parent) {
-		this.parentInstance = parent;
-	}
-
-	public GuiScreen(GuiScreen parent) {
+	public GuiScreen(GenericScreen parent) {
 		this.parent = parent;
 	}
 
-	public static int getScaledHeight() {
-		ScaledResolution r = new ScaledResolution(net.minecraft.client.Minecraft.getMinecraft());
-		return r.getScaledHeight();
-	}
-
-	public static int getScaledWidth() {
-		ScaledResolution r = new ScaledResolution(net.minecraft.client.Minecraft.getMinecraft());
-		return r.getScaledWidth();
-	}
-
-	public static int getDisplayWidth() {
-		return Display.getWidth();
-	}
-
-	public static int getDisplayHeight() {
-		return Display.getHeight();
+	public GuiScreen() {
+		this(null);
 	}
 
 	@Override
@@ -79,30 +47,29 @@ public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen {
 	public void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
 		if (onMouseClicked(mouseX, mouseY, mouseButton))
 			return;
-		children.forEach(c -> {
-			if (c instanceof TextField) {
-				c.doMouseClicked(mouseX, mouseY, mouseButton);
-			}
-		});
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 	}
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-		if (World.isLoaded()) GlStateManager.enableBlend();
+		if (net.minecraft.client.Minecraft.getMinecraft().world != null)
+			GlStateHelper.enableBlend();
 		Mouse.updateMousePosition();
-		onDraw(mouseX, mouseY, partialTicks);
-		super.drawScreen(mouseX, mouseY, partialTicks);
-		for (Tuple<Integer, Integer, ChatMessage> text : compiledText) {
-			fontRenderer.drawStringWithShadow(text.getRight().toString(true), text.getLeft(), text.getMiddle(), 16777215);
+		if (backgroundType != BackgroundType.None) {
+			if (backgroundType == BackgroundType.Textured)
+				this.drawBackground(0);
+			else if (backgroundType == BackgroundType.TexturedOrTransparent)
+				this.drawWorldBackground(0);
 		}
+		super.drawScreen(mouseX, mouseY, partialTicks);
+		onDraw(mouseX, mouseY, partialTicks);
 		onPostDraw(mouseX, mouseY, partialTicks);
 	}
 
 	@Override
 	public void handleMouseInput() throws IOException {
 		super.handleMouseInput();
-		children.forEach(GuiEventListener::doHandleMouse);
+		// Emulate scrolling
 		if (org.lwjgl.input.Mouse.hasWheel()) {
 			int mY = org.lwjgl.input.Mouse.getEventDWheel();
 			if (mY != 0) {
@@ -121,6 +88,9 @@ public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen {
 	public void updateScreen() {
 		super.updateScreen();
 		onUpdate();
+		// Do textbox cursor tick
+		getMinecraftScreen().getChildren(TextField.class)
+				.forEach(field -> ((GuiTextField) field).updateCursorCounter());
 	}
 
 	@Override
@@ -140,23 +110,14 @@ public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen {
 		char typedChar = Keyboard.getEventCharacter();
 		int keyCode = Keyboard.getEventKey();
 		if (Keyboard.getEventKeyState()) {
-			if (keyCode == Keyboard.KEY_ESCAPE) {
-				if (escGoesBack) {
-					goBack();
-					return;
-				}
-				onGoBackRequested();
-			} else {
-				children.forEach(c -> {
-					if (c instanceof TextField) {
-						c.doKeyTyped(typedChar, keyCode);
-					}
-				});
-				if (!onKeyPressed(GLFW.toGLFW.getOrDefault(keyCode, keyCode), 0, getModifier()))
-					super.keyTyped(typedChar, keyCode);
-				if (ChatAllowedCharacters.isAllowedCharacter(typedChar))
-					GLFW.callbacks.forEach((c) -> c.invoke(0L, typedChar));
-			}
+			// Pressed
+			if (keyCode == Keyboard.KEY_ESCAPE && goBack())
+				return;
+			if (onKeyPressed(GLFW.toGLFW.getOrDefault(keyCode, keyCode), 0, getModifier()))
+				return;
+			if (ChatAllowedCharacters.isAllowedCharacter(typedChar))
+				GLFW.callbacks.forEach((c) -> c.invoke(0L, typedChar));
+			super.keyTyped(typedChar, keyCode);
 		} else {
 			// Released
 			onKeyReleased(GLFW.toGLFW.getOrDefault(keyCode, keyCode), 0, getModifier());
@@ -173,63 +134,35 @@ public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen {
         return 0;
     }
 
-	public void addEventListener(GuiEventListener listener) {
-		this.children.add(listener);
+	public void setBackgroundType(BackgroundType backgroundType) {
+		this.backgroundType = backgroundType;
 	}
 
-	protected void renderBackgroundWrap(int offset) {
-		drawGradientRect(0, 0, this.width, this.height, -1072689136, -804253680);
+	protected MinecraftScreen getMinecraftScreen() {
+		return (MinecraftScreen) this;
 	}
 
-	protected void renderBackgroundTextureWrap(int offset) {
-		drawWorldBackground(offset);
-	}
-
-	protected GuiScreen addButton(Button button) {
-		children.add(button);
-		buttonList.add(button);
-		return this;
+	protected void addComponent(GenericComponent component) {
+		getMinecraftScreen().addScreenComponent(component);
 	}
 
 	protected GuiScreen addText(int x, int y, ChatMessage text) {
-		compiledText.add(new Tuple<>(x, y, text));
+		addComponent(
+				new Label(x, y, text)
+		);
 		return this;
 	}
 
 	protected GuiScreen addCenteredText(int x, int y, ChatMessage text) {
-		compiledText.add(new Tuple<>(x - fontRenderer.getStringWidth(text.toString(true)) / 2, y, text));
+		addComponent(
+				new Label(x - Minecraft.getMinecraft().fontRenderer.getStringWidth(text.toString()) / 2, y, text)
+		);
 		return this;
 	}
 
-	protected List<Button> getIButtonList() {
-		return ((IMixinGuiScreen) this).getEmcButtons();
-	}
-
-	protected void clearButtons() {
-		buttonList.clear();
-		children.removeIf(element -> element instanceof Button);
-	}
-
-	protected void clearTexts() {
-		compiledText.clear();
-	}
-
-	public static void drawTexture(MinecraftIdentifier texture, int x, int y, int width, int height) {
-		drawTexture(texture, x, y, 0, 0, width, height, width, height);
-	}
-
-	public static void drawTexture(MinecraftIdentifier texture, int x, int y, int u, int v, int width, int height, int textureWidth, int textureHeight) {
-		net.minecraft.client.Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-		net.minecraft.client.gui.GuiScreen.drawModalRectWithCustomSizedTexture(x, y, u, v, width, height, textureWidth, textureHeight);
-	}
-
-	protected void goBack() {
-		if (parentInstance != null) {
-			net.minecraft.client.Minecraft.getMinecraft().displayGuiScreen(parentInstance.getMinecraftScreen());
-		} else {
-			Minecraft.openScreen(parent);
-		}
+	protected boolean goBack() {
+		Minecraft.getMinecraft().displayGuiScreen((net.minecraft.client.gui.GuiScreen) parent);
+		return true;
 	}
 
 	public int getGuiScreenWidth() {
@@ -238,10 +171,6 @@ public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen {
 
 	public int getGuiScreenHeight() {
 		return height;
-	}
-
-	public void setFocusedComponent(GuiEventListener listener) {
-		// Dummy method
 	}
 
 	protected void onGuiClose() { }
@@ -254,21 +183,63 @@ public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen {
 
 	protected void onUpdate() { }
 
-	protected boolean onKeyPressed(int keyCode, int scanCode, int modifiers) { return false; }
-
-	protected boolean onKeyReleased(int keyCode, int scanCode, int modifiers) { return false; }
-
-	protected boolean onMouseReleased(int mouseX, int mouseY, int mouseButton) { return false; }
-
-	protected boolean onMouseClicked(int mouseX, int mouseY, int mouseButton) { return false; }
-
-	protected void onGuiResize(int w, int h) { }
-
-	protected boolean onGoBackRequested() {
+	protected boolean onKeyPressed(int keyCode, int scanCode, int modifiers) {
 		return false;
 	}
 
-	public List<Tuple<Integer, Integer, ChatMessage>> getCompiledText() {
-		return this.compiledText;
+	protected boolean onKeyReleased(int keyCode, int scanCode, int modifiers) {
+		return false;
 	}
+
+	protected boolean onMouseReleased(int mouseX, int mouseY, int mouseButton) {
+		return false;
+	}
+
+	protected boolean onMouseClicked(int mouseX, int mouseY, int mouseButton) {
+		return false;
+	}
+
+	protected void onGuiResize(int w, int h) { }
+
+	public enum BackgroundType {
+
+		/**
+		 * No background will be rendered
+		 */
+		None,
+
+		/**
+		 * A textured background will always be rendered
+		 */
+		Textured,
+
+		/**
+		 * A textured background will be rendered,
+		 * but if a world is loaded, a transparent black
+		 * overlay will be drawn instead
+		 */
+		TexturedOrTransparent
+
+	}
+
+	private static ScaledResolution getScaledResolution() {
+		return new ScaledResolution(net.minecraft.client.Minecraft.getMinecraft());
+	}
+
+	public static int getScaledHeight() {
+		return getScaledResolution().getScaledHeight();
+	}
+
+	public static int getScaledWidth() {
+		return getScaledResolution().getScaledWidth();
+	}
+
+	public static int getDisplayWidth() {
+		return Display.getWidth();
+	}
+
+	public static int getDisplayHeight() {
+		return Display.getHeight();
+	}
+
 }

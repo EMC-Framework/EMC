@@ -18,9 +18,6 @@ import java.net.URLClassLoader;
  */
 public abstract class EMCMod {
 
-	@Deprecated
-	public JsonObject modInfo;
-
 	protected ModResourceManager resourceManager;
 
 	protected ModMeta meta;
@@ -30,7 +27,6 @@ public abstract class EMCMod {
 	public File physicalFile;
 
 	public void init(JsonObject json) {
-		modInfo = json;
 		meta = new Gson().fromJson(json, ModMeta.class);
 		settings = new Settings(meta.getName());
 		settings.setupShutdownHook();
@@ -41,7 +37,16 @@ public abstract class EMCMod {
 			ex.printStackTrace();
 		}
 		Bootstrap.logger.debug("Physical jar of {} is {}", meta.getName(), physicalFile.getAbsolutePath());
-		initialize();
+		try {
+			Bootstrap.logger.info("Running init");
+			initialize();
+
+			Class<?> clazz = classLoader.loadClass("me.deftware.aristois.main.Main");
+
+			Bootstrap.logger.info("Finished init for {}", clazz.getName());
+		} catch (Throwable ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	/**

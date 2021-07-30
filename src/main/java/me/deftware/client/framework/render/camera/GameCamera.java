@@ -1,45 +1,22 @@
 package me.deftware.client.framework.render.camera;
 
-import me.deftware.client.framework.entity.Entity;
 import me.deftware.client.framework.math.vector.Vector3d;
-import me.deftware.mixin.imp.IMixinCamera;
-import net.minecraft.client.renderer.entity.RenderManager;
 
 /**
  * @author Deftware
  */
-public class GameCamera {
+public interface GameCamera {
+	
+	Vector3d getCameraPosition();
 
-	public RenderManager getMinecraftCamera() {
-		return net.minecraft.client.Minecraft.getMinecraft().getRenderManager();
-	}
+	float _getRotationPitch();
 
-	public Vector3d getCameraPosition() {
-		return new Vector3d(getRenderPosX(), getRenderPosY(), getRenderPosZ());
-	}
+	float _getRotationYaw();
 
-	public float getRotationPitch() {
-		return getMinecraftCamera().playerViewX;
-	}
+	double _getRenderPosX();
 
-	public float getRotationYaw() {
-		return getMinecraftCamera().playerViewY;
-	}
+	double _getRenderPosY();
 
-	public Entity getFocusedEntity() {
-		return Entity.newInstance(getMinecraftCamera().pointedEntity);
-	}
-
-	public double getRenderPosX() {
-		return ((IMixinCamera) getMinecraftCamera()).getRenderPosX();
-	}
-
-	public double getRenderPosY() {
-		return ((IMixinCamera) getMinecraftCamera()).getRenderPosY();
-	}
-
-	public double getRenderPosZ() {
-		return((IMixinCamera) getMinecraftCamera()).getRenderPosZ();
-	}
+	double _getRenderPosZ();
 
 }

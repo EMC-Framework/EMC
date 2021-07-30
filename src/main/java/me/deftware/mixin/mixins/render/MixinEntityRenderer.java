@@ -3,7 +3,6 @@ package me.deftware.mixin.mixins.render;
 import me.deftware.client.framework.chat.hud.ChatHud;
 import me.deftware.client.framework.event.events.*;
 import me.deftware.client.framework.helper.WindowHelper;
-import me.deftware.client.framework.minecraft.Minecraft;
 import me.deftware.client.framework.render.shader.Shader;
 import me.deftware.client.framework.render.batching.RenderStack;
 import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
@@ -63,10 +62,16 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     private boolean useShader;
 
     @Unique
-    private final Consumer<Float> renderEvent = partialTicks -> new EventRender3D(partialTicks).broadcast();
+    private final EventRender3D eventRender3D = new EventRender3D();
 
     @Unique
-    private final Consumer<Float> renderEventNoBobbing = partialTicks -> new EventRender3DNoBobbing(partialTicks).broadcast();
+    private final EventRender3DNoBobbing eventRender3DNoBobbing = new EventRender3DNoBobbing();
+
+    @Unique
+    private final Consumer<Float> renderEvent = partialTicks -> eventRender3D.create(partialTicks).broadcast();
+
+    @Unique
+    private final Consumer<Float> renderEventNoBobbing = partialTicks -> eventRender3DNoBobbing.create(partialTicks).broadcast();
 
     @Inject(method = "renderHand", at = @At("HEAD"))
     private void renderHand(float partialTicks, int pass, CallbackInfo ci) {
@@ -91,14 +96,24 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
         }
     }
 
+    @Unique
+    private final EventHurtcam eventHurtcam = new EventHurtcam();
+
     @Inject(method = "hurtCameraEffect", at = @At("HEAD"), cancellable = true)
     private void hurtCameraEffect(float partialTicks, CallbackInfo ci) {
-        EventHurtcam event = new EventHurtcam();
-        event.broadcast();
-        if (event.isCanceled()) {
+        eventHurtcam.setCanceled(false);
+        eventHurtcam.broadcast();
+        if (eventHurtcam.isCanceled()) {
             ci.cancel();
         }
     }
+
+
+    @Unique
+    private final EventRender2D eventRender2D = new EventRender2D();
+
+    @Unique
+    private final EventMatrixRender eventMatrixRender = new EventMatrixRender();
 
     @Redirect(method = "updateCameraAndRender", at = @At(value = "INVOKE", opcode = 180, target = "net/minecraft/client/gui/GuiIngame.renderGameOverlay(F)V"))
     private void onRender2D(GuiIngame guiIngame, float partialTicks) {
@@ -109,16 +124,11 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
             if (operation != null) {
                 operation.run();
             }
-            // Other actions
-            operation = Minecraft.RENDER_THREAD.poll();
-            if (operation != null) {
-                operation.run();
-            }
-            new EventRender2D(partialTicks).broadcast();
+            eventRender2D.create(partialTicks).broadcast();
             // Render with custom matrix
             RenderStack.reloadCustomMatrix();
             RenderStack.setupGl();
-            new EventMatrixRender(partialTicks).broadcast();
+            eventMatrixRender.create(partialTicks).broadcast();
             RenderStack.restoreGl();
             RenderStack.reloadMinecraftMatrix();
         }

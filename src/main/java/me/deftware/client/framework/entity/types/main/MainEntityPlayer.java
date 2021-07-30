@@ -1,9 +1,7 @@
 package me.deftware.client.framework.entity.types.main;
 
-import me.deftware.client.framework.conversion.ConvertedList;
 import me.deftware.client.framework.entity.Entity;
 import me.deftware.client.framework.entity.EntityHand;
-import me.deftware.client.framework.inventory.Slot;
 import me.deftware.client.framework.item.ItemStack;
 import me.deftware.client.framework.math.position.BlockPosition;
 import me.deftware.client.framework.math.vector.Vector3d;
@@ -11,7 +9,6 @@ import me.deftware.client.framework.minecraft.Minecraft;
 import me.deftware.client.framework.world.EnumFacing;
 import me.deftware.mixin.imp.IMixinEntityPlayerSP;
 import me.deftware.mixin.imp.IMixinEntityRenderer;
-import me.deftware.mixin.imp.IMixinMinecraft;
 import me.deftware.mixin.imp.IMixinPlayerControllerMP;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,7 +21,6 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.MovementInput;
 import net.minecraft.util.math.BlockPos;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -34,11 +30,6 @@ import java.util.Set;
  * @author Deftware
  */
 public class MainEntityPlayer extends RotationLogic {
-
-	private final ConvertedList<Slot, net.minecraft.inventory.Slot> inventorySlots =
-			new ConvertedList<>(() -> Objects.requireNonNull(net.minecraft.client.Minecraft.getMinecraft().player).inventoryContainer.inventorySlots, pair ->
-					pair.getLeft().getMinecraftSlot() == Objects.requireNonNull(net.minecraft.client.Minecraft.getMinecraft().player).inventoryContainer.inventorySlots.get(pair.getRight())
-					, Slot::new);
 
 	public MainEntityPlayer(EntityPlayer entity) {
 		super(entity);
@@ -61,10 +52,6 @@ public class MainEntityPlayer extends RotationLogic {
 	public void swapHands() {
 		Objects.requireNonNull(net.minecraft.client.Minecraft.getMinecraft().player).connection.sendPacket(new CPacketPlayerDigging(
 				CPacketPlayerDigging.Action.SWAP_HELD_ITEMS, BlockPos.ORIGIN, net.minecraft.util.EnumFacing.DOWN));
-	}
-
-	public void setRightClickDelayTimer(int delay) {
-		((IMixinMinecraft) net.minecraft.client.Minecraft.getMinecraft()).setRightClickDelayTimer(delay);
 	}
 
 	public void processRightClick(boolean offhand) {
@@ -137,10 +124,6 @@ public class MainEntityPlayer extends RotationLogic {
 		Inventory management
 	 */
 
-	public List<Slot> getInventorySlots() {
-		return inventorySlots.poll();
-	}
-
 	/**
 	 * Moves an item from the main inventory into the hotbar
 	 */
@@ -152,7 +135,7 @@ public class MainEntityPlayer extends RotationLogic {
 
 	public boolean placeStackInHotbar(ItemStack stack) {
 		for (int index = 0; index < 9; index++) {
-			if (Objects.requireNonNull(Minecraft.getPlayer()).getInventory().getStackInSlot(index).isEmpty()) {
+			if (Objects.requireNonNull(Minecraft.getMinecraftGame()._getPlayer()).getInventory().getStackInSlot(index).isEmpty()) {
 				Objects.requireNonNull(net.minecraft.client.Minecraft.getMinecraft().player).connection
 						.sendPacket(new CPacketCreativeInventoryAction(36 + index, stack.getMinecraftItemStack()));
 				return true;

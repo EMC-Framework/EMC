@@ -1,8 +1,7 @@
 package me.deftware.client.framework.gui.widgets;
 
 import me.deftware.client.framework.chat.ChatMessage;
-import me.deftware.client.framework.fonts.minecraft.FontRenderer;
-import me.deftware.client.framework.gui.GuiScreen;
+import me.deftware.client.framework.fonts.FontRenderer;
 import me.deftware.client.framework.util.types.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiListExtended;
@@ -13,7 +12,7 @@ import java.util.List;
 /**
  * @author Deftware
  */
-public class StringList extends GuiListExtended {
+public class StringList extends GuiListExtended implements GenericComponent {
 
 	private final List<StringEntry> entryList = new ArrayList<>();
 
@@ -28,12 +27,6 @@ public class StringList extends GuiListExtended {
 	public void addItem(ChatMessage text) {
 		entryList.add(new StringEntry(text));
 	}
-
-	public void doDraw(int mouseX, int mouseY, float delta) {
-		this.drawScreen(mouseX, mouseY, delta);
-	}
-
-	public void addToEventListener(GuiScreen screen) { }
 
 	@Override
 	protected int getSize() {

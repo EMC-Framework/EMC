@@ -103,6 +103,10 @@ public class Vector3d {
 		return Math.sqrt(vec3d.x * vec3d.x + vec3d.y * vec3d.y + vec3d.z * vec3d.z);
 	}
 
+	public void setVec3d(Vec3d vec3d) {
+		this.vec3d = vec3d;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof Vector3d) {

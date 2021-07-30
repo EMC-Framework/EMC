@@ -1,7 +1,7 @@
 package me.deftware.mixin.mixins.gui;
 
 import me.deftware.client.framework.chat.ChatMessage;
-import me.deftware.client.framework.chat.hud.ChatHudLine;
+import me.deftware.client.framework.chat.hud.HudLine;
 import me.deftware.client.framework.event.events.EventChatReceive;
 import me.deftware.mixin.imp.IMixinGuiNewChat;
 import net.minecraft.client.gui.ChatLine;
@@ -44,7 +44,7 @@ public abstract class MixinGuiNewChat implements IMixinGuiNewChat {
     }
 
     @Override
-    public void removeMessage(ChatHudLine line) {
+    public void removeMessage(HudLine line) {
         chatLines.removeIf(message -> TextFormatting.getTextWithoutFormattingCodes(message.getChatComponent().getFormattedText()).equalsIgnoreCase(line.getMessage().toString(false)));
         drawnChatLines.removeIf(message -> TextFormatting.getTextWithoutFormattingCodes(message.getChatComponent().getFormattedText()).equalsIgnoreCase(line.getMessage().toString(false)));
     }
@@ -56,12 +56,12 @@ public abstract class MixinGuiNewChat implements IMixinGuiNewChat {
     }
 
     @Override
-    public List<ChatHudLine> getLines() {
-        List<ChatHudLine> list = new ArrayList<>();
+    public List<HudLine> getLines() {
+        List<HudLine> list = new ArrayList<>();
         for (int i = 0; i < chatLines.size(); i++) {
             ChatLine line = chatLines.get(i);
             if (line.getChatComponent() instanceof TextComponentString) {
-                list.add(new ChatHudLine(new ChatMessage().fromText(line.getChatComponent()),  i));
+                list.add(new HudLine(new ChatMessage().fromText(line.getChatComponent()),  i));
             }
         }
         return list;

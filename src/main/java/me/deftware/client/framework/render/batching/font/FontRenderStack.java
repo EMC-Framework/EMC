@@ -3,7 +3,7 @@ package me.deftware.client.framework.render.batching.font;
 import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.chat.ChatSection;
 import me.deftware.client.framework.chat.style.ChatStyle;
-import me.deftware.client.framework.fonts.legacy.LegacyBitmapFont;
+import me.deftware.client.framework.fonts.AtlasTextureFont;
 import me.deftware.client.framework.registry.font.IFontProvider;
 import me.deftware.client.framework.render.batching.RenderStack;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -22,7 +22,7 @@ import java.util.Map;
 public class FontRenderStack extends RenderStack<FontRenderStack> {
 
 	private int offset = 0;
-	private final LegacyBitmapFont font;
+	private final AtlasTextureFont font;
 
 	public FontRenderStack(IFontProvider font) {
 		this.font = font.getFont();
@@ -90,7 +90,7 @@ public class FontRenderStack extends RenderStack<FontRenderStack> {
 
 		// Get font data
 		int shadow = font.getShadow();
-		Map<Character, LegacyBitmapFont.CharData> characterMap = font.getCharacterMap();
+		Map<Character, AtlasTextureFont.CharData> characterMap = font.getCharacterMap();
 
 		for (int character = 0; character < buffer.length; character++) {
 			// Skip spaces
@@ -104,7 +104,7 @@ public class FontRenderStack extends RenderStack<FontRenderStack> {
 				buffer[character] = '?';
 
 			// Get character data
-			LegacyBitmapFont.CharData data = characterMap.get(buffer[character]);
+			AtlasTextureFont.CharData data = characterMap.get(buffer[character]);
 
 			// Draw shadow
 			if (shadow > 0) {
@@ -131,7 +131,7 @@ public class FontRenderStack extends RenderStack<FontRenderStack> {
 		return getStringWidth(text.toString(false));
 	}
 
-	private void drawCharacter(int x, int y, LegacyBitmapFont.CharData data) {
+	private void drawCharacter(int x, int y, AtlasTextureFont.CharData data) {
 		// Size
 		int width = data.getWidth(), height = data.getHeight();
 		// Offsets

@@ -5,8 +5,7 @@ import com.mojang.authlib.UserAuthentication;
 import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication;
-import me.deftware.mixin.imp.IMixinMinecraft;
-import net.minecraft.client.Minecraft;
+import me.deftware.client.framework.minecraft.Minecraft;
 import net.minecraft.util.Session;
 
 import java.net.Proxy;
@@ -73,12 +72,12 @@ public class AuthLibSession {
 	}
 
 	public void setSession(Session session) {
-		((IMixinMinecraft) Minecraft.getMinecraft()).setSession(buildSession());
-		((IMixinMinecraft) Minecraft.getMinecraft()).setSessionService(authenticationService.createMinecraftSessionService());
+		Minecraft.getMinecraftGame().setSession(buildSession());
+		Minecraft.getMinecraftGame().setSessionService(authenticationService.createMinecraftSessionService());
 	}
 
 	public void setOfflineSession(String username) {
-		((IMixinMinecraft) net.minecraft.client.Minecraft.getMinecraft()).setSession(new Session(username, "", "0", "legacy"));
+		Minecraft.getMinecraftGame().setSession(new Session(username, "", "0", "legacy"));
 	}
 
 	public void setManualSession(String username, String uuid, String accessToken) {
@@ -88,8 +87,8 @@ public class AuthLibSession {
 		map.put("displayName", username);
 		map.put("uuid", uuid);
 		userAuthentication.loadFromStorage(map);
-		((IMixinMinecraft) Minecraft.getMinecraft()).setSession(session);
-		((IMixinMinecraft) Minecraft.getMinecraft()).setSessionService(authenticationService.createMinecraftSessionService());
+		Minecraft.getMinecraftGame().setSession(session);
+		Minecraft.getMinecraftGame().setSessionService(authenticationService.createMinecraftSessionService());
 	}
 
 }

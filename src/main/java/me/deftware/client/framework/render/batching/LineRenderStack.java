@@ -22,9 +22,9 @@ public class LineRenderStack extends RenderStack<LineRenderStack> {
 	@Override
 	public LineRenderStack begin(int mode) {
 		eyes = new Vec3d(0.0D, 0.0D, 1.0D);
-		if (Minecraft.getCamera().getMinecraftCamera() != null)
-			eyes = eyes.rotatePitch(-(float) Math.toRadians(Minecraft.getCamera().getRotationPitch()))
-				.rotateYaw(-(float) Math.toRadians(Minecraft.getCamera().getRotationYaw()));
+		if (Minecraft.getMinecraftGame().getCamera() != null)
+			eyes = eyes.rotatePitch(-(float) Math.toRadians(Minecraft.getMinecraftGame().getCamera()._getRotationPitch()))
+				.rotateYaw(-(float) Math.toRadians(Minecraft.getMinecraftGame().getCamera()._getRotationYaw()));
 		return super.begin(mode);
 	}
 
@@ -48,9 +48,9 @@ public class LineRenderStack extends RenderStack<LineRenderStack> {
 
 	public LineRenderStack lineToBlockPosition(BlockPosition pos) {
 		return drawLine(
-				pos.getX() - Minecraft.getCamera().getRenderPosX(),
-				pos.getY() + 1f / 2.0F - Minecraft.getCamera().getRenderPosY(),
-				pos.getZ() - Minecraft.getCamera().getRenderPosZ()
+				pos.getX() - Minecraft.getMinecraftGame().getCamera()._getRenderPosX(),
+				pos.getY() + 1f / 2.0F - Minecraft.getMinecraftGame().getCamera()._getRenderPosY(),
+				pos.getZ() - Minecraft.getMinecraftGame().getCamera()._getRenderPosZ()
 		);
 	}
 
@@ -60,9 +60,9 @@ public class LineRenderStack extends RenderStack<LineRenderStack> {
 
 	public LineRenderStack lineToEntity(Entity entity) {
 		return drawLine(
-				entity.getBlockPosition().getX() - Minecraft.getCamera().getRenderPosX(),
-				entity.getBlockPosition().getY() + entity.getHeight() / 2.0F - Minecraft.getCamera().getRenderPosY(),
-				entity.getBlockPosition().getZ() - Minecraft.getCamera().getRenderPosZ()
+				entity.getBlockPosition().getX() - Minecraft.getMinecraftGame().getCamera()._getRenderPosX(),
+				entity.getBlockPosition().getY() + entity.getHeight() / 2.0F - Minecraft.getMinecraftGame().getCamera()._getRenderPosY(),
+				entity.getBlockPosition().getZ() - Minecraft.getMinecraftGame().getCamera()._getRenderPosZ()
 		);
 	}
 
@@ -72,7 +72,7 @@ public class LineRenderStack extends RenderStack<LineRenderStack> {
 	}
 
 	public LineRenderStack drawLine(double x, double y, double z) {
-		return drawPoint(eyes.x, Minecraft.getPlayer().getEyeHeight() + eyes.y, eyes.z).drawPoint(x, y, z);
+		return drawPoint(eyes.x, Minecraft.getMinecraftGame()._getPlayer().getEyeHeight() + eyes.y, eyes.z).drawPoint(x, y, z);
 	}
 
 }

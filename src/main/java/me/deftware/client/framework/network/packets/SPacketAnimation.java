@@ -2,7 +2,7 @@ package me.deftware.client.framework.network.packets;
 
 import me.deftware.client.framework.entity.Entity;
 import me.deftware.client.framework.network.PacketWrapper;
-import net.minecraft.client.Minecraft;
+import me.deftware.client.framework.world.ClientWorld;
 import net.minecraft.network.Packet;
 
 /**
@@ -23,7 +23,7 @@ public class SPacketAnimation extends PacketWrapper {
 	}
 
 	public Entity getEntity() {
-		return Entity.newInstance(Minecraft.getMinecraft().world.getEntityByID(getEntityID()));
+		return ClientWorld.getClientWorld()._getEntityById(getEntityID());
 	}
 
 }

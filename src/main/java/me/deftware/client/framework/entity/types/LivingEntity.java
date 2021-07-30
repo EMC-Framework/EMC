@@ -1,6 +1,8 @@
 package me.deftware.client.framework.entity.types;
 
 import me.deftware.client.framework.entity.Entity;
+import me.deftware.client.framework.item.ItemStack;
+import net.minecraft.util.EnumHand;
 
 /**
  * @author Deftware
@@ -55,6 +57,15 @@ public class LivingEntity extends Entity {
 		getLivingEntity().isDead = false;
 		getLivingEntity().setHealth(20f);
 		getLivingEntity().setPosition(getPosX(), getPosY(), getPosZ());
+	}
+
+	private final ItemStack main = ItemStack.getEmpty(), offhand = ItemStack.getEmpty();
+
+	@Override
+	public ItemStack getEntityHeldItem(boolean offhand) {
+		if (offhand)
+			return this.offhand.setStack(getLivingEntity().getHeldItem(EnumHand.OFF_HAND));
+		return main.setStack(getLivingEntity().getHeldItem(EnumHand.MAIN_HAND));
 	}
 	
 }

@@ -83,6 +83,7 @@ dependencies {
         exclude module: 'commons-io'
     }
     compile 'com.mojang:brigadier:1.0.17'
+    implementation 'org.jetbrains:annotations:21.0.1'
 }
 
 mixin {

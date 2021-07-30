@@ -7,6 +7,7 @@ import me.deftware.client.framework.item.types.PotionItem;
 import me.deftware.client.framework.item.types.RangedWeaponItem;
 import me.deftware.client.framework.item.types.ToolItem;
 import me.deftware.client.framework.item.types.*;
+import me.deftware.client.framework.registry.BlockRegistry;
 import me.deftware.client.framework.world.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
@@ -98,7 +99,7 @@ public class Item implements IItem {
 
 	public Block getAsBlock() {
 		if (instanceOf(ItemType.ItemBlock)) {
-			return Block.newInstance(((net.minecraft.item.ItemBlock) item).getBlock());
+			return BlockRegistry.INSTANCE.getBlock(((net.minecraft.item.ItemBlock) item).getBlock());
 		}
 		return null;
 	}
