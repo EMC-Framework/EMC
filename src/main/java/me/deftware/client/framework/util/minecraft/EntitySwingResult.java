@@ -1,9 +1,7 @@
 package me.deftware.client.framework.util.minecraft;
 
 import me.deftware.client.framework.entity.Entity;
-import me.deftware.client.framework.world.World;
-
-import java.util.stream.Collectors;
+import me.deftware.client.framework.world.ClientWorld;
 
 public class EntitySwingResult {
 
@@ -14,12 +12,7 @@ public class EntitySwingResult {
     }
 
     public Entity getEntity() {
-        // Find entity in the world
-        for (Entity entity : World.getLoadedEntities().collect(Collectors.toList())) {
-            if (entity.getMinecraftEntity() == this.hitEntity)
-                return entity;
-        }
-        return null;
+        return ClientWorld.getClientWorld().getEntityByReference(this.hitEntity);
     }
 
 }

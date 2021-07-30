@@ -3,6 +3,7 @@ package me.deftware.client.framework.registry;
 import me.deftware.client.framework.item.Item;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -17,6 +18,8 @@ public enum ItemRegistry implements IRegistry<Item, net.minecraft.item.Item> {
 	private final HashMap<String, String> translatedNames = new HashMap<>();
 	public final HashMap<String, String> namesTranslated = new HashMap<>();
 
+	private final Map<net.minecraft.item.Item, Item> map = new HashMap<>();
+
 	@Override
 	public Stream<Item> stream() {
 		return items.values().stream();
@@ -24,9 +27,11 @@ public enum ItemRegistry implements IRegistry<Item, net.minecraft.item.Item> {
 
 	@Override
 	public void register(String id, net.minecraft.item.Item object) {
+		Item item = Item.newInstance(object);
 		items.putIfAbsent(id, Item.newInstance(object));
 		translatedNames.put(id.substring("minecraft:".length()), object.getUnlocalizedName());
 		namesTranslated.put(object.getUnlocalizedName(), id.substring("minecraft:".length()));
+		map.putIfAbsent(object, item);
 	}
 
 	@Override
@@ -41,6 +46,10 @@ public enum ItemRegistry implements IRegistry<Item, net.minecraft.item.Item> {
 						item.getUnlocalizedName().substring("item:".length()).equalsIgnoreCase(finalId) ||
 						item.getUnlocalizedName().substring("block:".length()).equalsIgnoreCase(finalId)
 		).findFirst();
+	}
+
+	public Item getItem(net.minecraft.item.Item item) {
+		return map.get(item);
 	}
 
 }

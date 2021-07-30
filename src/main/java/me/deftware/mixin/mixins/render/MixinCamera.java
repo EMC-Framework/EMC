@@ -1,12 +1,16 @@
 package me.deftware.mixin.mixins.render;
 
-import me.deftware.mixin.imp.IMixinCamera;
 import net.minecraft.client.renderer.entity.RenderManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import me.deftware.client.framework.math.vector.Vector3d;
+import me.deftware.client.framework.render.camera.GameCamera;
 
+/**
+ * @author Deftware, wagyourtail
+ */
 @Mixin(RenderManager.class)
-public class MixinCamera implements IMixinCamera {
+public class MixinCamera implements GameCamera {
 
 	@Shadow
 	private double renderPosX;
@@ -17,31 +21,34 @@ public class MixinCamera implements IMixinCamera {
 	@Shadow
 	private double renderPosZ;
 
-	@Override
-	public double getRenderPosX() {
-		return renderPosX;
-	}
-
-	@Override
-	public double getRenderPosY() {
-		return renderPosY;
-	}
-
-	@Override
-	public double getRenderPosZ() {
-		return renderPosZ;
-	}
-
-    /* FIXME
-    @Inject(at = @At("HEAD"), cancellable = true, method = "method_19318")
-    public void clipToSpace(double camDistance, CallbackInfoReturnable<Double> info) {
-        EventCameraClip event = new EventCameraClip(camDistance);
-        event.broadcast();
-        if (event.isCanceled()) {
-            info.setReturnValue(event.getDistance());
-            info.cancel();
-        }
+    @Override
+    public Vector3d getCameraPosition() {
+        return new Vector3d(renderPosX, renderPosY, renderPosZ);
     }
-	*/
+
+    @Override
+    public float _getRotationPitch() {
+        return ((RenderManager) (Object) this).playerViewX;
+    }
+
+    @Override
+    public float _getRotationYaw() {
+        return ((RenderManager) (Object) this).playerViewY;
+    }
+
+    @Override
+    public double _getRenderPosX() {
+        return renderPosX;
+    }
+
+    @Override
+    public double _getRenderPosY() {
+        return renderPosY;
+    }
+
+    @Override
+    public double _getRenderPosZ() {
+        return renderPosZ;
+    }
 
 }

@@ -3,12 +3,11 @@ package me.deftware.client.framework.chat;
 import com.mojang.brigadier.Message;
 import me.deftware.client.framework.chat.hud.ChatHud;
 import me.deftware.client.framework.chat.style.ChatStyle;
-import me.deftware.client.framework.fonts.minecraft.FontRenderer;
 import net.minecraft.network.play.client.C01PacketChatMessage;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
-
+import me.deftware.client.framework.fonts.FontRenderer;
 import java.util.ArrayList;
 import java.util.List;
 

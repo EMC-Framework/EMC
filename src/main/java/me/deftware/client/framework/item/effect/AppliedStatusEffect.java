@@ -9,7 +9,7 @@ import net.minecraft.potion.PotionEffect;
 public class AppliedStatusEffect {
 
 	private final StatusEffect effect;
-	private final PotionEffect instance;
+	private PotionEffect instance;
 
 	public AppliedStatusEffect(PotionEffect instance) {
 		this.effect = new StatusEffect(Potion.potionTypes[instance.getPotionID()]);
@@ -45,6 +45,11 @@ public class AppliedStatusEffect {
 
 	public boolean isAmbient() {
 		return instance.getIsAmbient();
+	}
+
+	public AppliedStatusEffect setInstance(PotionEffect instance) {
+		this.instance = instance;
+		return this;
 	}
 
 }

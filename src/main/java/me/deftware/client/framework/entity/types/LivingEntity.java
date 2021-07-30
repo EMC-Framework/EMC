@@ -1,12 +1,7 @@
 package me.deftware.client.framework.entity.types;
 
-import com.google.common.collect.Iterables;
-import me.deftware.client.framework.conversion.ConvertedList;
 import me.deftware.client.framework.entity.Entity;
 import me.deftware.client.framework.item.ItemStack;
-
-import java.util.Arrays;
-import java.util.Collections;
 
 /**
  * @author Deftware
@@ -15,12 +10,6 @@ public class LivingEntity extends Entity {
 
 	public LivingEntity(net.minecraft.entity.Entity entity) {
 		super(entity);
-		this.heldItems = new ConvertedList<>(() -> Collections.singleton(getLivingEntity().getHeldItem()),pair ->
-				pair.getLeft().getMinecraftItemStack() == Iterables.get(Collections.singleton(getLivingEntity().getHeldItem()), pair.getRight())
-				, ItemStack::new);
-		this.armourItems = new ConvertedList<>(() -> Arrays.asList(getLivingEntity().getInventory()), pair ->
-				pair.getLeft().getMinecraftItemStack() == Iterables.get(Arrays.asList(getLivingEntity().getInventory()), pair.getRight())
-				, ItemStack::new);
 	}
 
 	public net.minecraft.entity.EntityLivingBase getLivingEntity() {
@@ -67,6 +56,13 @@ public class LivingEntity extends Entity {
 		getLivingEntity().isDead = false;
 		getLivingEntity().setHealth(20f);
 		getLivingEntity().setPosition(getPosX(), getPosY(), getPosZ());
+	}
+
+	private final ItemStack main = ItemStack.getEmpty();
+
+	@Override
+	public ItemStack getEntityHeldItem(boolean offhand) {
+		return main.setStack(getLivingEntity().getHeldItem());
 	}
 	
 }

@@ -1,31 +1,40 @@
 package me.deftware.client.framework.event.events;
 
-import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.event.Event;
+import me.deftware.client.framework.world.ClientWorld;
 import net.minecraft.entity.Entity;
 
 /**
  * Triggered when player model is being rendered.
+<<<<<<< HEAD
 
  * It does not include the model drawn in players' inventory
  */
 public class EventRenderPlayerModel extends Event {
-	private boolean shouldRender = false;
-	private final ChatMessage name;
 
-	public EventRenderPlayerModel(Entity entity) {
-		this.name = new ChatMessage().fromString(entity.getName());
+	private me.deftware.client.framework.entity.Entity entity;
+	private boolean shouldRender = false;
+
+	public EventRenderPlayerModel create(Entity entity) {
+		this.shouldRender = false;
+		this.entity = ClientWorld.getClientWorld().getEntityByReference(entity);
+		return this;
+	}
+
+	public me.deftware.client.framework.entity.Entity getEntity() {
+		return entity;
+	}
+
+	public void setEntity(me.deftware.client.framework.entity.Entity entity) {
+		this.entity = entity;
 	}
 
 	public boolean isShouldRender() {
-		return this.shouldRender;
+		return shouldRender;
 	}
 
-	public void setShouldRender(final boolean shouldRender) {
+	public void setShouldRender(boolean shouldRender) {
 		this.shouldRender = shouldRender;
 	}
 
-	public ChatMessage getName() {
-		return this.name;
-	}
 }

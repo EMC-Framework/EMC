@@ -11,6 +11,7 @@ import me.deftware.client.framework.global.GameKeys;
 import me.deftware.client.framework.global.GameMap;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -18,16 +19,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(RendererLivingEntity.class)
 public abstract class MixinRenderLivingBase<T extends EntityLivingBase> extends Render<T> {
 
-    @Shadow protected boolean renderOutlines;
+    @Shadow
+    protected boolean renderOutlines;
+
+    @Unique
+    private final EventRenderPlayerModel eventRenderPlayerModel = new EventRenderPlayerModel();
 
     protected MixinRenderLivingBase(RenderManager renderManager) {
         super(renderManager);
     }
 
     private boolean isVisible(T entity) {
-        EventRenderPlayerModel event = new EventRenderPlayerModel(entity);
-        event.broadcast();
-        if (event.isShouldRender()) {
+        eventRenderPlayerModel.create(entity);
+        eventRenderPlayerModel.broadcast();
+        if (eventRenderPlayerModel.isShouldRender()) {
             return true;
         }
         return !entity.isInvisible() || this.renderOutlines;

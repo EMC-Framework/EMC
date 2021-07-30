@@ -1,15 +1,13 @@
 package me.deftware.client.framework.entity;
 
-import com.google.common.collect.Iterables;
 import me.deftware.client.framework.chat.ChatMessage;
-import me.deftware.client.framework.conversion.ComparedConversion;
-import me.deftware.client.framework.conversion.ConvertedList;
 import me.deftware.client.framework.entity.types.EntityPlayer;
 import me.deftware.client.framework.entity.types.OwnedEntity;
 import me.deftware.client.framework.entity.types.animals.HorseEntity;
 import me.deftware.client.framework.entity.types.animals.MobEntity;
 import me.deftware.client.framework.entity.types.animals.WaterEntity;
 import me.deftware.client.framework.entity.types.animals.WolfEntity;
+import me.deftware.client.framework.entity.types.main.MainEntityPlayer;
 import me.deftware.client.framework.entity.types.objects.BoatEntity;
 import me.deftware.client.framework.entity.types.objects.EndCrystalEntity;
 import me.deftware.client.framework.entity.types.objects.ItemEntity;
@@ -20,6 +18,8 @@ import me.deftware.client.framework.math.position.BlockPosition;
 import me.deftware.client.framework.math.position.ChunkBlockPosition;
 import me.deftware.client.framework.math.vector.Vector3d;
 import me.deftware.client.framework.nbt.NbtCompound;
+import me.deftware.client.framework.util.Util;
+import me.deftware.client.framework.world.ClientWorld;
 import me.deftware.client.framework.world.EnumFacing;
 import me.deftware.mixin.imp.IMixinAbstractClientPlayer;
 import me.deftware.mixin.imp.IMixinEntity;
@@ -28,7 +28,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityBoat;
 import net.minecraft.entity.item.EntityEnderCrystal;
@@ -41,6 +40,7 @@ import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.nbt.NBTTagCompound;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -49,15 +49,18 @@ import java.util.Objects;
  */
 public class Entity {
 
-	protected ConvertedList<ItemStack, net.minecraft.item.ItemStack> armourItems;
-	protected ConvertedList<ItemStack, net.minecraft.item.ItemStack> heldItems;
-	protected final ComparedConversion<net.minecraft.entity.Entity, Entity> vehicle;
+	private List<ItemStack> armourItems = Collections.emptyList();
+
+	private Entity vehicle;
+
 	protected final net.minecraft.entity.Entity entity;
 	protected final BlockPosition blockPosition;
 	protected final BoundingBox boundingBox;
 
 	public static Entity newInstance(net.minecraft.entity.Entity entity) {
-		if (entity instanceof net.minecraft.entity.player.EntityPlayer) {
+		if (entity == Minecraft.getMinecraft().thePlayer) {
+			return new MainEntityPlayer((net.minecraft.entity.player.EntityPlayer) entity);
+		} else if (entity instanceof net.minecraft.entity.player.EntityPlayer) {
 			return new EntityPlayer((net.minecraft.entity.player.EntityPlayer) entity);
 		} else if (entity instanceof EntityEnderCrystal) {
 			return new EndCrystalEntity(entity);
@@ -90,7 +93,14 @@ public class Entity {
 		this.entity = entity;
 		this.boundingBox = new BoundingBox(entity);
 		this.blockPosition = new BlockPosition(entity);
-		this.vehicle = new ComparedConversion<>(() -> entity.ridingEntity, Entity::newInstance);
+		if (entity.ridingEntity != null)
+			this.vehicle = ClientWorld.getClientWorld().getEntityByReference(entity.ridingEntity);
+		/* TODO
+		if (entity.getArmorInventoryList() instanceof List) {
+			List<net.minecraft.item.ItemStack> defaultedList = (List<net.minecraft.item.ItemStack>) entity.getArmorInventoryList();
+			ItemStack.init(defaultedList, this.armourItems = Util.getEmptyStackList(defaultedList.size()));
+		}
+		 */
 	}
 
 	public EnumFacing getHorizontalFacing() {
@@ -129,23 +139,27 @@ public class Entity {
 	}
 
 	public Entity getVehicle() {
-		return vehicle.get();
+		if (entity.ridingEntity == null)
+			return null;
+		if (vehicle == null || vehicle.getMinecraftEntity() != entity.ridingEntity)
+			vehicle = ClientWorld.getClientWorld().getEntityByReference(entity.ridingEntity);
+		return vehicle;
 	}
 
 	public boolean isTouchingWater() {
 		return entity.isInWater();
 	}
 
-	public me.deftware.client.framework.item.ItemStack getEntityHeldItem(boolean offhand) {
-		List<me.deftware.client.framework.item.ItemStack> stackList = heldItems.poll();
-		if (!stackList.isEmpty()) {
-			if (!offhand) return stackList.get(0);
-		}
-		return me.deftware.client.framework.item.ItemStack.EMPTY;
+	public ItemStack getEntityHeldItem(boolean offhand) {
+		return ItemStack.EMPTY;
 	}
 
 	public List<ItemStack> getArmourInventory() {
-		return armourItems.poll();
+		/* TODO
+		if (!armourItems.isEmpty())
+			ItemStack.copyReferences(entity.getArmorInventoryList(), armourItems);
+		 */
+		return armourItems;
 	}
 
 	public void setInPortal(boolean inPortal) {

@@ -4,7 +4,6 @@ import me.deftware.client.framework.gui.GuiScreen;
 import me.deftware.client.framework.render.shader.Shader;
 import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
 import me.deftware.mixin.imp.IMixinEntityRenderer;
-import me.deftware.mixin.imp.IMixinMinecraft;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import org.lwjgl.opengl.Display;
@@ -59,7 +58,7 @@ public class WindowHelper {
 	}
 
 	public static int getFPS() {
-		return ((IMixinMinecraft) net.minecraft.client.Minecraft.getMinecraft()).getFPS();
+		return me.deftware.client.framework.minecraft.Minecraft.getMinecraftGame().getFPS();
 	}
 
 	public static boolean isDebugInfoShown() {

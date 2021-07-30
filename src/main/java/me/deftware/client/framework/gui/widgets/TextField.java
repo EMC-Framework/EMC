@@ -1,102 +1,63 @@
 package me.deftware.client.framework.gui.widgets;
 
-import me.deftware.client.framework.gui.GuiEventListener;
-import me.deftware.mixin.imp.IMixinGuiTextField;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiTextField;
-import org.lwjgl.input.Keyboard;
 
 import java.util.function.Predicate;
 
 /**
  * @author Deftware
  */
-public class TextField extends GuiTextField implements GuiEventListener {
+@SuppressWarnings("ConstantConditions")
+public interface TextField extends Component {
 
-	public TextField(int id, int x, int y, int width, int height) {
-		super(id, Minecraft.getMinecraft().fontRendererObj, x, y, width, height);
+	/**
+	 * Creates a new TextField instance
+	 *
+	 * @param id Unique ID
+	 * @param x x coordinate
+	 * @param y y coordinate
+	 * @param width The width
+	 * @param height The height
+	 * @return A TextField instance
+	 */
+	static TextField create(int id, int x, int y, int width, int height) {
+		return (TextField) new GuiTextField(id, Minecraft.getMinecraft().fontRendererObj, x, y, width, height);
 	}
 
-	public String getTextboxText() {
-		return getText();
-	}
+	/**
+	 * Sets the current text
+	 *
+	 * @param text Some text
+	 */
+	void _setText(String text);
 
-	public void setTextboxPasswordMode(boolean flag) {
-		((IMixinGuiTextField) this).setPasswordField(flag);
-	}
+	/**
+	 * @return The current text
+	 */
+	String _getText();
 
-	public void setTextboxPredicate(Predicate<String> textPredicate) {
-		// Because Minecraft doesnt use the java type...
-		this.setValidator(textPredicate::test);
-	}
+	/**
+	 * Toggles password mode, which renders
+	 * text written with asterisks
+	 */
+	void _setPasswordMode(boolean state);
 
-	public void setTextboxText(String text) {
-		setText(text);
-	}
+	/**
+	 * Sets the max text length
+	 */
+	void _setMaxLength(int length);
 
-	public void setMaxTextboxLenght(int lenght) {
-		setMaxStringLength(lenght);
-	}
+	/**
+	 * @param text Text to be drawn on top of the textbox
+	 */
+	void _setOverlay(String text);
 
-	public boolean isTextboxFocused() {
-		return isFocused();
-	}
-
-	public void setTextboxFocused(boolean state) {
-		setFocused(state);
-	}
-
-	public boolean onKeyPressed(int keyCode, int scanCode, int modifiers) {
-		return textboxKeyTyped(Keyboard.getEventCharacter(), keyCode);
-	}
-
-	public void onMouseClicked(int mouseX, int mouseY, int mouseButton) {
-		mouseClicked(mouseX, mouseY, mouseButton);
-	}
-
-	public void onDraw(int mouseX, int mouseY, float partialTicks) {
-		drawTextBox();
-	}
-
-	public void doCursorTick() {
-		updateCursorCounter();
-	}
-
-	public void setTextboxEnabled(boolean state) {
-		setEnabled(state);
-	}
-
-	public int getPosX() {
-		return ((IMixinGuiTextField) this).getX();
-	}
-
-	public void setPosX(int x) {
-		((IMixinGuiTextField) this).setX(x);
-	}
-
-	public int getPosY() {
-		return ((IMixinGuiTextField) this).getY();
-	}
-
-	public void setPosY(int y) {
-		((IMixinGuiTextField) this).setY(y);
-	}
-
-	@Override
-	public void doHandleMouse() { }
-
-	@Override
-	public void doKeyTyped(char typedChar, int keyCode) {
-		textboxKeyTyped(typedChar, keyCode);
-	}
-
-	@Override
-	public void doMouseClicked(int mouseX, int mouseY, int mouseButton) {
-		mouseClicked(mouseX, mouseY, mouseButton);
-	}
-
-	@Override
-	public void focusChanged(boolean state) { }
+	/**
+	 * Sets a text predicate
+	 *
+	 * @param predicate A string predicate
+	 */
+	void _setPredicate(Predicate<String> predicate);
 
 }
-

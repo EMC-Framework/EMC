@@ -1,11 +1,11 @@
 package me.deftware.client.framework.inventory;
 
-import me.deftware.client.framework.conversion.ComparedConversion;
-import me.deftware.client.framework.conversion.ConvertedList;
 import me.deftware.client.framework.item.Item;
 import me.deftware.client.framework.item.ItemStack;
+import me.deftware.client.framework.util.Util;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.InventoryLargeChest;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -13,77 +13,58 @@ import java.util.List;
  */
 public class Inventory {
 
-	protected final ConvertedList<ItemStack, net.minecraft.item.ItemStack> armourInventory, mainInventory;
-	protected final ComparedConversion<net.minecraft.item.ItemStack, ItemStack> mainHand;
-	protected final net.minecraft.entity.player.EntityPlayer entity;
+	protected final List<ItemStack> delegate;
+	protected final IInventory inventory;
 
-	public Inventory(net.minecraft.entity.player.EntityPlayer entity) {
-		this.entity = entity;
-		this.mainHand = new ComparedConversion<>(entity::getHeldItem, ItemStack::new);
-
-		this.armourInventory = new ConvertedList<>(() -> Arrays.asList(entity.inventory.armorInventory),pair ->
-			pair.getLeft().getMinecraftItemStack() == entity.inventory.armorInventory[pair.getRight()]
-		, ItemStack::new);
-
-		this.mainInventory = new ConvertedList<>(() -> Arrays.asList(entity.inventory.mainInventory), pair ->
-				net.minecraft.item.ItemStack.areItemsEqual(pair.getLeft().getMinecraftItemStack(), entity.inventory.mainInventory[pair.getRight()])
-				, ItemStack::new);
+	public Inventory(IInventory inventory) {
+		this.inventory = inventory;
+		this.delegate = Util.getEmptyStackList(inventory.getSizeInventory());
+		this.refresh();
 	}
 
 	public int findItem(Item item) {
-		for (int i = 0; i < entity.inventory.getSizeInventory(); i++) {
-			net.minecraft.item.ItemStack it = entity.inventory.getStackInSlot(i);
-			if (it != null && it.getItem().getUnlocalizedName().equals(item.getTranslationKey())) {
+		for (int i = 0; i < delegate.size(); i++) {
+			ItemStack it = delegate.get(i);
+			if (it.getItem().equals(item)) {
 				return i;
 			}
 		}
 		return -1;
 	}
 
+	public void refresh() {
+		for (int i = 0; i < delegate.size(); i++)
+			delegate.get(i).setStack(inventory.getStackInSlot(i));
+	}
+
 	public int getSize() {
-		return entity.inventory.getSizeInventory();
+		return delegate.size();
 	}
 
-	public List<ItemStack> getArmourInventory() {
-		return armourInventory.poll();
+	public boolean isEmpty() {
+		// TODO
+		return false;
 	}
 
-	public List<ItemStack> getMainInventory() {
-		return mainInventory.poll();
-	}
-	
-	public int getFirstEmptyStack() {
-		return entity.inventory.getFirstEmptyStack();
-	}
-
-	public int getCurrentItem() {
-		return entity.inventory.currentItem;
+	public boolean isFull() {
+		for (ItemStack itemStack : delegate)
+			if (itemStack.isEmpty())
+				return false;
+		return true;
 	}
 
-	public int getFirstEmptySlot() {
-		return entity.inventory.getFirstEmptyStack();
+	public boolean isDouble() {
+		return inventory instanceof InventoryLargeChest;
 	}
 
-	public void setCurrentItem(int id) {
-		entity.inventory.currentItem = id;
-	}
-
-	public ItemStack getHeldItem(boolean offhand) {
-		ItemStack stack = offhand ? null : this.mainHand.get();
-		if (stack == null) stack = ItemStack.EMPTY;
-		return stack;
+	public List<ItemStack> getInventory() {
+		return delegate;
 	}
 
 	public ItemStack getStackInSlot(int slotId) {
-		return new ItemStack(entity.inventory.getStackInSlot(slotId));
-	}
-
-	public ItemStack getStackInArmourSlot(int slotId) {
-		return new ItemStack(entity.inventory.armorItemInSlot(slotId));
-	}
-
-	public boolean hasElytra() {
-		return false;
+		if (slotId >= delegate.size())
+			return ItemStack.EMPTY;
+		return delegate.get(slotId).setStack(inventory.getStackInSlot(slotId));
 	}
 
 }

@@ -42,7 +42,7 @@ public class MixinEntityLivingBase implements IMixinEntityLivingBase {
 
     @Redirect(method = "moveEntityWithHeading", at = @At(value = "FIELD", target = "Lnet/minecraft/block/Block;slipperiness:F", opcode = 180))
     public float slipperiness(Block block) {
-        EventSlowdown event = new EventSlowdown(EventSlowdown.SlowdownType.Slipperiness, block.slipperiness);
+        EventSlowdown event = new EventSlowdown().create(EventSlowdown.SlowdownType.Slipperiness, block.slipperiness);
         event.broadcast();
         return event.getMultiplier();
     }

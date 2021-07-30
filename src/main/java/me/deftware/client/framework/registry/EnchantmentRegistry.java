@@ -13,7 +13,7 @@ public enum EnchantmentRegistry implements IRegistry<Enchantment, net.minecraft.
 
 	INSTANCE;
 
-	private final HashMap<String, Enchantment> enchantments = new HashMap<>();
+	public final HashMap<String, Enchantment> enchantments = new HashMap<>();
 	private final HashMap<String, String> translatedNames = new HashMap<>();
 
 	@Override
