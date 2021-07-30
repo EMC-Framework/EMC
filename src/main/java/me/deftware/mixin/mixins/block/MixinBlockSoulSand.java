@@ -16,7 +16,7 @@ public class MixinBlockSoulSand {
 
     @Inject(method = "onEntityCollision", at = @At("HEAD"), cancellable = true)
     public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity, CallbackInfo ci) {
-        EventSlowdown event = new EventSlowdown(EventSlowdown.SlowdownType.Soulsand);
+        EventSlowdown event = new EventSlowdown().create(EventSlowdown.SlowdownType.Soulsand, 1);
         event.broadcast();
         if (event.isCanceled()) {
             ci.cancel();

@@ -1,6 +1,5 @@
 package me.deftware.client.framework.entity.types.main;
 
-import me.deftware.client.framework.conversion.ConvertedList;
 import me.deftware.client.framework.entity.Entity;
 import me.deftware.client.framework.entity.EntityHand;
 import me.deftware.client.framework.inventory.Slot;
@@ -27,7 +26,6 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -37,11 +35,6 @@ import java.util.Set;
  * @author Deftware
  */
 public class MainEntityPlayer extends RotationLogic {
-
-	private final ConvertedList<Slot, net.minecraft.container.Slot> inventorySlots =
-			new ConvertedList<>(() -> Objects.requireNonNull(MinecraftClient.getInstance().player).container.slots, pair ->
-					pair.getLeft().getMinecraftSlot() == Objects.requireNonNull(MinecraftClient.getInstance().player).container.slots.get(pair.getRight())
-					, Slot::new);
 
 	public MainEntityPlayer(PlayerEntity entity) {
 		super(entity);
@@ -140,10 +133,6 @@ public class MainEntityPlayer extends RotationLogic {
 	/*
 		Inventory management
 	 */
-
-	public List<Slot> getInventorySlots() {
-		return inventorySlots.poll();
-	}
 
 	/**
 	 * Moves an item from the main inventory into the hotbar

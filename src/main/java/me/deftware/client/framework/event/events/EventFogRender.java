@@ -7,15 +7,19 @@ import me.deftware.client.framework.event.Event;
 import net.minecraft.client.render.Camera;
 
 public class EventFogRender extends Event {
+
     private @Getter @Setter Camera camera;
     private @Getter @Setter GlStateManager.FogMode fogType;
     private @Getter @Setter float viewDistance;
     private @Getter @Setter boolean thickFog;
 
-    public EventFogRender(Camera camera, GlStateManager.FogMode fogType, float viewDistance, boolean thickFog) {
+    public EventFogRender create(Camera camera, GlStateManager.FogMode fogType, float viewDistance, boolean thickFog) {
+        setCanceled(false);
         this.camera = camera;
         this.fogType = fogType;
         this.viewDistance = viewDistance;
         this.thickFog = thickFog;
+        return this;
     }
+
 }

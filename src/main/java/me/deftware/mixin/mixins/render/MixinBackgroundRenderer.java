@@ -14,12 +14,16 @@ import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(BackgroundRenderer.class)
 public class MixinBackgroundRenderer {
+
+    @Unique
+    private static final EventFogRender eventFogRender = new EventFogRender();
 
     @Final
     @Shadow
@@ -44,10 +48,9 @@ public class MixinBackgroundRenderer {
             fogType = GlStateManager.FogMode.LINEAR;
         }
 
-        EventFogRender event = new EventFogRender(camera, fogType,
-                gameRenderer.getViewDistance(), client.world.dimension.isFogThick(MathHelper.floor(camera.getPos().x), MathHelper.floor(camera.getPos().z)) || client.inGameHud.getBossBarHud().shouldThickenFog());
-        event.broadcast();
-        if (event.isCanceled()) {
+        eventFogRender.create(camera, fogType, gameRenderer.getViewDistance(), client.world.dimension.isFogThick(MathHelper.floor(camera.getPos().x), MathHelper.floor(camera.getPos().z)) || client.inGameHud.getBossBarHud().shouldThickenFog());
+        eventFogRender.broadcast();
+        if (eventFogRender.isCanceled()) {
             ci.cancel();
         }
     }
