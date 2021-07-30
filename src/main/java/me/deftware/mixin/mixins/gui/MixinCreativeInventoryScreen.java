@@ -3,6 +3,7 @@ package me.deftware.mixin.mixins.gui;
 import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.event.events.EventGetItemToolTip;
 import me.deftware.client.framework.item.Item;
+import me.deftware.client.framework.registry.ItemRegistry;
 import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.entity.player.PlayerInventory;
@@ -41,7 +42,7 @@ public abstract class MixinCreativeInventoryScreen extends AbstractInventoryScre
         List<ChatMessage> list = new ArrayList<>();
         list.add(new ChatMessage().fromString(textObj));
 
-        EventGetItemToolTip event = new EventGetItemToolTip(list, Item.newInstance(stack.getItem()), minecraft.options.advancedItemTooltips);
+        EventGetItemToolTip event = new EventGetItemToolTip(list, ItemRegistry.INSTANCE.getItem(stack.getItem()), minecraft.options.advancedItemTooltips);
         event.broadcast();
         List<String> modifiedTextList = new ArrayList<>();
         for (ChatMessage text : event.getList()) {

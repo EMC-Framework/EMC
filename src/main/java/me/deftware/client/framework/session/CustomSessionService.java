@@ -16,7 +16,7 @@ public class CustomSessionService extends YggdrasilMinecraftSessionService {
 	@Override
 	protected GameProfile fillGameProfile(final GameProfile profile, final boolean requireSecure) {
 		try {
-			Field baseUrl = this.getClass().getSuperclass().getDeclaredField("baseUrl");
+			Field baseUrl = this.getClass().getSuperclass().getDeclaredField("BASE_URL");
 			baseUrl.setAccessible(true);
 			String currentServer = (String) baseUrl.get(this);
 			boolean reset = false;
