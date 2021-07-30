@@ -1,205 +1,189 @@
 package me.deftware.client.framework.minecraft;
 
-import me.deftware.client.framework.conversion.ComparedConversion;
+import com.mojang.authlib.minecraft.MinecraftSessionService;
 import me.deftware.client.framework.entity.Entity;
 import me.deftware.client.framework.entity.types.main.MainEntityPlayer;
-import me.deftware.client.framework.gui.GuiScreen;
-import me.deftware.client.framework.helper.ScreenHelper;
+import me.deftware.client.framework.gui.screens.GenericScreen;
+import me.deftware.client.framework.gui.screens.MinecraftScreen;
 import me.deftware.client.framework.render.camera.GameCamera;
 import me.deftware.client.framework.util.minecraft.BlockSwingResult;
-import me.deftware.client.framework.util.minecraft.ServerConnectionInfo;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.GuiChat;
-import net.minecraft.client.gui.GuiConnecting;
-import net.minecraft.client.gui.GuiMultiplayer;
-import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.realms.RealmsSharedConstants;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.Session;
+
+import me.deftware.client.framework.world.ClientWorld;
+import me.deftware.client.framework.world.WorldTimer;
 
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.ApiStatus;
 import java.io.File;
-import java.net.URISyntaxException;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.List;
+import java.util.function.Function;
 
 /**
+ * @since 17.0.0
  * @author Deftware
  */
-public class Minecraft {
+public interface Minecraft {
 
-	public static final Queue<Runnable> RENDER_THREAD = new ConcurrentLinkedQueue<>();
-
-	private static final ComparedConversion<EntityPlayerSP, MainEntityPlayer> mainPlayer =
-			new ComparedConversion<>(() -> net.minecraft.client.Minecraft.getInstance().player, MainEntityPlayer::new);
-
-	private static final ComparedConversion<net.minecraft.entity.Entity, Entity> cameraEntity =
-			new ComparedConversion<>(() -> net.minecraft.client.Minecraft.getInstance().getRenderViewEntity(), Entity::newInstance);
-
-	private static final ComparedConversion<net.minecraft.entity.Entity, Entity> hitEntity =
-			new ComparedConversion<>(() -> {
-				if (net.minecraft.client.Minecraft.getInstance().objectMouseOver != null) {
-					if (net.minecraft.client.Minecraft.getInstance().objectMouseOver.type == RayTraceResult.Type.ENTITY) {
-						return net.minecraft.client.Minecraft.getInstance().objectMouseOver.entity;
-					}
-				}
-				return null;
-			}, Entity::newInstance);
-
-	private static final ComparedConversion<RayTraceResult, BlockSwingResult> hitBlock =
-			new ComparedConversion<>(() -> {
-				if (net.minecraft.client.Minecraft.getInstance().objectMouseOver != null) {
-					if (net.minecraft.client.Minecraft.getInstance().objectMouseOver.type == RayTraceResult.Type.BLOCK) {
-						return net.minecraft.client.Minecraft.getInstance().objectMouseOver;
-					}
-				}
-				return null;
-			}, BlockSwingResult::new);
-
-	private static final ComparedConversion<ServerData, ServerConnectionInfo> connectedServer =
-			new ComparedConversion<>(() -> net.minecraft.client.Minecraft.getInstance().getCurrentServerData(), ServerConnectionInfo::new);
-
-	public static ServerConnectionInfo lastConnectedServer = null;
-
-	private static final GameCamera camera = new GameCamera();
+	static Minecraft getMinecraftGame() {
+		return (Minecraft) net.minecraft.client.Minecraft.getInstance();
+	}
 
 	/**
-	 * The main player
+	 * @return The in-game player entity
 	 */
 	@Nullable
-	public static MainEntityPlayer getPlayer() {
-		return mainPlayer.get();
+	default MainEntityPlayer _getPlayer() {
+		if (this.getClientWorld() == null)
+			return null;
+		return this.getClientWorld().getEntityByReference(net.minecraft.client.Minecraft.getInstance().player);
 	}
 
+	/**
+	 * @return The in-game camera entity
+	 */
 	@Nullable
-	public static Entity getCameraEntity() {
-		return cameraEntity.get();
+	default Entity _getCameraEntity() {
+		if (this.getClientWorld() == null)
+			return null;
+		return this.getClientWorld().getEntityByReference(net.minecraft.client.Minecraft.getInstance().getRenderViewEntity());
 	}
 
-	public static int getMinecraftChatScaledYOffset() {
-		if (ScreenHelper.isChatOpen()) {
-			int chatHeight = 24, multiplier = getRealScaledMultiplier(), scaleFactor = (int) net.minecraft.client.Minecraft.getInstance().mainWindow.getGuiScaleFactor();
-			if (scaleFactor == 0) return chatHeight;
-			chatHeight *= multiplier;
-			if (scaleFactor % 2 == 0) chatHeight += 5;
-			return chatHeight;
-		}
-		return 0;
-	}
+	GameCamera getCamera();
 
-	public static int getMinecraftChatScaledXOffset() {
-		if (ScreenHelper.isChatOpen()) {
-			int chatX = 4, multiplier = getRealScaledMultiplier(), scaleFactor = (int) net.minecraft.client.Minecraft.getInstance().mainWindow.getGuiScaleFactor();
-			if (scaleFactor == 0) return chatX;
-			chatX *= multiplier;
-			return chatX;
-		}
-		return 4;
-	}
-
-	public static int getRealScaledMultiplier() {
-		int scaleFactor = (int) net.minecraft.client.Minecraft.getInstance().mainWindow.getGuiScaleFactor();
-		if (scaleFactor != 0) {
-			scaleFactor /= scaleFactor % 2 == 0 ? 2 : 1.8;
-		}
-		return scaleFactor;
-	}
-
-	public static void openScreen(GuiScreen screen) {
-		net.minecraft.client.Minecraft.getInstance().displayGuiScreen(screen);
-	}
-
-	public static String getRunningLocation() throws URISyntaxException {
-		return new File(Minecraft.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getParent();
-	}
-
-	public static void connectToServer(ServerConnectionInfo server) {
-		net.minecraft.client.Minecraft.getInstance().displayGuiScreen(new GuiConnecting(new GuiMultiplayer(null), net.minecraft.client.Minecraft.getInstance(), server));
-	}
-
-	public static void openChat(String originText) {
-		if (net.minecraft.client.Minecraft.getInstance().currentScreen == null) {
-			net.minecraft.client.Minecraft.getInstance().displayGuiScreen(new GuiChat(originText));
-		}
-	}
-
-	public static boolean isSingleplayer() {
-		return net.minecraft.client.Minecraft.getInstance().isSingleplayer();
-	}
-
-	public static boolean isInGame() {
-		return net.minecraft.client.Minecraft.getInstance().currentScreen == null;
-	}
-
-	public static File getRunDir() {
+	/**
+	 * @return The current game directory
+	 */
+	default File _getGameDir() {
 		return net.minecraft.client.Minecraft.getInstance().gameDir;
 	}
 
-	public static GameCamera getCamera() {
-		return camera;
-	}
-
+	/**
+	 * @return The client world
+	 */
 	@Nullable
-	public static GuiScreen getScreen() {
-		if (net.minecraft.client.Minecraft.getInstance().currentScreen != null) {
-			if (net.minecraft.client.Minecraft.getInstance().currentScreen instanceof GuiScreen) {
-				return (GuiScreen) net.minecraft.client.Minecraft.getInstance().currentScreen;
-			}
-		}
-		return null;
-	}
+	ClientWorld getClientWorld();
 
-	public static int getViewDistance() {
-		return net.minecraft.client.Minecraft.getInstance().gameSettings.renderDistanceChunks;
-	}
+	/**
+	 * @return The world timer
+	 */
+	WorldTimer getWorldTimer();
 
-	public static PlayerPerspective getPerspective() {
-		return net.minecraft.client.Minecraft.getInstance().gameSettings.thirdPersonView == 0 ?
-				PlayerPerspective.FIRST_PERSON : net.minecraft.client.Minecraft.getInstance().gameSettings.thirdPersonView == 1 ?
-				PlayerPerspective.THIRD_PERSON_BACK : PlayerPerspective.THIRD_PERSON_FRONT;
-	}
+	/**
+	 * @return Client options
+	 */
+	ClientOptions getClientOptions();
 
-	public static void shutdown() {
-		net.minecraft.client.Minecraft.getInstance().shutdown();
-	}
+	/**
+	 * @return The current connected server
+	 */
+	@Nullable
+	ServerDetails getConnectedServer();
 
-	public static String getMinecraftVersion() {
+	/**
+	 * @return The last connected server
+	 */
+	@Nullable
+	ServerDetails getLastConnectedServer();
+
+	/**
+	 * Sets the game screen
+	 */
+	void openScreen(GenericScreen screen);
+
+	/**
+	 * @return The current screen
+	 */
+	@Nullable
+	MinecraftScreen getScreen();
+
+	/**
+	 * @return If the game is connected to realms server
+	 */
+	boolean _isOnRealms();
+
+	/**
+	 * @return If the game is in a single player server
+	 */
+	boolean _isSinglePlayer();
+
+	/**
+	 * @return If the player is looking at a block or an entity
+	 */
+	boolean isMouseOver();
+
+	/**
+	 * @return The current block the player is looking at
+	 */
+	@Nullable
+	BlockSwingResult getHitBlock();
+
+	/**
+	 * @return The current entity the player is looking at
+	 */
+	@Nullable
+	Entity getHitEntity();
+
+	/**
+	 * Executes a task on the render thread
+	 *
+	 * @param runnable An action
+	 */
+	void runOnRenderThread(Runnable runnable);
+
+	/**
+	 * @return The current Minecraft version
+	 */
+	static String getMinecraftVersion() {
 		return RealmsSharedConstants.VERSION_STRING;
 	}
 
-	public static int getMinecraftProtocolVersion() {
+	/**
+	 * @return The current protocol version
+	 */
+	static int getMinecraftProtocolVersion() {
 		return RealmsSharedConstants.NETWORK_PROTOCOL_VERSION;
 	}
 
-	public static boolean isMouseOver() {
-		return net.minecraft.client.Minecraft.getInstance().objectMouseOver != null;
-	}
+	/**
+	 * @return A list of debug hud info modifiers
+	 */
+	List<Function<List<String>, List<String>>> getDebugModifiers();
 
-	@Nullable
-	public static ServerConnectionInfo getConnectedServer() {
-		return connectedServer.get();
-	}
-	
-	public static boolean isOnRealms() {
-		return net.minecraft.client.Minecraft.getInstance().isConnectedToRealms();
-	}
-	
-	@Nullable
-	public static ServerConnectionInfo getLastConnectedServer() {
-		return lastConnectedServer;
-	}
+	/**
+	 * @return The game FPS
+	 */
+	int getFPS();
 
-	@Nullable
-	public static Entity getHitEntity() {
-		return hitEntity.get();
-	}
+	/**
+	 * Exits the game
+	 */
+	void shutdown();
 
-	@Nullable
-	public static BlockSwingResult getHitBlock() {
-		return hitBlock.get();
-	}
+	/**
+	 * @return The current session
+	 */
+	@ApiStatus.Internal
+	Session getSession();
 
-	public static float getRenderPartialTicks() {
-		return net.minecraft.client.Minecraft.getInstance().getRenderPartialTicks();
-	}
+	/**
+	 * Sets the current session
+	 */
+	@ApiStatus.Internal
+	void setSession(Session session);
+
+	/**
+	 * Sets the current session service
+	 */
+	@ApiStatus.Internal
+	void setSessionService(MinecraftSessionService service);
+
+	void doRightClickMouse();
+
+	void doClickMouse();
+
+	void doMiddleClickMouse();
+
+	void setRightClickDelayTimer(int delay);
 
 }

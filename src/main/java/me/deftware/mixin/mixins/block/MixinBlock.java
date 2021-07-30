@@ -24,6 +24,7 @@ import net.minecraft.world.IBlockReader;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -38,18 +39,22 @@ public abstract class MixinBlock {
     @Final
     protected boolean blocksMovement;
 
+    @Unique
+    private final EventSlowdown eventSlowdown = new EventSlowdown();
+
     @Inject(method = "getSlipperiness", at = @At("TAIL"), cancellable = true)
     public void getSlipperiness(CallbackInfoReturnable<Float> cir) {
         if (((IMixinAbstractBlock) this).getTheSlipperiness() != 0.6f) {
             Block block = Block.getBlockFromItem(this.asItem());
-            EventSlowdown event = null;
+            boolean flag = false;
             if (block instanceof BlockIce || block.getTranslationKey().contains("blue_ice") || block.getTranslationKey().contains("packed_ice")) {
-                event = new EventSlowdown(EventSlowdown.SlowdownType.Slipperiness, 0.6f);
+                flag = true;
+                eventSlowdown.create(EventSlowdown.SlowdownType.Slipperiness, 0.6f);
             }
-            if (event != null) {
-                event.broadcast();
-                if (event.isCanceled()) {
-                    cir.setReturnValue(event.getMultiplier());
+            if (flag) {
+                eventSlowdown.broadcast();
+                if (eventSlowdown.isCanceled()) {
+                    cir.setReturnValue(eventSlowdown.getMultiplier());
                 }
             }
         }

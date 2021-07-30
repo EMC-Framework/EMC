@@ -1,23 +1,21 @@
 package me.deftware.mixin.mixins.network;
 
-import com.google.common.collect.Maps;
 import io.netty.buffer.Unpooled;
 import me.deftware.client.framework.event.events.EventAnimation;
 import me.deftware.client.framework.event.events.EventChunkDataReceive;
 import me.deftware.client.framework.event.events.EventKnockback;
+import me.deftware.client.framework.network.NetworkHandler;
 import me.deftware.client.framework.world.player.PlayerEntry;
-import me.deftware.mixin.imp.IMixinNetworkHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
-import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.client.CPacketCustomPayload;
 import net.minecraft.network.play.server.SPacketChunkData;
 import net.minecraft.network.play.server.SPacketEntityStatus;
-import net.minecraft.network.play.server.SPacketEntityVelocity;
 import net.minecraft.network.play.server.SPacketExplosion;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -26,34 +24,26 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.Map;
-import java.util.UUID;
+import java.util.List;
+import java.util.stream.Collectors;
 
+/**
+ * @author Deftware
+ */
 @Mixin(NetHandlerPlayClient.class)
-public class MixinNetHandlerPlayClient implements IMixinNetworkHandler {
+public class MixinNetHandlerPlayClient implements NetworkHandler {
 
     @Shadow
     private Minecraft client;
 
-    @Unique
-    private final Map<UUID, PlayerEntry> playerEntryMap = Maps.newHashMap();
-
-    @Redirect(method = "handlePlayerListItem", at = @At(value = "INVOKE", target = "Ljava/util/Map;remove(Ljava/lang/Object;)Ljava/lang/Object;"))
-    private Object onPlayerListUpdate(Map<UUID, NetworkPlayerInfo> map, Object key) {
-        playerEntryMap.remove((UUID) key);
-        return map.remove((UUID) key);
-    }
-
-    @Redirect(method = "handlePlayerListItem", at = @At(value = "INVOKE", target = "Ljava/util/Map;put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"))
-    private Object onPlayerListAdd(Map<UUID, NetworkPlayerInfo> map, Object key, Object value) {
-        playerEntryMap.put((UUID) key, new PlayerEntry((NetworkPlayerInfo) value));
-        return map.put((UUID) key, (NetworkPlayerInfo) value);
-    }
-
     @Override
-    public Map<UUID, PlayerEntry> getPlayerEntryMap() {
-        return playerEntryMap;
+    public List<PlayerEntry> _getPlayerList() {
+        return ((NetHandlerPlayClient) (Object) this).getPlayerInfoMap()
+                .stream().map(PlayerEntry.class::cast).collect(Collectors.toList());
     }
+
+    @Unique
+    private final EventAnimation eventAnimation = new EventAnimation();
 
     @Redirect(method = "handleJoinGame", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/NetworkManager;sendPacket(Lnet/minecraft/network/Packet;)V"))
     private void handleJoinGame(NetworkManager connection, Packet<?> packet) {
@@ -68,9 +58,9 @@ public class MixinNetHandlerPlayClient implements IMixinNetworkHandler {
     @Inject(method = "handleEntityStatus", at = @At("HEAD"), cancellable = true)
     public void onEntityStatus(SPacketEntityStatus packetIn, CallbackInfo ci) {
         if (packetIn.getOpCode() == 35) {
-            EventAnimation event = new EventAnimation(EventAnimation.AnimationType.Totem);
-            event.broadcast();
-            if (event.isCanceled()) {
+            eventAnimation.create(EventAnimation.AnimationType.Totem);
+            eventAnimation.broadcast();
+            if (eventAnimation.isCanceled()) {
                 ci.cancel();
             }
         }
@@ -88,15 +78,6 @@ public class MixinNetHandlerPlayClient implements IMixinNetworkHandler {
         ci.cancel();
     }
 
-    @Inject(method = "handleEntityVelocity", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;setVelocity(DDD)V"), cancellable = true)
-    public void onVelocityUpdate(SPacketEntityVelocity packet, CallbackInfo ci) {
-        EventKnockback event = new EventKnockback(packet.getMotionX(), packet.getMotionY(), packet.getMotionZ());
-        event.broadcast();
-        if (event.isCanceled()) {
-            ci.cancel();
-        }
-    }
-
     @Inject(method = "handleChunkData", at = @At("HEAD"), cancellable = true)
     public void onReceiveChunkData(SPacketChunkData packet, CallbackInfo ci) {
         EventChunkDataReceive event = new EventChunkDataReceive(packet);
@@ -105,5 +86,5 @@ public class MixinNetHandlerPlayClient implements IMixinNetworkHandler {
             ci.cancel();
         }
     }
-    
+
 }

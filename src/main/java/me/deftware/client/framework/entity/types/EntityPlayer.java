@@ -1,32 +1,29 @@
 package me.deftware.client.framework.entity.types;
 
-import me.deftware.client.framework.conversion.ConvertedList;
 import me.deftware.client.framework.entity.Entity;
 import me.deftware.client.framework.entity.types.objects.ClonedPlayerMP;
-import me.deftware.client.framework.inventory.Inventory;
+import me.deftware.client.framework.inventory.EntityInventory;
 import me.deftware.client.framework.item.effect.AppliedStatusEffect;
 import me.deftware.client.framework.item.effect.StatusEffect;
 import me.deftware.client.framework.minecraft.Minecraft;
 import me.deftware.mixin.imp.IMixinEntityLivingBase;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author Deftware
  */
 public class EntityPlayer extends LivingEntity {
 
-	private final Inventory inventory;
-	private final ConvertedList<AppliedStatusEffect, PotionEffect> statusEffects;
+	private final EntityInventory inventory;
+	private final Map<Potion, AppliedStatusEffect> statusEffects = new HashMap<>();
 
 	public EntityPlayer(net.minecraft.entity.player.EntityPlayer entity) {
 		super(entity);
-		inventory = new Inventory(entity);
-		this.statusEffects = new ConvertedList<>(() -> getMinecraftEntity().getActivePotionEffects(), null, AppliedStatusEffect::new);
+		inventory = new EntityInventory(entity);
 	}
 
 	public boolean isUsingItem() {
@@ -49,14 +46,12 @@ public class EntityPlayer extends LivingEntity {
 		getMinecraftEntity().abilities.isFlying = flag;
 	}
 
-	public Inventory getInventory() {
+	public EntityInventory getInventory() {
 		return inventory;
 	}
 
 	public AppliedStatusEffect getStatusEffect(StatusEffect effect) {
-		return new AppliedStatusEffect(Objects.requireNonNull(
-				getMinecraftEntity().getActivePotionEffect(effect.getMinecraftStatusEffect())
-		));
+		return statusEffects.get(effect.getMinecraftStatusEffect());
 	}
 
 	public void removeStatusEffect(StatusEffect effect) {
@@ -71,8 +66,24 @@ public class EntityPlayer extends LivingEntity {
 		getMinecraftEntity().addPotionEffect(effect.getMinecraftStatusEffectInstance());
 	}
 
-	public List<AppliedStatusEffect> getStatusEffects() {
-		return statusEffects.poll();
+	public Collection<AppliedStatusEffect> getStatusEffects() {
+		net.minecraft.entity.player.EntityPlayer player = getMinecraftEntity();
+		int size = player.getActivePotionEffects().size();
+		if (size != 0) {
+			if (statusEffects.keySet().size() != size) {
+				for (PotionEffect effect : player.getActivePotionEffects()) {
+					if (!statusEffects.containsKey(effect.getPotion()))
+						statusEffects.put(effect.getPotion(), new AppliedStatusEffect(effect));
+					else
+						statusEffects.get(effect.getPotion()).setInstance(effect);
+				}
+				// Remove old effects
+				if (statusEffects.keySet().size() != size)
+					statusEffects.keySet().removeIf(e -> !player.isPotionActive(e));
+			}
+			return statusEffects.values();
+		}
+		return Collections.emptyList();
 	}
 
 	public float getSaturationLevel() {
@@ -105,7 +116,7 @@ public class EntityPlayer extends LivingEntity {
 	}
 
 	public void openInventory() {
-		Minecraft.RENDER_THREAD.add(() -> net.minecraft.client.Minecraft.getInstance().displayGuiScreen(new GuiInventory(getMinecraftEntity())));
+		Minecraft.getMinecraftGame().runOnRenderThread(() -> net.minecraft.client.Minecraft.getInstance().displayGuiScreen(new GuiInventory(getMinecraftEntity())));
 	}
 
 	public int getFoodLevel() {

@@ -1,7 +1,9 @@
 package me.deftware.client.framework.network;
 
+
 import me.deftware.client.framework.network.packets.*;
 import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.SPacketTimeUpdate;
 
 import java.util.HashMap;
 
@@ -13,6 +15,8 @@ import java.util.HashMap;
 public class PacketRegistry {
 
     public static final PacketRegistry INSTANCE = new PacketRegistry();
+
+    private SocksProxy proxy;
 
     private final HashMap<Class<? extends Packet<?>>, Class<? extends PacketWrapper>> packetMap = new HashMap<>();
 
@@ -31,6 +35,7 @@ public class PacketRegistry {
         // Server bound
         register(net.minecraft.network.play.server.SPacketEntity.class, SPacketEntity.class);
         register(net.minecraft.network.play.server.SPacketAnimation.class, SPacketAnimation.class);
+        register(SPacketTimeUpdate.class, SPacketWorldTime.class);
     }
 
     public void register(Class<? extends Packet<?>> minecraft, Class<? extends PacketWrapper> translated) {
@@ -47,6 +52,14 @@ public class PacketRegistry {
             }
         }
         return new PacketWrapper(packet);
+    }
+
+    public SocksProxy getProxy() {
+        return proxy;
+    }
+
+    public void setProxy(SocksProxy proxy) {
+        this.proxy = proxy;
     }
 
 }

@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -32,43 +33,50 @@ public class MixinGuiIngame {
             ci.cancel();
     }
 
+    @Unique
+    private final EventRenderHotbar eventRenderHotbar = new EventRenderHotbar();
+
     @Inject(method = "renderHotbar", at = @At("HEAD"))
     private void renderHotbar(float partialTicks, CallbackInfo ci) {
-        new EventRenderHotbar().broadcast();
+        eventRenderHotbar.broadcast();
     }
 
     @Inject(method = "renderPumpkinOverlay", at = @At("HEAD"), cancellable = true)
     private void renderPumpkinOverlay(CallbackInfo ci) {
-        EventAnimation event = new EventAnimation(EventAnimation.AnimationType.Pumpkin);
-        event.broadcast();
-        if (event.isCanceled()) {
+        eventAnimation.create(EventAnimation.AnimationType.Pumpkin);
+        eventAnimation.broadcast();
+        if (eventAnimation.isCanceled()) {
             ci.cancel();
         }
+
     }
+
+    @Unique
+    private final EventAnimation eventAnimation = new EventAnimation();
 
     @Inject(method = "renderPortal", at = @At("HEAD"), cancellable = true)
     private void renderPortalOverlay(float f, CallbackInfo ci) {
-        EventAnimation event = new EventAnimation(EventAnimation.AnimationType.Portal);
-        event.broadcast();
-        if (event.isCanceled()) {
+        eventAnimation.create(EventAnimation.AnimationType.Portal);
+        eventAnimation.broadcast();
+        if (eventAnimation.isCanceled()) {
             ci.cancel();
         }
     }
 
     @Inject(method = "func_212307_a", at = @At("HEAD"), cancellable = true)
     private void updateVignetteDarkness(Entity entity, CallbackInfo ci) {
-        EventAnimation event = new EventAnimation(EventAnimation.AnimationType.Vignette);
-        event.broadcast();
-        if (event.isCanceled()) {
+        eventAnimation.create(EventAnimation.AnimationType.Vignette);
+        eventAnimation.broadcast();
+        if (eventAnimation.isCanceled()) {
             ci.cancel();
         }
     }
 
     @Inject(method = "func_212303_b", at = @At("HEAD"), cancellable = true)
     private void renderVignetteOverlay(Entity entity, CallbackInfo ci) {
-        EventAnimation event = new EventAnimation(EventAnimation.AnimationType.Vignette);
-        event.broadcast();
-        if (event.isCanceled()) {
+        eventAnimation.create(EventAnimation.AnimationType.Vignette);
+        eventAnimation.broadcast();
+        if (eventAnimation.isCanceled()) {
             ci.cancel();
         }
     }

@@ -4,12 +4,10 @@ import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import me.deftware.client.framework.event.events.EventPacketReceive;
 import me.deftware.client.framework.event.events.EventPacketSend;
-import me.deftware.client.framework.world.World;
 import me.deftware.mixin.imp.IMixinNetworkManager;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.SPacketTimeUpdate;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,10 +21,6 @@ public abstract class MixinNetworkManager implements IMixinNetworkManager {
 
     @Redirect(method = "channelRead0", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/NetworkManager;processPacket(Lnet/minecraft/network/Packet;Lnet/minecraft/network/INetHandler;)V"))
     private void channelRead0(Packet<?> packet, INetHandler listener) {
-        if (packet instanceof SPacketTimeUpdate) {
-            World.updateTime();
-        }
-
         EventPacketReceive event = new EventPacketReceive(packet);
         event.broadcast();
         if (!event.isCanceled()) {

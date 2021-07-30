@@ -1,37 +1,59 @@
 package me.deftware.mixin.mixins.gui;
 
-import me.deftware.client.framework.event.events.EventGuiScreenPostDraw;
-import me.deftware.client.framework.gui.GuiScreen;
-import me.deftware.mixin.imp.IMixinGuiContainer;
+import me.deftware.client.framework.chat.ChatMessage;
+import me.deftware.client.framework.gui.screens.ContainerScreen;
+import me.deftware.client.framework.inventory.Inventory;
+import me.deftware.client.framework.util.Lazy;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.inventory.Container;
+import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(GuiContainer.class)
-public class MixinGuiContainer extends MixinGuiScreen implements IMixinGuiContainer {
+public abstract class MixinGuiContainer extends MixinGuiScreen implements ContainerScreen {
 
     @Shadow
     protected Slot hoveredSlot;
 
+    @Unique
+    private final Lazy<Inventory> inventoryLazy = new Lazy<>(() -> new Inventory(
+            getHandlerInventory()
+    ));
+
     @Override
-    public Slot getHoveredSlot() {
+    public Slot getMinecraftSlot() {
         return hoveredSlot;
     }
 
-    @Inject(method = "<init>*", at = @At("RETURN"))
-    private void onConstructed(CallbackInfo ci) {
-        this.shouldSendPostRenderEvent = false;
+    @Override
+    public Container getScreenHandler() {
+        return ((GuiContainer) (Object) this).inventorySlots;
     }
 
-    @Inject(method = "renderHoveredToolTip", at = @At("RETURN"))
-    private void drawMouseoverTooltip(int x, int y, CallbackInfo ci) {
-        if (!(((net.minecraft.client.gui.GuiScreen) (Object) this) instanceof GuiScreen)) {
-            new EventGuiScreenPostDraw(this.screenInstance.get(), x, y).broadcast();
+    @Override
+    public Inventory getContainerInventory() {
+        if (getHandlerInventory() == null)
+            return null;
+        return inventoryLazy.get();
+    }
+
+    @Unique
+    private final Lazy<ChatMessage> inventoryTitle = new Lazy<>(() -> {
+        if (getScreenHandler() instanceof ContainerChest) {
+            ContainerChest chest = (ContainerChest) getScreenHandler();
+            return new ChatMessage().fromText(
+                chest.getLowerChestInventory().getDisplayName()
+            );
         }
+        return null;
+    });
+
+    @Override
+    public ChatMessage getInventoryName() {
+        return inventoryTitle.get();
     }
 
 }

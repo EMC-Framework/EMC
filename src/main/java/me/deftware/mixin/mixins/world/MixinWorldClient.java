@@ -8,13 +8,13 @@ import me.deftware.client.framework.event.events.EventWorldLoad;
 import me.deftware.client.framework.global.GameKeys;
 import me.deftware.client.framework.global.GameMap;
 import me.deftware.client.framework.world.classifier.BlockClassifier;
-import me.deftware.mixin.imp.IMixinWorldClient;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.WorldSettings;
 import net.minecraft.world.dimension.DimensionType;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,8 +23,13 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.stream.Stream;
+
+/**
+ * @author Deftware
+ */
 @Mixin(WorldClient.class)
-public class MixinWorldClient implements IMixinWorldClient {
+public abstract class MixinWorldClient extends MixinWorld implements me.deftware.client.framework.world.ClientWorld {
 
     @Unique
     private final Int2ObjectMap<Entity> entities = new Int2ObjectOpenHashMap<>();
@@ -42,10 +47,10 @@ public class MixinWorldClient implements IMixinWorldClient {
         BlockClassifier.getClassifiers().forEach(blockClassifier -> blockClassifier.getClassifiedBlocks().clear());
     }
 
-    @Inject(method = "addEntityToWorld", at = @At("TAIL"))
-    private void addEntityPrivate(int id, net.minecraft.entity.Entity entity, CallbackInfo ci) {
+    @Inject(method = "spawnEntity", at = @At("TAIL"))
+    private void addEntityPrivate(net.minecraft.entity.Entity entity, CallbackInfoReturnable<Boolean> cir) {
         Entity e = Entity.newInstance(entity);
-        entities.put(id, e);
+        entities.put(entity.getEntityId(), e);
         new EventEntityUpdated(EventEntityUpdated.Change.Added, e).broadcast();
     }
 
@@ -55,8 +60,36 @@ public class MixinWorldClient implements IMixinWorldClient {
     }
 
     @Override
-    @Unique
-    public Int2ObjectMap<Entity> getLoadedEntitiesAccessor() {
+    public Stream<Entity> getLoadedEntities() {
+        return entities.values().stream();
+    }
+
+    @Override
+    public Entity _getEntityById(int id) {
+        return entities.get(id);
+    }
+
+    @Override
+    public void _addEntity(int id, Entity entity) {
+        ((WorldClient) (Object) this).addEntityToWorld(id, entity.getMinecraftEntity());
+    }
+
+    @Override
+    public void _removeEntity(int id) {
+        ((WorldClient) (Object) this).removeEntityFromWorld(id);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends Entity> @Nullable T getEntityByReference(net.minecraft.entity.Entity reference) {
+        if (reference != null) {
+            return (T) entities.get(reference.getEntityId());
+        }
+        return null;
+    }
+
+    @Override
+    public Int2ObjectMap<Entity> getEntities() {
         return entities;
     }
 

@@ -4,7 +4,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
-import net.minecraft.client.Minecraft;
 import net.minecraft.command.ISuggestionProvider;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
 

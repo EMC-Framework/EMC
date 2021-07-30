@@ -8,6 +8,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import me.deftware.client.framework.global.GameKeys;
 import me.deftware.client.framework.global.GameMap;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -16,11 +17,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(RenderLivingBase.class)
 public abstract class MixinRenderLivingBase<T extends EntityLivingBase> {
 
+    @Unique
+    private final EventRenderPlayerModel eventRenderPlayerModel = new EventRenderPlayerModel();
+
     @Inject(method = "isVisible", at = @At("HEAD"), cancellable = true)
     private void isVisible(T entity, CallbackInfoReturnable<Boolean> ci) {
-        EventRenderPlayerModel event = new EventRenderPlayerModel(entity);
-        event.broadcast();
-        if (event.isShouldRender()) {
+        eventRenderPlayerModel.create(entity);
+        eventRenderPlayerModel.broadcast();
+        if (eventRenderPlayerModel.isShouldRender()) {
             ci.setReturnValue(true);
         }
     }

@@ -52,11 +52,14 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
         }
     }
 
+    @Unique
+    private final EventSlowdown eventSlowdown = new EventSlowdown();
+
     @Redirect(method = "livingTick", at = @At(value = "INVOKE", target = "net/minecraft/client/entity/EntityPlayerSP.isHandActive()Z", ordinal = 0))
     private boolean itemUseSlowdownEvent(EntityPlayerSP self) {
-        EventSlowdown event = new EventSlowdown(EventSlowdown.SlowdownType.Item_Use);
-        event.broadcast();
-        if (event.isCanceled()) {
+        eventSlowdown.create(EventSlowdown.SlowdownType.Item_Use, 1);
+        eventSlowdown.broadcast();
+        if (eventSlowdown.isCanceled()) {
             return false;
         }
         return isHandActive();
@@ -64,9 +67,9 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
 
     @Redirect(method = "livingTick", at = @At(value = "INVOKE", target = "net/minecraft/util/FoodStats.getFoodLevel()I"))
     private int hungerSlowdownEvent(FoodStats self) {
-        EventSlowdown event = new EventSlowdown(EventSlowdown.SlowdownType.Hunger);
-        event.broadcast();
-        if (event.isCanceled()) {
+        eventSlowdown.create(EventSlowdown.SlowdownType.Hunger, 1);
+        eventSlowdown.broadcast();
+        if (eventSlowdown.isCanceled()) {
             return 7;
         }
         return self.getFoodLevel();
@@ -74,24 +77,26 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
 
     @Redirect(method = "livingTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;isPotionActive(Lnet/minecraft/potion/Potion;)Z"))
     private boolean blindlessSlowdownEvent(EntityPlayerSP self, Potion potion) {
-        EventSlowdown event = new EventSlowdown(EventSlowdown.SlowdownType.Blindness);
-        event.broadcast();
-        if (event.isCanceled()) {
+        eventSlowdown.create(EventSlowdown.SlowdownType.Blindness, 1);
+        eventSlowdown.broadcast();
+        if (eventSlowdown.isCanceled()) {
             return false;
         }
         return self.isPotionActive(MobEffects.BLINDNESS);
     }
 
+    @Unique
+    private final EventUpdate eventUpdate = new EventUpdate();
+
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
     private void tick(CallbackInfo ci) {
         EntityPlayerSP entity = (EntityPlayerSP) (Object) this;
-        EventUpdate event = new EventUpdate(entity.posX, entity.posY, entity.posZ, entity.rotationYaw, entity.rotationPitch, entity.onGround);
-        event.broadcast();
-        if (event.isCanceled()) {
+        eventUpdate.create(entity.posX, entity.posY, entity.posZ, entity.rotationYaw, entity.rotationPitch, entity.onGround);
+        eventUpdate.broadcast();
+        if (eventUpdate.isCanceled()) {
             ci.cancel();
         }
     }
-
 
     @Inject(method = "sendChatMessage", at = @At("HEAD"), cancellable = true)
     public void sendChatMessage(String message, CallbackInfo ci) {
@@ -122,25 +127,30 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
         horseJumpPower = height;
     }
 
+    @Unique
+    private final EventPlayerWalking eventPlayerWalking = new EventPlayerWalking();
+
     @Inject(method = "onUpdateWalkingPlayer", at = @At(value = "HEAD"), cancellable = true)
     private void onSendMovementPackets(CallbackInfo ci) {
         EntityPlayerSP entity = (EntityPlayerSP) (Object) this;
-        EventPlayerWalking event = new EventPlayerWalking(entity.posX, entity.posY, entity.posZ, entity.rotationYaw, entity.rotationPitch, entity.onGround);
-        event.broadcast();
-        if (event.isCanceled()) {
+        eventPlayerWalking.create(entity.posX, entity.posY, entity.posZ, entity.rotationYaw, entity.rotationPitch, onGround);
+        eventPlayerWalking.broadcast();
+        if (eventPlayerWalking.isCanceled()) {
             ci.cancel();
         }
     }
+
+    @Unique
+    private final EventPlayerWalking.PostEvent postEvent = new EventPlayerWalking.PostEvent();
 
     @Inject(method = "onUpdateWalkingPlayer", at = @At(value = "TAIL"), cancellable = true)
     private void onSendMovementPacketsTail(CallbackInfo ci) {
         EntityPlayerSP entity = (EntityPlayerSP) (Object) this;
-        EventPlayerWalking event = new EventPlayerWalking.PostEvent(entity.posX, entity.posY, entity.posZ, entity.rotationYaw, entity.rotationPitch, entity.onGround);
-        event.broadcast();
-        if (event.isCanceled()) {
+        postEvent.create(entity.posX, entity.posY, entity.posZ, entity.rotationYaw, entity.rotationPitch, onGround);
+        postEvent.broadcast();
+        if (postEvent.isCanceled()) {
             ci.cancel();
         }
     }
-
 
 }

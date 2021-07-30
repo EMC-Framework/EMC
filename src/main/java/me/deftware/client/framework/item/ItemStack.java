@@ -1,8 +1,6 @@
 package me.deftware.client.framework.item;
 
 import me.deftware.client.framework.chat.ChatMessage;
-import me.deftware.client.framework.conversion.ConvertedList;
-import me.deftware.client.framework.item.effect.AppliedStatusEffect;
 import me.deftware.client.framework.item.effect.StatusEffect;
 import me.deftware.client.framework.item.enchantment.Enchantment;
 import me.deftware.client.framework.item.types.SwordItem;
@@ -11,6 +9,7 @@ import me.deftware.client.framework.math.position.BlockPosition;
 import me.deftware.client.framework.nbt.NbtCompound;
 import me.deftware.client.framework.nbt.NbtList;
 import me.deftware.client.framework.registry.EnchantmentRegistry;
+import me.deftware.client.framework.registry.ItemRegistry;
 import me.deftware.client.framework.util.types.Pair;
 import me.deftware.client.framework.world.block.Block;
 import net.minecraft.client.Minecraft;
@@ -41,37 +40,59 @@ import java.util.*;
  */
 public class ItemStack {
 
-	public static final ItemStack EMPTY = new ItemStack(net.minecraft.item.ItemStack.EMPTY);
+	public static final ItemStack EMPTY = new ItemStack(net.minecraft.item.ItemStack.EMPTY) {
+		@Override
+		public ItemStack setStack(net.minecraft.item.ItemStack itemStack) {
+			if (item != null)
+				throw new IllegalStateException("Cannot update reference of global empty stack!");
+			return super.setStack(itemStack);
+		}
+	};
 
-	protected ConvertedList<AppliedStatusEffect, PotionEffect> statusEffects;
 	protected final List<Pair<Enchantment, Integer>> enchantments = new ArrayList<>();
-	protected final net.minecraft.item.ItemStack itemStack;
-	protected final Item item;
+
+	protected net.minecraft.item.ItemStack itemStack;
+	protected Item item;
 
 	public ItemStack(IItem item, int size) {
-		this(Item.newInstance(item.getAsItem()), size);
+		this(ItemRegistry.INSTANCE.getItem(item.getAsItem()), size);
 	}
 
 	public ItemStack(Block item, int size) {
 		this.itemStack = new net.minecraft.item.ItemStack(item.getMinecraftBlock().asItem(), size);
-		this.item = Item.newInstance(itemStack.getItem());
-		initConversions();
+		this.item = ItemRegistry.INSTANCE.getItem(itemStack.getItem());
 	}
 
 	public ItemStack(Item item, int size) {
 		this.itemStack = new net.minecraft.item.ItemStack(item.getMinecraftItem(), size);
 		this.item = item;
-		initConversions();
 	}
 
 	public ItemStack(net.minecraft.item.ItemStack itemStack) {
-		this.itemStack = itemStack;
-		this.item = Item.newInstance(itemStack.getItem());
-		initConversions();
+		setStack(itemStack);
 	}
 
-	private void initConversions() {
-		this.statusEffects = new ConvertedList<>(() -> PotionUtils.getEffectsFromStack(itemStack), null, AppliedStatusEffect::new);
+	public ItemStack setStack(net.minecraft.item.ItemStack itemStack) {
+		if (itemStack != null) {
+			this.itemStack = itemStack;
+			this.item = ItemRegistry.INSTANCE.getItem(itemStack.getItem());
+		}
+		return this;
+	}
+
+	public static ItemStack getEmpty() {
+		return new ItemStack(net.minecraft.item.ItemStack.EMPTY);
+	}
+
+	public static void init(List<net.minecraft.item.ItemStack> original, List<ItemStack> stack) {
+		for (int i = 0; i < original.size(); i++)
+			stack.set(i, new ItemStack(original.get(i)));
+	}
+
+	public static void copyReferences(Iterable<net.minecraft.item.ItemStack> original, List<ItemStack> stack) {
+		int index = 0;
+		for (net.minecraft.item.ItemStack item : original)
+			stack.get(index++).setStack(item);
 	}
 
 	public net.minecraft.item.ItemStack getMinecraftItemStack() {
@@ -83,15 +104,24 @@ public class ItemStack {
 	}
 
 	public List<Pair<Enchantment, Integer>> getEnchantments() {
-		Map<net.minecraft.enchantment.Enchantment, Integer> stackEnchantments = EnchantmentHelper.getEnchantments(itemStack);
-		if (enchantments.size() != stackEnchantments.size()) {
-			for (net.minecraft.enchantment.Enchantment enchantment : stackEnchantments.keySet()) {
-				EnchantmentRegistry.INSTANCE.find(enchantment.getName()).ifPresent(e ->
-						enchantments.add(new Pair<>(e, stackEnchantments.get(enchantment)))
-				);
+		NBTTagCompound tag = itemStack.getTag();
+		if (tag != null && tag.contains("Enchantments", 9)) {
+			NBTTagList list = tag.getList("Enchantments", 10);
+			if (!list.isEmpty()) {
+				// Found active enchantments
+				if (enchantments.size() != list.size()) {
+					enchantments.clear();
+					Map<net.minecraft.enchantment.Enchantment, Integer> stackEnchantments = EnchantmentHelper.getEnchantments(itemStack);
+					for (net.minecraft.enchantment.Enchantment enchantment : stackEnchantments.keySet()) {
+						EnchantmentRegistry.INSTANCE.find(enchantment.getName()).ifPresent(e ->
+								enchantments.add(new Pair<>(e, stackEnchantments.get(enchantment)))
+						);
+					}
+				}
+				return enchantments;
 			}
 		}
-		return enchantments;
+		return Collections.emptyList();
 	}
 
 	public int getStackProtectionAmount() {
@@ -170,10 +200,6 @@ public class ItemStack {
 			return net.minecraft.item.ItemStack.areItemsEqualIgnoreDurability(getMinecraftItemStack(), ((ItemStack) object).getMinecraftItemStack());
 		}
 		return false;
-	}
-
-	public List<AppliedStatusEffect> getAppliedStatusEffects() {
-		return statusEffects.poll();
 	}
 
 	public boolean isEqualItems(ItemStack stack, boolean ignoreDamage) {
