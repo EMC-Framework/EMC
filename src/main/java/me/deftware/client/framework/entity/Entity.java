@@ -18,6 +18,7 @@ import me.deftware.client.framework.math.position.BlockPosition;
 import me.deftware.client.framework.math.position.ChunkBlockPosition;
 import me.deftware.client.framework.math.vector.Vector3d;
 import me.deftware.client.framework.nbt.NbtCompound;
+import me.deftware.client.framework.util.Util;
 import me.deftware.client.framework.world.EnumFacing;
 import me.deftware.client.framework.world.World;
 import me.deftware.mixin.imp.IMixinAbstractClientPlayer;
@@ -43,7 +44,7 @@ import java.util.Objects;
  */
 public class Entity {
 
-	private List<ItemStack> heldItems = Collections.emptyList(), armourItems = Collections.emptyList();
+	private List<ItemStack> armourItems = Collections.emptyList();
 
 	private Entity vehicle;
 
@@ -87,10 +88,6 @@ public class Entity {
 		this.blockPosition = new BlockPosition(entity);
 		if (entity.getVehicle() != null)
 			this.vehicle = World.getEntityById(entity.getVehicle().getEntityId());
-		if (entity.getItemsHand() instanceof DefaultedList) {
-			DefaultedList<net.minecraft.item.ItemStack> defaultedList = (DefaultedList<net.minecraft.item.ItemStack>) entity.getItemsHand();
-			ItemStack.init(defaultedList, this.heldItems = DefaultedList.ofSize(defaultedList.size(), ItemStack.EMPTY));
-		}
 		if (entity.getArmorItems() instanceof DefaultedList) {
 			DefaultedList<net.minecraft.item.ItemStack> defaultedList = (DefaultedList<net.minecraft.item.ItemStack>) entity.getArmorItems();
 			ItemStack.init(defaultedList, this.armourItems = DefaultedList.ofSize(defaultedList.size(), ItemStack.EMPTY));
@@ -142,13 +139,6 @@ public class Entity {
 	}
 
 	public ItemStack getEntityHeldItem(boolean offhand) {
-		if (!heldItems.isEmpty()) {
-			ItemStack.copyReferences(entity.getItemsHand(), heldItems);
-			if (!offhand)
-				return heldItems.get(0);
-			else if (heldItems.size() > 1)
-				return heldItems.get(1);
-		}
 		return ItemStack.EMPTY;
 	}
 
