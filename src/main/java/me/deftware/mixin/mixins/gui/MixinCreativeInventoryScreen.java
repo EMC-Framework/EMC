@@ -1,59 +1,32 @@
 package me.deftware.mixin.mixins.gui;
 
 import me.deftware.client.framework.chat.ChatMessage;
-import me.deftware.client.framework.event.events.EventGetItemToolTip;
-import me.deftware.client.framework.item.Item;
-import me.deftware.client.framework.registry.ItemRegistry;
-import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
-import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.client.item.TooltipContext;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Mixin(CreativeInventoryScreen.class)
-public abstract class MixinCreativeInventoryScreen extends AbstractInventoryScreen<CreativeInventoryScreen.CreativeContainer> {
+public class MixinCreativeInventoryScreen {
 
-    @Unique
-    private ItemStack stack;
-
-    @Inject(at = @At("HEAD"), method="renderTooltip")
-    public void onRenderTooolip(ItemStack stack, int x, int y, CallbackInfo ci) {
-        this.stack = stack;
-    }
-
-
-    /*
-    TODO: find a better way of doing this.
-    ie. use ModifyVariable on renderTooltip(MatrixStack matrices, List<Text> lines, int x, int y)
-    inside of
-    renderTooolip(MatrixStack matrices, ItemStack stack, int x, int y);
+    /**
+     * Uses {@link MixinGuiScreen#onGetTooltipFromItem(ItemStack, CallbackInfoReturnable)}
+     * to get a modified tooltip. Only called in the search tab in a creative inventory
      */
-
-    @Override
-    public void renderTooltip(String textObj, int x, int y) {
-        List<ChatMessage> list = new ArrayList<>();
-        list.add(new ChatMessage().fromString(textObj));
-
-        EventGetItemToolTip event = new EventGetItemToolTip(list, ItemRegistry.INSTANCE.getItem(stack.getItem()), minecraft.options.advancedItemTooltips);
-        event.broadcast();
-        List<String> modifiedTextList = new ArrayList<>();
-        for (ChatMessage text : event.getList()) {
-            modifiedTextList.add(text.toString(true));
-        }
-        super.renderTooltip(modifiedTextList.get(0), x, y);
+    @Redirect(method = "renderTooltip", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;getTooltip(Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/client/item/TooltipContext;)Ljava/util/List;"))
+    private List<Text> onGetStackTooltip(ItemStack itemStack, PlayerEntity player, TooltipContext context) {
+        return (((Screen) (Object) this).getTooltipFromItem(itemStack))
+                .stream().map(s -> new ChatMessage().fromString(s).build())
+                .collect(Collectors.toList());
     }
 
-
-
-    public MixinCreativeInventoryScreen(CreativeInventoryScreen.CreativeContainer screenHandler, PlayerInventory playerInventory, Text text) {
-        super(screenHandler, playerInventory, text);
-    }
 }

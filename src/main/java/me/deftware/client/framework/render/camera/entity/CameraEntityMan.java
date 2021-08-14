@@ -1,7 +1,6 @@
 package me.deftware.client.framework.render.camera.entity;
 
 import me.deftware.client.framework.entity.Entity;
-import me.deftware.client.framework.world.World;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.input.KeyboardInput;
 
@@ -23,7 +22,6 @@ public class CameraEntityMan {
 	}
 
 	public static void enable() {
-		if (World.isLoaded()) {
 			fakePlayer = new CameraEntity(Objects.requireNonNull(MinecraftClient.getInstance().world),
 					Objects.requireNonNull(MinecraftClient.getInstance().player).getGameProfile(),
 					Objects.requireNonNull(MinecraftClient.getInstance().player).getHungerManager());
@@ -34,7 +32,6 @@ public class CameraEntityMan {
 			Objects.requireNonNull(MinecraftClient.getInstance().options).perspective = 0;
 			MinecraftClient.getInstance().setCameraEntity(fakePlayer);
 			if (MinecraftClient.getInstance().player.input instanceof KeyboardInput) MinecraftClient.getInstance().player.input = new DummyInput();
-		}
 	}
 
 	public static boolean isCameraEntity(Entity entity) {
@@ -42,13 +39,11 @@ public class CameraEntityMan {
 	}
 
 	public static void disable() {
-		if (World.isLoaded()) {
-			MinecraftClient.getInstance().options.perspective = savedPerspective;
-			MinecraftClient.getInstance().setCameraEntity(Objects.requireNonNull(MinecraftClient.getInstance().player));
-			if (fakePlayer != null) fakePlayer.despawn();
-			fakePlayer = null;
-			if (MinecraftClient.getInstance().player.input instanceof DummyInput) MinecraftClient.getInstance().player.input = new KeyboardInput(MinecraftClient.getInstance().options);
-		}
+		MinecraftClient.getInstance().options.perspective = savedPerspective;
+		MinecraftClient.getInstance().setCameraEntity(Objects.requireNonNull(MinecraftClient.getInstance().player));
+		if (fakePlayer != null) fakePlayer.despawn();
+		fakePlayer = null;
+		if (MinecraftClient.getInstance().player.input instanceof DummyInput) MinecraftClient.getInstance().player.input = new KeyboardInput(MinecraftClient.getInstance().options);
 	}
 
 }
