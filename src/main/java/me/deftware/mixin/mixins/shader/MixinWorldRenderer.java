@@ -5,17 +5,15 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import me.deftware.client.framework.FrameworkConstants;
 import me.deftware.client.framework.entity.block.TileEntity;
 import me.deftware.client.framework.render.shader.EntityShader;
-import me.deftware.client.framework.world.World;
+import me.deftware.client.framework.world.ClientWorld;
 import me.deftware.client.framework.world.block.Block;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,8 +24,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.Optional;
 
 @Mixin(WorldRenderer.class)
 public abstract class MixinWorldRenderer {
@@ -127,7 +123,7 @@ public abstract class MixinWorldRenderer {
             for (EntityShader shader : EntityShader.SHADERS) {
                 if (shader.isEnabled()) {
                     if (block == null) {
-                        TileEntity tileEntity = World.getTileEntityFromEntity(blockEntity);
+                        TileEntity tileEntity = ClientWorld.getClientWorld().getTileEntityByReference(blockEntity);
                         if (tileEntity == null)
                             break;
                         block = tileEntity.getBlock();
@@ -157,7 +153,7 @@ public abstract class MixinWorldRenderer {
             for (EntityShader shader : EntityShader.SHADERS) {
                 if (shader.isEnabled()) {
                     if (emcEntity == null)
-                        emcEntity = World.getEntityById(entity.getEntityId());
+                        emcEntity = ClientWorld.getClientWorld().getEntityByReference(entity);
                     if (shader.getTargetPredicate().test(emcEntity)) {
                         shader.setRender(true);
                         targetBuffer = shader.getFramebuffer().getMinecraftBuffer();

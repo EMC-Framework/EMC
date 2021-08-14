@@ -1,8 +1,7 @@
 package me.deftware.client.framework.gui.widgets;
 
 import me.deftware.client.framework.chat.ChatMessage;
-import me.deftware.client.framework.fonts.minecraft.FontRenderer;
-import me.deftware.client.framework.gui.GuiScreen;
+import me.deftware.client.framework.fonts.FontRenderer;
 import me.deftware.client.framework.util.types.Pair;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.EntryListWidget;
@@ -11,7 +10,7 @@ import net.minecraft.client.util.math.MatrixStack;
 /**
  * @author Deftware
  */
-public class StringList extends EntryListWidget<StringList.StringEntry> {
+public class StringList extends EntryListWidget<StringList.StringEntry> implements GenericComponent {
 
 	private final MatrixStack stack = new MatrixStack();
 
@@ -25,14 +24,6 @@ public class StringList extends EntryListWidget<StringList.StringEntry> {
 
 	public void addItem(ChatMessage text) {
 		this.children().add(new StringEntry(text));
-	}
-
-	public void doDraw(int mouseX, int mouseY, float delta) {
-		this.render(stack, mouseX, mouseY, delta);
-	}
-
-	public void addToEventListener(GuiScreen screen) {
-		screen.addRawEventListener(this);
 	}
 
 	@Override

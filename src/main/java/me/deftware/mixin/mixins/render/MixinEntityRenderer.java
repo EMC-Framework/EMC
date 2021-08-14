@@ -7,10 +7,8 @@ import me.deftware.client.framework.global.GameKeys;
 import me.deftware.client.framework.global.GameMap;
 import me.deftware.client.framework.helper.GlStateHelper;
 import me.deftware.client.framework.helper.WindowHelper;
-import me.deftware.client.framework.minecraft.Minecraft;
 import me.deftware.client.framework.render.shader.Shader;
 import me.deftware.client.framework.render.batching.RenderStack;
-import me.deftware.client.framework.render.gl.GLX;
 import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
 import me.deftware.mixin.imp.IMixinEntityRenderer;
 import net.minecraft.client.MinecraftClient;
@@ -134,11 +132,6 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
         if (!WindowHelper.isMinimized()) {
             // Chat queue
             Runnable operation = ChatHud.getChatMessageQueue().poll();
-            if (operation != null) {
-                operation.run();
-            }
-            // Other actions
-            operation = Minecraft.RENDER_THREAD.poll();
             if (operation != null) {
                 operation.run();
             }

@@ -1,11 +1,15 @@
 package me.deftware.client.framework.network;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import me.deftware.client.framework.network.packets.*;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.c2s.play.*;
 import net.minecraft.network.packet.s2c.play.CloseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 
 import java.util.HashMap;
 
@@ -17,6 +21,10 @@ import java.util.HashMap;
 public class PacketRegistry {
 
     public static final PacketRegistry INSTANCE = new PacketRegistry();
+
+    @Getter
+    @Setter
+    private SocksProxy proxy;
 
     private final HashMap<Class<? extends Packet<?>>, Class<? extends PacketWrapper>> packetMap = new HashMap<>();
 
@@ -35,6 +43,7 @@ public class PacketRegistry {
         // Server bound
         register(EntityS2CPacket.class, SPacketEntity.class);
         register(EntityAnimationS2CPacket.class, SPacketAnimation.class);
+        register(WorldTimeUpdateS2CPacket.class, SPacketWorldTime.class);
     }
 
     public void register(Class<? extends Packet<?>> minecraft, Class<? extends PacketWrapper> translated) {

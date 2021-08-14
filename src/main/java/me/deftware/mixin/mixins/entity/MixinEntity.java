@@ -5,13 +5,11 @@ import me.deftware.client.framework.global.GameKeys;
 import me.deftware.client.framework.global.GameMap;
 import me.deftware.client.framework.math.vector.Vector3d;
 import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
-import me.deftware.client.framework.world.World;
+import me.deftware.client.framework.world.ClientWorld;
 import me.deftware.mixin.imp.IMixinEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -20,7 +18,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @SuppressWarnings("ConstantConditions")
 @Mixin(Entity.class)
@@ -80,7 +77,7 @@ public abstract class MixinEntity implements IMixinEntity {
     @Inject(method = "pushAwayFrom", at = @At("HEAD"), cancellable = true)
     public void pushAwayFrom(Entity entity, CallbackInfo info) {
         if (((Object) this) == MinecraftClient.getInstance().player) {
-            if (new EventEntityPush(World.getEntityById(entity.getEntityId())).broadcast().isCanceled()) {
+            if (new EventEntityPush(ClientWorld.getClientWorld().getEntityByReference(entity)).broadcast().isCanceled()) {
                 info.cancel();
             }
         }
@@ -113,27 +110,16 @@ public abstract class MixinEntity implements IMixinEntity {
         }
     }
 
-    @Redirect(method = "move", at = @At(value = "INVOKE", target = "net/minecraft/entity/Entity.isSneaking()Z", opcode = 180, ordinal = 0))
-    private boolean sneakingCheck(Entity self) {
-        if (self == MinecraftClient.getInstance().player) {
-            EventSneakingCheck event = new EventSneakingCheck(isSneaking());
-            event.broadcast();
-            if (event.isSneaking()) {
-                return true;
-            }
-        }
-        return getFlag(1);
-    }
-
     @Inject(method = "setVelocityClient", at = @At("HEAD"), cancellable = true)
     private void onSetVelocityClient(double x, double y, double z, CallbackInfo ci) {
-        if ((Object) this == MinecraftClient.getInstance().player) {
-            EventKnockback event = new EventKnockback(x, y, z);
-            event.broadcast();
-            if (event.isCanceled()) {
-                ci.cancel();
+        Entity entity = (Entity) (Object) this;
+        if (entity == MinecraftClient.getInstance().player) {
+            EventKnockback event = new EventKnockback(x, y, z).broadcast();
+            if (!event.isCanceled()) {
+                entity.setVelocity(event.getX(), event.getY(), event.getZ());
             }
         }
+        ci.cancel();
     }
 
     @Override

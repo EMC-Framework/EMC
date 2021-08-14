@@ -3,25 +3,19 @@ package me.deftware.mixin.mixins.world;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import me.deftware.client.framework.entity.Entity;
-import me.deftware.client.framework.entity.types.EntityPlayer;
 import me.deftware.client.framework.event.events.EventEntityUpdated;
 import me.deftware.client.framework.event.events.EventWorldLoad;
 import me.deftware.client.framework.global.GameKeys;
 import me.deftware.client.framework.global.GameMap;
 import me.deftware.client.framework.world.classifier.BlockClassifier;
-import me.deftware.mixin.imp.IMixinWorldClient;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ingame.ShulkerBoxScreen;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -30,9 +24,13 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
+/**
+ * @author Deftware
+ */
 @Mixin(ClientWorld.class)
-public class MixinWorldClient implements IMixinWorldClient {
+public abstract class MixinWorldClient extends MixinWorld implements me.deftware.client.framework.world.ClientWorld {
 
     @Unique
     private final Int2ObjectMap<Entity> entities = new Int2ObjectOpenHashMap<>();
@@ -63,29 +61,32 @@ public class MixinWorldClient implements IMixinWorldClient {
     }
 
     @Override
-    @Unique
-    public Int2ObjectMap<Entity> getLoadedEntitiesAccessor() {
-        return entities;
+    public Stream<Entity> getLoadedEntities() {
+        return entities.values().stream();
     }
 
-    /*private int index;
+    @Override
+    public Entity _getEntityById(int id) {
+        return entities.get(id);
+    }
 
-    @Inject(method = "setBlockBreakingInfo", at = @At("HEAD"))
-    private void moveStuffAround(int entityId, BlockPos pos, int progress, CallbackInfo ci) {
-        if (MinecraftClient.getInstance().currentScreen instanceof ShulkerBoxScreen && ModLoader.getMod(ShulkerDupe.class).isEnabled() && progress == -1) {
-            this.index++;
-            if (this.index == 2) {
-                System.out.println("Click slot");
-                this.index = 0;
-                ShulkerBoxScreen currentScreen = (ShulkerBoxScreen) MinecraftClient.getInstance().currentScreen;
-                MinecraftClient.getInstance().interactionManager.clickSlot(currentScreen.getScreenHandler().syncId, 0, 0, SlotActionType.QUICK_MOVE, MinecraftClient.getInstance().player);
-                ((IndexAccess) (MinecraftClient.getInstance().world)).clearIndex();
-            }
+    @Override
+    public void _addEntity(int id, Entity entity) {
+        ((ClientWorld) (Object) this).addEntity(id, entity.getMinecraftEntity());
+    }
+
+    @Override
+    public void _removeEntity(int id) {
+        ((ClientWorld) (Object) this).removeEntity(id);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends Entity> @Nullable T getEntityByReference(net.minecraft.entity.Entity reference) {
+        if (reference != null) {
+            return (T) entities.get(reference.getEntityId());
         }
+        return null;
     }
-
-    public void clearIndex() {
-        this.index = 0;
-    }*/
 
 }
