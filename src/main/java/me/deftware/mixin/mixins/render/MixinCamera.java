@@ -2,6 +2,8 @@ package me.deftware.mixin.mixins.render;
 
 import me.deftware.client.framework.event.events.EventAnimation;
 import me.deftware.client.framework.event.events.EventCameraClip;
+import me.deftware.client.framework.math.vector.Vector3d;
+import me.deftware.client.framework.render.camera.GameCamera;
 import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
@@ -14,8 +16,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+/**
+ * @author Deftware, wagyourtail
+ */
 @Mixin(Camera.class)
-public class MixinCamera {
+public class MixinCamera implements GameCamera {
 
     @Inject(at = @At("HEAD"), cancellable = true, method = "getFocusedEntity")
     public void getFocusedEntity(CallbackInfoReturnable<Entity> info) {
@@ -56,8 +61,37 @@ public class MixinCamera {
         if (eventAnimation.isCanceled()) {
             // Assuming that cancel is in this case completely ignoring fog and not to keep old fog rendered
             info.setReturnValue(Fluids.EMPTY.getDefaultState());
-            info.cancel();
         }
+    }
+
+    @Override
+    public Vector3d getCameraPosition() {
+        return new Vector3d(((Camera) (Object) this).getPos());
+    }
+
+    @Override
+    public float _getRotationPitch() {
+        return ((Camera) (Object) this).getPitch();
+    }
+
+    @Override
+    public float _getRotationYaw() {
+        return ((Camera) (Object) this).getYaw();
+    }
+
+    @Override
+    public double _getRenderPosX() {
+        return ((Camera) (Object) this).getPos().x;
+    }
+
+    @Override
+    public double _getRenderPosY() {
+        return ((Camera) (Object) this).getPos().y;
+    }
+
+    @Override
+    public double _getRenderPosZ() {
+        return ((Camera) (Object) this).getPos().z;
     }
 
 }

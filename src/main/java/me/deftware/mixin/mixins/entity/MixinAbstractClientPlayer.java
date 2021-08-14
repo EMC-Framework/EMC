@@ -62,7 +62,7 @@ public abstract class MixinAbstractClientPlayer implements IMixinAbstractClientP
             		ci.setReturnValue(capeIdentifier);
 	            } else {
 		            capeIdentifier = new Identifier(String.format("capes/%s.png", uidHash));
-		            PlayerSkinTexture playerSkinTexture = new PlayerSkinTexture(new File(String.format("%s/libraries/EMC/capes/%s.png", Minecraft.getRunDir().getAbsolutePath(), uidHash)),
+		            PlayerSkinTexture playerSkinTexture = new PlayerSkinTexture(new File(String.format("%s/libraries/EMC/capes/%s.png", Minecraft.getMinecraftGame()._getGameDir().getAbsolutePath(), uidHash)),
 				            GameMap.INSTANCE.get(GameCategory.CapeTexture, id, ""), DefaultSkinHelper.getTexture(), new SkinRemappingImageFilter());
 		            capeLoaded = true;
 		            MinecraftClient.getInstance().getTextureManager().registerTexture(capeIdentifier, playerSkinTexture);
