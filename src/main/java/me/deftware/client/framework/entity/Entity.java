@@ -94,7 +94,7 @@ public class Entity {
 			this.vehicle = ClientWorld.getClientWorld().getEntityByReference(entity.getVehicle());
 		if (entity.getArmorItems() instanceof DefaultedList) {
 			DefaultedList<net.minecraft.item.ItemStack> defaultedList = (DefaultedList<net.minecraft.item.ItemStack>) entity.getArmorItems();
-			ItemStack.init(defaultedList, this.armourItems = DefaultedList.ofSize(defaultedList.size(), ItemStack.EMPTY));
+			ItemStack.init(defaultedList, this.armourItems = Util.getEmptyStackList(defaultedList.size()));
 		}
 	}
 
