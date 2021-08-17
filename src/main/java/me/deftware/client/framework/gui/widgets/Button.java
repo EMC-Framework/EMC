@@ -28,7 +28,7 @@ public interface Button extends Component, Nameable<Button>, Tooltipable<Button>
 	 * @return A button component instance
 	 */
 	static Button create(int id, int x, int y, int widthIn, int heightIn, ChatMessage buttonText, boolean shouldPlaySound, Function<Integer, Boolean> onClick) {
-		AbstractButtonWidget widget = new AbstractButtonWidget(x, y, widthIn, heightIn, buttonText.toString()) {
+		AbstractButtonWidget widget = new AbstractButtonWidget(x, y, widthIn, heightIn, buttonText.toString(true)) {
 
 			@Override
 			public boolean mouseClicked(double mouseX, double mouseY, int button) {
