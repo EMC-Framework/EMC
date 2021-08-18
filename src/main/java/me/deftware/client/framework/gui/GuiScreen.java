@@ -55,12 +55,8 @@ public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen imple
 		if (net.minecraft.client.Minecraft.getMinecraft().world != null)
 			GlStateHelper.enableBlend();
 		Mouse.updateMousePosition();
-		if (backgroundType != BackgroundType.None) {
-			if (backgroundType == BackgroundType.Textured)
-				this.drawBackground(0);
-			else if (backgroundType == BackgroundType.TexturedOrTransparent)
-				this.drawWorldBackground(0);
-		}
+		if (backgroundType != null)
+			backgroundType.renderBackground(mouseX, mouseY, partialTicks, this);
 		super.drawScreen(mouseX, mouseY, partialTicks);
 		onDraw(mouseX, mouseY, partialTicks);
 		onPostDraw(mouseX, mouseY, partialTicks);
@@ -201,27 +197,6 @@ public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen imple
 
 	protected void onGuiResize(int w, int h) { }
 
-	public enum BackgroundType {
-
-		/**
-		 * No background will be rendered
-		 */
-		None,
-
-		/**
-		 * A textured background will always be rendered
-		 */
-		Textured,
-
-		/**
-		 * A textured background will be rendered,
-		 * but if a world is loaded, a transparent black
-		 * overlay will be drawn instead
-		 */
-		TexturedOrTransparent
-
-	}
-
 	private static ScaledResolution getScaledResolution() {
 		return new ScaledResolution(net.minecraft.client.Minecraft.getMinecraft());
 	}
@@ -240,6 +215,32 @@ public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen imple
 
 	public static int getDisplayHeight() {
 		return Display.getHeight();
+	}
+
+	public interface BackgroundType {
+
+		/**
+		 * No background will be rendered
+		 */
+		BackgroundType None = (mouseX, mouseY, delta, parent) -> { };
+
+		/**
+		 * A textured background will always be rendered
+		 */
+		BackgroundType Textured = (mouseX, mouseY, delta, parent) -> parent.drawBackground(0);
+
+		/**
+		 * A textured background will be rendered,
+		 * but if a world is loaded, a transparent black
+		 * overlay will be drawn instead
+		 */
+		BackgroundType TexturedOrTransparent = (mouseX, mouseY, delta, parent) -> parent.drawWorldBackground(0);
+
+		/**
+		 * Renders the background
+		 */
+		void renderBackground(int mouseX, int mouseY, float delta, GuiScreen parent);
+
 	}
 
 }
