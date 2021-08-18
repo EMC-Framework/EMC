@@ -9,6 +9,7 @@ import me.deftware.client.framework.gui.widgets.Label;
 import me.deftware.client.framework.gui.widgets.TextField;
 import me.deftware.client.framework.helper.GlStateHelper;
 import me.deftware.client.framework.input.Mouse;
+import me.deftware.client.framework.render.gl.GLX;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -53,12 +54,8 @@ public abstract class GuiScreen extends Screen implements GenericScreen {
 		if (MinecraftClient.getInstance().world != null)
 			GlStateHelper.enableBlend();
 		Mouse.updateMousePosition();
-		if (backgroundType != BackgroundType.None) {
-			if (backgroundType == BackgroundType.Textured)
-				this.renderDirtBackground(0);
-			else if (backgroundType == BackgroundType.TexturedOrTransparent)
-				this.renderBackground(0);
-		}
+		if (backgroundType != null)
+			backgroundType.renderBackground(mouseX, mouseY, partialTicks, this);
 		super.render(mouseX, mouseY, partialTicks);
 		onDraw(mouseX, mouseY, partialTicks);
 		onPostDraw(mouseX, mouseY, partialTicks);
@@ -175,27 +172,6 @@ public abstract class GuiScreen extends Screen implements GenericScreen {
 
 	protected void onGuiResize(int w, int h) { }
 
-	public enum BackgroundType {
-
-		/**
-		 * No background will be rendered
-		 */
-		None,
-
-		/**
-		 * A textured background will always be rendered
-		 */
-		Textured,
-
-		/**
-		 * A textured background will be rendered,
-		 * but if a world is loaded, a transparent black
-		 * overlay will be drawn instead
-		 */
-		TexturedOrTransparent
-
-	}
-
 	public static int getScaledHeight() {
 		return MinecraftClient.getInstance().getWindow().getScaledHeight();
 	}
@@ -210,6 +186,32 @@ public abstract class GuiScreen extends Screen implements GenericScreen {
 
 	public static int getDisplayWidth() {
 		return MinecraftClient.getInstance().getWindow().getWidth();
+	}
+
+	public interface BackgroundType {
+
+		/**
+		 * No background will be rendered
+		 */
+		BackgroundType None = (mouseX, mouseY, delta, parent) -> { };
+
+		/**
+		 * A textured background will always be rendered
+		 */
+		BackgroundType Textured = (mouseX, mouseY, delta, parent) -> parent.renderDirtBackground(0);
+
+		/**
+		 * A textured background will be rendered,
+		 * but if a world is loaded, a transparent black
+		 * overlay will be drawn instead
+		 */
+		BackgroundType TexturedOrTransparent = (mouseX, mouseY, delta, parent) -> parent.renderBackground(0);
+
+		/**
+		 * Renders the background
+		 */
+		void renderBackground(int mouseX, int mouseY, float delta, GuiScreen parent);
+
 	}
 
 }
