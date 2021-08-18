@@ -2,7 +2,10 @@ package me.deftware.client.framework.render.texture;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import lombok.Getter;
+import me.deftware.client.framework.gui.GuiScreen;
 import me.deftware.client.framework.main.EMCMod;
+import me.deftware.client.framework.render.batching.RenderStack;
+import me.deftware.client.framework.render.gl.GLX;
 import me.deftware.client.framework.util.ResourceUtils;
 import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
 import net.minecraft.client.MinecraftClient;
@@ -22,7 +25,7 @@ import java.nio.ByteBuffer;
 /**
  * @author Deftware
  */
-public class GlTexture {
+public class GlTexture implements GuiScreen.BackgroundType {
 
     @Getter
     protected int glId;
@@ -124,6 +127,17 @@ public class GlTexture {
         bind();
         GL11.glDeleteTextures(glId);
         glId = -1;
+    }
+
+    @Override
+    public void renderBackground(int mouseX, int mouseY, float delta, GuiScreen parent) {
+        GLX.INSTANCE.color(1, 1, 1, 1);
+        int width = parent.getGuiScreenWidth(), height = parent.getGuiScreenHeight();
+        if (RenderStack.isInCustomMatrix()) {
+            width = GuiScreen.getDisplayWidth();
+            height = GuiScreen.getDisplayHeight();
+        }
+        bind().draw(0,0, width, height).unbind();
     }
 
     public static ByteBuffer getImageBuffer(BufferedImage image) {
