@@ -23,7 +23,7 @@ public class Inventory {
 
 	public int findItem(Item item) {
 		for (int i = 0; i < delegate.size(); i++) {
-			ItemStack it = delegate.get(i).setStack(inventory.getStack(i));
+			ItemStack it = delegate.get(i).setStack(inventory.getInvStack(i));
 			if (it.getItem().equals(item)) {
 				return i;
 			}
