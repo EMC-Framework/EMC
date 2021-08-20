@@ -20,6 +20,7 @@ public class EntityInventory extends Inventory {
 
 	public EntityInventory(PlayerEntity entity) {
 		super(entity.inventory);
+		this.delegate.clear();
 		this.entity = entity;
 		ItemStack.init(entity.inventory.main, main);
 		ItemStack.init(entity.inventory.armor, armor);
@@ -31,10 +32,12 @@ public class EntityInventory extends Inventory {
 	}
 
 	public List<ItemStack> getArmourInventory() {
+		ItemStack.copyReferences(entity.inventory.armor, armor);
 		return armor;
 	}
 
 	public List<ItemStack> getMainInventory() {
+		ItemStack.copyReferences(entity.inventory.main, main);
 		return main;
 	}
 

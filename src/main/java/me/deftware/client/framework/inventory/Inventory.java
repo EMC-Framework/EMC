@@ -23,7 +23,7 @@ public class Inventory {
 
 	public int findItem(Item item) {
 		for (int i = 0; i < delegate.size(); i++) {
-			ItemStack it = delegate.get(i);
+			ItemStack it = delegate.get(i).setStack(inventory.getStack(i));
 			if (it.getItem().equals(item)) {
 				return i;
 			}
@@ -53,10 +53,6 @@ public class Inventory {
 
 	public boolean isDouble() {
 		return inventory instanceof DoubleInventory;
-	}
-
-	public List<ItemStack> getInventory() {
-		return delegate;
 	}
 
 	public ItemStack getStackInSlot(int slotId) {
