@@ -28,12 +28,16 @@ public class EntityInventory extends Inventory {
 	}
 
 	public List<ItemStack> getArmourInventory() {
-		ItemStack.copyReferences(entity.inventory.armorInventory, armor);
+		int index = 0;
+		for (net.minecraft.item.ItemStack item : entity.inventory.armorInventory)
+			armor.get(index++).setStack(item);
 		return armor;
 	}
 
 	public List<ItemStack> getMainInventory() {
-		ItemStack.copyReferences(entity.inventory.mainInventory, main);
+		int index = 0;
+		for (net.minecraft.item.ItemStack item : entity.inventory.mainInventory)
+			main.get(index++).setStack(item);
 		return main;
 	}
 
