@@ -20,6 +20,7 @@ public class EntityInventory extends Inventory {
 
 	public EntityInventory(PlayerEntity entity) {
 		super(entity.inventory);
+		this.delegate.clear();
 		this.entity = entity;
 		ItemStack.init(entity.inventory.main, main);
 		ItemStack.init(entity.inventory.armor, armor);
