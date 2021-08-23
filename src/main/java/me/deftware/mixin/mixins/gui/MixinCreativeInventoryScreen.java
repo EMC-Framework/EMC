@@ -23,10 +23,8 @@ public abstract class MixinCreativeInventoryScreen {
      * to get a modified tooltip. Only called in the search tab in a creative inventory
      */
     @Redirect(method = "renderToolTip", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;getTooltip(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/client/util/ITooltipFlag;)Ljava/util/List;"))
-    private List<ITextComponent> onGetStackTooltip(ItemStack itemStack, EntityPlayer playerIn, ITooltipFlag advanced) {
-        return (((GuiScreen) (Object) this).getItemToolTip(itemStack))
-                .stream().map(s -> new ChatMessage().fromString(s).build())
-                .collect(Collectors.toList());
+    private List<String> onGetStackTooltip(ItemStack itemStack, EntityPlayer playerIn, ITooltipFlag advanced) {
+        return (((GuiScreen) (Object) this).getItemToolTip(itemStack));
     }
 
 }
