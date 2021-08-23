@@ -92,13 +92,13 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
     }
 
     @Inject(method = "getTooltipFromItem", at = @At(value = "TAIL"), cancellable = true)
-    private void onGetTooltipFromItem(ItemStack stack, CallbackInfoReturnable<List<Text>> cir) {
+    private void onGetTooltipFromItem(ItemStack stack, CallbackInfoReturnable<List<String>> cir) {
         List<ChatMessage> list = cir.getReturnValue().stream()
-                .map(t -> new ChatMessage().fromText(t))
+                .map(t -> new ChatMessage().fromString(t))
                 .collect(Collectors.toList());
         new EventGetItemToolTip(list, Item.newInstance(stack.getItem()), MinecraftClient.getInstance().options.advancedItemTooltips).broadcast();
         cir.setReturnValue(
-                list.stream().map(ChatMessage::build).collect(Collectors.toList())
+                list.stream().map(c -> c.toString(true)).collect(Collectors.toList())
         );
     }
 
