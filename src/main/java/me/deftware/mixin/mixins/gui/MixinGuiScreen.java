@@ -7,11 +7,12 @@ import me.deftware.client.framework.gui.widgets.properties.Tooltipable;
 import me.deftware.client.framework.gui.screens.MinecraftScreen;
 import me.deftware.client.framework.gui.widgets.NativeComponent;
 import me.deftware.client.framework.gui.widgets.GenericComponent;
-import me.deftware.client.framework.item.Item;
+import me.deftware.client.framework.registry.ItemRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ingame.ContainerScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -96,7 +97,7 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
         List<ChatMessage> list = cir.getReturnValue().stream()
                 .map(t -> new ChatMessage().fromString(t))
                 .collect(Collectors.toList());
-        new EventGetItemToolTip(list, Item.newInstance(stack.getItem()), MinecraftClient.getInstance().options.advancedItemTooltips).broadcast();
+        new EventGetItemToolTip(list, ItemRegistry.INSTANCE.getItem(stack.getItem()), MinecraftClient.getInstance().options.advancedItemTooltips).broadcast();
         cir.setReturnValue(
                 list.stream().map(c -> c.toString(true)).collect(Collectors.toList())
         );
@@ -113,8 +114,16 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Inject(method = "render", at = @At("RETURN"))
     private void onPostDraw(int mouseX, int mouseY, float delta, CallbackInfo ci) {
+        if (!((Object) this instanceof ContainerScreen)) {
+            this.onPostDrawEvent(mouseX, mouseY, delta);
+        }
+    }
+
+    @Unique
+    protected void onPostDrawEvent(int mouseX, int mouseY, float delta) {
         event.setType(EventScreen.Type.PostDraw).broadcast();
         // Render tooltip
         for (Element element : children) {
