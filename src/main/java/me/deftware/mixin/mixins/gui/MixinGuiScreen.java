@@ -9,11 +9,12 @@ import me.deftware.client.framework.gui.widgets.properties.Tooltipable;
 import me.deftware.client.framework.gui.screens.MinecraftScreen;
 import me.deftware.client.framework.gui.widgets.NativeComponent;
 import me.deftware.client.framework.gui.widgets.GenericComponent;
-import me.deftware.client.framework.item.Item;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
+import me.deftware.client.framework.registry.ItemRegistry;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -97,7 +98,7 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
                 .stream()
                 .map(t -> new ChatMessage().fromString(t))
                 .collect(Collectors.toList());
-        new EventGetItemToolTip(list, Item.newInstance(stack.getItem()), Minecraft.getMinecraft().gameSettings.advancedItemTooltips).broadcast();
+        new EventGetItemToolTip(list, ItemRegistry.INSTANCE.getItem(stack.getItem()), Minecraft.getMinecraft().gameSettings.advancedItemTooltips).broadcast();
         return list.stream().map(ChatMessage::toString).collect(Collectors.toList());
     }
 
@@ -112,8 +113,16 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Inject(method = "drawScreen", at = @At("RETURN"))
     private void onPostDraw(int mouseX, int mouseY, float delta, CallbackInfo ci) {
+        if (!((Object) this instanceof GuiContainer)) {
+            this.onPostDrawEvent(mouseX, mouseY, delta);
+        }
+    }
+
+    @Unique
+    protected void onPostDrawEvent(int mouseX, int mouseY, float delta) {
         event.setType(EventScreen.Type.PostDraw).broadcast();
         // Render tooltip
         for (Element element : children) {
