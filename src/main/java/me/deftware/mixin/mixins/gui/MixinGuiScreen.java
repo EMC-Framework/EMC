@@ -13,6 +13,7 @@ import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.OrderedText;
@@ -115,8 +116,16 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Inject(method = "render", at = @At("RETURN"))
     private void onPostDraw(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+        if (!((Object) this instanceof HandledScreen)) {
+            this.onPostDrawEvent(matrices, mouseX, mouseY, delta);
+        }
+    }
+
+    @Unique
+    protected void onPostDrawEvent(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         event.setType(EventScreen.Type.PostDraw).broadcast();
         // Render tooltip
         for (Element element : children) {
