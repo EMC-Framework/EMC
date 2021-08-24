@@ -11,6 +11,9 @@ import net.minecraft.inventory.Slot;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GuiContainer.class)
 public abstract class MixinGuiContainer extends MixinGuiScreen implements ContainerScreen {
@@ -54,6 +57,11 @@ public abstract class MixinGuiContainer extends MixinGuiScreen implements Contai
     @Override
     public ChatMessage getInventoryName() {
         return inventoryTitle.get();
+    }
+
+    @Inject(method = "drawScreen", at = @At("RETURN"))
+    private void onPostDraw(int mouseX, int mouseY, float delta, CallbackInfo ci) {
+        this.onPostDrawEvent(mouseX, mouseY, delta);
     }
 
 }
