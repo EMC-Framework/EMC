@@ -8,11 +8,12 @@ import me.deftware.client.framework.gui.widgets.properties.Tooltipable;
 import me.deftware.client.framework.gui.screens.MinecraftScreen;
 import me.deftware.client.framework.gui.widgets.NativeComponent;
 import me.deftware.client.framework.gui.widgets.GenericComponent;
-import me.deftware.client.framework.item.Item;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.IGuiEventListener;
+import me.deftware.client.framework.registry.ItemRegistry;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -90,7 +91,7 @@ public class MixinGuiScreen implements MinecraftScreen {
         List<ChatMessage> list = cir.getReturnValue().stream()
                 .map(t -> new ChatMessage().fromString(t))
                 .collect(Collectors.toList());
-        new EventGetItemToolTip(list, Item.newInstance(stack.getItem()), Minecraft.getInstance().gameSettings.advancedItemTooltips).broadcast();
+        new EventGetItemToolTip(list, ItemRegistry.INSTANCE.getItem(stack.getItem()), Minecraft.getInstance().gameSettings.advancedItemTooltips).broadcast();
         cir.setReturnValue(
                 list.stream().map(ChatMessage::toString).collect(Collectors.toList())
         );
@@ -107,8 +108,16 @@ public class MixinGuiScreen implements MinecraftScreen {
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Inject(method = "render", at = @At("RETURN"))
     private void onPostDraw(int mouseX, int mouseY, float delta, CallbackInfo ci) {
+        if (!((Object) this instanceof GuiContainer)) {
+            this.onPostDrawEvent(mouseX, mouseY, delta);
+        }
+    }
+
+    @Unique
+    protected void onPostDrawEvent(int mouseX, int mouseY, float delta) {
         event.setType(EventScreen.Type.PostDraw).broadcast();
         // Render tooltip
         for (IGuiEventListener element : children) {
