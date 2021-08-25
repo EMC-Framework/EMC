@@ -1,12 +1,16 @@
 package me.deftware.client.framework.gui.screens;
 
+import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.event.events.EventScreen;
 import me.deftware.client.framework.gui.ScreenRegistry;
 import me.deftware.client.framework.gui.widgets.GenericComponent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import org.jetbrains.annotations.ApiStatus;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Represents a Minecraft screen instance
@@ -74,5 +78,23 @@ public interface MinecraftScreen extends GenericScreen {
 	 * @return The associated screen event handler
 	 */
 	EventScreen getEventScreen();
+
+	/**
+	 * Renders a tooltip onscreen
+	 * @param tooltip Tooltip lines
+	 */
+	default void renderTooltip(int x, int y, ChatMessage... tooltip) {
+		this.renderTooltip(x, y, getTooltipList(tooltip));
+	}
+
+	@ApiStatus.Internal
+	static List<String> getTooltipList(ChatMessage... tooltip) {
+		return Arrays.stream(tooltip)
+				.map(c -> c.toString(true))
+				.collect(Collectors.toList());
+	}
+
+	@ApiStatus.Internal
+	void renderTooltip(int x, int y, List<String> tooltipComponents);
 
 }

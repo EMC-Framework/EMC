@@ -4,7 +4,10 @@ import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.gui.Drawable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import me.deftware.client.framework.gui.widgets.properties.Tooltipable;
+import net.minecraft.client.gui.IGuiEventListener;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -14,7 +17,7 @@ import java.util.stream.Collectors;
  * @since 17.0.0
  * @author Deftware
  */
-public class Label implements Drawable, GenericComponent {
+public class Label implements Drawable, IGuiEventListener, GenericComponent, Tooltipable {
 
 	private List<String> text;
 	private int width, height, x, y;
@@ -45,6 +48,34 @@ public class Label implements Drawable, GenericComponent {
 			textRenderer.drawStringWithShadow(line, center, y, 0xFFFFFF);
 			y += textRenderer.FONT_HEIGHT;
 		}
+	}
+
+	private final List<String> tooltipComponents = new ArrayList<>();
+
+	@Override
+	public List<String> getTooltipComponents(int mouseX, int mouseY) {
+		return this.tooltipComponents;
+	}
+
+	@Override
+	public boolean isMouseOverComponent(int mouseX, int mouseY) {
+		return mouseX > this.x && mouseX < this.x + this.width && mouseY > this.y && mouseY < this.y + this.height;
+	}
+
+	public int getWidth() {
+		return width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public int getX() {
+		return x;
+	}
+
+	public int getY() {
+		return y;
 	}
 
 }

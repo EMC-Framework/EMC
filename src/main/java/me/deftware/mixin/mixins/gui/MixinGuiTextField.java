@@ -15,6 +15,8 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
@@ -159,6 +161,14 @@ public class MixinGuiTextField implements TextField, Drawable {
     @Override
     public void onRender(int mouseX, int mouseY, float delta) {
         ((GuiTextField) (Object) this).drawTextField(mouseX, mouseY, delta);
+    }
+
+    @Unique
+    private final java.util.List<String> tooltipComponents = new ArrayList<>();
+
+    @Override
+    public List<String> getTooltipComponents(int mouseX, int mouseY) {
+        return this.tooltipComponents;
     }
 
 }

@@ -2,6 +2,7 @@ package me.deftware.client.framework.gui.widgets;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiTextField;
+import me.deftware.client.framework.gui.widgets.properties.Tooltipable;
 
 import java.util.function.Predicate;
 
@@ -9,20 +10,19 @@ import java.util.function.Predicate;
  * @author Deftware
  */
 @SuppressWarnings("ConstantConditions")
-public interface TextField extends Component {
+public interface TextField extends Component, Tooltipable {
 
 	/**
 	 * Creates a new TextField instance
 	 *
-	 * @param id Unique ID
 	 * @param x x coordinate
 	 * @param y y coordinate
 	 * @param width The width
 	 * @param height The height
 	 * @return A TextField instance
 	 */
-	static TextField create(int id, int x, int y, int width, int height) {
-		return (TextField) new GuiTextField(id, Minecraft.getInstance().fontRenderer, x, y, width, height);
+	static TextField create(int x, int y, int width, int height) {
+		return (TextField) new GuiTextField(0, Minecraft.getInstance().fontRenderer, x, y, width, height);
 	}
 
 	/**
@@ -59,5 +59,10 @@ public interface TextField extends Component {
 	 * @param predicate A string predicate
 	 */
 	void _setPredicate(Predicate<String> predicate);
+
+	@Override
+	default boolean isMouseOverComponent(int mouseX, int mouseY) {
+		return mouseX > this.getPositionX() && mouseX < this.getPositionX() + this.getComponentWidth() && mouseY > this.getPositionY() && mouseY < this.getPositionY() + this.getComponentHeight();
+	}
 
 }

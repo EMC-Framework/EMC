@@ -12,12 +12,16 @@ import java.util.function.Function;
  * @author Deftware
  */
 @SuppressWarnings("ConstantConditions")
-public interface Button extends Component, Nameable<Button>, Tooltipable<Button> {
+public interface Button extends Component, Nameable<Button>, Tooltipable {
+
+	@Deprecated
+	static Button create(int id, int x, int y, int widthIn, int heightIn, ChatMessage buttonText, boolean shouldPlaySound, Function<Integer, Boolean> onClick) {
+		return create(x, y, widthIn, heightIn, buttonText, shouldPlaySound, onClick);
+	}
 
 	/**
 	 * Creates a new button instance
 	 *
-	 * @param id The button ID
 	 * @param x The x coordinate
 	 * @param y The y coordinate
 	 * @param widthIn The width of the button
@@ -27,8 +31,8 @@ public interface Button extends Component, Nameable<Button>, Tooltipable<Button>
 	 * @param onClick Button click handler
 	 * @return A button component instance
 	 */
-	static Button create(int id, int x, int y, int widthIn, int heightIn, ChatMessage buttonText, boolean shouldPlaySound, Function<Integer, Boolean> onClick) {
-		GuiButton widget = new GuiButton(id, x, y, widthIn, heightIn, buttonText.toString(true)) {
+	static Button create(int x, int y, int widthIn, int heightIn, ChatMessage buttonText, boolean shouldPlaySound, Function<Integer, Boolean> onClick) {
+		GuiButton widget = new GuiButton(0, x, y, widthIn, heightIn, buttonText.toString(true)) {
 
 			@Override
 			public boolean mouseClicked(double mouseX, double mouseY, int button) {
@@ -42,6 +46,11 @@ public interface Button extends Component, Nameable<Button>, Tooltipable<Button>
 
 		};
 		return (Button) widget;
+	}
+
+	@Override
+	default boolean isMouseOverComponent(int mouseX, int mouseY) {
+		return ((GuiButton) this).isMouseOver();
 	}
 
 }

@@ -111,14 +111,18 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     @Unique
     private final EventMatrixRender eventMatrixRender = new EventMatrixRender();
 
+    @Inject(method = "updateCameraAndRender(FJZ)V", at = @At("HEAD"))
+    private void onRender(float partialTicks, long nanoTime, boolean renderWorldIn, CallbackInfo ci) {
+        // Chat queue
+        Runnable operation = ChatHud.getChatMessageQueue().poll();
+        if (operation != null) {
+            operation.run();
+        }
+    }
+
     @Redirect(method = "updateCameraAndRender(FJZ)V", at = @At(value = "INVOKE", opcode = 180, target = "net/minecraft/client/gui/GuiIngame.renderGameOverlay(F)V"))
     private void onRender2D(GuiIngame guiIngame, float partialTicks) {
         if (!WindowHelper.isMinimized()) {
-            // Chat queue
-            Runnable operation = ChatHud.getChatMessageQueue().poll();
-            if (operation != null) {
-                operation.run();
-            }
             eventRender2D.create(partialTicks).broadcast();
             // Render with custom matrix
             RenderStack.reloadCustomMatrix();
