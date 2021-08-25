@@ -10,9 +10,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Deftware
@@ -87,19 +86,11 @@ public class MixinGuiButton implements Button, Drawable, Element {
     }
 
     @Unique
-    private List<String> tooltipComponents;
+    private final List<String> tooltipComponents = new ArrayList<>();
 
     @Override
-    public Button _setTooltip(ChatMessage... tooltip) {
-        this.tooltipComponents = Arrays.stream(tooltip)
-                .map(m -> m.toString(true))
-                .collect(Collectors.toList());
-        return this;
-    }
-
-    @Override
-    public List<String> _getTooltip() {
-        return tooltipComponents;
+    public List<String> getTooltipComponents(int mouseX, int mouseY) {
+        return this.tooltipComponents;
     }
 
     @Override

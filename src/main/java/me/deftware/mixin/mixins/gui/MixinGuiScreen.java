@@ -5,6 +5,7 @@ import me.deftware.client.framework.event.events.EventGetItemToolTip;
 import me.deftware.client.framework.event.events.EventScreen;
 import me.deftware.client.framework.gui.Drawable;
 import me.deftware.client.framework.gui.Element;
+import me.deftware.client.framework.gui.widgets.SelectableList;
 import me.deftware.client.framework.gui.widgets.properties.Tooltipable;
 import me.deftware.client.framework.gui.screens.MinecraftScreen;
 import me.deftware.client.framework.gui.widgets.NativeComponent;
@@ -126,11 +127,12 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
         event.setType(EventScreen.Type.PostDraw).broadcast();
         // Render tooltip
         for (Element element : children) {
-            if (element instanceof GuiButton && element instanceof Tooltipable) {
-                if (((GuiButton) element).isMouseOver()) {
-                    List<String> list = ((Tooltipable<?>) element)._getTooltip();
+            if (element instanceof Tooltipable) {
+                Tooltipable tooltipable = (Tooltipable) element;
+                if (tooltipable.isMouseOverComponent(mouseX, mouseY)) {
+                    List<String> list = tooltipable.getTooltipComponents(mouseX, mouseY);
                     if (list != null && !list.isEmpty()) {
-                        this.drawHoveringText(list, mouseX, mouseY);
+                        this.renderTooltip(mouseX, mouseY, list);
                         break;
                     }
                 }
@@ -172,6 +174,20 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
         for (Element element : this.children) {
             element.onMouseReleased(mouseX, mouseY, mouseButton);
         }
+    }
+
+    @Inject(method = "handleMouseInput", at = @At("HEAD"))
+    private void onHandleMouse(CallbackInfo ci) {
+        for (Element element : this.children) {
+            if (element instanceof SelectableList) {
+                ((SelectableList<?>) element).handleMouseInput();
+            }
+        }
+    }
+
+    @Override
+    public void renderTooltip(int x, int y, List<String> tooltipComponents) {
+        this.drawHoveringText(tooltipComponents, x, y);
     }
 
 }
