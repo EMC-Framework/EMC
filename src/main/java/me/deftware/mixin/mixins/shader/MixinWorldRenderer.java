@@ -38,9 +38,7 @@ public abstract class MixinWorldRenderer {
     @Shadow
     @Final
     private MinecraftClient client;
-
-    @Shadow protected abstract boolean canDrawEntityOutlines();
-
+    
     @Unique
     private void initShaders() {
         for (EntityShader shader : EntityShader.SHADERS)
@@ -77,7 +75,7 @@ public abstract class MixinWorldRenderer {
 
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/WorldRenderer;canDrawEntityOutlines()Z", opcode = 180, ordinal = 0))
     private boolean onClear(WorldRenderer worldRenderer) {
-        int buffer = GlStateManager.getBoundFramebuffer();
+        int buffer = GlStateManager.getFramebufferDepthAttachment();
         for (EntityShader shader : EntityShader.SHADERS) {
             if (shader.getFramebuffer() == null) {
                 // Not initialised?
@@ -85,7 +83,7 @@ public abstract class MixinWorldRenderer {
             }
             shader.getFramebuffer().clear();
         }
-        GlStateManager._glBindFramebuffer(GL30.GL_FRAMEBUFFER, buffer);
+        GlStateManager.bindFramebuffer(GL30.GL_FRAMEBUFFER, buffer);
         return false;
     }
 
@@ -111,7 +109,7 @@ public abstract class MixinWorldRenderer {
 
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/block/entity/BlockEntityRenderDispatcher;render(Lnet/minecraft/block/entity/BlockEntity;FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;)V", opcode = 180, ordinal = 0))
     private void renderBlocKEntity(BlockEntityRenderDispatcher blockEntityRenderDispatcher, BlockEntity blockEntity, float tickDelta, MatrixStack matrix, VertexConsumerProvider vertexConsumerProvider) {
-        int buffer = GlStateManager.getBoundFramebuffer();
+        int buffer = GlStateManager.getFramebufferDepthAttachment();
         if (anyShaderEnabled) {
             Block block = null;
             for (EntityShader shader : EntityShader.SHADERS) {
@@ -131,7 +129,7 @@ public abstract class MixinWorldRenderer {
             }
         }
         blockEntityRenderDispatcher.render(blockEntity, tickDelta, matrix, vertexConsumerProvider);
-        GlStateManager._glBindFramebuffer(GL30.GL_FRAMEBUFFER, buffer);
+        GlStateManager.bindFramebuffer(GL30.GL_FRAMEBUFFER, buffer);
     }
 
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;hasOutline(Lnet/minecraft/entity/Entity;)Z", opcode = 180))
@@ -143,7 +141,7 @@ public abstract class MixinWorldRenderer {
 
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/WorldRenderer;renderEntity(Lnet/minecraft/entity/Entity;DDDFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;)V", opcode = 180))
     private void doRenderEntity(WorldRenderer worldRenderer, Entity entity, double cameraX, double cameraY, double cameraZ, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers) {
-        int buffer = GlStateManager.getBoundFramebuffer();
+        int buffer = GlStateManager.getFramebufferDepthAttachment();
         if (anyShaderEnabled) {
             me.deftware.client.framework.entity.Entity emcEntity = null;
             for (EntityShader shader : EntityShader.SHADERS) {
@@ -159,13 +157,13 @@ public abstract class MixinWorldRenderer {
             }
         }
         renderEntity(entity, cameraX, cameraY, cameraZ, tickDelta, matrices, vertexConsumers);
-        GlStateManager._glBindFramebuffer(GL30.GL_FRAMEBUFFER, buffer);
+        GlStateManager.bindFramebuffer(GL30.GL_FRAMEBUFFER, buffer);
     }
 
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/OutlineVertexConsumerProvider;draw()V", opcode = 180))
     private void onVertexDraw(OutlineVertexConsumerProvider outlineVertexConsumerProvider) {
         if (anyShaderEnabled) {
-            int buffer = GlStateManager.getBoundFramebuffer();
+            int buffer = GlStateManager.getFramebufferDepthAttachment();
             for (EntityShader shader : EntityShader.SHADERS) {
                 if (shader.isRender()) {
                     targetBuffer = shader.getFramebuffer().getMinecraftBuffer();
@@ -173,7 +171,7 @@ public abstract class MixinWorldRenderer {
                     shader.getShaderEffect().render(tickDelta);
                 }
             }
-            GlStateManager._glBindFramebuffer(GL30.GL_FRAMEBUFFER, buffer);
+            GlStateManager.bindFramebuffer(GL30.GL_FRAMEBUFFER, buffer);
         } else {
             outlineVertexConsumerProvider.draw();
         }
