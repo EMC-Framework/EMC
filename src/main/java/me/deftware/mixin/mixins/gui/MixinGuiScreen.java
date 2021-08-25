@@ -127,11 +127,12 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
         event.setType(EventScreen.Type.PostDraw).broadcast();
         // Render tooltip
         for (Element element : children) {
-            if (element instanceof AbstractButtonWidget && element instanceof Tooltipable) {
-                if (((AbstractButtonWidget) element).isHovered()) {
-                    List<String> list = ((Tooltipable<?>) element)._getTooltip();
+            if (element instanceof Tooltipable) {
+                Tooltipable tooltipable = (Tooltipable) element;
+                if (tooltipable.isMouseOverComponent(mouseX, mouseY)) {
+                    List<String> list = tooltipable.getTooltipComponents(mouseX, mouseY);
                     if (list != null && !list.isEmpty()) {
-                        ((Screen) (Object) this).renderTooltip(list, mouseX, mouseY);
+                        this.renderTooltip(mouseX, mouseY, list);
                         break;
                     }
                 }
@@ -152,6 +153,11 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
     @Inject(method = "init(Lnet/minecraft/client/MinecraftClient;II)V", at = @At("RETURN"))
     private void init(CallbackInfo ci) {
         event.setType(EventScreen.Type.Setup).broadcast();
+    }
+
+    @Override
+    public void renderTooltip(int x, int y, List<String> tooltipComponents) {
+        ((Screen) (Object) this).renderTooltip(tooltipComponents, x, y);
     }
 
 }
