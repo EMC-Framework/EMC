@@ -8,6 +8,7 @@ import me.deftware.client.framework.gui.screens.MinecraftScreen;
 import me.deftware.client.framework.gui.widgets.NativeComponent;
 import me.deftware.client.framework.gui.widgets.GenericComponent;
 import me.deftware.client.framework.registry.ItemRegistry;
+import me.deftware.client.framework.render.gl.GLX;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
@@ -107,6 +108,7 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
 
     @Inject(method = "render", at = @At("HEAD"))
     private void onDraw(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+        GLX.INSTANCE.refresh();
         event.setMouseX(mouseX);
         event.setMouseY(mouseY);
         event.setType(EventScreen.Type.Draw).broadcast();
@@ -129,11 +131,12 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
         event.setType(EventScreen.Type.PostDraw).broadcast();
         // Render tooltip
         for (Element element : children) {
-            if (element instanceof AbstractButtonWidget && element instanceof Tooltipable) {
-                if (((AbstractButtonWidget) element).isHovered()) {
-                    List<OrderedText> list = ((Tooltipable<?>) element)._getTooltip();
+            if (element instanceof Tooltipable) {
+                Tooltipable tooltipable = (Tooltipable) element;
+                if (tooltipable.isMouseOverComponent(mouseX, mouseY)) {
+                    List<OrderedText> list = tooltipable.getTooltipComponents(mouseX, mouseY);
                     if (list != null && !list.isEmpty()) {
-                        ((Screen) (Object) this).renderOrderedTooltip(matrices, list, mouseX, mouseY);
+                        this.renderTooltip(mouseX, mouseY, list);
                         break;
                     }
                 }
@@ -154,6 +157,11 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
     @Inject(method = "init(Lnet/minecraft/client/MinecraftClient;II)V", at = @At("RETURN"))
     private void init(CallbackInfo ci) {
         event.setType(EventScreen.Type.Setup).broadcast();
+    }
+
+    @Override
+    public void renderTooltip(int x, int y, List<OrderedText> tooltipComponents) {
+        ((Screen) (Object) this).renderOrderedTooltip(GLX.INSTANCE.getStack(), tooltipComponents, x, y);
     }
 
 }

@@ -4,14 +4,12 @@ import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.gui.widgets.Button;
 import net.minecraft.text.OrderedText;
-import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Deftware
@@ -86,20 +84,11 @@ public class MixinGuiButton implements Button {
     }
 
     @Unique
-    private List<OrderedText> tooltipComponents;
+    private final List<OrderedText> tooltipComponents = new ArrayList<>();
 
     @Override
-    public Button _setTooltip(ChatMessage... tooltip) {
-        this.tooltipComponents = Arrays.stream(tooltip)
-                .map(ChatMessage::build)
-                .map(Text::asOrderedText)
-                .collect(Collectors.toList());
-        return this;
-    }
-
-    @Override
-    public List<OrderedText> _getTooltip() {
-        return tooltipComponents;
+    public List<OrderedText> getTooltipComponents(int mouseX, int mouseY) {
+        return this.tooltipComponents;
     }
 
 }
