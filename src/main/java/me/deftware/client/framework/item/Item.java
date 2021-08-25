@@ -1,6 +1,8 @@
 package me.deftware.client.framework.item;
 
 import me.deftware.client.framework.chat.ChatMessage;
+import me.deftware.client.framework.fonts.FontRenderer;
+import me.deftware.client.framework.gui.widgets.SelectableList;
 import me.deftware.client.framework.item.types.BlockItem;
 import me.deftware.client.framework.item.types.FishingRodItem;
 import me.deftware.client.framework.item.types.PotionItem;
@@ -8,6 +10,7 @@ import me.deftware.client.framework.item.types.RangedWeaponItem;
 import me.deftware.client.framework.item.types.ToolItem;
 import me.deftware.client.framework.item.types.*;
 import me.deftware.client.framework.registry.BlockRegistry;
+import me.deftware.client.framework.render.ItemRenderer;
 import me.deftware.client.framework.world.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
@@ -17,7 +20,7 @@ import net.minecraft.item.ItemStack;
 /**
  * @author Deftware
  */
-public class Item implements IItem {
+public class Item implements IItem, SelectableList.ListItem {
 
 	protected final net.minecraft.item.Item item;
 
@@ -104,5 +107,10 @@ public class Item implements IItem {
 		return null;
 	}
 
+	@Override
+	public void render(int index, int x, int y, int entryWidth, int entryHeight, int mouseX, int mouseY, float tickDelta) {
+		ItemRenderer.drawItem(x, y + 5, this);
+		FontRenderer.drawString(getName(), x + 28, y + ((entryHeight / 2) - (FontRenderer.getFontHeight() / 2)) - 3, 0xFFFFFF);
+	}
 
 }
