@@ -2,6 +2,8 @@ package me.deftware.mixin.mixins.shader;
 
 import me.deftware.client.framework.FrameworkConstants;
 import me.deftware.client.framework.entity.block.TileEntity;
+import me.deftware.client.framework.render.WorldEntityRenderer;
+import me.deftware.client.framework.render.camera.GameCamera;
 import me.deftware.client.framework.render.shader.EntityShader;
 import me.deftware.client.framework.world.ClientWorld;
 import me.deftware.client.framework.world.block.Block;
@@ -25,12 +27,17 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Mixin(WorldRenderer.class)
-public abstract class MixinWorldRenderer {
+public abstract class MixinWorldRenderer implements WorldEntityRenderer {
 
     @Shadow
     @Final
     private Minecraft mc;
+
+    @Shadow @Final private RenderManager renderManager;
 
     @Unique
     private boolean canUseShaders() {
@@ -44,6 +51,14 @@ public abstract class MixinWorldRenderer {
     private void initShaders() {
         for (EntityShader shader : EntityShader.SHADERS)
             shader.init();
+    }
+
+    @Unique
+    private final List<Statue> statues = new ArrayList<>();
+
+    @Override
+    public List<Statue> getStatues() {
+        return statues;
     }
 
     @Inject(method = "makeEntityOutlineShader", at = @At("RETURN"))
@@ -163,6 +178,19 @@ public abstract class MixinWorldRenderer {
         GlStateManager.enableDepthTest();
         GlStateManager.enableAlphaTest();
         this.mc.getFramebuffer().bindFramebuffer(false);
+    }
+
+    @Inject(method = "renderEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/WorldRenderer;isRenderEntityOutlines()Z"))
+    private void onRenderStatues(Entity renderViewEntity, ICamera iCamera, float partialTicks, CallbackInfo ci) {
+        GameCamera camera = me.deftware.client.framework.minecraft.Minecraft.getMinecraftGame().getCamera();
+        for (Statue statue : this.statues) {
+            this.renderManager.renderEntity(statue.getEntity().getMinecraftEntity(),
+                    statue.getPosition().getX() - camera._getRenderPosX(),
+                    statue.getPosition().getY() - camera._getRenderPosY(),
+                    statue.getPosition().getZ() - camera._getRenderPosZ(),
+                    statue.getEntity().getRotationYaw(), partialTicks, false
+            );
+        }
     }
 
 }

@@ -43,7 +43,7 @@ public class MixinCamera implements GameCamera {
 
     @Override
     public double _getRenderPosY() {
-        return renderPosY;
+        return renderPosY + 1;
     }
 
     @Override
