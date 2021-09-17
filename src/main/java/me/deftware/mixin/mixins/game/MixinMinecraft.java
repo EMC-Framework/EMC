@@ -25,6 +25,7 @@ import me.deftware.client.framework.event.events.EventScreen;
 import me.deftware.client.framework.gui.screens.MinecraftScreen;
 import me.deftware.client.framework.minecraft.ClientOptions;
 import me.deftware.client.framework.minecraft.ServerDetails;
+import me.deftware.client.framework.render.WorldEntityRenderer;
 import me.deftware.client.framework.render.camera.GameCamera;
 import me.deftware.client.framework.util.minecraft.BlockSwingResult;
 import me.deftware.client.framework.world.ClientWorld;
@@ -259,6 +260,11 @@ public abstract class MixinMinecraft implements me.deftware.client.framework.min
         if (((Minecraft) (Object) this).world == null && this.currentScreen != null) {
             cir.setReturnValue(60);
         }
+    }
+
+    @Override
+    public WorldEntityRenderer getWorldEntityRenderer() {
+        return (WorldEntityRenderer) ((Minecraft) (Object) this).renderGlobal;
     }
 
 }
