@@ -2,7 +2,9 @@ package me.deftware.mixin.mixins.shader;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.deftware.client.framework.FrameworkConstants;
+import lombok.Getter;
 import me.deftware.client.framework.entity.block.TileEntity;
+import me.deftware.client.framework.render.WorldEntityRenderer;
 import me.deftware.client.framework.render.shader.EntityShader;
 import me.deftware.client.framework.world.ClientWorld;
 import me.deftware.client.framework.world.block.Block;
@@ -22,8 +24,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Mixin(WorldRenderer.class)
-public abstract class MixinWorldRenderer {
+public abstract class MixinWorldRenderer implements WorldEntityRenderer {
 
     @Shadow
     @Final
@@ -37,11 +42,19 @@ public abstract class MixinWorldRenderer {
         return FrameworkConstants.CAN_RENDER_SHADER;
     }
 
+    @Shadow
+    @Final
+    private EntityRenderDispatcher entityRenderDispatcher;
+
     @Unique
     private void initShaders() {
         for (EntityShader shader : EntityShader.SHADERS)
             shader.init();
     }
+
+    @Unique
+    @Getter
+    private final List<Statue> statues = new ArrayList<>();
 
     @Inject(method = "loadEntityOutlineShader", at = @At("RETURN"))
     private void reload(CallbackInfo ci) {
@@ -166,6 +179,18 @@ public abstract class MixinWorldRenderer {
         GlStateManager.enableDepthTest();
         GlStateManager.enableAlphaTest();
         this.client.getFramebuffer().beginWrite(false);
+    }
+
+    @Inject(method = "renderEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/WorldRenderer;canDrawEntityOutlines()Z"))
+    private void onRenderStatues(Camera camera, VisibleRegion visibleRegion, float tickDelta, CallbackInfo ci) {
+        for (Statue statue : this.statues) {
+            this.entityRenderDispatcher.render(statue.getEntity().getMinecraftEntity(),
+                    statue.getPosition().getX() - camera.getPos().getX(),
+                    statue.getPosition().getY() - camera.getPos().getY(),
+                    statue.getPosition().getZ() - camera.getPos().getZ(),
+                    statue.getEntity().getRotationYaw(), tickDelta, false
+            );
+        }
     }
 
 }
