@@ -11,13 +11,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(targets = "net/minecraft/network/ClientConnection$1")
 public class MixinProxyConnection {
 
-	/*
 	@Inject(method = "initChannel(Lio/netty/channel/Channel;)V", at = @At("HEAD"))
 	public void connect(Channel channel, CallbackInfo cir) {
 		SocksProxy proxy = PacketRegistry.INSTANCE.getProxy();
 		if (proxy != null)
 			channel.pipeline().addFirst(proxy.getProxyHandler());
 	}
-	 */
 
 }
