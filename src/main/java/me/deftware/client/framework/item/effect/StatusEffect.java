@@ -29,7 +29,7 @@ public class StatusEffect {
 		return effectType;
 	}
 
-	public String getUnlocalizedName() {
+	public String getTranslationKey() {
 		return statusEffect.getName();
 	}
 

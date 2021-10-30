@@ -35,8 +35,8 @@ public enum StatusEffectRegistry implements IRegistry<StatusEffect, Potion> {
 		}
 		String finalId = id;
 		return stream().filter(effect ->
-				effect.getUnlocalizedName().equalsIgnoreCase(finalId) ||
-						effect.getUnlocalizedName().substring("potion:".length()).equalsIgnoreCase(finalId)
+				effect.getTranslationKey().equalsIgnoreCase(finalId) ||
+						effect.getTranslationKey().substring("potion:".length()).equalsIgnoreCase(finalId)
 		).findFirst();
 	}
 
