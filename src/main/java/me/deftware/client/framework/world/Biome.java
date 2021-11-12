@@ -12,8 +12,12 @@ public class Biome {
 		return this;
 	}
 
+	private ResourceLocation getId() {
+		return IRegistry.BIOME.getKey(biome);
+	}
+
 	public String getKey() {
-		ResourceLocation id = IRegistry.BIOME.getKey(biome);
+		ResourceLocation id = getId();
 		if (id == null)
 			return null;
 		return id.getPath();

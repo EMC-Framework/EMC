@@ -11,6 +11,7 @@ import me.deftware.client.framework.item.types.ToolItem;
 import me.deftware.client.framework.item.types.TridentItem;
 import me.deftware.client.framework.item.types.*;
 import me.deftware.client.framework.registry.BlockRegistry;
+import me.deftware.client.framework.registry.Identifiable;
 import me.deftware.client.framework.render.ItemRenderer;
 import me.deftware.client.framework.world.block.Block;
 import net.minecraft.init.Blocks;
@@ -20,7 +21,7 @@ import net.minecraft.util.registry.IRegistry;
 /**
  * @author Deftware
  */
-public class Item implements IItem, SelectableList.ListItem {
+public class Item implements IItem, SelectableList.ListItem, Identifiable {
 
 	protected final net.minecraft.item.Item item;
 
@@ -60,13 +61,7 @@ public class Item implements IItem, SelectableList.ListItem {
 	}
 
 	public String getIdentifierKey() {
-		String key = getTranslationKey();
-		if (key.startsWith("item.minecraft")) {
-			key = key.substring("item.minecraft.".length());
-		} else if (key.startsWith("block.minecraft")) {
-			key = key.substring("block.minecraft.".length());
-		}
-		return key;
+		return IRegistry.ITEM.getKey(item).getPath();
 	}
 
 	public boolean isAir() {
