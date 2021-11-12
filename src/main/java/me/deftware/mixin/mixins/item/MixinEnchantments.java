@@ -13,7 +13,7 @@ public class MixinEnchantments {
 
 	@Redirect(method = "registerEnchantments", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/registry/RegistryNamespaced;register(ILjava/lang/Object;Ljava/lang/Object;)V", opcode = 180))
 	private static void registerEnchantments(RegistryNamespaced<ResourceLocation, Enchantment> registryNamespaced, int id, Object key, Object value) {
-		EnchantmentRegistry.INSTANCE.register(((ResourceLocation) key).toString(), (Enchantment) value);
+		EnchantmentRegistry.INSTANCE.register(((ResourceLocation) key).getPath(), (Enchantment) value);
 		registryNamespaced.register(id, (ResourceLocation) key, (Enchantment) value);
 	}
 
