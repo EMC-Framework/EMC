@@ -13,7 +13,7 @@ public class MixinItems {
 
 	@Inject(method = "register(Lnet/minecraft/util/ResourceLocation;Lnet/minecraft/item/Item;)V", at = @At("TAIL"))
 	private static void register(ResourceLocation resourceLocationIn, Item itemIn, CallbackInfo ci) {
-		ItemRegistry.INSTANCE.register(resourceLocationIn.toString(), itemIn);
+		ItemRegistry.INSTANCE.register(resourceLocationIn.getPath(), itemIn);
 	}
 
 }

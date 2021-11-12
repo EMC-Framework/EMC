@@ -14,7 +14,7 @@ public class MixinEntityType {
     @Redirect(method = "register", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/registry/IRegistry;put(Lnet/minecraft/util/ResourceLocation;Ljava/lang/Object;)V", opcode = 182))
     private static <T> void registerRedirect(IRegistry<T> iRegistry, ResourceLocation key, T entityType) {
         iRegistry.put(key, entityType);
-        EntityRegistry.INSTANCE.register(key.toString(), (EntityType<?>) entityType);
+        EntityRegistry.INSTANCE.register(key.getPath(), (EntityType<?>) entityType);
     }
 
 }

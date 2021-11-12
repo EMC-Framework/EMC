@@ -13,7 +13,7 @@ public class MixinBlocks {
 
 	@Inject(method = "register(Lnet/minecraft/util/ResourceLocation;Lnet/minecraft/block/Block;)V", at = @At("HEAD"))
 	private static void register(ResourceLocation key, Block blockIn, CallbackInfo ci) {
-		BlockRegistry.INSTANCE.register(key.toString(), blockIn);
+		BlockRegistry.INSTANCE.register(key.getPath(), blockIn);
 	}
 
 }
