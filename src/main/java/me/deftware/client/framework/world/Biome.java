@@ -12,8 +12,12 @@ public class Biome {
 		return this;
 	}
 
+	private Identifier getId() {
+		return Registry.BIOME.getId(biome);
+	}
+
 	public String getKey() {
-		Identifier id = Registry.BIOME.getId(biome);
+		Identifier id = getId();
 		if (id == null)
 			return null;
 		return id.getPath();
