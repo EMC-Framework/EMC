@@ -87,6 +87,8 @@
     "world.MixinWorldClient",
     "world.MixinWorldChunk",
     "shader.MixinShaderEffect",
-    "shader.MixinWorldRenderer"
+    "shader.MixinWorldRenderer",
+    "biome.MixinBiome",
+    "biome.MixinHeightContext"
   ]
 }
