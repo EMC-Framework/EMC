@@ -17,9 +17,9 @@ public class MixinRegistry {
 	@Inject(method = "register(Lnet/minecraft/util/registry/Registry;Lnet/minecraft/util/Identifier;Ljava/lang/Object;)Ljava/lang/Object;", at = @At("HEAD"))
 	private static <V, T extends V> void register(Registry<V> registry, Identifier id, T entry, CallbackInfoReturnable<T> cir) {
 		if (entry instanceof Block) {
-			BlockRegistry.INSTANCE.register(id.toString(), (Block) entry);
+			BlockRegistry.INSTANCE.register(id.getPath(), (Block) entry);
 		} else if (entry instanceof Item) {
-			ItemRegistry.INSTANCE.register(id.toString(), (Item) entry);
+			ItemRegistry.INSTANCE.register(id.getPath(), (Item) entry);
 		}
 	}
 
