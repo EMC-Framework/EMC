@@ -12,8 +12,7 @@ public class Biome {
 	}
 
 	public String getKey() {
-		// TODO
-		return "plains";
+		return biome.biomeName;
 	}
 
 	public String getCatergory() {

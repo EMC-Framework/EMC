@@ -3,6 +3,7 @@ package me.deftware.client.framework.entity;
 import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.fonts.FontRenderer;
 import me.deftware.client.framework.gui.widgets.SelectableList;
+import me.deftware.client.framework.registry.Identifiable;
 import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -14,7 +15,7 @@ import java.util.Objects;
 /**
  * @author Deftware
  */
-public class EntityCapsule implements SelectableList.ListItem {
+public class EntityCapsule implements SelectableList.ListItem, Identifiable {
 
     private final Class<? extends Entity> entityType;
     private final String entityName;
@@ -58,6 +59,11 @@ public class EntityCapsule implements SelectableList.ListItem {
         return new MinecraftIdentifier(entityName);
     }
 
+    public String getIdentifierKey() {
+        return entityName;
+    }
+
+    @Override
     public String getTranslationKey() {
         return entityName;
     }
