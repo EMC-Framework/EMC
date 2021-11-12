@@ -1,11 +1,13 @@
 package me.deftware.client.framework.item.enchantment;
 
 import me.deftware.client.framework.chat.ChatMessage;
+import me.deftware.client.framework.registry.Identifiable;
+import net.minecraft.util.registry.IRegistry;
 
 /**
  * @author Deftware
  */
-public class Enchantment {
+public class Enchantment implements Identifiable {
 
 	protected final net.minecraft.enchantment.Enchantment enchantment;
 
@@ -17,16 +19,14 @@ public class Enchantment {
 		return enchantment;
 	}
 
+	@Override
 	public String getTranslationKey() {
-		return net.minecraft.enchantment.Enchantment.REGISTRY.getNameForObject(enchantment).toString();
+		return enchantment.getName();
 	}
 
-	public String getEnchantmentKey() {
-		String key = getTranslationKey();
-		if (key.startsWith("minecraft")) {
-			key = key.substring("minecraft.".length());
-		}
-		return key;
+	@Override
+	public String getIdentifierKey() {
+		return net.minecraft.enchantment.Enchantment.REGISTRY.getNameForObject(enchantment).getPath();
 	}
 
 	public int getMinLevel() {

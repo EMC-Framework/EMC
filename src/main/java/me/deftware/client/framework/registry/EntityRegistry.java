@@ -11,19 +11,11 @@ import java.util.stream.Stream;
 /**
  * @author Deftware
  */
-public enum EntityRegistry implements IRegistry<EntityCapsule, Class<? extends Entity>> {
+public enum EntityRegistry implements IRegistry.IdentifiableRegistry<EntityCapsule, Class<? extends Entity>> {
 
     INSTANCE;
 
     private final HashMap<String, EntityCapsule> entities = new HashMap<>();
-
-    @Override
-    public Optional<EntityCapsule> find(String id) {
-        return stream().filter(item -> {
-            return  item.getTranslationKey().equalsIgnoreCase(id) ||
-                    item.getTranslationKey().startsWith("minecraft:") && item.getTranslationKey().substring("minecraft:".length()).equalsIgnoreCase(id);
-        }).findFirst();
-    }
 
     @Override
     public Stream<EntityCapsule> stream() {

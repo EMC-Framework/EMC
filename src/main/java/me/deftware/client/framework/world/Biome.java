@@ -12,8 +12,12 @@ public class Biome {
 		return this;
 	}
 
+	private ResourceLocation getId() {
+		return net.minecraft.world.biome.Biome.REGISTRY.getNameForObject(biome);
+	}
+
 	public String getKey() {
-		ResourceLocation id = net.minecraft.world.biome.Biome.REGISTRY.getNameForObject(biome);
+		ResourceLocation id = getId();
 		if (id == null)
 			return null;
 		return id.getPath();

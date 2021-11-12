@@ -10,6 +10,7 @@ import me.deftware.client.framework.item.types.RangedWeaponItem;
 import me.deftware.client.framework.item.types.ToolItem;
 import me.deftware.client.framework.item.types.*;
 import me.deftware.client.framework.registry.BlockRegistry;
+import me.deftware.client.framework.registry.Identifiable;
 import me.deftware.client.framework.render.ItemRenderer;
 import me.deftware.client.framework.world.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
@@ -20,7 +21,7 @@ import net.minecraft.item.ItemStack;
 /**
  * @author Deftware
  */
-public class Item implements IItem, SelectableList.ListItem {
+public class Item implements IItem, SelectableList.ListItem, Identifiable {
 
 	protected final net.minecraft.item.Item item;
 
@@ -58,7 +59,7 @@ public class Item implements IItem, SelectableList.ListItem {
 	}
 
 	public String getIdentifierKey() {
-		return getTranslationKey().substring("minecraft:".length());
+		return net.minecraft.item.Item.REGISTRY.getNameForObject(item).getPath();
 	}
 
 	public boolean isAir() {
@@ -66,7 +67,7 @@ public class Item implements IItem, SelectableList.ListItem {
 	}
 
 	public String getTranslationKey() {
-		return net.minecraft.item.Item.REGISTRY.getNameForObject(item).toString();
+		return item.getTranslationKey();
 	}
 
 	public int getID() {

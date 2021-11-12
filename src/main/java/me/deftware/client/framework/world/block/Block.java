@@ -5,6 +5,7 @@ import me.deftware.client.framework.fonts.FontRenderer;
 import me.deftware.client.framework.gui.widgets.SelectableList;
 import me.deftware.client.framework.item.IItem;
 import me.deftware.client.framework.math.position.BlockPosition;
+import me.deftware.client.framework.registry.Identifiable;
 import me.deftware.client.framework.render.ItemRenderer;
 import me.deftware.client.framework.world.block.types.CropBlock;
 import me.deftware.client.framework.world.block.types.ShulkerBlock;
@@ -13,10 +14,12 @@ import net.minecraft.block.*;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 
+import java.awt.*;
+
 /**
  * @author Deftware
  */
-public class Block implements IItem, SelectableList.ListItem {
+public class Block implements IItem, SelectableList.ListItem, Identifiable {
 
 	protected final net.minecraft.block.Block block;
 	protected BlockPosition blockPosition;
@@ -84,11 +87,11 @@ public class Block implements IItem, SelectableList.ListItem {
 	}
 
 	public String getIdentifierKey() {
-		return getTranslationKey().substring("minecraft:".length());
+		return net.minecraft.block.Block.REGISTRY.getNameForObject(block).getPath();
 	}
 
 	public String getTranslationKey() {
-		return net.minecraft.block.Block.REGISTRY.getNameForObject(block).toString();
+		return block.getTranslationKey();
 	}
 
 	public boolean instanceOf(BlockType type) {

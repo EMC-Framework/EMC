@@ -1,11 +1,12 @@
 package me.deftware.client.framework.item.effect;
 
 import net.minecraft.potion.Potion;
+import me.deftware.client.framework.registry.Identifiable;
 
 /**
  * @author Deftware
  */
-public class StatusEffect {
+public class StatusEffect implements Identifiable {
 
 	private final Potion statusEffect;
 	private final EffectType effectType;
@@ -25,8 +26,14 @@ public class StatusEffect {
 		return effectType;
 	}
 
+	@Override
 	public String getTranslationKey() {
-		return Potion.REGISTRY.getNameForObject(statusEffect).toString();
+		return statusEffect.getName();
+	}
+
+	@Override
+	public String getIdentifierKey() {
+		return Potion.REGISTRY.getNameForObject(statusEffect).getPath();
 	}
 
 }
