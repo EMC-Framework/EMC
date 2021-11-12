@@ -1,5 +1,6 @@
 package me.deftware.client.framework.world;
 
+import me.deftware.client.framework.world.gen.BiomeDecorator;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -12,8 +13,12 @@ public class Biome {
 		return this;
 	}
 
+	private Identifier getId() {
+		return Registry.BIOME.getId(biome);
+	}
+
 	public String getKey() {
-		Identifier id = Registry.BIOME.getId(biome);
+		Identifier id = getId();
 		if (id == null)
 			return null;
 		return id.getPath();
@@ -21,6 +26,10 @@ public class Biome {
 
 	public String getCatergory() {
 		return biome.getCategory().getName();
+	}
+
+	public BiomeDecorator getDecorator() {
+		return BiomeDecorator.BIOME_DECORATORS.get(this.getId());
 	}
 
 }
