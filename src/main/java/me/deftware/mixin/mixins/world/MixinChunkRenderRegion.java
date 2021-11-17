@@ -1,9 +1,8 @@
 package me.deftware.mixin.mixins.world;
 
-import me.deftware.client.framework.world.classifier.BlockClassifier;
+import me.deftware.client.framework.world.chunk.BlockClassifier;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.render.chunk.ChunkRendererRegion;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
@@ -31,8 +30,12 @@ public abstract class MixinChunkRenderRegion {
 		if (blockStates != null && pos != null) {
 			BlockState blockState = blockStates[getIndex(pos)];
 			Block block = blockState.getBlock();
-			int id = Registry.BLOCK.getRawId(block);
-			BlockClassifier.getClassifiers().forEach(blockClassifier -> blockClassifier.classify(block, pos, id));
+			String id = Registry.BLOCK.getId(block).getPath();
+			long position = pos.asLong();
+			BlockClassifier.CLASSIFIERS.forEach(blockClassifier -> {
+				if (blockClassifier.isActive())
+					blockClassifier.classify(position, id);
+			});
 		}
 	}
 
