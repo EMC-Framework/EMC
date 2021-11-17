@@ -7,12 +7,12 @@ import me.deftware.client.framework.event.events.EventEntityUpdated;
 import me.deftware.client.framework.event.events.EventWorldLoad;
 import me.deftware.client.framework.global.GameKeys;
 import me.deftware.client.framework.global.GameMap;
-import me.deftware.client.framework.world.classifier.BlockClassifier;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.WorldSettings;
+import me.deftware.client.framework.world.chunk.BlockClassifier;
 import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -44,7 +44,7 @@ public abstract class MixinWorldClient extends MixinWorld implements me.deftware
     @Inject(method = "<init>", at = @At("TAIL"))
     private void onConstructed(NetHandlerPlayClient p_i49845_1_, WorldSettings p_i49845_2_, DimensionType p_i49845_3_, EnumDifficulty p_i49845_4_, Profiler p_i49845_5_, CallbackInfo ci) {
         new EventWorldLoad().broadcast();
-        BlockClassifier.getClassifiers().forEach(blockClassifier -> blockClassifier.getClassifiedBlocks().clear());
+        BlockClassifier.CLASSIFIERS.forEach(BlockClassifier::clear);
     }
 
     @Inject(method = "spawnEntity", at = @At("TAIL"))
