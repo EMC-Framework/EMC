@@ -1,6 +1,6 @@
 package me.deftware.mixin.mixins.world;
 
-import me.deftware.client.framework.world.classifier.BlockClassifier;
+import me.deftware.client.framework.world.chunk.BlockClassifier;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.BlockPos;
@@ -20,8 +20,12 @@ public abstract class MixinWorldChunk {
 	private IBlockState getBlockState(Chunk chunk, BlockPos p_getBlockState_1_) {
 		IBlockState blockState = chunk.getBlockState(p_getBlockState_1_);
 		Block block = blockState.getBlock();
-		int id = Block.blockRegistry.getIDForObject(block);
-		BlockClassifier.getClassifiers().forEach(blockClassifier -> blockClassifier.classify(block, p_getBlockState_1_, id));
+		String id = Block.blockRegistry.getNameForObject(block).getResourcePath();
+		long position = p_getBlockState_1_.toLong();
+		BlockClassifier.CLASSIFIERS.forEach(blockClassifier -> {
+			if (blockClassifier.isActive())
+				blockClassifier.classify(position, id);
+		});
 		return blockState;
 	}
 
