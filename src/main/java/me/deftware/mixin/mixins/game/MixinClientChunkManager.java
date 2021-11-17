@@ -1,6 +1,6 @@
 package me.deftware.mixin.mixins.game;
 
-import me.deftware.client.framework.world.classifier.BlockClassifier;
+import me.deftware.client.framework.world.chunk.BlockClassifier;
 import net.minecraft.client.world.ClientChunkManager;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.WorldChunk;
@@ -19,7 +19,7 @@ public abstract class MixinClientChunkManager {
 			ChunkPos chunkPos = chunk.getPos();
 			boolean match = chunkPos.x == x && chunkPos.z == y;
 			if (match) {
-				BlockClassifier.clear(chunkPos);
+				BlockClassifier.CLASSIFIERS.forEach(b -> b.unload(x, y));
 			}
 			return match;
 		}

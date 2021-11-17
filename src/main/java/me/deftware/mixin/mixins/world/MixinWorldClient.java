@@ -7,7 +7,7 @@ import me.deftware.client.framework.event.events.EventEntityUpdated;
 import me.deftware.client.framework.event.events.EventWorldLoad;
 import me.deftware.client.framework.global.GameKeys;
 import me.deftware.client.framework.global.GameMap;
-import me.deftware.client.framework.world.classifier.BlockClassifier;
+import me.deftware.client.framework.world.chunk.BlockClassifier;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.world.ClientWorld;
@@ -44,7 +44,7 @@ public abstract class MixinWorldClient extends MixinWorld implements me.deftware
     @Inject(method = "<init>", at = @At("TAIL"))
     private void onConstructed(ClientPlayNetworkHandler clientPlayNetworkHandler, LevelInfo levelInfo, DimensionType dimensionType, int chunkLoadDistance, Profiler profiler, WorldRenderer worldRenderer, CallbackInfo ci) {
         new EventWorldLoad().broadcast();
-        BlockClassifier.getClassifiers().forEach(blockClassifier -> blockClassifier.getClassifiedBlocks().clear());
+        BlockClassifier.CLASSIFIERS.forEach(BlockClassifier::clear);
     }
 
     @Inject(method = "addEntityPrivate", at = @At("TAIL"))
