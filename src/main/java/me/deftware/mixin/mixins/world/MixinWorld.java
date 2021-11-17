@@ -4,8 +4,6 @@ import me.deftware.client.framework.entity.block.TileEntity;
 import me.deftware.client.framework.event.events.EventTileBlockRemoved;
 import me.deftware.client.framework.math.position.BlockPosition;
 import me.deftware.client.framework.world.Biome;
-import me.deftware.client.framework.world.classifier.BlockClassifier;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
@@ -64,18 +62,6 @@ public abstract class MixinWorld implements me.deftware.client.framework.world.W
 			new EventTileBlockRemoved(emcTileEntities.remove(blockEntity)).broadcast();
 		}
 	}
-
-	@Inject(method = "setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;I)Z", at = @At("TAIL"))
-	public void setBlockState(BlockPos pos, BlockState state, int flags, CallbackInfoReturnable<Boolean> info) {
-		if (state.isAir()) {
-			BlockClassifier.getClassifiers().forEach(blockClassifier -> {
-				if (blockClassifier.getClassifiedBlocks().containsKey(pos.asLong())) {
-					blockClassifier.getClassifiedBlocks().remove(pos.asLong());
-				}
-			});
-		}
-	}
-
 
 	@Override
 	public Stream<TileEntity> getLoadedTileEntities() {
