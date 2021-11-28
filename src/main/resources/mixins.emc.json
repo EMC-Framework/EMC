@@ -23,7 +23,6 @@
     "entity.MixinStatusEffects",
     "entity.MixinEntityType",
     "game.MixinClientBrandRetriever",
-    "game.MixinClientChunkManager",
     "game.MixinMinecraft",
     "game.MixinSoundSystem",
     "game.MixinTimer",
@@ -79,9 +78,11 @@
     "render.MixinWindow",
     "render.MixinParticleManager",
     "world.MixinWorld",
-    "world.MixinWorldChunk",
     "world.MixinWorldClient",
     "shader.MixinShaderEffect",
-    "shader.MixinWorldRenderer"
+    "shader.MixinWorldRenderer",
+    "world.MixinChunk",
+    "world.MixinChunkSection",
+    "world.MixinChunkManager"
   ]
 }
