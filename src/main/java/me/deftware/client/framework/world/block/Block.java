@@ -10,10 +10,13 @@ import me.deftware.client.framework.render.ItemRenderer;
 import me.deftware.client.framework.world.block.types.CropBlock;
 import me.deftware.client.framework.world.block.types.StorageBlock;
 import net.minecraft.block.*;
+import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
 
-import java.awt.*;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * @author Deftware
@@ -63,8 +66,10 @@ public class Block implements IItem, SelectableList.ListItem, Identifiable {
 		return false;
 	}
 
-	public BlockState getDefaultBlockState() {
-		return new BlockState(block.getDefaultState());
+	public InputStream getAsset() throws IOException {
+		ResourceLocation blockResource = net.minecraft.block.Block.blockRegistry.getNameForObject(block);
+		ResourceLocation blockTexture = new ResourceLocation(blockResource.getResourceDomain(), "textures/blocks/" + blockResource.getResourcePath() + ".png");
+		return Minecraft.getMinecraft().getResourceManager().getResource(blockTexture).getInputStream();
 	}
 
 	public boolean isAir() {

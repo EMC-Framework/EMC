@@ -4,10 +4,9 @@ import me.deftware.client.framework.entity.block.TileEntity;
 import me.deftware.client.framework.event.events.EventTileBlockRemoved;
 import me.deftware.client.framework.math.position.BlockPosition;
 import me.deftware.client.framework.world.Biome;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
 import net.minecraft.client.Minecraft;
+import me.deftware.client.framework.world.chunk.ChunkAccessor;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -91,6 +90,11 @@ public abstract class MixinWorld implements me.deftware.client.framework.world.W
 	@Override
 	public void _disconnect() {
 		((World) (Object) this).sendQuittingDisconnectingPacket();
+	}
+
+	@Override
+	public ChunkAccessor getChunk(int x, int z) {
+		return (ChunkAccessor) ((World) (Object) this).getChunkFromChunkCoords(x, z);
 	}
 
 	@Override

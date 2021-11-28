@@ -12,7 +12,6 @@ import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.WorldSettings;
-import me.deftware.client.framework.world.chunk.BlockClassifier;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -47,7 +46,6 @@ public abstract class MixinWorldClient extends MixinWorld implements me.deftware
     @Inject(method = "<init>", at = @At("RETURN"))
     private void onConstructed(NetHandlerPlayClient netHandler, WorldSettings settings, int dimension, EnumDifficulty difficulty, Profiler profilerIn, CallbackInfo ci) {
         new EventWorldLoad().broadcast();
-        BlockClassifier.CLASSIFIERS.forEach(BlockClassifier::clear);
     }
 
     @Inject(method = "spawnEntityInWorld", at = @At("TAIL"))
