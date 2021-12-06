@@ -39,7 +39,7 @@ dependencies {
 	implementation 'com.google.code.findbugs:jsr305:3.0.2'
 	implementation files("deps/mocked.jar")
 
-	include 'com.github.Chocohead:Fabric-ASM:v2.2'
+	include 'com.github.Chocohead:Fabric-ASM:v2.3'
 }
 
 sourceSets {
