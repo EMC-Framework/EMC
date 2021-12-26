@@ -88,6 +88,7 @@
     "shader.MixinWorldRenderer",
     "biome.MixinBiome",
     "biome.MixinHeightContext",
+    "biome.MixinChunkRandom",
     "world.MixinChunk",
     "world.MixinChunkSection",
     "world.MixinChunkManager"
