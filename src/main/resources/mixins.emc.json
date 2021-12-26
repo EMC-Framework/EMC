@@ -84,6 +84,7 @@
     "shader.MixinShaderEffect",
     "shader.MixinWorldRenderer",
     "biome.MixinBiome",
+    "biome.MixinChunkRandom",
     "world.MixinChunk",
     "world.MixinChunkSection",
     "world.MixinChunkManager"
