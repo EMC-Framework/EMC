@@ -59,6 +59,8 @@ public interface World {
 	 */
 	ChunkAccessor getChunk(int x, int z);
 
+	boolean _hasChunk(int x, int z);
+
 	/**
 	 * End = 1
 	 * Overworld = 0
