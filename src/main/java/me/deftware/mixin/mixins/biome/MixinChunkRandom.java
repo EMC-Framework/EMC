@@ -9,12 +9,12 @@ public abstract class MixinChunkRandom implements ChunkGenerationRandom {
 
     @Override
     public long _setPopulationSeed(long worldSeed, int blockX, int blockZ) {
-        return ((ChunkRandom) (Object) this).setPopulationSeed(worldSeed, blockX, blockZ);
+        return ((ChunkRandom) (Object) this).setStructureSeed(worldSeed, blockX, blockZ);
     }
 
     @Override
     public void _setDecoratorSeed(long populationSeed, int index, int step) {
-        ((ChunkRandom) (Object) this).setDecoratorSeed(populationSeed, index, step);
+        ((ChunkRandom) (Object) this).setFeatureSeed(populationSeed, index, step);
     }
 
 }
