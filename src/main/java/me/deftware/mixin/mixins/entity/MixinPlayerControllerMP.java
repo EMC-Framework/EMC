@@ -1,17 +1,33 @@
 package me.deftware.mixin.mixins.entity;
 
+import me.deftware.client.framework.entity.EntityHand;
 import me.deftware.client.framework.event.events.EventAttackEntity;
 import me.deftware.client.framework.event.events.EventBlockBreakingCooldown;
+import me.deftware.client.framework.event.events.EventBlockUpdate;
+import me.deftware.client.framework.event.events.EventItemUse;
 import me.deftware.client.framework.global.GameKeys;
 import me.deftware.client.framework.global.GameMap;
 import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
 import me.deftware.mixin.imp.IMixinPlayerControllerMP;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemUseContext;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.RayTraceResult;
+import me.deftware.client.framework.math.position.DoubleBlockPosition;
+import me.deftware.client.framework.registry.BlockRegistry;
+import me.deftware.client.framework.registry.ItemRegistry;
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -74,6 +90,48 @@ public class MixinPlayerControllerMP implements IMixinPlayerControllerMP {
     @Override
     public void setPlayerHittingBlock(boolean state) {
         this.isHittingBlock = state;
+    }
+
+    @Redirect(method = "processRightClick", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;useItemRightClick(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/util/EnumHand;)Lnet/minecraft/util/ActionResult;"))
+    private ActionResult<ItemStack> onItemUse(ItemStack instance, World world, EntityPlayer user, EnumHand hand) {
+        Item item = instance.getItem();
+        ActionResult<ItemStack> result = instance.useItemRightClick(world, user, hand);
+
+        new EventItemUse(
+                ItemRegistry.INSTANCE.getItem(item),
+                EntityHand.of(hand)
+        ).broadcast();
+
+        return result;
+    }
+
+    @Redirect(method = "onPlayerDestroyBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;onPlayerDestroy(Lnet/minecraft/world/IWorld;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/state/IBlockState;)V"))
+    private void onBlockBreak(Block block, IWorld world, BlockPos pos, IBlockState state) {
+        block.onPlayerDestroy(world, pos, state);
+        new EventBlockUpdate(EventBlockUpdate.State.Break,
+                DoubleBlockPosition.fromMinecraftBlockPos(pos),
+                BlockRegistry.INSTANCE.getBlock(block),
+                EntityHand.MainHand
+        ).broadcast();
+    }
+
+    @Redirect(method = "processRightClickBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;onItemUse(Lnet/minecraft/item/ItemUseContext;)Lnet/minecraft/util/EnumActionResult;"))
+    private EnumActionResult onBlockPlace(ItemStack instance, ItemUseContext context) {
+        Item item = instance.getItem();
+        EnumActionResult result = instance.onItemUse(context);
+
+        if ((result == EnumActionResult.SUCCESS || result == EnumActionResult.PASS) && item instanceof ItemBlock) {
+            Block block = ((ItemBlock) item).getBlock();
+            BlockPos pos = context.getPos().offset(context.getFace());
+
+            new EventBlockUpdate(
+                    EventBlockUpdate.State.Place,
+                    DoubleBlockPosition.fromMinecraftBlockPos(pos),
+                    BlockRegistry.INSTANCE.getBlock(block),
+                    EntityHand.MainHand
+            ).broadcast();
+        }
+        return result;
     }
 
 }
