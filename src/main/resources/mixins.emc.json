@@ -52,6 +52,7 @@
     "network.MixinServerListEntryNormal",
     "network.MixinPlayerListEntry",
     "network.MixinServerInfo",
+    "network.MixinSPacketMultiBlockChange",
     "render.MixinBlockFluidRenderer",
     "render.MixinBlockModelRenderer",
     "render.MixinCamera",
