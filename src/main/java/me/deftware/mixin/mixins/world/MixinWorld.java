@@ -100,6 +100,11 @@ public abstract class MixinWorld implements me.deftware.client.framework.world.W
 	}
 
 	@Override
+	public boolean _hasChunk(int x, int z) {
+		return ((World) (Object) this).isChunkLoaded(x, z);
+	}
+
+	@Override
 	public int _getDimension() {
 		return ((World) (Object) this).getDimension().getType().getRawId();
 	}
