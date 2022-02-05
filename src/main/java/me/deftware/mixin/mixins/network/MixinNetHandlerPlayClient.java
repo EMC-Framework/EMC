@@ -12,7 +12,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.util.math.ChunkPos;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -88,13 +88,22 @@ public class MixinNetHandlerPlayClient implements NetworkHandler {
     @Inject(method = "onChunkDeltaUpdate", at = @At("HEAD"))
     private void onChunkDeltaPacket(ChunkDeltaUpdateS2CPacket packet, CallbackInfo ci) {
         ChunkDeltaAccessor accessor = (ChunkDeltaAccessor) packet;
-        Block[] blocks = Arrays.stream(accessor.getBlockStates())
-                .map(s -> BlockRegistry.INSTANCE.getBlock(s.getBlock()))
+        Block[] blocks = Arrays.stream(accessor.getRecords())
+                .map(s -> BlockRegistry.INSTANCE.getBlock(s.getState().getBlock()))
                 .toArray(Block[]::new);
-        ChunkSectionPos pos = accessor.getSectionPos();
+        int section = 0;
+        short[] positions = new short[accessor.getRecords().length];
+        for (int i = 0; i < positions.length; i++) {
+            // Format is wrong so we need to repack it
+            short pos = accessor.getRecords()[i].getPosShort();
+            int x = pos >> 12 & 0xF, y = pos & 0xFF, z = pos >> 8 & 0xF;
+            positions[i] = (short) ((x << 8) | (z << 4) | (y & 0xF));
+            section = y >> 4;
+        }
+        ChunkPos chunkPos = accessor.getChunkPos();
         new EventChunk.EventDeltaChunk(
-                pos.getX(), pos.getY(), pos.getZ(),
-                accessor.getPositions(), blocks
+                chunkPos.x, section, chunkPos.z,
+                positions, blocks
         ).broadcast();
     }
 
