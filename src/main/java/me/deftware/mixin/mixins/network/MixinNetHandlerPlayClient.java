@@ -101,9 +101,6 @@ public class MixinNetHandlerPlayClient implements NetworkHandler {
         short[] positions = { (short) ((x << 8) | (z << 4) | y) };
         Block[] blocks = { BlockRegistry.INSTANCE.getBlock(packet.getBlockState().getBlock()) };
 
-        if (blocks[0].getIdentifierKey().contains("redstone"))
-            System.out.printf("Packing %d, %d, %d (%d, %d, %d) to %d (%d, %d, %d)\n", pos.getX(), pos.getY(), pos.getZ(), x, y, z, positions[0], chunkX, chunkY, chunkZ);
-
         new EventChunk.EventDeltaChunk(
                 chunkX, chunkY, chunkZ,
                 positions, blocks
