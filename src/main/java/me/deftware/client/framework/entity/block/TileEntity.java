@@ -43,9 +43,9 @@ public class TileEntity {
 	protected TileEntity(net.minecraft.tileentity.TileEntity entity) {
 		this.entity = entity;
 		this.position = new TileBlockPosition(entity);
-		if (entity.getBlockType() != null) {
+		/*if (entity.getBlockType() != null) {
 			this.block = BlockRegistry.INSTANCE.getBlock(entity.getBlockType());
-		}
+		}*/
 	}
 
 	public String getClassName() {
