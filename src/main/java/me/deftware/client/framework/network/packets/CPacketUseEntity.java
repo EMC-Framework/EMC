@@ -4,6 +4,7 @@ import me.deftware.client.framework.entity.Entity;
 import me.deftware.client.framework.network.PacketWrapper;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
+import net.minecraft.util.Hand;
 
 /**
  * @author Deftware
@@ -14,8 +15,12 @@ public class CPacketUseEntity extends PacketWrapper {
         super(packet);
     }
 
-    public CPacketUseEntity(Entity entity) {
-        super(new PlayerInteractEntityC2SPacket(entity.getMinecraftEntity(), entity.getMinecraftEntity().isSneaking()));
+    public static CPacketUseEntity attack(Entity entity) {
+        return new CPacketUseEntity(new PlayerInteractEntityC2SPacket(entity.getMinecraftEntity(), entity.getMinecraftEntity().isSneaking()));
+    }
+
+    public static CPacketUseEntity interact(Entity entity) {
+        return new CPacketUseEntity(new PlayerInteractEntityC2SPacket(entity.getMinecraftEntity(), Hand.MAIN_HAND, entity.getMinecraftEntity().isSneaking()));
     }
 
     public Type getType() {
