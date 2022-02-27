@@ -18,4 +18,5 @@ public class CPacketPlayerUseBlock extends PacketWrapper {
 	public CPacketPlayerUseBlock(BlockSwingResult swingResult) {
 		this(new PlayerInteractBlockC2SPacket(Hand.MAIN_HAND, swingResult.getMinecraftHitResult()));
 	}
+
 }
