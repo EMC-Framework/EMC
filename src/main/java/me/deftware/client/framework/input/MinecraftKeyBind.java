@@ -11,7 +11,7 @@ import net.minecraft.client.util.InputMappings;
 public enum MinecraftKeyBind {
 
 	SNEAK(Minecraft.getInstance().gameSettings.keyBindSneak),
-	USEITEM(Minecraft.getInstance().gameSettings.keyBindUseItem),
+	USE_ITEM(Minecraft.getInstance().gameSettings.keyBindUseItem),
 	JUMP(Minecraft.getInstance().gameSettings.keyBindJump),
 	SPRINT(Minecraft.getInstance().gameSettings.keyBindSprint),
 	FORWARD(Minecraft.getInstance().gameSettings.keyBindForward),
