@@ -11,7 +11,7 @@ import org.lwjgl.input.Keyboard;
 public enum MinecraftKeyBind {
 
 	SNEAK(Minecraft.getMinecraft().gameSettings.keyBindSneak),
-	USEITEM(Minecraft.getMinecraft().gameSettings.keyBindUseItem),
+	USE_ITEM(Minecraft.getMinecraft().gameSettings.keyBindUseItem),
 	JUMP(Minecraft.getMinecraft().gameSettings.keyBindJump),
 	SPRINT(Minecraft.getMinecraft().gameSettings.keyBindSprint),
 	FORWARD(Minecraft.getMinecraft().gameSettings.keyBindForward),
