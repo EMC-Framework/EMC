@@ -11,13 +11,22 @@ public class RenderHelper {
 
 	private static AoMode aoMode = null;
 
+	public static AoMode getAoMode() {
+		return MinecraftClient.getInstance().options.getAo().getValue();
+	}
+
+	public static void setAoMode(AoMode mode) {
+		MinecraftClient.getInstance().options.getAo().setValue(mode);
+	}
+
 	public static void reloadRenderers() {
-		if (aoMode == null) aoMode = MinecraftClient.getInstance().options.ao;
+		if (aoMode == null)
+			aoMode = getAoMode();
 		if (Bootstrap.blockProperties.isActive()) {
-			aoMode = MinecraftClient.getInstance().options.ao;
-			MinecraftClient.getInstance().options.ao = AoMode.OFF;
+			aoMode = getAoMode();
+			setAoMode(AoMode.OFF);
 		} else {
-			MinecraftClient.getInstance().options.ao = aoMode;
+			setAoMode(aoMode);
 		}
 		MinecraftClient.getInstance().worldRenderer.reload();
 	}

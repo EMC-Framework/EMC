@@ -13,11 +13,11 @@ import net.minecraft.client.MinecraftClient;
 public class WindowHelper {
 
 	public static int getLimitFramerate() {
-		return MinecraftClient.getInstance().options.maxFps;
+		return MinecraftClient.getInstance().options.getMaxFps().getValue();
 	}
 
 	public static void setLimitFramerate(int framerate) {
-		MinecraftClient.getInstance().options.maxFps = framerate;
+		MinecraftClient.getInstance().options.getMaxFps().setValue(framerate);
 		MinecraftClient.getInstance().getWindow().setFramerateLimit(framerate);
 	}
 
@@ -30,16 +30,16 @@ public class WindowHelper {
 	}
 
 	public static void setScaleFactor(int factor) {
-		MinecraftClient.getInstance().options.guiScale = factor;
+		MinecraftClient.getInstance().options.getGuiScale().setValue(factor);
 		MinecraftClient.getInstance().onResolutionChanged();
 	}
 
 	public static int getGuiScaleRaw() {
-		return MinecraftClient.getInstance().options.guiScale;
+		return MinecraftClient.getInstance().options.getGuiScale().getValue();
 	}
 
 	public static int getGuiScale() {
-		int factor = MinecraftClient.getInstance().getWindow().calculateScaleFactor(MinecraftClient.getInstance().options.guiScale, MinecraftClient.getInstance().forcesUnicodeFont());
+		int factor = MinecraftClient.getInstance().getWindow().calculateScaleFactor(getGuiScaleRaw(), MinecraftClient.getInstance().forcesUnicodeFont());
 		if (factor == 0) {
 			factor = 4;
 		}
@@ -63,11 +63,11 @@ public class WindowHelper {
 	}
 
 	public static double getGamma() {
-		return MinecraftClient.getInstance().options.gamma;
+		return MinecraftClient.getInstance().options.getGamma().getValue();
 	}
 
 	public static void setGamma(double value) {
-		MinecraftClient.getInstance().options.gamma = value;
+		MinecraftClient.getInstance().options.getGamma().setValue(value);
 	}
 
 	@Deprecated

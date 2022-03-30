@@ -17,7 +17,8 @@ public class CPacketPlayerUseBlock extends PacketWrapper {
 	}
 
 	public CPacketPlayerUseBlock(BlockSwingResult swingResult) {
-		this(new PlayerInteractBlockC2SPacket(Hand.MAIN_HAND, swingResult.getMinecraftHitResult()));
+		// TODO: What is sequence?
+		this(new PlayerInteractBlockC2SPacket(Hand.MAIN_HAND, swingResult.getMinecraftHitResult(), 0));
 	}
 
 }

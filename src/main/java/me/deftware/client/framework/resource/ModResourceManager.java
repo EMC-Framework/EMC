@@ -6,13 +6,13 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourcePack;
+import net.minecraft.resource.ResourceRef;
 import net.minecraft.util.Identifier;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
@@ -58,8 +58,10 @@ public class ModResourceManager implements ResourceManager {
     }
 
     @Override
-    public List<Resource> getAllResources(Identifier id) throws IOException {
-        return Collections.singletonList(getResource(id));
+    public List<ResourceRef> getAllResources(Identifier id) {
+        return Collections.singletonList(
+                new ResourceRef("EMC", () -> getResource(id))
+        );
     }
 
     @Override
@@ -72,7 +74,12 @@ public class ModResourceManager implements ResourceManager {
     }
 
     @Override
-    public Collection<Identifier> findResources(String startingPath, Predicate<String> pathPredicate) {
+    public Map<Identifier, ResourceRef> findResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
+        return null;
+    }
+
+    @Override
+    public Map<Identifier, List<ResourceRef>> findAllResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
         return null;
     }
 

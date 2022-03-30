@@ -27,7 +27,7 @@ public class Biome {
 	}
 
 	public String getCatergory() {
-		return net.minecraft.world.biome.Biome.getCategory(this.biome).getName();
+		return this.biome.getKeyOrValue().map(b -> b.getValue().getPath(), b -> "[unregistered]");
 	}
 
 	public BiomeDecorator getDecorator() {

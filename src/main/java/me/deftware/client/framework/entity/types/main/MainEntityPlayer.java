@@ -48,8 +48,7 @@ public class MainEntityPlayer extends RotationLogic {
 
 	public boolean processRightClickBlock(BlockPosition pos, EnumFacing facing, Vector3d vector3d, EntityHand hand) {
 		BlockHitResult customHitResult = new BlockHitResult(vector3d.getMinecraftVector(), facing.getFacing(), pos.getMinecraftBlockPos(), false);
-		return Objects.requireNonNull(MinecraftClient.getInstance().interactionManager).interactBlock(MinecraftClient.getInstance().player,
-				MinecraftClient.getInstance().world, hand.getMinecraftHand(), customHitResult) == ActionResult.SUCCESS;
+		return Objects.requireNonNull(MinecraftClient.getInstance().interactionManager).interactBlock(MinecraftClient.getInstance().player, hand.getMinecraftHand(), customHitResult) == ActionResult.SUCCESS;
 	}
 
 	public void swapHands() {
@@ -58,7 +57,7 @@ public class MainEntityPlayer extends RotationLogic {
 	}
 
 	public void processRightClick(boolean offhand) {
-		Objects.requireNonNull(MinecraftClient.getInstance().interactionManager).interactItem(MinecraftClient.getInstance().player, MinecraftClient.getInstance().world, offhand ? Hand.OFF_HAND : Hand.MAIN_HAND);
+		Objects.requireNonNull(MinecraftClient.getInstance().interactionManager).interactItem(MinecraftClient.getInstance().player, offhand ? Hand.OFF_HAND : Hand.MAIN_HAND);
 	}
 
 	public void resetBlockRemoving() {

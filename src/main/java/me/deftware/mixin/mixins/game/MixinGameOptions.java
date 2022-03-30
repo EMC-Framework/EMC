@@ -9,12 +9,12 @@ public class MixinGameOptions implements ClientOptions {
 
 	@Override
 	public int getViewDistance() {
-		return ((GameOptions) (Object) this).viewDistance;
+		return ((GameOptions) (Object) this).getViewDistance().getValue();
 	}
 
 	@Override
 	public boolean isFullScreen() {
-		return ((GameOptions) (Object) this).fullscreen;
+		return ((GameOptions) (Object) this).getFullscreen().getValue();
 	}
 
 }
