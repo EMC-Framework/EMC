@@ -11,19 +11,15 @@ import java.io.InputStream;
 /**
  * @author Deftware
  */
-public class ModResource implements Resource {
+public class ModResource extends Resource {
 
     private final InputStream stream;
     private final Identifier id;
 
     public ModResource(InputStream stream, Identifier id) {
+        super(id.getPath(), () -> stream);
         this.id = id;
         this.stream = stream;
-    }
-
-    @Override
-    public Identifier getId() {
-        return id;
     }
 
     @Override
@@ -34,22 +30,6 @@ public class ModResource implements Resource {
     @Override
     public String getResourcePackName() {
         return "Minecraft";
-    }
-
-    @Override
-    public void close() throws IOException {
-        stream.close();
-    }
-
-    @Override
-    public boolean hasMetadata() {
-        return false;
-    }
-
-    @Nullable
-    @Override
-    public <T> T getMetadata(ResourceMetadataReader<T> metaReader) {
-        return null;
     }
 
 }

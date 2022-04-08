@@ -15,11 +15,13 @@ import me.deftware.client.framework.world.block.types.StorageBlock;
 import net.minecraft.block.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.Item;
+import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 
 /**
  * @author Deftware
@@ -71,7 +73,8 @@ public class Block implements IItem, SelectableList.ListItem, Identifiable {
 	public InputStream getAsset() throws IOException {
 		Identifier blockResource = Registry.BLOCK.getId(block);
 		Identifier blockTexture = new Identifier(blockResource.getNamespace(), "textures/block/" + blockResource.getPath() + ".png");
-		return MinecraftClient.getInstance().getResourceManager().getResource(blockTexture).getInputStream();
+		Optional<Resource> resource = MinecraftClient.getInstance().getResourceManager().getResource(blockTexture);
+		return resource.orElseThrow(() -> new IOException("Unable to find resource")).getInputStream();
 	}
 
 	public boolean isAir() {

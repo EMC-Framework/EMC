@@ -6,7 +6,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourcePack;
-import net.minecraft.resource.ResourceRef;
 import net.minecraft.util.Identifier;
 
 import java.io.IOException;
@@ -53,33 +52,34 @@ public class ModResourceManager implements ResourceManager {
     }
 
     @Override
-    public boolean containsResource(Identifier id) {
-        return getEntry(id.getPath()) != null;
+    public List<Resource> getAllResources(Identifier id) {
+        return Collections.emptyList();
     }
 
     @Override
-    public List<ResourceRef> getAllResources(Identifier id) {
-        return Collections.singletonList(
-                new ResourceRef("EMC", () -> getResource(id))
-        );
-    }
-
-    @Override
-    public Resource getResource(Identifier id) throws IOException {
+    public Optional<Resource> getResource(Identifier id) {
         ZipEntry entry = getEntry(id.getPath());
         if (entry == null) {
             return MinecraftClient.getInstance().getResourceManager().getResource(id);
         }
-        return new ModResource(transformer.apply(id.getPath(), zipFile.getInputStream(entry)), id);
+        try {
+            return Optional.of(new ModResource(transformer.apply(id.getPath(), getResourceStream(entry)), id));
+        } catch (Exception ex) {
+            return Optional.empty();
+        }
+    }
+
+    private InputStream getResourceStream(ZipEntry entry) throws Exception {
+        return zipFile.getInputStream(entry);
     }
 
     @Override
-    public Map<Identifier, ResourceRef> findResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
+    public Map<Identifier, Resource> findResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
         return null;
     }
 
     @Override
-    public Map<Identifier, List<ResourceRef>> findAllResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
+    public Map<Identifier, List<Resource>> findAllResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
         return null;
     }
 

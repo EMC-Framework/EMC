@@ -3,12 +3,16 @@ package me.deftware.client.framework.world.gen;
 import lombok.Getter;
 import lombok.Setter;
 import me.deftware.client.framework.world.block.Block;
+import me.deftware.client.framework.world.chunk.Randomizer;
 import me.deftware.mixin.mixins.biome.CountInvoker;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.heightprovider.HeightProvider;
 import net.minecraft.world.gen.placementmodifier.CountPlacementModifier;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.StringJoiner;
+
 
 /**
  * Represents Biome ore generation
@@ -79,7 +83,7 @@ public class DecoratorConfig {
         this.feature = feature;
     }
 
-    public int getY(Random random, DecoratorContext context) {
+    public int getY(Randomizer random, DecoratorContext context) {
         return this.heightProvider.get(random, context.getHeightContext());
     }
 
@@ -87,7 +91,7 @@ public class DecoratorConfig {
         return feature.ordinal();
     }
 
-    public int getRepeat(Random random) {
+    public int getRepeat(Randomizer random) {
         return this.repeat.getInvokedCount(random, null);
     }
 
