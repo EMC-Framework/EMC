@@ -3,6 +3,7 @@ package me.deftware.mixin.mixins.render;
 import me.deftware.client.framework.chat.hud.ChatHud;
 import me.deftware.client.framework.event.events.*;
 import me.deftware.client.framework.helper.WindowHelper;
+import me.deftware.client.framework.minecraft.GameSetting;
 import me.deftware.client.framework.render.shader.Shader;
 import me.deftware.client.framework.render.batching.RenderStack;
 import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
@@ -12,6 +13,7 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.util.MathHelper;
 import net.minecraft.client.shader.ShaderGroup;
 import net.minecraft.util.ResourceLocation;
@@ -191,6 +193,11 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     @Redirect(method = "updateCameraAndRender(FJ)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;isSpectator()Z", opcode = 180))
     public boolean isSpectator(EntityPlayerSP entityPlayerSP) {
         return entityPlayerSP.isSpectator() || CameraEntityMan.isActive();
+    }
+
+    @Redirect(method = "updateLightmap", at = @At(value = "FIELD", target = "Lnet/minecraft/client/settings/GameSettings;gammaSetting:F"))
+    private float onGetMaxFps(GameSettings instance) {
+        return GameSetting.GAMMA.get().floatValue();
     }
 
 }
