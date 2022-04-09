@@ -12,38 +12,8 @@ import net.minecraft.client.MinecraftClient;
  */
 public class WindowHelper {
 
-	public static int getLimitFramerate() {
-		return MinecraftClient.getInstance().options.getMaxFps().getValue();
-	}
-
-	public static void setLimitFramerate(int framerate) {
-		MinecraftClient.getInstance().options.getMaxFps().setValue(framerate);
-		MinecraftClient.getInstance().getWindow().setFramerateLimit(framerate);
-	}
-
 	public static long getWindowHandle() {
 		return MinecraftClient.getInstance().getWindow().getHandle();
-	}
-
-	public static double getScaleFactor() {
-		return MinecraftClient.getInstance().getWindow().getScaleFactor();
-	}
-
-	public static void setScaleFactor(int factor) {
-		MinecraftClient.getInstance().options.getGuiScale().setValue(factor);
-		MinecraftClient.getInstance().onResolutionChanged();
-	}
-
-	public static int getGuiScaleRaw() {
-		return MinecraftClient.getInstance().options.getGuiScale().getValue();
-	}
-
-	public static int getGuiScale() {
-		int factor = MinecraftClient.getInstance().getWindow().calculateScaleFactor(getGuiScaleRaw(), MinecraftClient.getInstance().forcesUnicodeFont());
-		if (factor == 0) {
-			factor = 4;
-		}
-		return factor;
 	}
 
 	public static boolean isFocused() {
@@ -56,18 +26,6 @@ public class WindowHelper {
 
 	public static int getFPS() {
 		return Minecraft.getMinecraftGame().getFPS();
-	}
-
-	public static boolean isDebugInfoShown() {
-		return MinecraftClient.getInstance().options.debugEnabled;
-	}
-
-	public static double getGamma() {
-		return MinecraftClient.getInstance().options.getGamma().getValue();
-	}
-
-	public static void setGamma(double value) {
-		MinecraftClient.getInstance().options.getGamma().setValue(value);
 	}
 
 	@Deprecated

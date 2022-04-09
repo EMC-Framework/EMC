@@ -223,7 +223,6 @@ public class Bootstrap {
         }
         Bootstrap.mods.clear();
         registerFrameworkCommands();
-        MinecraftClient.getInstance().options.getGamma().setValue(0.5d);
         System.gc();
     }
 

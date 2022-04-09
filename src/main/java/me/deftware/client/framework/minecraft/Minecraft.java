@@ -74,11 +74,6 @@ public interface Minecraft {
 	WorldTimer getWorldTimer();
 
 	/**
-	 * @return Client options
-	 */
-	ClientOptions getClientOptions();
-
-	/**
 	 * @return The current connected server
 	 */
 	@Nullable

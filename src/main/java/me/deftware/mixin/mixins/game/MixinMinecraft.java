@@ -8,7 +8,7 @@ import me.deftware.client.framework.event.events.EventScreen;
 import me.deftware.client.framework.event.events.EventWorldLoad;
 import me.deftware.client.framework.gui.screens.GenericScreen;
 import me.deftware.client.framework.gui.screens.MinecraftScreen;
-import me.deftware.client.framework.minecraft.ClientOptions;
+import me.deftware.client.framework.minecraft.GameSetting;
 import me.deftware.client.framework.minecraft.Minecraft;
 import me.deftware.client.framework.minecraft.ServerDetails;
 import me.deftware.client.framework.render.WorldEntityRenderer;
@@ -23,6 +23,7 @@ import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.util.Session;
+import net.minecraft.client.util.Window;
 import net.minecraft.util.ModStatus;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -95,11 +96,6 @@ public abstract class MixinMinecraft implements Minecraft {
     @Override
     public WorldTimer getWorldTimer() {
         return (WorldTimer) renderTickCounter;
-    }
-
-    @Override
-    public ClientOptions getClientOptions() {
-        return (ClientOptions) ((MinecraftClient) (Object) this).options;
     }
 
     @Nullable
@@ -245,6 +241,11 @@ public abstract class MixinMinecraft implements Minecraft {
     @Inject(method = "setWorld", at = @At("TAIL"))
     private void onSetWorld(net.minecraft.client.world.ClientWorld world, CallbackInfo ci) {
         new EventWorldLoad((ClientWorld) world).broadcast();
+    }
+
+    @Redirect(method = "getFramerateLimit", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/Window;getFramerateLimit()I"))
+    private int onGetMaxFps(Window instance) {
+        return GameSetting.MAX_FPS.get();
     }
 
 }
