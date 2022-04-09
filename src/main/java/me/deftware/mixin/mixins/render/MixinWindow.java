@@ -1,6 +1,8 @@
 package me.deftware.mixin.mixins.render;
 
+import me.deftware.client.framework.minecraft.GameSetting;
 import me.deftware.client.framework.util.path.OSUtils;
+import net.minecraft.client.GameSettings;
 import net.minecraft.client.MainWindow;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,6 +27,11 @@ public abstract class MixinWindow {
 		if (OSUtils.isMac()) {
 			GLFW.glfwWindowHint(GLFW.GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW.GLFW_FALSE);
 		}
+	}
+
+	@Redirect(method = "getLimitFramerate", at = @At(value = "FIELD", target = "Lnet/minecraft/client/GameSettings;limitFramerate:I"))
+	private int onGetMaxFps(GameSettings instance) {
+		return GameSetting.MAX_FPS.get();
 	}
 
 }
