@@ -10,4 +10,8 @@ public interface ChunkAccessor {
 
     int getChunkHeight();
 
+    default int getChunkMinY() {
+        return 0;
+    }
+
 }
