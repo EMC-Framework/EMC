@@ -78,6 +78,7 @@
     "render.MixinVisGraph",
     "render.MixinWindow",
     "render.MixinParticleManager",
+    "render.MixinLightmapTextureManager",
     "world.MixinWorld",
     "world.MixinWorldClient",
     "shader.MixinShaderEffect",
