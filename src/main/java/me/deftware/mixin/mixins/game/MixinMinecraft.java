@@ -6,9 +6,11 @@ import me.deftware.client.framework.event.events.EventMouseClick;
 import me.deftware.client.framework.gui.screens.GenericScreen;
 import me.deftware.client.framework.main.EMCMod;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
+import me.deftware.client.framework.minecraft.GameSetting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.util.Session;
 import net.minecraft.util.Timer;
 import org.lwjgl.input.Keyboard;
@@ -265,6 +267,11 @@ public abstract class MixinMinecraft implements me.deftware.client.framework.min
     @Override
     public WorldEntityRenderer getWorldEntityRenderer() {
         return (WorldEntityRenderer) ((Minecraft) (Object) this).renderGlobal;
+    }
+
+    @Redirect(method = "getLimitFramerate", at = @At(value = "FIELD", target = "Lnet/minecraft/client/settings/GameSettings;limitFramerate:I"))
+    private int onGetMaxFps(GameSettings instance) {
+        return GameSetting.MAX_FPS.get();
     }
 
 }
