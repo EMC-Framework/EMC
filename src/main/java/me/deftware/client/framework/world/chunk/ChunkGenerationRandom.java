@@ -2,7 +2,7 @@ package me.deftware.client.framework.world.chunk;
 
 import net.minecraft.world.gen.ChunkRandom;
 
-public interface ChunkGenerationRandom {
+public interface ChunkGenerationRandom extends Randomizer {
 
     long _setPopulationSeed(long worldSeed, int blockX, int blockZ);
 

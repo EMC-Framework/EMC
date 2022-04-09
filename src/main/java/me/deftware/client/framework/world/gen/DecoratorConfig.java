@@ -3,6 +3,7 @@ package me.deftware.client.framework.world.gen;
 import lombok.Getter;
 import lombok.Setter;
 import me.deftware.client.framework.world.block.Block;
+import me.deftware.client.framework.world.chunk.Randomizer;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.world.gen.GenerationStep;
@@ -74,16 +75,16 @@ public class DecoratorConfig {
         this.feature = feature;
     }
 
-    public int getY(Random random, DecoratorContext context) {
-        return this.heightProvider.get(random, context.getHeightContext());
+    public int getY(Randomizer random, DecoratorContext context) {
+        return this.heightProvider.get((Random) random, context.getHeightContext());
     }
 
     public int getFeature() {
         return feature.ordinal();
     }
 
-    public int getRepeat(Random random) {
-        return this.repeat.get(random);
+    public int getRepeat(Randomizer random) {
+        return this.repeat.get((Random) random);
     }
 
     @Override
