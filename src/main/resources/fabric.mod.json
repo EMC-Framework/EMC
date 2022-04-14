@@ -13,8 +13,7 @@
     "sources": "https://gitlab.com/EMC-Framework/EMC"
   },
   "depends": {
-    "java": ">=17",
-    "minecraft": "1.18.x"
+    "java": ">=17"
   },
   "license": "MIT",
   "entrypoints": {
