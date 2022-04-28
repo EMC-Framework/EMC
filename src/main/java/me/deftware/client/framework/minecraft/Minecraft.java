@@ -1,12 +1,14 @@
 package me.deftware.client.framework.minecraft;
 
 import com.mojang.authlib.minecraft.MinecraftSessionService;
+import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import me.deftware.client.framework.entity.Entity;
 import me.deftware.client.framework.entity.types.main.MainEntityPlayer;
 import me.deftware.client.framework.gui.screens.GenericScreen;
 import me.deftware.client.framework.gui.screens.MinecraftScreen;
 import me.deftware.client.framework.render.WorldEntityRenderer;
 import me.deftware.client.framework.render.camera.GameCamera;
+import me.deftware.client.framework.session.AccountSession;
 import me.deftware.client.framework.util.minecraft.BlockSwingResult;
 import me.deftware.client.framework.world.ClientWorld;
 import me.deftware.client.framework.world.WorldTimer;
@@ -169,13 +171,7 @@ public interface Minecraft {
 	 * Sets the current session
 	 */
 	@ApiStatus.Internal
-	void setSession(Session session);
-
-	/**
-	 * Sets the current session service
-	 */
-	@ApiStatus.Internal
-	void setSessionService(MinecraftSessionService service);
+	void setSession(AccountSession session);
 
 	void doRightClickMouse();
 

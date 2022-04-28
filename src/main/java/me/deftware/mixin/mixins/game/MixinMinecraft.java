@@ -1,6 +1,7 @@
 package me.deftware.mixin.mixins.game;
 
 import com.mojang.authlib.minecraft.MinecraftSessionService;
+import com.mojang.authlib.minecraft.UserApiService;
 import com.mojang.blaze3d.systems.RenderSystem;
 import lombok.Getter;
 import me.deftware.client.framework.entity.Entity;
@@ -13,10 +14,12 @@ import me.deftware.client.framework.minecraft.Minecraft;
 import me.deftware.client.framework.minecraft.ServerDetails;
 import me.deftware.client.framework.render.WorldEntityRenderer;
 import me.deftware.client.framework.render.camera.GameCamera;
+import me.deftware.client.framework.session.AccountSession;
 import me.deftware.client.framework.util.minecraft.BlockSwingResult;
 import me.deftware.client.framework.world.ClientWorld;
 import me.deftware.client.framework.world.WorldTimer;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_7434;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ServerInfo;
@@ -28,6 +31,7 @@ import net.minecraft.util.ModStatus;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -35,6 +39,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -67,6 +72,11 @@ public abstract class MixinMinecraft implements Minecraft {
     @Final
     private MinecraftSessionService sessionService;
 
+    @Mutable
+    @Shadow
+    @Final
+    private UserApiService userApiService;
+
     @Shadow
     private static int currentFps;
 
@@ -81,6 +91,19 @@ public abstract class MixinMinecraft implements Minecraft {
 
     @Shadow
     protected abstract void doItemPick();
+
+    @Shadow
+    @Final
+    private static Logger LOGGER;
+
+    @Shadow
+    @Mutable
+    @Final
+    private class_7434 field_39068;
+
+    @Shadow
+    @Final
+    public File runDirectory;
 
     @Override
     public GameCamera getCamera() {
@@ -151,13 +174,16 @@ public abstract class MixinMinecraft implements Minecraft {
     }
 
     @Override
-    public void setSession(Session session) {
-        this.session = session;
-    }
-
-    @Override
-    public void setSessionService(MinecraftSessionService service) {
-        this.sessionService = service;
+    public void setSession(AccountSession session) {
+        this.session = session.getSession();
+        try {
+            this.sessionService = session.getSessionService();
+            this.userApiService = session.getAuthenticationService().createUserApiService(this.session.getAccessToken());
+            this.field_39068 = new class_7434(this.userApiService, this.session.getProfile().getId(), this.runDirectory.toPath());
+        } catch (Exception ex) {
+            this.userApiService = UserApiService.OFFLINE;
+            LOGGER.error("Failed to authenticate session", ex);
+        }
     }
 
     @Override

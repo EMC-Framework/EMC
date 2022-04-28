@@ -22,12 +22,13 @@ public class OAuth {
         new Thread(() -> {
             Thread.currentThread().setName("OAuth thread");
             try {
+                MinecraftClient client = MinecraftClient.getInstance();
                 InetAddress inetaddress = InetAddress.getByName(OAuth.ip);
                 OAuthNetworkManager manager = OAuthNetworkManager.connect(inetaddress, OAuth.port,
-                        MinecraftClient.getInstance().options.useNativeTransport, callback);
-                manager.setPacketListener(new OAuthNetHandler(manager, MinecraftClient.getInstance(), null, callback));
+                        client.options.useNativeTransport, callback);
+                manager.setPacketListener(new OAuthNetHandler(manager, client, null, callback));
                 manager.send(new HandshakeC2SPacket(OAuth.ip, OAuth.port, NetworkState.LOGIN));
-                manager.send(new LoginHelloC2SPacket(MinecraftClient.getInstance().getSession().getUsername(), Optional.empty()));
+                manager.send(new LoginHelloC2SPacket(client.getSession().getUsername(), Optional.ofNullable(client.method_43590().method_43603())));
             } catch (Exception ex) {
                 callback.callback(false, "", "");
             }

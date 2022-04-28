@@ -3,9 +3,11 @@ package me.deftware.client.framework.session;
 import com.mojang.authlib.Agent;
 import com.mojang.authlib.Environment;
 import com.mojang.authlib.UserAuthentication;
+import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.authlib.yggdrasil.YggdrasilEnvironment;
 import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication;
+import lombok.Getter;
 import me.deftware.client.framework.minecraft.Minecraft;
 import net.minecraft.client.util.Session;
 
@@ -38,6 +40,7 @@ public class AccountSession {
 	/**
 	 * Minecraft session object
 	 */
+	@Getter
 	private Session session;
 
 	private final UserAuthentication userAuthentication;
@@ -124,13 +127,20 @@ public class AccountSession {
 		return session.getProfile().getId();
 	}
 
+	public MinecraftSessionService getSessionService() {
+		return new CustomSessionService(this.authenticationService, this.environment);
+	}
+
+	public YggdrasilAuthenticationService getAuthenticationService() {
+		return this.authenticationService;
+	}
+
 	/**
 	 * Sets the Minecraft session to this session
 	 */
+	@Deprecated
 	public AccountSession setSession() {
-		Minecraft minecraft = Minecraft.getMinecraftGame();
-		minecraft.setSession(this.session);
-		minecraft.setSessionService(new CustomSessionService(this.authenticationService, this.environment));
+		Minecraft.getMinecraftGame().setSession(this);
 		return this;
 	}
 
