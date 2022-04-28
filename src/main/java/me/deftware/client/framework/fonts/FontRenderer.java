@@ -4,8 +4,7 @@ import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.render.gl.GLX;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
-import net.minecraft.util.math.Matrix4f;
+import net.minecraft.text.Text;
 
 /**
  * @author Deftware
@@ -17,7 +16,7 @@ public class FontRenderer {
 	}
 
 	public static void drawCenteredString(ChatMessage text, int x, int y, int color) {
-		LiteralText compiled = text.build();
+		Text compiled = text.build();
 		MinecraftClient.getInstance().textRenderer.drawWithShadow(getStack(), compiled, x - MinecraftClient.getInstance().textRenderer.getWidth(compiled) / 2f, y, color);
 	}
 

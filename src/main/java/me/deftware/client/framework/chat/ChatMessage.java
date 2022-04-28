@@ -6,11 +6,13 @@ import me.deftware.client.framework.chat.hud.ChatHud;
 import me.deftware.client.framework.chat.style.ChatStyle;
 import me.deftware.client.framework.fonts.FontRenderer;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -20,7 +22,7 @@ import java.util.Optional;
  */
 public class ChatMessage implements Message {
 
-	private LiteralText compiledText; /* Cache */
+	private MutableText compiledText; /* Cache */
 
 	@Getter
 	protected final List<ChatSection> sectionList = new ArrayList<>();
@@ -146,11 +148,11 @@ public class ChatMessage implements Message {
 		compiledText = null;
 	}
 
-	public synchronized LiteralText build() {
+	public synchronized Text build() {
 		if (compiledText == null) {
-			compiledText = new LiteralText("");
+			compiledText = Text.literal("");
 			for (ChatSection section : sectionList) {
-				compiledText.append(new LiteralText(section.getText())
+				compiledText.append(Text.literal(section.getText())
 						.setStyle(section.getStyle().getStyle()));
 			}
 		}
@@ -169,25 +171,6 @@ public class ChatMessage implements Message {
 		ChatHud.getChatMessageQueue().add(() ->
 			ChatHud.addMessage(this)
 		);
-	}
-
-	public void sendMessage() {
-		sendMessage(true);
-	}
-
-	/**
-	 * Sends this message to the server, without any formatting
-	 */
-	public void sendMessage(boolean packet) {
-		if (MinecraftClient.getInstance().player != null) {
-			ChatHud.getChatMessageQueue().add(() -> {
-				if (packet) {
-					MinecraftClient.getInstance().player.networkHandler.sendPacket(new ChatMessageC2SPacket(toString(false)));
-				} else {
-					MinecraftClient.getInstance().player.sendChatMessage(toString(false));
-				}
-			});
-		}
 	}
 	
 }

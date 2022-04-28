@@ -12,7 +12,9 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.player.HungerManager;
+import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
+import org.apache.commons.lang3.StringUtils;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -22,6 +24,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.time.Instant;
 
 @Mixin(ClientPlayerEntity.class)
 public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinEntityPlayerSP {
@@ -42,6 +46,8 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
 
     @Shadow
     public abstract float getYaw(float tickDelta);
+
+    @Shadow protected abstract NetworkEncryptionUtils.SignatureData method_43609(Instant instant, String string);
 
     @Inject(method = "closeHandledScreen", at = @At("HEAD"))
     private void onCloseHandledScreen(CallbackInfo ci) {
@@ -114,8 +120,11 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
         String trigger = CommandRegister.getCommandTrigger();
         EventChatSend event = new EventChatSend(message, sender).broadcast();
         if (!event.isCanceled()) {
+            message = StringUtils.normalizeSpace(event.getMessage());
             if (event.isDispatch() || !message.startsWith(trigger)) {
-                networkHandler.sendPacket(new ChatMessageC2SPacket(event.getMessage()));
+                Instant instant = Instant.now();
+                NetworkEncryptionUtils.SignatureData signature = this.method_43609(instant, message);
+                networkHandler.sendPacket(new ChatMessageC2SPacket(instant, message, signature));
             } else {
                 try {
                     CommandRegister.getDispatcher().execute(message.substring(CommandRegister.getCommandTrigger().length()), MinecraftClient.getInstance().player.getCommandSource());

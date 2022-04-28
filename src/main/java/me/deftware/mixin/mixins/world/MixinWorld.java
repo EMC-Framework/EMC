@@ -8,7 +8,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.MessageScreen;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.BlockEntityTickInvoker;
@@ -83,7 +83,7 @@ public class MixinWorld implements me.deftware.client.framework.world.World {
 		boolean sp = mc.isInSingleplayer();
 		((World) (Object) this).disconnect();
 		if (sp) {
-			mc.disconnect(new MessageScreen(new TranslatableText("menu.savingLevel")));
+			mc.disconnect(new MessageScreen(Text.translatable("menu.savingLevel")));
 		} else {
 			mc.disconnect(null);
 		}

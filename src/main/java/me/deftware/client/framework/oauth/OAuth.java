@@ -6,6 +6,7 @@ import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 
 import java.net.InetAddress;
+import java.util.Optional;
 
 /**
  * API to authenticate with https://mc-oauth.net/
@@ -26,7 +27,7 @@ public class OAuth {
                         MinecraftClient.getInstance().options.useNativeTransport, callback);
                 manager.setPacketListener(new OAuthNetHandler(manager, MinecraftClient.getInstance(), null, callback));
                 manager.send(new HandshakeC2SPacket(OAuth.ip, OAuth.port, NetworkState.LOGIN));
-                manager.send(new LoginHelloC2SPacket(MinecraftClient.getInstance().getSession().getProfile()));
+                manager.send(new LoginHelloC2SPacket(MinecraftClient.getInstance().getSession().getUsername(), Optional.empty()));
             } catch (Exception ex) {
                 callback.callback(false, "", "");
             }

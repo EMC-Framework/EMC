@@ -107,8 +107,7 @@ public abstract class RenderStack<T> implements VertexConstructor {
 	protected void drawBuffer() {
 		if (RenderSystem.getShader() != null && RenderSystem.getShader().lineWidth != null)
 			RenderSystem.getShader().lineWidth.set(RenderSystem.getShaderLineWidth());
-		builder.end();
-		BufferRenderer.draw(builder);
+		BufferRenderer.drawWithShader(builder.end());
 	}
 
 	public static void noBlend() {

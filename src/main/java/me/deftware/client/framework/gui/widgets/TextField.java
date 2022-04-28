@@ -3,7 +3,7 @@ package me.deftware.client.framework.gui.widgets;
 import me.deftware.client.framework.gui.widgets.properties.Tooltipable;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 
 import java.util.function.Predicate;
 
@@ -23,7 +23,7 @@ public interface TextField extends Component, Tooltipable {
 	 * @return A TextField instance
 	 */
 	static TextField create(int x, int y, int width, int height) {
-		return (TextField) new TextFieldWidget(MinecraftClient.getInstance().textRenderer, x, y, width, height, new LiteralText(""));
+		return (TextField) new TextFieldWidget(MinecraftClient.getInstance().textRenderer, x, y, width, height, Text.literal(""));
 	}
 
 	/**

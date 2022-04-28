@@ -20,7 +20,7 @@ import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.potion.PotionUtil;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.MathHelper;
@@ -205,7 +205,7 @@ public class ItemStack {
 
 	public void setStackDisplayName(ChatMessage name) {
 		net.minecraft.nbt.NbtCompound nbt = itemStack.getOrCreateSubNbt("display");
-		nbt.putString("Name", LiteralText.Serializer.toJson(name.build()));
+		nbt.putString("Name", Text.Serializer.toJson(name.build()));
 	}
 	
 	public void addEnchantment(Enchantment enchantment, int level) {

@@ -6,7 +6,6 @@ import me.deftware.client.framework.event.events.EventChatReceive;
 import me.deftware.mixin.imp.IMixinGuiNewChat;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.hud.ChatHudLine;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Final;
@@ -39,7 +38,7 @@ public abstract class MixinGuiNewChat implements IMixinGuiNewChat {
     protected abstract void addMessage(Text chatComponent, int messageId, int timestamp, boolean displayOnly);
 
     @Override
-    public void setTheChatLine(LiteralText chatComponent, int chatLineId, int updateCounter, boolean displayOnly) {
+    public void setTheChatLine(Text chatComponent, int chatLineId, int updateCounter, boolean displayOnly) {
         addMessage(chatComponent, chatLineId, updateCounter, displayOnly);
     }
 
@@ -68,14 +67,14 @@ public abstract class MixinGuiNewChat implements IMixinGuiNewChat {
         List<HudLine> list = new ArrayList<>();
         for (int index = 0; index < messages.size(); index++) {
             ChatHudLine<Text> line = messages.get(index);
-            if (line.getText() instanceof LiteralText) {
+            //if (line.getText() instanceof Text) {
                 list.add(new HudLine(new ChatMessage().fromText(line.getText()),  index));
-            }
+            //}
         }
         return list;
     }
 
-    @ModifyVariable(method = "addMessage(Lnet/minecraft/text/Text;)V", at = @At("HEAD"))
+    @ModifyVariable(method = "addMessage(Lnet/minecraft/text/Text;)V", at = @At("HEAD"), argsOnly = true)
     public Text addMessage(Text chatComponent) {
         event = new EventChatReceive(new ChatMessage().fromText(chatComponent)).broadcast();
         return event.getMessage().build();
