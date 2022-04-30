@@ -17,10 +17,11 @@ import net.minecraft.util.math.ChunkSectionPos;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -115,6 +116,11 @@ public abstract class MixinNetHandlerPlayClient implements NetworkHandler {
         if (!this.event.isCanceled()) {
             instance.method_43592(messageType, this.event.getMessage().build(), chatMessageSender);
         }
+    }
+
+    @Redirect(method = "onGameJoin", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/ClientBrandRetriever;getClientModName()Ljava/lang/String;"))
+    private String onGameJoin$GetClientBrand() {
+        return "vanilla";
     }
 
 }
