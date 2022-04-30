@@ -1,24 +1,26 @@
 package me.deftware.mixin.mixins.network;
 
-import me.deftware.client.framework.event.events.EventAnimation;
-import me.deftware.client.framework.event.events.EventChunk;
-import me.deftware.client.framework.event.events.EventChunkDataReceive;
-import me.deftware.client.framework.event.events.EventKnockback;
+import me.deftware.client.framework.event.events.*;
 import me.deftware.client.framework.network.NetworkHandler;
 import me.deftware.client.framework.registry.BlockRegistry;
 import me.deftware.client.framework.world.block.Block;
 import me.deftware.client.framework.world.player.PlayerEntry;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.network.ChatMessageSender;
+import net.minecraft.network.MessageType;
 import net.minecraft.network.packet.s2c.play.*;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,7 +29,10 @@ import java.util.stream.Collectors;
  * @author Deftware
  */
 @Mixin(ClientPlayNetworkHandler.class)
-public class MixinNetHandlerPlayClient implements NetworkHandler {
+public abstract class MixinNetHandlerPlayClient implements NetworkHandler {
+
+    @Shadow
+    protected abstract boolean method_43597(ChatMessageS2CPacket chatMessageS2CPacket);
 
     @Override
     public List<PlayerEntry> _getPlayerList() {
@@ -94,6 +99,22 @@ public class MixinNetHandlerPlayClient implements NetworkHandler {
                 pos.getX(), pos.getY(), pos.getZ(),
                 accessor.getPositions(), blocks
         ).broadcast();
+    }
+
+    @Unique
+    private EventChatReceive event;
+
+    @Inject(method = "onChatMessage", at = @At("HEAD"))
+    private void onChatMessage(ChatMessageS2CPacket packet, CallbackInfo ci) {
+        boolean validSignature = this.method_43597(packet);
+        this.event = new EventChatReceive(packet, validSignature).broadcast();
+    }
+
+    @Redirect(method = "onChatMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;method_43592(Lnet/minecraft/network/MessageType;Lnet/minecraft/text/Text;Lnet/minecraft/network/ChatMessageSender;)V"))
+    private void onChatMessage$Notify(InGameHud instance, MessageType messageType, Text text, ChatMessageSender chatMessageSender) {
+        if (!this.event.isCanceled()) {
+            instance.method_43592(messageType, this.event.getMessage().build(), chatMessageSender);
+        }
     }
 
 }
