@@ -28,7 +28,7 @@ public class OAuth {
                         client.options.useNativeTransport, callback);
                 manager.setPacketListener(new OAuthNetHandler(manager, client, null, callback));
                 manager.send(new HandshakeC2SPacket(OAuth.ip, OAuth.port, NetworkState.LOGIN));
-                manager.send(new LoginHelloC2SPacket(client.getSession().getUsername(), Optional.ofNullable(client.method_43590().method_43603())));
+                manager.send(new LoginHelloC2SPacket(client.getSession().getUsername(), client.getProfileKeys().method_43784()));
             } catch (Exception ex) {
                 callback.callback(false, "", "");
             }

@@ -19,7 +19,7 @@ public class CameraEntity extends OtherClientPlayerEntity {
 	public Input input;
 
 	public CameraEntity(ClientWorld clientWorld, GameProfile gameProfile, HungerManager hunger) {
-		super(clientWorld, gameProfile);
+		super(clientWorld, gameProfile, null);
 		this.hungerManager = hunger;
 		MinecraftClient mc = MinecraftClient.getInstance();
 		this.input = new KeyboardInput(mc.options);

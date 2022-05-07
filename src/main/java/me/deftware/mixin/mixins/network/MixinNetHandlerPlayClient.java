@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 public abstract class MixinNetHandlerPlayClient implements NetworkHandler {
 
     @Shadow
-    protected abstract boolean method_43597(ChatMessageS2CPacket chatMessageS2CPacket);
+    protected abstract boolean isSignatureValid(ChatMessageS2CPacket chatMessageS2CPacket);
 
     @Override
     public List<PlayerEntry> _getPlayerList() {
@@ -107,14 +107,14 @@ public abstract class MixinNetHandlerPlayClient implements NetworkHandler {
 
     @Inject(method = "onChatMessage", at = @At("HEAD"))
     private void onChatMessage(ChatMessageS2CPacket packet, CallbackInfo ci) {
-        boolean validSignature = this.method_43597(packet);
+        boolean validSignature = this.isSignatureValid(packet);
         this.event = new EventChatReceive(packet, validSignature).broadcast();
     }
 
-    @Redirect(method = "onChatMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;method_43592(Lnet/minecraft/network/MessageType;Lnet/minecraft/text/Text;Lnet/minecraft/network/ChatMessageSender;)V"))
+    @Redirect(method = "onChatMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;onChatMessage(Lnet/minecraft/network/MessageType;Lnet/minecraft/text/Text;Lnet/minecraft/network/ChatMessageSender;)V"))
     private void onChatMessage$Notify(InGameHud instance, MessageType messageType, Text text, ChatMessageSender chatMessageSender) {
         if (!this.event.isCanceled()) {
-            instance.method_43592(messageType, this.event.getMessage().build(), chatMessageSender);
+            instance.onChatMessage(messageType, this.event.getMessage().build(), chatMessageSender);
         }
     }
 

@@ -7,6 +7,8 @@ import me.deftware.client.framework.event.events.*;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
 import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
 import me.deftware.mixin.imp.IMixinEntityPlayerSP;
+import net.minecraft.class_7469;
+import net.minecraft.class_7470;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -14,6 +16,7 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.player.HungerManager;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
+import net.minecraft.text.Text;
 import org.apache.commons.lang3.StringUtils;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -47,7 +50,11 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
     @Shadow
     public abstract float getYaw(float tickDelta);
 
-    @Shadow protected abstract NetworkEncryptionUtils.SignatureData method_43609(Instant instant, String string);
+    @Shadow
+    protected abstract class_7469 signChatMessage(class_7470 arg, Text text);
+
+    @Shadow
+    protected abstract void method_43787(class_7470 arg, String string);
 
     @Inject(method = "closeHandledScreen", at = @At("HEAD"))
     private void onCloseHandledScreen(CallbackInfo ci) {
@@ -121,10 +128,14 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
         EventChatSend event = new EventChatSend(message, sender).broadcast();
         if (!event.isCanceled()) {
             message = StringUtils.normalizeSpace(event.getMessage());
+            class_7470 lv = class_7470.method_43866(((ClientPlayerEntity) (Object) this).getUuid());
             if (event.isDispatch() || !message.startsWith(trigger)) {
-                Instant instant = Instant.now();
-                NetworkEncryptionUtils.SignatureData signature = this.method_43609(instant, message);
-                networkHandler.sendPacket(new ChatMessageC2SPacket(instant, message, signature));
+                if (message.startsWith("/")) {
+                    this.method_43787(lv, message.substring(1));
+                } else {
+                    class_7469 signature = this.signChatMessage(lv, Text.literal(message));
+                    networkHandler.sendPacket(new ChatMessageC2SPacket(message, signature));
+                }
             } else {
                 try {
                     CommandRegister.getDispatcher().execute(message.substring(CommandRegister.getCommandTrigger().length()), MinecraftClient.getInstance().player.getCommandSource());
