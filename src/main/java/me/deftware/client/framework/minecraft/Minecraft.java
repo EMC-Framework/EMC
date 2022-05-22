@@ -93,6 +93,11 @@ public interface Minecraft {
 	void openScreen(GenericScreen screen);
 
 	/**
+	 * @return The player chat sender
+	 */
+	Chat getChatSender();
+
+	/**
 	 * @return The current screen
 	 */
 	@Nullable

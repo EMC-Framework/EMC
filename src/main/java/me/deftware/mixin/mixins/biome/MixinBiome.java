@@ -5,9 +5,7 @@ import me.deftware.client.framework.world.gen.BiomeDecorator;
 import me.deftware.client.framework.world.gen.DecoratorConfig;
 import me.deftware.client.framework.world.block.Block;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.BuiltinRegistries;
-import net.minecraft.util.registry.RegistryEntryList;
-import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.*;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BuiltinBiomes;
 import net.minecraft.world.biome.GenerationSettings;
@@ -21,6 +19,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
@@ -32,9 +31,11 @@ import java.util.stream.Collectors;
 @Mixin(BuiltinBiomes.class)
 public class MixinBiome {
 
-    @Inject(method = "register", at = @At("RETURN"))
-    private static void onRegister(RegistryKey<Biome> key, Biome biome, CallbackInfo ci) {
-        register(biome, key.getValue());
+    @Redirect(method = "getDefaultBiome", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/registry/BuiltinRegistries;add(Lnet/minecraft/util/registry/Registry;Lnet/minecraft/util/registry/RegistryKey;Ljava/lang/Object;)Lnet/minecraft/util/registry/RegistryEntry;"))
+    private static <T> RegistryEntry<T> onRegister(Registry<T> registry, RegistryKey<T> key, T biome) {
+        RegistryEntry<T> entry = BuiltinRegistries.add(registry, key, biome);
+        register((Biome) biome, key.getValue());
+        return entry;
     }
 
     @Unique

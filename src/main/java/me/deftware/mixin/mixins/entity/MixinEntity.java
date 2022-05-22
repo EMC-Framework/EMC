@@ -22,6 +22,8 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.UUID;
+
 @SuppressWarnings("ConstantConditions")
 @Mixin(Entity.class)
 public abstract class MixinEntity implements IMixinEntity {
@@ -55,6 +57,8 @@ public abstract class MixinEntity implements IMixinEntity {
     @Shadow public abstract float getPitch();
 
     @Shadow private boolean glowing;
+
+    @Shadow public abstract UUID getUuid();
 
     @SuppressWarnings("ConstantConditions")
     @Inject(method = "changeLookDirection", at = @At("HEAD"), cancellable = true)

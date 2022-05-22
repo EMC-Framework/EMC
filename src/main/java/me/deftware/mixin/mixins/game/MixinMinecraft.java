@@ -9,6 +9,7 @@ import me.deftware.client.framework.event.events.EventScreen;
 import me.deftware.client.framework.event.events.EventWorldLoad;
 import me.deftware.client.framework.gui.screens.GenericScreen;
 import me.deftware.client.framework.gui.screens.MinecraftScreen;
+import me.deftware.client.framework.minecraft.Chat;
 import me.deftware.client.framework.minecraft.GameSetting;
 import me.deftware.client.framework.minecraft.Minecraft;
 import me.deftware.client.framework.minecraft.ServerDetails;
@@ -272,6 +273,11 @@ public abstract class MixinMinecraft implements Minecraft {
     @Redirect(method = "getFramerateLimit", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/Window;getFramerateLimit()I"))
     private int onGetMaxFps(Window instance) {
         return GameSetting.MAX_FPS.get();
+    }
+
+    @Override
+    public Chat getChatSender() {
+        return (Chat) ((MinecraftClient) (Object) this).player;
     }
 
 }

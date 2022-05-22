@@ -5,7 +5,9 @@ import lombok.Getter;
 import me.deftware.client.framework.chat.hud.ChatHud;
 import me.deftware.client.framework.chat.style.ChatStyle;
 import me.deftware.client.framework.fonts.FontRenderer;
+import me.deftware.client.framework.minecraft.Minecraft;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.text.MutableText;
@@ -172,5 +174,22 @@ public class ChatMessage implements Message {
 			ChatHud.addMessage(this)
 		);
 	}
-	
+
+	@Deprecated
+	public void sendMessage() {
+		sendMessage(true);
+	}
+
+	/**
+	 * Sends this message to the server, without any formatting
+	 */
+	@Deprecated
+	public void sendMessage(boolean packet) {
+		if (MinecraftClient.getInstance().player != null) {
+			ChatHud.getChatMessageQueue().add(() -> {
+				Minecraft.getMinecraftGame().getChatSender().send(toString(false), ClientPlayerEntity.class);
+			});
+		}
+	}
+
 }

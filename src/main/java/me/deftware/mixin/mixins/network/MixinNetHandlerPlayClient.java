@@ -8,8 +8,9 @@ import me.deftware.client.framework.world.player.PlayerEntry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.network.ChatMessageSender;
+import net.minecraft.network.MessageSender;
 import net.minecraft.network.MessageType;
+import net.minecraft.network.encryption.SignedChatMessage;
 import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
@@ -33,7 +34,7 @@ import java.util.stream.Collectors;
 public abstract class MixinNetHandlerPlayClient implements NetworkHandler {
 
     @Shadow
-    protected abstract boolean isSignatureValid(ChatMessageS2CPacket chatMessageS2CPacket);
+    protected abstract boolean isSignatureValid(SignedChatMessage message);
 
     @Override
     public List<PlayerEntry> _getPlayerList() {
@@ -107,14 +108,14 @@ public abstract class MixinNetHandlerPlayClient implements NetworkHandler {
 
     @Inject(method = "onChatMessage", at = @At("HEAD"))
     private void onChatMessage(ChatMessageS2CPacket packet, CallbackInfo ci) {
-        boolean validSignature = this.isSignatureValid(packet);
+        boolean validSignature = this.isSignatureValid(packet.getSignedMessage());
         this.event = new EventChatReceive(packet, validSignature).broadcast();
     }
 
-    @Redirect(method = "onChatMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;onChatMessage(Lnet/minecraft/network/MessageType;Lnet/minecraft/text/Text;Lnet/minecraft/network/ChatMessageSender;)V"))
-    private void onChatMessage$Notify(InGameHud instance, MessageType messageType, Text text, ChatMessageSender chatMessageSender) {
+    @Redirect(method = "handleMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;onChatMessage(Lnet/minecraft/network/MessageType;Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageSender;)V"))
+    private void onChatMessage$Notify(InGameHud instance, MessageType type, Text message, MessageSender sender) {
         if (!this.event.isCanceled()) {
-            instance.onChatMessage(messageType, this.event.getMessage().build(), chatMessageSender);
+            instance.onChatMessage(type, this.event.getMessage().build(), sender);
         }
     }
 

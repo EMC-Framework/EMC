@@ -1,7 +1,5 @@
 package me.deftware.client.framework.event.events;
 
-import lombok.Getter;
-import lombok.Setter;
 import me.deftware.client.framework.event.Event;
 
 /**
@@ -9,13 +7,34 @@ import me.deftware.client.framework.event.Event;
  */
 public class EventChatSend extends Event {
 
-	private @Getter @Setter String message;
-	private @Getter @Setter boolean dispatch = false;
-	private final @Getter Class<?> sender;
+	private String message;
+	private final Type type;
+	private final Class<?> sender;
 
-	public EventChatSend(String message, Class<?> sender) {
+	public EventChatSend(String message, Class<?> sender, Type type) {
 		this.message = message;
 		this.sender = sender;
+		this.type = type;
+	}
+
+	public Type getType() {
+		return type;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public Class<?> getSender() {
+		return sender;
+	}
+
+	public enum Type {
+		Message, Command
 	}
 
 }

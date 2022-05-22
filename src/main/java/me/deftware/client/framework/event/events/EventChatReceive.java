@@ -24,7 +24,7 @@ public class EventChatReceive extends Event {
     private final ChatMessageS2CPacket packet;
 
     public EventChatReceive(ChatMessageS2CPacket packet, boolean signed) {
-        this.message = new ChatMessage().fromText(packet.content());
+        this.message = new ChatMessage().fromText(packet.signedContent());
         this.expired = packet.isExpired(Instant.now());
         this.packet = packet;
         this.signed = signed;

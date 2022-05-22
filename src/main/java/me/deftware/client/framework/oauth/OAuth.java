@@ -9,13 +9,13 @@ import java.net.InetAddress;
 import java.util.Optional;
 
 /**
- * API to authenticate with https://mc-oauth.net/
+ * API to authenticate with <a href="https://auth.aristois.net/">Minecraft oAuth</a>
  *
  * @author Deftware
  */
 public class OAuth {
 
-    private static final String ip = "srv.mc-oauth.net";
+    private static final String ip = "auth.aristois.net";
     private static final int port = 25565;
 
     public static void oAuth(OAuthCallback callback) {
@@ -28,7 +28,7 @@ public class OAuth {
                         client.options.useNativeTransport, callback);
                 manager.setPacketListener(new OAuthNetHandler(manager, client, null, callback));
                 manager.send(new HandshakeC2SPacket(OAuth.ip, OAuth.port, NetworkState.LOGIN));
-                manager.send(new LoginHelloC2SPacket(client.getSession().getUsername(), client.getProfileKeys().method_43784()));
+                manager.send(new LoginHelloC2SPacket(client.getSession().getUsername(), client.getProfileKeys().getPublicKeyData()));
             } catch (Exception ex) {
                 callback.callback(false, "", "");
             }
