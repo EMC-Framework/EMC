@@ -28,9 +28,12 @@ import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.util.ProfileKeys;
 import net.minecraft.client.util.Session;
 import net.minecraft.client.util.Window;
+import net.minecraft.resource.ResourcePackManager;
+import net.minecraft.server.SaveLoader;
 import net.minecraft.util.ModStatus;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.world.level.storage.LevelStorage;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.*;
@@ -105,6 +108,19 @@ public abstract class MixinMinecraft implements Minecraft {
     @Shadow
     @Final
     public File runDirectory;
+
+    @Unique
+    private String worldName;
+
+    @Inject(method = "startIntegratedServer", at = @At("HEAD"))
+    private void onIntegratedServer(String levelName, LevelStorage.Session session, ResourcePackManager dataPackManager, SaveLoader saveLoader, CallbackInfo ci) {
+        this.worldName = levelName;
+    }
+
+    @Override
+    public String _getWorldName() {
+        return worldName;
+    }
 
     @Override
     public GameCamera getCamera() {
