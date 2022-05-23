@@ -11,6 +11,7 @@ import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.util.Session;
 import net.minecraft.util.Timer;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.world.WorldSettings;
 import net.minecraft.world.dimension.DimensionType;
 import org.spongepowered.asm.mixin.*;
 import me.deftware.client.framework.chat.hud.ChatHud;
@@ -74,6 +75,19 @@ public abstract class MixinMinecraft implements me.deftware.client.framework.min
 
     @Shadow
     protected abstract void middleClickMouse();
+
+    @Unique
+    private String worldName;
+
+    @Inject(method = "launchIntegratedServer", at = @At("HEAD"))
+    private void onIntegratedServer(String folderName, String worldName, WorldSettings worldSettingsIn, CallbackInfo ci) {
+        this.worldName = worldName;
+    }
+
+    @Override
+    public String _getWorldName() {
+        return worldName;
+    }
 
     @Override
     public GameCamera getCamera() {
