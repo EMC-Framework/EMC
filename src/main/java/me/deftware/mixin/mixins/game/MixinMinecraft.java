@@ -44,6 +44,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+import net.minecraft.world.WorldSettings;
+
 @Mixin(Minecraft.class)
 public abstract class MixinMinecraft implements me.deftware.client.framework.minecraft.Minecraft {
 
@@ -84,6 +86,19 @@ public abstract class MixinMinecraft implements me.deftware.client.framework.min
 
     @Shadow
     protected abstract void middleClickMouse();
+
+    @Unique
+    private String worldName;
+
+    @Inject(method = "launchIntegratedServer", at = @At("HEAD"))
+    private void onIntegratedServer(String folderName, String worldName, WorldSettings worldSettingsIn, CallbackInfo ci) {
+        this.worldName = worldName;
+    }
+
+    @Override
+    public String _getWorldName() {
+        return worldName;
+    }
 
     @Override
     public GameCamera getCamera() {
