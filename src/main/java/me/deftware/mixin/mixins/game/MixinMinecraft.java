@@ -81,6 +81,19 @@ public abstract class MixinMinecraft implements Minecraft {
     @Shadow
     protected abstract void doItemPick();
 
+    @Unique
+    private String worldName;
+
+    @Inject(method = "startIntegratedServer(Ljava/lang/String;)V", at = @At("HEAD"))
+    private void onIntegratedServer(String worldName, CallbackInfo ci) {
+        this.worldName = worldName;
+    }
+
+    @Override
+    public String _getWorldName() {
+        return worldName;
+    }
+
     @Override
     public GameCamera getCamera() {
         return (GameCamera) ((MinecraftClient) (Object) this).getEntityRenderManager().camera;
