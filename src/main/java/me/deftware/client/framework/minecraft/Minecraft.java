@@ -112,6 +112,11 @@ public interface Minecraft {
 	boolean _isSinglePlayer();
 
 	/**
+	 * @return The name of the current singleplayer world
+	 */
+	String _getWorldName();
+
+	/**
 	 * @return If the player is looking at a block or an entity
 	 */
 	boolean isMouseOver();
