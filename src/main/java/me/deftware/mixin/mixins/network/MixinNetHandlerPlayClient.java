@@ -8,6 +8,7 @@ import me.deftware.client.framework.world.player.PlayerEntry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.network.MessageSender;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.encryption.SignedChatMessage;
@@ -15,6 +16,7 @@ import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -25,6 +27,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -34,7 +37,9 @@ import java.util.stream.Collectors;
 public abstract class MixinNetHandlerPlayClient implements NetworkHandler {
 
     @Shadow
-    protected abstract boolean isSignatureValid(SignedChatMessage message);
+    protected abstract boolean isSignatureValid(SignedChatMessage message, PlayerListEntry playerListEntry);
+
+    @Shadow @Nullable public abstract PlayerListEntry getPlayerListEntry(UUID uuid);
 
     @Override
     public List<PlayerEntry> _getPlayerList() {
@@ -108,7 +113,8 @@ public abstract class MixinNetHandlerPlayClient implements NetworkHandler {
 
     @Inject(method = "onChatMessage", at = @At("HEAD"))
     private void onChatMessage(ChatMessageS2CPacket packet, CallbackInfo ci) {
-        boolean validSignature = this.isSignatureValid(packet.getSignedMessage());
+        PlayerListEntry playerListEntry = this.getPlayerListEntry(packet.getSignedMessage().signature().sender());
+        boolean validSignature = playerListEntry != null && this.isSignatureValid(packet.getSignedMessage(), playerListEntry);
         this.event = new EventChatReceive(packet, validSignature).broadcast();
     }
 
