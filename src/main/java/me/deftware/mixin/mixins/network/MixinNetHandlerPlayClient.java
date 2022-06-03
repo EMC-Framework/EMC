@@ -9,9 +9,9 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.network.MessageSender;
-import net.minecraft.network.MessageType;
-import net.minecraft.network.encryption.SignedChatMessage;
+import net.minecraft.network.message.MessageSender;
+import net.minecraft.network.message.MessageType;
+import net.minecraft.network.message.SignedMessage;
 import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 public abstract class MixinNetHandlerPlayClient implements NetworkHandler {
 
     @Shadow
-    protected abstract boolean isSignatureValid(SignedChatMessage message, PlayerListEntry playerListEntry);
+    protected abstract boolean isSignatureValid(SignedMessage message, PlayerListEntry playerListEntry);
 
     @Shadow @Nullable public abstract PlayerListEntry getPlayerListEntry(UUID uuid);
 
@@ -118,7 +118,7 @@ public abstract class MixinNetHandlerPlayClient implements NetworkHandler {
         this.event = new EventChatReceive(packet, validSignature).broadcast();
     }
 
-    @Redirect(method = "handleMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;onChatMessage(Lnet/minecraft/network/MessageType;Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageSender;)V"))
+    @Redirect(method = "handleMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;onChatMessage(Lnet/minecraft/network/message/MessageType;Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSender;)V"))
     private void onChatMessage$Notify(InGameHud instance, MessageType type, Text message, MessageSender sender) {
         if (!this.event.isCanceled()) {
             instance.onChatMessage(type, this.event.getMessage().build(), sender);

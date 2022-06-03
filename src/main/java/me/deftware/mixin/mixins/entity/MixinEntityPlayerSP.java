@@ -8,11 +8,10 @@ import me.deftware.client.framework.minecraft.Chat;
 import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
 import me.deftware.mixin.imp.IMixinEntityPlayerSP;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.player.HungerManager;
-import net.minecraft.network.encryption.ChatMessageSigner;
+import net.minecraft.network.message.ChatMessageSigner;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
@@ -24,6 +23,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.List;
 
 @Mixin(ClientPlayerEntity.class)
 public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinEntityPlayerSP, Chat {
@@ -38,11 +39,11 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
     @Shadow
     public abstract boolean isUsingItem();
 
-    @Shadow @Nullable private String serverBrand;
+    @Shadow
+    protected abstract void sendChatMessagePacket(ChatMessageSigner signer, String message, @Nullable Text preview);
 
-    @Shadow protected abstract void sendChatMessagePacket(ChatMessageSigner signer, String message, @Nullable Text preview);
-
-    @Shadow protected abstract void sendCommand(ChatMessageSigner signer, String command, @Nullable Text preview);
+    @Shadow
+    protected abstract void sendCommand(ChatMessageSigner signer, String command, @Nullable Text preview);
 
     @Inject(method = "closeHandledScreen", at = @At("HEAD"))
     private void onCloseHandledScreen(CallbackInfo ci) {
@@ -135,12 +136,12 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
         }
     }
 
-    @Redirect(method = "sendChatMessage(Ljava/lang/String;Lnet/minecraft/text/Text;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;sendChatMessagePacket(Lnet/minecraft/network/encryption/ChatMessageSigner;Ljava/lang/String;Lnet/minecraft/text/Text;)V"))
+    @Redirect(method = "sendChatMessage(Ljava/lang/String;Lnet/minecraft/text/Text;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;sendChatMessagePacket(Lnet/minecraft/network/message/ChatMessageSigner;Ljava/lang/String;Lnet/minecraft/text/Text;)V"))
     private void onMessage(ClientPlayerEntity instance, ChatMessageSigner signer, String message, Text preview) {
         this.send(this::sendChatMessagePacket, message, preview, ClientPlayerEntity.class, EventChatSend.Type.Message);
     }
 
-    @Redirect(method = "sendCommand(Ljava/lang/String;Lnet/minecraft/text/Text;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;sendCommand(Lnet/minecraft/network/encryption/ChatMessageSigner;Ljava/lang/String;Lnet/minecraft/text/Text;)V"))
+    @Redirect(method = "sendCommand(Ljava/lang/String;Lnet/minecraft/text/Text;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;sendCommand(Lnet/minecraft/network/message/ChatMessageSigner;Ljava/lang/String;Lnet/minecraft/text/Text;)V"))
     private void onCommand(ClientPlayerEntity instance, ChatMessageSigner signer, String command, Text preview) {
         this.send(this::sendCommand, command, preview, ClientPlayerEntity.class, EventChatSend.Type.Command);
     }
@@ -159,17 +160,24 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
 
     @Unique
     public void send(Chat.Consumer consumer, String text, Text preview, Class<?> sender, EventChatSend.Type type) {
+        List<String> ignoredCommands = List.of("say");
         EventChatSend event = new EventChatSend(text, sender, type).broadcast();
         if (!event.isCanceled()) {
             // Client command hook
             String trigger = CommandRegister.getCommandTrigger();
-            if (text.startsWith(trigger) && !text.startsWith("say")) {
-                try {
-                    CommandRegister.getDispatcher().execute(text.substring(trigger.length()), MinecraftClient.getInstance().player.getCommandSource());
-                } catch (Exception ex) {
-                    new LiteralChatMessage(ex.getMessage(), ChatColors.RED).print();
+            if (text.startsWith(trigger)) {
+                text = text.substring(trigger.length());
+                String command = text.contains(" ") ? text.split(" ")[0] : text;
+                if (!ignoredCommands.contains(command)) {
+                    try {
+                        CommandRegister.getDispatcher().execute(text, MinecraftClient.getInstance().player.getCommandSource());
+                    } catch (Exception ex) {
+                        new LiteralChatMessage(ex.getMessage(), ChatColors.RED).print();
+                    }
+                    return;
+                } else {
+                    text = text.substring(command.length()).trim();
                 }
-                return;
             }
             if (!event.getMessage().equalsIgnoreCase(text)) {
                 // Modified text, update preview
