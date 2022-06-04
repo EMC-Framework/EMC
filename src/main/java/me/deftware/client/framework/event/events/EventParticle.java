@@ -1,8 +1,15 @@
 package me.deftware.client.framework.event.events;
 
+import com.google.common.collect.Lists;
 import me.deftware.client.framework.event.Event;
+import net.minecraft.particle.ParticleEffect;
+import net.minecraft.particle.ParticleTypes;
+
+import java.util.List;
 
 public class EventParticle extends Event {
+
+    public static final List<ParticleEffect> IGNORED_PARTICLES = Lists.newArrayList(ParticleTypes.FIREWORK, ParticleTypes.FLASH);
 
     private String id;
     private double x, y, z, velocityX, velocityZ, velocityY;
