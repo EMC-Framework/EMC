@@ -1,5 +1,6 @@
 package me.deftware.mixin.mixins.render;
 
+import com.google.common.collect.Lists;
 import me.deftware.client.framework.event.events.EventParticle;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleManager;
@@ -17,7 +18,7 @@ import java.util.List;
 public abstract class MixinParticleManager {
 
     @Unique
-    private final List<ParticleEffect> IGNORED_PARTICLES = List.of(ParticleTypes.FIREWORK, ParticleTypes.FLASH);
+    private final List<ParticleEffect> IGNORED_PARTICLES = Lists.newArrayList(ParticleTypes.FIREWORK, ParticleTypes.FLASH);
 
     @Inject(method = "addParticle(Lnet/minecraft/particle/ParticleEffect;DDDDDD)Lnet/minecraft/client/particle/Particle;", at = @At("HEAD"), cancellable = true)
     private void onAddParticle(ParticleEffect parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ, CallbackInfoReturnable<Particle> ci) {
