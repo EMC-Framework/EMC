@@ -5,7 +5,6 @@ build:
     GRADLE_OPTS: "-Dorg.gradle.daemon=false"
   script:
     - ./gradlew publish --stacktrace
-    - ./gradlew publish -Pav=1.18 --stacktrace
   artifacts:
     paths:
       - maven
