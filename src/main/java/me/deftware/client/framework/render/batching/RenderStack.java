@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import lombok.Getter;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
 import me.deftware.client.framework.render.gl.GLX;
+import me.deftware.mixin.mixins.render.BufferBuilderAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.Window;
@@ -48,7 +49,6 @@ public abstract class RenderStack<T> implements VertexConstructor {
 	protected Color lastColor = Color.white;
 
 	protected BufferBuilder builder = Tessellator.getInstance().getBuffer();
-	private boolean building = false;
 	protected int mode = -1;
 
 	public T setScaled(boolean scaling) {
@@ -88,7 +88,6 @@ public abstract class RenderStack<T> implements VertexConstructor {
 	public abstract T begin();
 
 	public T begin(int mode) {
-		building = true;
 		GlStateManager.lineWidth(lineWidth);
 		builder.begin(this.mode = mode, getFormat());
 		return (T) this;
@@ -99,11 +98,10 @@ public abstract class RenderStack<T> implements VertexConstructor {
 	}
 
 	public boolean isBuilding() {
-		return building;
+		return ((BufferBuilderAccessor) builder).isBuilding();
 	}
 
 	protected void drawBuffer() {
-		building = false;
 		Tessellator.getInstance().draw();
 	}
 

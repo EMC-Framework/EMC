@@ -79,6 +79,7 @@
     "render.MixinWindow",
     "render.MixinParticleManager",
     "render.MixinLightmapTextureManager",
+    "render.BufferBuilderAccessor",
     "world.MixinWorld",
     "world.MixinWorldClient",
     "shader.MixinShaderEffect",
