@@ -10,7 +10,7 @@ public interface ChunkGenerationRandom extends Randomizer {
     void _setDecoratorSeed(long populationSeed, int index, int step);
 
     static ChunkGenerationRandom create(long seed) {
-        Random random = Random.create(seed); // TODO: Verify this
+        Random random = ChunkRandom.RandomProvider.XOROSHIRO.create(seed);
         ChunkRandom chunkRandom = new ChunkRandom(random);
         return (ChunkGenerationRandom) chunkRandom;
     }

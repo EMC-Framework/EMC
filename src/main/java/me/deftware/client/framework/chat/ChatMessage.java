@@ -175,4 +175,27 @@ public class ChatMessage implements Message {
 		);
 	}
 
+	@Deprecated
+	public void sendMessage() {
+		sendMessage(true);
+	}
+
+	/**
+	 * Sends this message to the server, without any formatting
+	 */
+	@Deprecated
+	public void sendMessage(boolean packet) {
+		if (MinecraftClient.getInstance().player != null) {
+			ChatHud.getChatMessageQueue().add(() -> {
+				String text = toString(false);
+				var player = MinecraftClient.getInstance().player;
+				if (text.startsWith("/")) {
+					player.sendCommand(text.substring(1), null);
+				} else {
+					player.sendChatMessage(text, null);
+				}
+			});
+		}
+	}
+
 }
