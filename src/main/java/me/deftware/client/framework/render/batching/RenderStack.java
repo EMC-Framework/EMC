@@ -5,7 +5,6 @@ import me.deftware.client.framework.render.gl.GLX;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
-import me.deftware.client.framework.main.bootstrap.Bootstrap;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -14,6 +13,7 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import java.awt.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import me.deftware.mixin.mixins.render.BufferBuilderAccessor;
 
 /**
  * new RenderStackImpl()
@@ -61,7 +61,6 @@ public abstract class RenderStack<T> implements VertexConstructor {
 	protected Color lastColor = Color.white;
 
 	protected WorldRenderer builder = Tessellator.getInstance().getWorldRenderer();
-	private boolean building = false;
 	protected int mode = -1;
 
 	public T setScaled(boolean scaling) {
@@ -101,7 +100,6 @@ public abstract class RenderStack<T> implements VertexConstructor {
 	public abstract T begin();
 
 	public T begin(int mode) {
-		building = true;
 		GL11.glLineWidth(lineWidth);
 		builder.begin(this.mode = mode, getFormat());
 		return (T) this;
@@ -112,11 +110,10 @@ public abstract class RenderStack<T> implements VertexConstructor {
 	}
 
 	public boolean isBuilding() {
-		return building;
+		return ((BufferBuilderAccessor) builder).isBuilding();
 	}
 
 	protected void drawBuffer() {
-		building = false;
 		Tessellator.getInstance().draw();
 	}
 
