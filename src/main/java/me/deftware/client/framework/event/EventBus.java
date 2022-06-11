@@ -5,8 +5,9 @@ import me.deftware.client.framework.event.events.EventRender2D;
 import me.deftware.client.framework.event.events.EventRender3D;
 import me.deftware.client.framework.helper.Logger;
 import me.deftware.client.framework.maps.MultiMap;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Tessellator;
+import me.deftware.mixin.mixins.render.BufferBuilderAccessor;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.Tessellator;
 
 import java.lang.reflect.Method;
 import java.util.Comparator;
@@ -82,9 +83,9 @@ public class EventBus {
 
 	private static final Runnable abortRendering = () -> {
 		BufferBuilder builder = Tessellator.getInstance().getBuffer();
-		if (builder.isBuilding()) {
+		if (((BufferBuilderAccessor) builder).isBuilding()) {
 			LOGGER.warn("Closing open buffer builder");
-			builder.end();
+			builder.finishDrawing();
 		}
 	};
 

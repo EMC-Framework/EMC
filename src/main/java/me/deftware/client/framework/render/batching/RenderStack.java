@@ -14,6 +14,7 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import java.awt.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import me.deftware.mixin.mixins.render.BufferBuilderAccessor;
 
 /**
  * new RenderStackImpl()
@@ -61,7 +62,6 @@ public abstract class RenderStack<T> implements VertexConstructor {
 	protected Color lastColor = Color.white;
 
 	protected BufferBuilder builder = Tessellator.getInstance().getBuffer();
-	private boolean building = false;
 	protected int mode = -1;
 
 	public T setScaled(boolean scaling) {
@@ -101,7 +101,6 @@ public abstract class RenderStack<T> implements VertexConstructor {
 	public abstract T begin();
 
 	public T begin(int mode) {
-		building = true;
 		GlStateManager.glLineWidth(lineWidth);
 		builder.begin(this.mode = mode, getFormat());
 		return (T) this;
@@ -112,11 +111,10 @@ public abstract class RenderStack<T> implements VertexConstructor {
 	}
 
 	public boolean isBuilding() {
-		return building;
+		return ((BufferBuilderAccessor) builder).isBuilding();
 	}
 
 	protected void drawBuffer() {
-		building = false;
 		Tessellator.getInstance().draw();
 	}
 

@@ -70,6 +70,7 @@
     "render.MixinTextureManager",
     "render.MixinVisGraph",
     "render.MixinParticleManager",
+    "render.BufferBuilderAccessor",
     "world.MixinWorld",
     "world.MixinWorldClient",
     "shader.MixinShaderEffect",
