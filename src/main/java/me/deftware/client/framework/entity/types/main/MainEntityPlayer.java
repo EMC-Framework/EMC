@@ -18,6 +18,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -102,9 +103,10 @@ public class MainEntityPlayer extends RotationLogic {
 	public void sendChatMessage(String text) {
 		var player = this.getMinecraftEntity();
 		if (text.startsWith("/")) {
-			player.sendCommand(text.substring(1), null);
+			text = text.substring(1);
+			player.sendCommand(text, Text.literal(text));
 		} else {
-			player.sendChatMessage(text, null);
+			player.sendChatMessage(text, Text.literal(text));
 		}
 	}
 

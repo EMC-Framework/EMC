@@ -177,9 +177,9 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
                     return;
                 } else {
                     text = text.substring(command.length()).trim();
+                    preview = Text.literal(text);
                 }
-            }
-            if (!event.getMessage().equalsIgnoreCase(text)) {
+            } else if (!event.getMessage().equalsIgnoreCase(text)) {
                 // Modified text, update preview
                 preview = Text.literal(event.getMessage());
             }

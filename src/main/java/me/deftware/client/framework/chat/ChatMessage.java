@@ -4,6 +4,7 @@ import com.mojang.brigadier.Message;
 import lombok.Getter;
 import me.deftware.client.framework.chat.hud.ChatHud;
 import me.deftware.client.framework.chat.style.ChatStyle;
+import me.deftware.client.framework.entity.types.main.MainEntityPlayer;
 import me.deftware.client.framework.fonts.FontRenderer;
 import me.deftware.client.framework.minecraft.Minecraft;
 import net.minecraft.client.MinecraftClient;
@@ -185,16 +186,9 @@ public class ChatMessage implements Message {
 	 */
 	@Deprecated
 	public void sendMessage(boolean packet) {
-		if (MinecraftClient.getInstance().player != null) {
-			ChatHud.getChatMessageQueue().add(() -> {
-				String text = toString(false);
-				var player = MinecraftClient.getInstance().player;
-				if (text.startsWith("/")) {
-					player.sendCommand(text.substring(1), null);
-				} else {
-					player.sendChatMessage(text, null);
-				}
-			});
+		MainEntityPlayer player = Minecraft.getMinecraftGame()._getPlayer();
+		if (player != null) {
+			player.sendChatMessage(toString(false));
 		}
 	}
 
