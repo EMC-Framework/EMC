@@ -6,13 +6,13 @@ import me.deftware.client.framework.global.GameMap;
 import me.deftware.client.framework.math.vector.Vector3d;
 import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
 import me.deftware.client.framework.world.ClientWorld;
-import me.deftware.client.framework.world.World;
 import me.deftware.mixin.imp.IMixinEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.border.WorldBorder;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -130,6 +130,17 @@ public abstract class MixinEntity implements IMixinEntity {
             }
             ci.cancel();
         }
+    }
+
+    @Redirect(
+            method = "adjustMovementForCollisions(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Box;Lnet/minecraft/world/World;Ljava/util/List;)Lnet/minecraft/util/math/Vec3d;",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/border/WorldBorder;canCollide(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Box;)Z")
+    )
+    private static boolean onCollision$WorldBorder(WorldBorder instance, Entity entity, Box box) {
+        if (GameMap.INSTANCE.get(GameKeys.IGNORE_WORLD_BORDER, false)) {
+            return false;
+        }
+        return instance.canCollide(entity, box);
     }
 
     @Inject(method = "isGlowing", at = @At("HEAD"), cancellable = true)
