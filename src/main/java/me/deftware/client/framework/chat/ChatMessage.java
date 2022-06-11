@@ -187,7 +187,13 @@ public class ChatMessage implements Message {
 	public void sendMessage(boolean packet) {
 		if (MinecraftClient.getInstance().player != null) {
 			ChatHud.getChatMessageQueue().add(() -> {
-				Minecraft.getMinecraftGame().getChatSender().send(toString(false), ClientPlayerEntity.class);
+				String text = toString(false);
+				var player = MinecraftClient.getInstance().player;
+				if (text.startsWith("/")) {
+					player.sendCommand(text.substring(1), null);
+				} else {
+					player.sendChatMessage(text, null);
+				}
 			});
 		}
 	}
