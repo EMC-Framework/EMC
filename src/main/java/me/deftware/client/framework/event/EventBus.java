@@ -87,11 +87,14 @@ public class EventBus {
 		}
 	};
 
-	private static final Map<Class<? extends Event>, Runnable> cleanupHandlers = Map.of(
-			EventMatrixRender.class, abortRendering,
-			EventRender3D.class, abortRendering,
-			EventRender2D.class, abortRendering
-	);
+	private static final Map<Class<? extends Event>, Runnable> cleanupHandlers;
+
+	static {
+		cleanupHandlers = new HashMap<>();
+		cleanupHandlers.put(EventMatrixRender.class, abortRendering);
+		cleanupHandlers.put(EventRender3D.class, abortRendering);
+		cleanupHandlers.put(EventRender2D.class, abortRendering);
+	}
 
 	public static void sendEvent(Event event) {
 		List<Listener> listeners = EventBus.listeners.get(event.getClass());
