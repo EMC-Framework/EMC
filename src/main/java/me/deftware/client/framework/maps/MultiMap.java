@@ -7,7 +7,7 @@ import java.util.*;
  */
 public class MultiMap<K, V> {
 
-    private final Map<K, Collection<V>> map = new HashMap<>();
+    private final Map<K, List<V>> map = new HashMap<>();
 
     /**
      * Add the specified set to the map
@@ -37,8 +37,12 @@ public class MultiMap<K, V> {
      * Returns the Collection of values to which the specified key is mapped,
      * or null if this multimap contains no mapping for the key.
      */
-    public Collection<V> get(Object key) {
+    public List<V> get(K key) {
         return map.get(key);
+    }
+
+    public List<V> getOrCreate(K key) {
+        return map.computeIfAbsent(key, k -> new ArrayList<>());
     }
 
     /**
@@ -51,7 +55,7 @@ public class MultiMap<K, V> {
     /**
      * Returns a Set view of the mappings contained in this multimap.
      */
-    public Set<Map.Entry<K, Collection<V>>> entrySet() {
+    public Set<Map.Entry<K, List<V>>> entrySet() {
         return map.entrySet();
     }
 
@@ -59,7 +63,7 @@ public class MultiMap<K, V> {
      * Returns a Collection view of Collection of the values present in
      * this multimap.
      */
-    public Collection<Collection<V>> values() {
+    public Collection<List<V>> values() {
         return map.values();
     }
 
