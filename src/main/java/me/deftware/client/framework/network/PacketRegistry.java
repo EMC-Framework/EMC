@@ -24,6 +24,7 @@ public class PacketRegistry {
         register(net.minecraft.network.play.client.C0DPacketCloseWindow.class, CPacketCloseWindow.class);
         register(net.minecraft.network.play.client.C00PacketKeepAlive.class, CPacketKeepAlive.class);
         register(net.minecraft.network.play.client.C16PacketClientStatus.class, CPacketClientStatus.class);
+        register(net.minecraft.network.play.client.C01PacketChatMessage.class, CPacketChatMessage.class);
         // Move packets
         register(net.minecraft.network.play.client.C03PacketPlayer.class, CPacketPlayer.class);
         register(net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook.class, CPacketPositionRotation.class);
