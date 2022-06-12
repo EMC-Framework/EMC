@@ -160,24 +160,18 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
 
     @Unique
     public void send(Chat.Consumer consumer, String text, Text preview, Class<?> sender, EventChatSend.Type type) {
-        List<String> ignoredCommands = List.of("say");
         EventChatSend event = new EventChatSend(text, sender, type).broadcast();
         if (!event.isCanceled()) {
             // Client command hook
             String trigger = CommandRegister.getCommandTrigger();
             if (text.startsWith(trigger)) {
                 text = text.substring(trigger.length());
-                String command = text.contains(" ") ? text.split(" ")[0] : text;
-                if (!ignoredCommands.contains(command)) {
-                    try {
-                        CommandRegister.getDispatcher().execute(text, MinecraftClient.getInstance().player.getCommandSource());
-                    } catch (Exception ex) {
-                        new LiteralChatMessage(ex.getMessage(), ChatColors.RED).print();
-                    }
-                    return;
-                } else {
-                    event.setMessage(text.substring(command.length()).trim());
+                try {
+                    CommandRegister.getDispatcher().execute(text, MinecraftClient.getInstance().player.getCommandSource());
+                } catch (Exception ex) {
+                    new LiteralChatMessage(ex.getMessage(), ChatColors.RED).print();
                 }
+                return;
             }
             // Update text and preview if the message has changed
             if (!event.getMessage().equalsIgnoreCase(text)) {
