@@ -93,8 +93,12 @@ public class MainEntityPlayer extends RotationLogic {
 				.setHorseJumpPower(f);
 	}
 
+	public void sendChatMessage(String message) {
+		this.getMinecraftEntity().sendChatMessage(message);
+	}
+
 	public void sendChatMessage(String message, Class<?> sender) {
-		Objects.requireNonNull(((IMixinEntityPlayerSP) net.minecraft.client.Minecraft.getMinecraft().player)).sendChatMessageWithSender(message, sender);
+		((IMixinEntityPlayerSP) this.getMinecraftEntity()).sendChatMessageWithSender(message, sender);
 	}
 
 	private MovementInput getInput() {

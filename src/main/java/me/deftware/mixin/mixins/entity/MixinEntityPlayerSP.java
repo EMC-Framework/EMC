@@ -110,8 +110,12 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
         String trigger = CommandRegister.getCommandTrigger();
         EventChatSend event = new EventChatSend(message, sender).broadcast();
         if (!event.isCanceled()) {
-            if (event.isDispatch() || !message.startsWith(trigger)) {
-                connection.sendPacket(new CPacketChatMessage(event.getMessage()));
+            if (!message.startsWith(trigger)) {
+                String text = event.getMessage();
+                if (event.getType() == EventChatSend.Type.Command) {
+                    text = "/" + text;
+                }
+                connection.sendPacket(new CPacketChatMessage(text));
             } else {
                 try {
                     CommandRegister.getDispatcher().execute(message.substring(CommandRegister.getCommandTrigger().length()), new CustomSuggestionProvider());
