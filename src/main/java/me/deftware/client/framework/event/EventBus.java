@@ -97,36 +97,38 @@ public class EventBus {
 	}
 
 	public static void sendEvent(Event event) {
-		List<Listener> listeners = EventBus.listeners.get(event.getClass());
-		if (listeners != null && !listeners.isEmpty()) {
-			Iterator<Listener> iterator = listeners.iterator();
-			while (iterator.hasNext()) {
-				Listener listener = iterator.next();
-				try {
-					listener.invoke(event);
-				} catch (Throwable ex) {
-					Throwable cause = ex.getCause();
-					Class<?> clazz = listener.getClassInstance().getClass();
-					LOGGER.error("\"{}\" occurred whilst dispatching \"{}\" to method \"{}\" in class \"{}\" due to \"{}\"",
-							cause.getClass().getSimpleName(),
-							event.getClass().getSimpleName(),
-							listener.getMethod().getName(),
-							clazz.getSimpleName(),
-							cause.getMessage()
-					);
-					Consumer<Throwable> consumer = listener.getExceptionHandler();
-					if (consumer != null) {
-						consumer.accept(cause);
-					}
-					LOGGER.warn("Removing event {} for class {}", event.getClass().getSimpleName(), clazz.getSimpleName());
-					LOGGER.debug("Event dispatch stack:", ex);
-					cause.printStackTrace();
-					iterator.remove();
+		synchronized (lock) {
+			List<Listener> listeners = EventBus.listeners.get(event.getClass());
+			if (listeners != null && !listeners.isEmpty()) {
+				Iterator<Listener> iterator = listeners.iterator();
+				while (iterator.hasNext()) {
+					Listener listener = iterator.next();
+					try {
+						listener.invoke(event);
+					} catch (Throwable ex) {
+						Throwable cause = ex.getCause();
+						Class<?> clazz = listener.getClassInstance().getClass();
+						LOGGER.error("\"{}\" occurred whilst dispatching \"{}\" to method \"{}\" in class \"{}\" due to \"{}\"",
+								cause.getClass().getSimpleName(),
+								event.getClass().getSimpleName(),
+								listener.getMethod().getName(),
+								clazz.getSimpleName(),
+								cause.getMessage()
+						);
+						Consumer<Throwable> consumer = listener.getExceptionHandler();
+						if (consumer != null) {
+							consumer.accept(cause);
+						}
+						LOGGER.warn("Removing event {} for class {}", event.getClass().getSimpleName(), clazz.getSimpleName());
+						LOGGER.debug("Event dispatch stack:", ex);
+						cause.printStackTrace();
+						iterator.remove();
 
-					// Run cleanup handlers
-					Runnable cleanup = cleanupHandlers.get(event.getClass());
-					if (cleanup != null) {
-						cleanup.run();
+						// Run cleanup handlers
+						Runnable cleanup = cleanupHandlers.get(event.getClass());
+						if (cleanup != null) {
+							cleanup.run();
+						}
 					}
 				}
 			}
