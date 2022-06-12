@@ -176,12 +176,13 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
                     }
                     return;
                 } else {
-                    text = text.substring(command.length()).trim();
-                    preview = Text.literal(text);
+                    event.setMessage(text.substring(command.length()).trim());
                 }
-            } else if (!event.getMessage().equalsIgnoreCase(text)) {
-                // Modified text, update preview
-                preview = Text.literal(event.getMessage());
+            }
+            // Update text and preview if the message has changed
+            if (!event.getMessage().equalsIgnoreCase(text)) {
+                text = event.getMessage();
+                preview = Text.literal(text);
             }
             ChatMessageSigner chatMessageSigner = ChatMessageSigner.create(this.getUuid());
             consumer.apply(chatMessageSigner, text, preview);
