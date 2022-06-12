@@ -29,6 +29,7 @@ public class PacketRegistry {
         register(CloseHandledScreenC2SPacket.class, CPacketCloseWindow.class);
         register(KeepAliveC2SPacket.class, CPacketKeepAlive.class);
         register(ClientStatusC2SPacket.class, CPacketClientStatus.class);
+        register(ChatMessageC2SPacket.class, CPacketChatMessage.class);
         // Move packets
         register(PlayerMoveC2SPacket.class, CPacketPlayer.class);
         register(PlayerMoveC2SPacket.OnGroundOnly.class, CPacketPlayer.class);
