@@ -1,6 +1,8 @@
 package me.deftware.mixin.mixins.gui;
 
+import me.deftware.aristois.commands.CommandManager;
 import me.deftware.client.framework.chat.ChatMessage;
+import me.deftware.client.framework.command.CommandRegister;
 import me.deftware.client.framework.event.events.EventGetItemToolTip;
 import me.deftware.client.framework.event.events.EventScreen;
 import me.deftware.client.framework.gui.widgets.properties.Tooltipable;
@@ -9,6 +11,7 @@ import me.deftware.client.framework.gui.widgets.NativeComponent;
 import me.deftware.client.framework.gui.widgets.GenericComponent;
 import me.deftware.client.framework.registry.ItemRegistry;
 import me.deftware.client.framework.render.gl.GLX;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
@@ -17,7 +20,10 @@ import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import org.checkerframework.checker.units.qual.A;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -151,6 +157,26 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
     @Override
     public void renderTooltip(int x, int y, List<TooltipComponent> tooltipComponents) {
         this.renderTooltipFromComponents(GLX.INSTANCE.getStack(), tooltipComponents, x, y);
+    }
+
+    @Inject(method = "handleTextClick", at = @At("HEAD"), cancellable = true)
+    private void onTextClick(Style style, CallbackInfoReturnable<Boolean> cir) {
+        var event = style.getClickEvent();
+        if (event != null) {
+            if (event.getAction() == ClickEvent.Action.RUN_COMMAND) {
+                String text = SharedConstants.stripInvalidChars(event.getValue());
+                String trigger = CommandRegister.getCommandTrigger();
+                if (text.startsWith(trigger)) {
+                    try {
+                        var source = MinecraftClient.getInstance().player.getCommandSource();
+                        CommandRegister.getDispatcher().execute(text.substring(trigger.length()), source);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                    cir.setReturnValue(true);
+                }
+            }
+        }
     }
 
 }

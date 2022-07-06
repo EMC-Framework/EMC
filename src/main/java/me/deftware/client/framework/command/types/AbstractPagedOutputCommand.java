@@ -13,7 +13,6 @@ import me.deftware.client.framework.chat.hud.HudLine;
 import me.deftware.client.framework.chat.style.ChatColors;
 import me.deftware.client.framework.command.CommandBuilder;
 import me.deftware.client.framework.command.CommandRegister;
-import me.deftware.client.framework.command.CommandResult;
 import me.deftware.client.framework.command.EMCModCommand;
 
 import java.util.ArrayList;
@@ -45,7 +44,7 @@ public abstract class AbstractPagedOutputCommand extends EMCModCommand {
                 .then(
                         RequiredArgumentBuilder.argument("page", IntegerArgumentType.integer(1))
                                 .executes(c ->
-                                        onExecute(new CommandResult(c).getInteger("page") - 1)
+                                        onExecute(IntegerArgumentType.getInteger(c, "page") - 1)
                                 )
                 )
                 .executes(c -> onExecute(0))
