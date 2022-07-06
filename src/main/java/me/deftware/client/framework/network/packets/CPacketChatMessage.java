@@ -26,10 +26,11 @@ public class CPacketChatMessage extends PacketWrapper {
     public static ChatMessageC2SPacket message(String text) {
         var client = MinecraftClient.getInstance();
         var player = client.player;
-        ChatMessageSigner chatMessageSigner = ChatMessageSigner.create(player.getUuid());
+        var uuid = player.getUuid();
+        ChatMessageSigner chatMessageSigner = ChatMessageSigner.create(uuid);
 
         Text literal = Text.literal(text);
-        MessageSignature signature = MessageSignature.none();
+        MessageSignature signature = MessageSignature.none(uuid);
 
         try {
             Signer signer = client.getProfileKeys().getSigner();

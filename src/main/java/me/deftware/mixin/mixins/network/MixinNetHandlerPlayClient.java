@@ -6,19 +6,11 @@ import me.deftware.client.framework.registry.BlockRegistry;
 import me.deftware.client.framework.world.block.Block;
 import me.deftware.client.framework.world.player.PlayerEntry;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.network.message.MessageSender;
-import net.minecraft.network.message.MessageType;
-import net.minecraft.network.message.SignedMessage;
 import net.minecraft.network.packet.s2c.play.*;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -27,7 +19,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -35,11 +26,6 @@ import java.util.stream.Collectors;
  */
 @Mixin(ClientPlayNetworkHandler.class)
 public abstract class MixinNetHandlerPlayClient implements NetworkHandler {
-
-    @Shadow
-    protected abstract boolean isSignatureValid(SignedMessage message, PlayerListEntry playerListEntry);
-
-    @Shadow @Nullable public abstract PlayerListEntry getPlayerListEntry(UUID uuid);
 
     @Override
     public List<PlayerEntry> _getPlayerList() {
@@ -106,23 +92,6 @@ public abstract class MixinNetHandlerPlayClient implements NetworkHandler {
                 pos.getX(), pos.getY(), pos.getZ(),
                 accessor.getPositions(), blocks
         ).broadcast();
-    }
-
-    @Unique
-    private EventChatReceive event;
-
-    @Inject(method = "onChatMessage", at = @At("HEAD"))
-    private void onChatMessage(ChatMessageS2CPacket packet, CallbackInfo ci) {
-        PlayerListEntry playerListEntry = this.getPlayerListEntry(packet.getSignedMessage().signature().sender());
-        boolean validSignature = playerListEntry != null && this.isSignatureValid(packet.getSignedMessage(), playerListEntry);
-        this.event = new EventChatReceive(packet, validSignature).broadcast();
-    }
-
-    @Redirect(method = "handleMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;onChatMessage(Lnet/minecraft/network/message/MessageType;Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSender;)V"))
-    private void onChatMessage$Notify(InGameHud instance, MessageType type, Text message, MessageSender sender) {
-        if (!this.event.isCanceled()) {
-            instance.onChatMessage(type, this.event.getMessage().build(), this.event.getSender());
-        }
     }
 
     @Redirect(method = "onGameJoin", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/ClientBrandRetriever;getClientModName()Ljava/lang/String;"))

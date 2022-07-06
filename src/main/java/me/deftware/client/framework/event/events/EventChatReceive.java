@@ -4,6 +4,7 @@ import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.event.Event;
 import net.minecraft.network.message.MessageSender;
 import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
+import net.minecraft.text.Text;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -18,11 +19,11 @@ public class EventChatReceive extends Event {
     private final boolean signed, expired;
     private MessageSender sender;
 
-    public EventChatReceive(ChatMessageS2CPacket packet, boolean signed) {
-        this.message = new ChatMessage().fromText(packet.signedContent());
-        this.expired = packet.isExpired(Instant.now());
+    public EventChatReceive(MessageSender sender, Text content, boolean expired, boolean signed) {
+        this.message = new ChatMessage().fromText(content);
+        this.expired = expired;
         this.signed = signed;
-        this.sender = packet.sender();
+        this.sender = sender;
     }
 
     public void setMessage(ChatMessage message) {
@@ -50,11 +51,11 @@ public class EventChatReceive extends Event {
     }
 
     public UUID getSenderId() {
-        return sender.uuid();
+        return sender.profileId();
     }
 
     public void setSender(ChatMessage name) {
-        this.sender = new MessageSender(this.sender.uuid(), name.build());
+        this.sender = new MessageSender(this.sender.profileId(), name.build());
     }
 
 }
