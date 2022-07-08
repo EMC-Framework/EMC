@@ -40,10 +40,10 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
     public abstract boolean isUsingItem();
 
     @Shadow
-    protected abstract void sendChatMessagePacket(ChatMessageSigner signer, String message, @Nullable Text preview);
+    protected abstract void sendChatMessagePacket(String message, @Nullable Text preview);
 
     @Shadow
-    protected abstract void sendCommand(ChatMessageSigner signer, String command, @Nullable Text preview);
+    protected abstract void sendCommand(String command, @Nullable Text preview);
 
     @Inject(method = "closeHandledScreen", at = @At("HEAD"))
     private void onCloseHandledScreen(CallbackInfo ci) {
@@ -136,13 +136,13 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
         }
     }
 
-    @Redirect(method = "sendChatMessage(Ljava/lang/String;Lnet/minecraft/text/Text;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;sendChatMessagePacket(Lnet/minecraft/network/message/ChatMessageSigner;Ljava/lang/String;Lnet/minecraft/text/Text;)V"))
-    private void onMessage(ClientPlayerEntity instance, ChatMessageSigner signer, String message, Text preview) {
+    @Redirect(method = "sendChatMessage(Ljava/lang/String;Lnet/minecraft/text/Text;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;sendChatMessagePacket(Ljava/lang/String;Lnet/minecraft/text/Text;)V"))
+    private void onMessage(ClientPlayerEntity instance, String message, Text preview) {
         this.send(this::sendChatMessagePacket, message, preview, ClientPlayerEntity.class, EventChatSend.Type.Message);
     }
 
-    @Redirect(method = "sendCommand(Ljava/lang/String;Lnet/minecraft/text/Text;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;sendCommand(Lnet/minecraft/network/message/ChatMessageSigner;Ljava/lang/String;Lnet/minecraft/text/Text;)V"))
-    private void onCommand(ClientPlayerEntity instance, ChatMessageSigner signer, String command, Text preview) {
+    @Redirect(method = "method_44098", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;sendCommand(Ljava/lang/String;Lnet/minecraft/text/Text;)V"))
+    private void onCommand(ClientPlayerEntity instance, String command, Text preview) {
         this.send(this::sendCommand, command, preview, ClientPlayerEntity.class, EventChatSend.Type.Command);
     }
 
@@ -178,8 +178,7 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
                 text = event.getMessage();
                 preview = Text.literal(text);
             }
-            ChatMessageSigner chatMessageSigner = ChatMessageSigner.create(this.getUuid());
-            consumer.apply(chatMessageSigner, text, preview);
+            consumer.apply(text, preview);
         }
     }
 

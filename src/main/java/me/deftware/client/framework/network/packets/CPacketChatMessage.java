@@ -26,22 +26,22 @@ public class CPacketChatMessage extends PacketWrapper {
     public static ChatMessageC2SPacket message(String text) {
         var client = MinecraftClient.getInstance();
         var player = client.player;
-        var uuid = player.getUuid();
-        ChatMessageSigner chatMessageSigner = ChatMessageSigner.create(uuid);
+        var networkHandler = client.getNetworkHandler();
+        var chatMessageSigner = ChatMessageSigner.create(player.getUuid());
 
         Text literal = Text.literal(text);
-        MessageSignature signature = MessageSignature.none(uuid);
+        MessageSignature signature = MessageSignature.field_39811;
 
         try {
             Signer signer = client.getProfileKeys().getSigner();
             if (signer != null) {
-                signature = chatMessageSigner.sign(signer, literal);
+                signature = networkHandler.method_44816().pack(signer, chatMessageSigner, literal).signature();
             }
         } catch (Exception ex) {
             LOGGER.error("Unable to sign chat message", ex);
         }
 
-        return new ChatMessageC2SPacket(text, signature, true);
+        return new ChatMessageC2SPacket(text, chatMessageSigner.timeStamp(), chatMessageSigner.salt(), signature, true);
     }
 
 }

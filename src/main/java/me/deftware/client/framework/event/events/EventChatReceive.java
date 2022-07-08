@@ -3,6 +3,8 @@ package me.deftware.client.framework.event.events;
 import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.event.Event;
 import net.minecraft.network.message.MessageSender;
+import net.minecraft.network.message.MessageType;
+import net.minecraft.network.message.SignedMessage;
 import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.text.Text;
 
@@ -17,13 +19,16 @@ public class EventChatReceive extends Event {
     private ChatMessage message;
 
     private final boolean signed, expired;
-    private MessageSender sender;
+    private MessageType.class_7602 arg;
 
-    public EventChatReceive(MessageSender sender, Text content, boolean expired, boolean signed) {
-        this.message = new ChatMessage().fromText(content);
+    private UUID sender;
+
+    public EventChatReceive(MessageType.class_7602 arg, SignedMessage message, boolean expired, boolean signed) {
+        this.message = new ChatMessage().fromText(message.getContent());
         this.expired = expired;
         this.signed = signed;
-        this.sender = sender;
+        this.sender = message.signedHeader().sender();
+        this.arg = arg;
     }
 
     public void setMessage(ChatMessage message) {
@@ -42,20 +47,20 @@ public class EventChatReceive extends Event {
         return expired;
     }
 
-    public MessageSender getSender() {
-        return this.sender;
+    public ChatMessage getSenderName() {
+        return new ChatMessage().fromText(arg.name());
     }
 
-    public ChatMessage getSenderName() {
-        return new ChatMessage().fromText(sender.name());
+    public MessageType.class_7602 getArg() {
+        return arg;
     }
 
     public UUID getSenderId() {
-        return sender.profileId();
+        return sender;
     }
 
     public void setSender(ChatMessage name) {
-        this.sender = new MessageSender(this.sender.profileId(), name.build());
+        this.arg = new MessageType.class_7602(arg.chatType(), name.build(), arg.targetName());
     }
 
 }

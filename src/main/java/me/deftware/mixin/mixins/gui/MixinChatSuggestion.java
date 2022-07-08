@@ -4,8 +4,8 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
 import me.deftware.client.framework.command.CommandRegister;
+import net.minecraft.client.gui.screen.ChatInputSuggestor;
 import net.minecraft.client.gui.screen.ChatScreen;
-import net.minecraft.client.gui.screen.CommandSuggestor;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.network.ClientCommandSource;
@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 /**
  * @author Deftware
  */
-@Mixin(CommandSuggestor.class)
+@Mixin(ChatInputSuggestor.class)
 public class MixinChatSuggestion {
 
     @Shadow

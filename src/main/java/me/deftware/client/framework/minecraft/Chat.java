@@ -19,7 +19,7 @@ public interface Chat {
 
     interface Consumer {
 
-        void apply(ChatMessageSigner signer, String message, Text preview);
+        void apply(String message, Text preview);
 
     }
 
