@@ -2,6 +2,7 @@ package me.deftware.mixin.mixins.game;
 
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.datafixers.util.Function4;
 import lombok.Getter;
 import me.deftware.client.framework.entity.Entity;
 import me.deftware.client.framework.event.events.EventScreen;
@@ -26,6 +27,9 @@ import net.minecraft.client.util.Session;
 import net.minecraft.client.util.Window;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.world.SaveProperties;
+import net.minecraft.world.level.storage.LevelStorage;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
@@ -34,6 +38,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -84,9 +89,10 @@ public abstract class MixinMinecraft implements Minecraft {
     @Unique
     private String worldName;
 
-    @Inject(method = "startIntegratedServer(Ljava/lang/String;)V", at = @At("HEAD"))
-    private void onIntegratedServer(String worldName, CallbackInfo ci) {
-        this.worldName = worldName;
+    @Redirect(method = "startIntegratedServer(Ljava/lang/String;Lnet/minecraft/util/registry/DynamicRegistryManager$Impl;Ljava/util/function/Function;Lcom/mojang/datafixers/util/Function4;ZLnet/minecraft/client/MinecraftClient$WorldLoadAction;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/storage/LevelStorage;createSession(Ljava/lang/String;)Lnet/minecraft/world/level/storage/LevelStorage$Session;"))
+    private LevelStorage.Session onIntegratedServer(LevelStorage instance, String directoryName) throws IOException {
+        this.worldName = directoryName;
+        return instance.createSession(directoryName);
     }
 
     @Override
