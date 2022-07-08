@@ -1,6 +1,5 @@
 package me.deftware.mixin.mixins.gui;
 
-import me.deftware.aristois.commands.CommandManager;
 import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.command.CommandRegister;
 import me.deftware.client.framework.event.events.EventGetItemToolTip;
