@@ -104,7 +104,7 @@ public class MainEntityPlayer extends RotationLogic {
 		var player = this.getMinecraftEntity();
 		if (text.startsWith("/")) {
 			text = text.substring(1);
-			player.method_44098(text, Text.literal(text));
+			player.sendCommand(text, Text.literal(text));
 		} else {
 			player.sendChatMessage(text, Text.literal(text));
 		}

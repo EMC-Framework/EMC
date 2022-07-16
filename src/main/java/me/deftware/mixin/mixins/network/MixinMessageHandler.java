@@ -8,7 +8,6 @@ import net.minecraft.client.network.message.MessageHandler;
 import net.minecraft.client.network.message.MessageTrustStatus;
 import net.minecraft.network.message.*;
 import net.minecraft.text.Text;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -22,40 +21,41 @@ import java.util.UUID;
 public abstract class MixinMessageHandler {
 
     @Shadow
-    protected abstract PlayerListEntry method_44731(UUID uUID);
+    protected abstract PlayerListEntry getPlayerListEntry(UUID uUID);
 
     @Shadow
-    protected abstract MessageTrustStatus method_44732(SignedMessage signedMessage, Text text, @Nullable PlayerListEntry playerListEntry);
+    protected abstract MessageTrustStatus getStatus(SignedMessage message, Text decorated, PlayerListEntry senderEntry, Instant instant);
 
     @Unique
     private EventChatReceive event;
 
-    @Inject(method = "method_44733", at = @At("HEAD"), cancellable = true)
-    private void onChatMessage(SignedMessage signedMessage, MessageType.class_7602 arg, CallbackInfo ci) {
-        Text text = arg.method_44837(signedMessage.getContent());
+    @Inject(method = "onChatMessage", at = @At("HEAD"), cancellable = true)
+    private void onChatMessage(SignedMessage signedMessage, MessageType.Parameters params, CallbackInfo ci) {
+        Text text = params.applyChatDecoration(signedMessage.getContent());
+        Instant instant = Instant.now();
 
         boolean signed = false;
-        boolean expired = signedMessage.isExpiredOnClient(Instant.now());
+        boolean expired = signedMessage.isExpiredOnClient(instant);
 
-        ChatMessageSigner chatMessageSigner = signedMessage.method_44866();
-        if (!chatMessageSigner.method_44851()) {
-            PlayerListEntry playerListEntry = this.method_44731(chatMessageSigner.profileId());
-            MessageTrustStatus messageTrustStatus = this.method_44732(signedMessage, text, playerListEntry);
+        MessageMetadata messageMetadata = signedMessage.createMetadata();
+        if (!messageMetadata.lacksSender()) {
+            PlayerListEntry playerListEntry = this.getPlayerListEntry(messageMetadata.sender());
+            MessageTrustStatus messageTrustStatus = this.getStatus(signedMessage, text, playerListEntry, instant);
             signed = !messageTrustStatus.isInsecure();
         }
 
-        this.event = new EventChatReceive(arg, signedMessage, expired, signed).broadcast();
+        this.event = new EventChatReceive(params, signedMessage, expired, signed).broadcast();
         if (this.event.isCanceled()) {
             ci.cancel();
         }
     }
 
-    @Redirect(method = "method_44768", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/ChatHud;method_44811(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignature;Lnet/minecraft/client/gui/hud/MessageIndicator;)V"))
-    private void onAddChatMessage(ChatHud instance, Text original, MessageSignature messageSignature, MessageIndicator messageIndicator) {
+    @Redirect(method = "method_44943", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/ChatHud;addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignatureData;Lnet/minecraft/client/gui/hud/MessageIndicator;)V"))
+    private void onAddChatMessage(ChatHud instance, Text original, MessageSignatureData signature, MessageIndicator indicator) {
         var arg = this.event.getArg();
         Text message = this.event.getMessage().build();
-        Text text = arg.method_44837(message);
-        instance.method_44811(text, messageSignature, messageIndicator);
+        Text text = arg.applyChatDecoration(message);
+        instance.addMessage(text, signature, indicator);
     }
 
 }

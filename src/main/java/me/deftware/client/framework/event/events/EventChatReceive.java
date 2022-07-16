@@ -2,13 +2,9 @@ package me.deftware.client.framework.event.events;
 
 import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.event.Event;
-import net.minecraft.network.message.MessageSender;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SignedMessage;
-import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
-import net.minecraft.text.Text;
 
-import java.time.Instant;
 import java.util.UUID;
 
 /**
@@ -19,11 +15,11 @@ public class EventChatReceive extends Event {
     private ChatMessage message;
 
     private final boolean signed, expired;
-    private MessageType.class_7602 arg;
+    private MessageType.Parameters arg;
 
     private UUID sender;
 
-    public EventChatReceive(MessageType.class_7602 arg, SignedMessage message, boolean expired, boolean signed) {
+    public EventChatReceive(MessageType.Parameters arg, SignedMessage message, boolean expired, boolean signed) {
         this.message = new ChatMessage().fromText(message.getContent());
         this.expired = expired;
         this.signed = signed;
@@ -51,7 +47,7 @@ public class EventChatReceive extends Event {
         return new ChatMessage().fromText(arg.name());
     }
 
-    public MessageType.class_7602 getArg() {
+    public MessageType.Parameters getArg() {
         return arg;
     }
 
@@ -60,7 +56,7 @@ public class EventChatReceive extends Event {
     }
 
     public void setSender(ChatMessage name) {
-        this.arg = new MessageType.class_7602(arg.chatType(), name.build(), arg.targetName());
+        this.arg = new MessageType.Parameters(arg.type(), name.build(), arg.targetName());
     }
 
 }

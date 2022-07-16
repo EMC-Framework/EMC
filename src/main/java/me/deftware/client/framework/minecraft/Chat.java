@@ -1,6 +1,5 @@
 package me.deftware.client.framework.minecraft;
 
-import net.minecraft.network.message.ChatMessageSigner;
 import net.minecraft.text.Text;
 
 public interface Chat {

@@ -6,7 +6,7 @@ import me.deftware.mixin.imp.IMixinGuiNewChat;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.hud.ChatHudLine;
 import net.minecraft.client.gui.hud.MessageIndicator;
-import net.minecraft.network.message.MessageSignature;
+import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -27,10 +27,10 @@ public abstract class MixinGuiNewChat implements IMixinGuiNewChat {
     private List<ChatHudLine.Visible> visibleMessages;
 
     @Shadow
-    protected abstract void addMessage(Text message, MessageSignature messageSignature, int i, MessageIndicator messageIndicator, boolean bl);
+    protected abstract void addMessage(Text message, MessageSignatureData messageSignature, int i, MessageIndicator messageIndicator, boolean bl);
 
     @Override
-    public void setTheChatLine(Text message, MessageSignature messageSignature, int messageId, MessageIndicator arg, boolean refresh) {
+    public void setTheChatLine(Text message, MessageSignatureData messageSignature, int messageId, MessageIndicator arg, boolean refresh) {
         addMessage(message, messageSignature, messageId, arg, refresh);
     }
 

@@ -11,7 +11,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.player.HungerManager;
-import net.minecraft.network.message.ChatMessageSigner;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
@@ -23,8 +22,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.List;
 
 @Mixin(ClientPlayerEntity.class)
 public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinEntityPlayerSP, Chat {
@@ -43,7 +40,7 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
     protected abstract void sendChatMessagePacket(String message, @Nullable Text preview);
 
     @Shadow
-    protected abstract void sendCommand(String command, @Nullable Text preview);
+    protected abstract void sendCommandInternal(String command, @Nullable Text preview);
 
     @Inject(method = "closeHandledScreen", at = @At("HEAD"))
     private void onCloseHandledScreen(CallbackInfo ci) {
@@ -141,9 +138,9 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
         this.send(this::sendChatMessagePacket, message, preview, ClientPlayerEntity.class, EventChatSend.Type.Message);
     }
 
-    @Redirect(method = "method_44098", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;sendCommand(Ljava/lang/String;Lnet/minecraft/text/Text;)V"))
+    @Redirect(method = "sendCommand(Ljava/lang/String;Lnet/minecraft/text/Text;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;sendCommandInternal(Ljava/lang/String;Lnet/minecraft/text/Text;)V"))
     private void onCommand(ClientPlayerEntity instance, String command, Text preview) {
-        this.send(this::sendCommand, command, preview, ClientPlayerEntity.class, EventChatSend.Type.Command);
+        this.send(this::sendCommandInternal, command, preview, ClientPlayerEntity.class, EventChatSend.Type.Command);
     }
 
     @Unique
@@ -155,7 +152,7 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
     @Unique
     @Override
     public void command(String text, Class<?> sender) {
-        this.send(this::sendCommand, text, Text.literal(text), sender, EventChatSend.Type.Command);
+        this.send(this::sendCommandInternal, text, Text.literal(text), sender, EventChatSend.Type.Command);
     }
 
     @Unique
