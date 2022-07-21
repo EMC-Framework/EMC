@@ -1,11 +1,11 @@
 package me.deftware.client.framework.network.packets;
 
 import me.deftware.client.framework.network.PacketWrapper;
-import net.minecraft.class_7634;
-import net.minecraft.class_7635;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.Packet;
 import net.minecraft.network.encryption.Signer;
+import net.minecraft.network.message.DecoratedContents;
+import net.minecraft.network.message.LastSeenMessageList;
 import net.minecraft.network.message.MessageMetadata;
 import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
@@ -33,19 +33,19 @@ public class CPacketChatMessage extends PacketWrapper {
 
         Text literal = Text.literal(text);
         MessageSignatureData signature = MessageSignatureData.EMPTY;
-        class_7635.class_7636 lv = networkHandler.method_44941();
-        class_7634 lv2 = new class_7634(literal);
+        LastSeenMessageList.Acknowledgment acknowledgment = networkHandler.consumeAcknowledgment();
+        DecoratedContents decoratedContents = new DecoratedContents(text, literal);
 
         try {
             Signer signer = client.getProfileKeys().getSigner();
             if (signer != null) {
-                signature = networkHandler.getMessagePacker().pack(signer, messageMeta, lv2, lv.lastSeen()).signature();
+                signature = networkHandler.getMessagePacker().pack(signer, messageMeta, decoratedContents, acknowledgment.lastSeen()).signature();
             }
         } catch (Exception ex) {
             LOGGER.error("Unable to sign chat message", ex);
         }
 
-        return new ChatMessageC2SPacket(text, messageMeta.timestamp(), messageMeta.salt(), signature, true, lv);
+        return new ChatMessageC2SPacket(text, messageMeta.timestamp(), messageMeta.salt(), signature, true, acknowledgment);
     }
 
 }
