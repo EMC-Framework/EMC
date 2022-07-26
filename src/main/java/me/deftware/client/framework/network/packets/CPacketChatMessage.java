@@ -2,9 +2,9 @@ package me.deftware.client.framework.network.packets;
 
 import com.mojang.brigadier.ParseResults;
 import me.deftware.client.framework.network.PacketWrapper;
-import net.minecraft.class_7644;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.command.CommandSource;
+import net.minecraft.command.argument.DecoratableArgumentList;
 import net.minecraft.network.Packet;
 import net.minecraft.network.encryption.Signer;
 import net.minecraft.network.message.*;
@@ -79,7 +79,7 @@ public class CPacketChatMessage extends PacketWrapper {
             return ArgumentSignatureDataMap.EMPTY;
         }
         try {
-            return ArgumentSignatureDataMap.sign(class_7644.method_45043(parseResults), (argumentName, value) -> {
+            return ArgumentSignatureDataMap.sign(DecoratableArgumentList.of(parseResults), (argumentName, value) -> {
                 DecoratedContents decoratedContents = preview != null ? new DecoratedContents(value, preview) : new DecoratedContents(value);
                 return networkHandler.getMessagePacker().pack(profileSigner, messageMetadata, decoratedContents, lastSeen).signature();
             });

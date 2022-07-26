@@ -1,10 +1,9 @@
 package me.deftware.mixin.mixins.network;
 
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
 import me.deftware.client.framework.event.events.EventPacketReceive;
 import me.deftware.client.framework.event.events.EventPacketSend;
 import me.deftware.mixin.imp.IMixinNetworkManager;
+import net.minecraft.class_7648;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.PacketListener;
@@ -17,10 +16,10 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public abstract class MixinNetworkManager implements IMixinNetworkManager {
 
     @Shadow
-    protected abstract void sendImmediately(Packet<?> packet, GenericFutureListener<? extends Future<? super Void>> listener);
+    protected abstract void sendImmediately(Packet<?> packet, class_7648 arg);
 
     @SuppressWarnings("unchecked")
-    @Redirect(method = "channelRead0", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/ClientConnection;handlePacket(Lnet/minecraft/network/Packet;Lnet/minecraft/network/listener/PacketListener;)V"))
+    @Redirect(method = "channelRead0(Lio/netty/channel/ChannelHandlerContext;Lnet/minecraft/network/Packet;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/ClientConnection;handlePacket(Lnet/minecraft/network/Packet;Lnet/minecraft/network/listener/PacketListener;)V"))
     private void channelRead0(Packet<?> packet, PacketListener listener) {
         EventPacketReceive event = new EventPacketReceive(packet).broadcast();
         if (!event.isCanceled()) {
@@ -28,14 +27,14 @@ public abstract class MixinNetworkManager implements IMixinNetworkManager {
         }
     }
 
-    @Redirect(method = "send(Lnet/minecraft/network/Packet;Lio/netty/util/concurrent/GenericFutureListener;)V", at = @At(value = "INVOKE", target = "net/minecraft/network/ClientConnection.sendImmediately(Lnet/minecraft/network/Packet;Lio/netty/util/concurrent/GenericFutureListener;)V"))
-    private void sendPacket$dispatchPacket(ClientConnection connection, Packet<?> packetIn, final GenericFutureListener<? extends Future<? super Void>> futureListeners) {
-        EventPacketSend event = new EventPacketSend(packetIn);
+    @Redirect(method = "send(Lnet/minecraft/network/Packet;Lnet/minecraft/class_7648;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/ClientConnection;sendImmediately(Lnet/minecraft/network/Packet;Lnet/minecraft/class_7648;)V"))
+    private void sendPacket$dispatchPacket(ClientConnection instance, Packet<?> packet, class_7648 arg) {
+        EventPacketSend event = new EventPacketSend(packet);
         event.broadcast();
         if (event.isCanceled()) {
             return;
         }
-        sendImmediately(event.getPacket(), futureListeners);
+        sendImmediately(event.getPacket(), arg);
     }
 
     public void sendPacketImmediately(Packet<?> packet) {

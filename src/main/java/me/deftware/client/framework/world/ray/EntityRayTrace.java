@@ -38,7 +38,7 @@ public class EntityRayTrace extends RayTrace<EntitySwingResult> {
 
         Box box = entity.getBoundingBox().stretch(rotation.getMinecraftVector().multiply(maxDistance)).expand(1.0D, 1.0D, 1.0D);
 
-        EntityHitResult result = ProjectileUtil.raycast(entity, start.getMinecraftVector(), end.getMinecraftVector(), box, e -> (!e.isSpectator() && e.collides()), distance);
+        EntityHitResult result = ProjectileUtil.raycast(entity, start.getMinecraftVector(), end.getMinecraftVector(), box, e -> (!e.isSpectator() && e.canHit()), distance);
 
         if (result != null) {
             double g = start.getMinecraftVector().squaredDistanceTo(result.getPos());
