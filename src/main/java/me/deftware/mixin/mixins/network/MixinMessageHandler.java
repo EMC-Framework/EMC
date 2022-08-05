@@ -50,7 +50,7 @@ public abstract class MixinMessageHandler {
         }
     }
 
-    @Redirect(method = "method_44943", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/ChatHud;addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignatureData;Lnet/minecraft/client/gui/hud/MessageIndicator;)V"))
+    @Redirect(method = "processChatMessageInternal", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/ChatHud;addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignatureData;Lnet/minecraft/client/gui/hud/MessageIndicator;)V"))
     private void onAddChatMessage(ChatHud instance, Text original, MessageSignatureData signature, MessageIndicator indicator) {
         var arg = this.event.getArg();
         Text message = this.event.getMessage().build();

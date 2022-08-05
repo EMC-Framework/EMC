@@ -3,9 +3,9 @@ package me.deftware.mixin.mixins.network;
 import me.deftware.client.framework.event.events.EventPacketReceive;
 import me.deftware.client.framework.event.events.EventPacketSend;
 import me.deftware.mixin.imp.IMixinNetworkManager;
-import net.minecraft.class_7648;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketCallbacks;
 import net.minecraft.network.listener.PacketListener;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public abstract class MixinNetworkManager implements IMixinNetworkManager {
 
     @Shadow
-    protected abstract void sendImmediately(Packet<?> packet, class_7648 arg);
+    protected abstract void sendImmediately(Packet<?> packet, PacketCallbacks arg);
 
     @SuppressWarnings("unchecked")
     @Redirect(method = "channelRead0(Lio/netty/channel/ChannelHandlerContext;Lnet/minecraft/network/Packet;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/ClientConnection;handlePacket(Lnet/minecraft/network/Packet;Lnet/minecraft/network/listener/PacketListener;)V"))
@@ -27,8 +27,8 @@ public abstract class MixinNetworkManager implements IMixinNetworkManager {
         }
     }
 
-    @Redirect(method = "send(Lnet/minecraft/network/Packet;Lnet/minecraft/class_7648;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/ClientConnection;sendImmediately(Lnet/minecraft/network/Packet;Lnet/minecraft/class_7648;)V"))
-    private void sendPacket$dispatchPacket(ClientConnection instance, Packet<?> packet, class_7648 arg) {
+    @Redirect(method = "send(Lnet/minecraft/network/Packet;Lnet/minecraft/network/PacketCallbacks;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/ClientConnection;sendImmediately(Lnet/minecraft/network/Packet;Lnet/minecraft/network/PacketCallbacks;)V"))
+    private void sendPacket$dispatchPacket(ClientConnection instance, Packet<?> packet, PacketCallbacks arg) {
         EventPacketSend event = new EventPacketSend(packet);
         event.broadcast();
         if (event.isCanceled()) {

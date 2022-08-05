@@ -37,7 +37,7 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
     public abstract boolean isUsingItem();
 
     @Shadow
-    protected abstract void sendChatMessagePacket(String message, @Nullable Text preview);
+    protected abstract void sendChatMessageInternal(String message, @Nullable Text preview);
 
     @Shadow
     protected abstract void sendCommandInternal(String command, @Nullable Text preview);
@@ -133,9 +133,9 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
         }
     }
 
-    @Redirect(method = "sendChatMessage(Ljava/lang/String;Lnet/minecraft/text/Text;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;sendChatMessagePacket(Ljava/lang/String;Lnet/minecraft/text/Text;)V"))
+    @Redirect(method = "sendChatMessage(Ljava/lang/String;Lnet/minecraft/text/Text;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;sendChatMessageInternal(Ljava/lang/String;Lnet/minecraft/text/Text;)V"))
     private void onMessage(ClientPlayerEntity instance, String message, Text preview) {
-        this.send(this::sendChatMessagePacket, message, preview, ClientPlayerEntity.class, EventChatSend.Type.Message);
+        this.send(this::sendChatMessageInternal, message, preview, ClientPlayerEntity.class, EventChatSend.Type.Message);
     }
 
     @Redirect(method = "sendCommand(Ljava/lang/String;Lnet/minecraft/text/Text;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;sendCommandInternal(Ljava/lang/String;Lnet/minecraft/text/Text;)V"))
@@ -146,7 +146,7 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
     @Unique
     @Override
     public void message(String text, Class<?> sender) {
-        this.send(this::sendChatMessagePacket, text, Text.literal(text), sender, EventChatSend.Type.Message);
+        this.send(this::sendChatMessageInternal, text, Text.literal(text), sender, EventChatSend.Type.Message);
     }
 
     @Unique

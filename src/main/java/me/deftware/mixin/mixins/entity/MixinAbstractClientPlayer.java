@@ -41,7 +41,7 @@ public abstract class MixinAbstractClientPlayer implements IMixinAbstractClientP
 		cir.setReturnValue(event.isSpectator());
 	}
 
-	@ModifyVariable(method = "getSpeed", ordinal = 0, at = @At(value = "INVOKE", ordinal = 0, target = "Lnet/minecraft/client/network/AbstractClientPlayerEntity;getAttributeInstance(Lnet/minecraft/entity/attribute/EntityAttribute;)Lnet/minecraft/entity/attribute/EntityAttributeInstance;"))
+	@ModifyVariable(method = "getFovMultiplier", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/AbstractClientPlayerEntity;getAttributeValue(Lnet/minecraft/entity/attribute/EntityAttribute;)D"))
 	private float onGetSpeed(float fov) {
 		EventFovModifier event = new EventFovModifier(fov);
 		event.broadcast();

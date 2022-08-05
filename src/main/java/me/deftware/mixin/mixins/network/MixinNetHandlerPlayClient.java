@@ -94,7 +94,7 @@ public abstract class MixinNetHandlerPlayClient implements NetworkHandler {
         ).broadcast();
     }
 
-    @Redirect(method = "onGameJoin", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/ClientBrandRetriever;getClientModName()Ljava/lang/String;"))
+    @Redirect(method = "onGameJoin", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/ClientBrandRetriever;getClientModName()Ljava/lang/String;", remap = false))
     private String onGameJoin$GetClientBrand() {
         return "vanilla";
     }
