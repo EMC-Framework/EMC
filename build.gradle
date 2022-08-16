@@ -32,19 +32,19 @@ repositories {
 dependencies {
 	if (forgeBuild) {
 		forge "net.minecraftforge:forge:${project.forge_version}"
+	} else {
+		modImplementation 'com.github.Chocohead:Fabric-ASM:v2.3'
+		include 'com.github.Chocohead:Fabric-ASM:v2.3'
 	}
 	minecraft "com.mojang:minecraft:${project.minecraftVersion}"
 	mappings "net.fabricmc:yarn:${project.minecraftVersion}${project.mappingsVer}:v2"
 
 	modImplementation "net.fabricmc:fabric-loader:0.14.8"
-	modImplementation 'com.github.Chocohead:Fabric-ASM:v2.3'
 
 	// No longer included in Minecraft
 	implementation 'io.netty:netty-handler-proxy:4.1.76.Final'
 	implementation 'com.google.code.findbugs:jsr305:3.0.2'
 	implementation files("deps/mocked.jar")
-
-	include 'com.github.Chocohead:Fabric-ASM:v2.3'
 }
 
 loom {
@@ -63,7 +63,7 @@ if (forgeBuild) {
 	jar {
 		manifest {
 			attributes([
-					'MixinConnector': 'me.deftware.launch.EarlyRiser'
+					'MixinConnector': 'me.deftware.launch.MixinConnector'
 			])
 		}
 	}
@@ -73,6 +73,7 @@ if (forgeBuild) {
 			java {
 				srcDir 'src'
 				exclude '**/deftware/client/framework/main/ForgeMod**'
+				exclude '**/deftware/launch/MixinConnector**'
 			}
 		}
 	}
@@ -114,3 +115,4 @@ task generateApiDocumentation(type: Javadoc) {
 	destinationDir = file("docs")
 	failOnError false
 }
+

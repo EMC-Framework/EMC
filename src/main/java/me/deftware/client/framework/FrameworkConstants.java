@@ -12,8 +12,16 @@ public class FrameworkConstants {
 
     public static boolean VALID_EMC_INSTANCE = false, SUBSYSTEM_IN_USE = false, CAN_RENDER_SHADER = true;
     public static String FRAMEWORK_MAVEN_URL = "https://gitlab.com/EMC-Framework/maven/raw/master/";
-    public static MappingsLoader MAPPING_LOADER = MappingsLoader.Fabric;
     public static MappingSystem MAPPING_SYSTEM = MappingSystem.YarnV2;
+    public static MappingsLoader MAPPING_LOADER;
+
+    static {
+        MAPPING_LOADER = MappingsLoader.Fabric;
+        try {
+            Class.forName("net.minecraftforge.fml.ModList");
+            MAPPING_LOADER = MappingsLoader.Forge;
+        } catch (Throwable ignored) { }
+    }
 
     public static String toDataString() {
         return String.format("EMC v%s version %s.%s using %s with %s mappings", SCHEME, VERSION, PATCH, MAPPING_LOADER.name(), MAPPING_SYSTEM.name());
