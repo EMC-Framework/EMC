@@ -1,10 +1,12 @@
 plugins {
-	id 'fabric-loom' version '0.12-SNAPSHOT'
+	id 'dev.architectury.loom' version '0.12.0-SNAPSHOT'
 	id "io.freefair.lombok" version "6.3.0"
 	id 'maven-publish'
 }
 
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
+
+def forgeBuild = project.properties["loom.platform"] == "forge"
 
 def getVersionFromJava() {
 	def ver = 0.0, patch = 0
@@ -28,6 +30,9 @@ repositories {
 }
 
 dependencies {
+	if (forgeBuild) {
+		forge "net.minecraftforge:forge:${project.forge_version}"
+	}
 	minecraft "com.mojang:minecraft:${project.minecraftVersion}"
 	mappings "net.fabricmc:yarn:${project.minecraftVersion}${project.mappingsVer}:v2"
 
@@ -43,20 +48,46 @@ dependencies {
 }
 
 loom {
+	if (forgeBuild) {
+		forge {
+			mixinConfig "mixins.emc.json"
+		}
+	}
 	mixin {
 		useLegacyMixinAp = true
 		defaultRefmapName = 'mixins.emc.refmap.json'
 	}
 }
 
-def artifactVersion = project.hasProperty("av") ? project.property("av").toString() : project.minecraftVersion
+if (forgeBuild) {
+	jar {
+		manifest {
+			attributes([
+					'MixinConnector': 'me.deftware.launch.EarlyRiser'
+			])
+		}
+	}
+} else {
+	sourceSets {
+		main {
+			java {
+				srcDir 'src'
+				exclude '**/deftware/client/framework/main/ForgeMod**'
+			}
+		}
+	}
+}
 
 publishing {
 	publications {
 		emc(MavenPublication) {
 			groupId 'me.deftware'
-			artifactId "EMC-F-v2"
-			version "${version}-${artifactVersion}"
+			if (forgeBuild) {
+				artifactId "EMC-Forge"
+			} else {
+				artifactId "EMC-F-v2"
+			}
+			version "${version}-${project.minecraftVersion}"
 
 			from components['java']
 		}
