@@ -289,7 +289,7 @@ public class Entity {
 	}
 
 	public float distanceToEntity(Entity entity) {
-		return (float) this.entity.getDistanceSqToEntity(entity.getMinecraftEntity());
+		return this.entity.getDistanceToEntity(entity.getMinecraftEntity());
 	}
 
 	public ChatMessage getName() {
