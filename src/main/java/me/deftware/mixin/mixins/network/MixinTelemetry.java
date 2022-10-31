@@ -1,6 +1,6 @@
 package me.deftware.mixin.mixins.network;
 
-import net.minecraft.client.util.telemetry.TelemetrySender;
+import net.minecraft.client.util.TelemetrySender;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

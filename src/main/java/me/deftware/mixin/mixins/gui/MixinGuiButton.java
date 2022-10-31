@@ -20,14 +20,20 @@ public class MixinGuiButton implements Button {
     @Shadow
     protected int height;
 
+    @Shadow
+    private int x;
+
+    @Shadow
+    private int y;
+
     @Override
     public int getPositionX() {
-        return ((ClickableWidget) (Object) this).x;
+        return x;
     }
 
     @Override
     public int getPositionY() {
-        return ((ClickableWidget) (Object) this).y;
+        return y;
     }
 
     @Override
@@ -47,12 +53,12 @@ public class MixinGuiButton implements Button {
 
     @Override
     public void setPositionX(int x) {
-        ((ClickableWidget) (Object) this).x = x;
+        this.x = x;
     }
 
     @Override
     public void setPositionY(int y) {
-        ((ClickableWidget) (Object) this).y = y;
+        this.y = y;
     }
 
     @Override

@@ -21,7 +21,6 @@ public enum GameKeys implements IGameKey {
     BLOCK_REACH_DISTANCE,
     EXTENDED_REACH,
 
-    FULL_LIQUID_VOXEL,
     FULL_BERRY_VOXEL,
     FULL_CACTUS_VOXEL,
     IGNORE_WORLD_BORDER,

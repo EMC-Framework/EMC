@@ -17,7 +17,7 @@ public class ModResource extends Resource {
     private final Identifier id;
 
     public ModResource(InputStream stream, Identifier id) {
-        super(id.getPath(), () -> stream);
+        super(null, () -> stream);
         this.id = id;
         this.stream = stream;
     }
@@ -30,6 +30,11 @@ public class ModResource extends Resource {
     @Override
     public String getResourcePackName() {
         return "Minecraft";
+    }
+
+    @Override
+    public boolean isAlwaysStable() {
+        return true;
     }
 
 }

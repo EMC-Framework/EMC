@@ -1,18 +1,14 @@
 package me.deftware.mixin.mixins.entity;
 
-import me.deftware.client.framework.chat.LiteralChatMessage;
-import me.deftware.client.framework.chat.style.ChatColors;
-import me.deftware.client.framework.command.CommandRegister;
 import me.deftware.client.framework.event.events.*;
 import me.deftware.client.framework.minecraft.Chat;
 import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
 import me.deftware.mixin.imp.IMixinEntityPlayerSP;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.player.HungerManager;
-import net.minecraft.text.Text;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -37,10 +33,8 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
     public abstract boolean isUsingItem();
 
     @Shadow
-    protected abstract void sendChatMessageInternal(String message, @Nullable Text preview);
-
-    @Shadow
-    protected abstract void sendCommandInternal(String command, @Nullable Text preview);
+    @Final
+    public ClientPlayNetworkHandler networkHandler;
 
     @Inject(method = "closeHandledScreen", at = @At("HEAD"))
     private void onCloseHandledScreen(CallbackInfo ci) {
@@ -133,50 +127,16 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
         }
     }
 
-    @Redirect(method = "sendChatMessage(Ljava/lang/String;Lnet/minecraft/text/Text;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;sendChatMessageInternal(Ljava/lang/String;Lnet/minecraft/text/Text;)V"))
-    private void onMessage(ClientPlayerEntity instance, String message, Text preview) {
-        this.send(this::sendChatMessageInternal, message, preview, ClientPlayerEntity.class, EventChatSend.Type.Message);
-    }
-
-    @Redirect(method = "sendCommand(Ljava/lang/String;Lnet/minecraft/text/Text;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;sendCommandInternal(Ljava/lang/String;Lnet/minecraft/text/Text;)V"))
-    private void onCommand(ClientPlayerEntity instance, String command, Text preview) {
-        this.send(this::sendCommandInternal, command, preview, ClientPlayerEntity.class, EventChatSend.Type.Command);
-    }
-
     @Unique
     @Override
     public void message(String text, Class<?> sender) {
-        this.send(this::sendChatMessageInternal, text, Text.literal(text), sender, EventChatSend.Type.Message);
+        Chat.send(networkHandler::sendChatMessage, text, sender, EventChatSend.Type.Message);
     }
 
     @Unique
     @Override
     public void command(String text, Class<?> sender) {
-        this.send(this::sendCommandInternal, text, Text.literal(text), sender, EventChatSend.Type.Command);
-    }
-
-    @Unique
-    public void send(Chat.Consumer consumer, String text, Text preview, Class<?> sender, EventChatSend.Type type) {
-        EventChatSend event = new EventChatSend(text, sender, type).broadcast();
-        if (!event.isCanceled()) {
-            // Client command hook
-            String trigger = CommandRegister.getCommandTrigger();
-            if (text.startsWith(trigger)) {
-                text = text.substring(trigger.length());
-                try {
-                    CommandRegister.getDispatcher().execute(text, MinecraftClient.getInstance().player.getCommandSource());
-                } catch (Exception ex) {
-                    new LiteralChatMessage(ex.getMessage(), ChatColors.RED).print();
-                }
-                return;
-            }
-            // Update text and preview if the message has changed
-            if (!event.getMessage().equalsIgnoreCase(text)) {
-                text = event.getMessage();
-                preview = Text.literal(text);
-            }
-            consumer.apply(text, preview);
-        }
+        Chat.send(networkHandler::sendChatCommand, text, sender, EventChatSend.Type.Command);
     }
 
 }

@@ -27,7 +27,7 @@ import java.io.File;
 public abstract class MixinAbstractClientPlayer implements IMixinAbstractClientPlayer {
 
 	@Shadow
-	private PlayerListEntry cachedScoreboardEntry;
+	private PlayerListEntry playerListEntry;
 
 	@Unique
 	private boolean capeLoaded = false;
@@ -75,7 +75,7 @@ public abstract class MixinAbstractClientPlayer implements IMixinAbstractClientP
 
 	@Override
 	public PlayerListEntry getPlayerNetworkInfo() {
-		return cachedScoreboardEntry;
+		return playerListEntry;
 	}
 
 }

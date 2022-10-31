@@ -6,12 +6,12 @@ import me.deftware.client.framework.global.GameKeys;
 import me.deftware.client.framework.global.GameMap;
 import me.deftware.client.framework.helper.GlStateHelper;
 import me.deftware.client.framework.helper.WindowHelper;
-import me.deftware.client.framework.minecraft.Minecraft;
 import me.deftware.client.framework.render.shader.Shader;
 import me.deftware.client.framework.render.batching.RenderStack;
 import me.deftware.client.framework.render.gl.GLX;
 import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
 import me.deftware.mixin.imp.IMixinEntityRenderer;
+import net.minecraft.class_7833;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.ShaderEffect;
 import net.minecraft.client.gui.hud.InGameHud;
@@ -25,10 +25,9 @@ import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -51,7 +50,7 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     private float lastFovMultiplier;
 
     @Shadow
-    protected abstract void loadShader(Identifier identifier);
+    abstract void loadShader(Identifier identifier);
 
     @Shadow
     @Final
@@ -65,11 +64,11 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
 
     @Shadow
     @Nullable
-    private ShaderEffect shader;
+    ShaderEffect shader;
 
     @Shadow
     @Final
-    private MinecraftClient client;
+    MinecraftClient client;
 
     @Shadow
     private boolean shadersEnabled;
@@ -96,12 +95,12 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
            matrix.push();
            // TODO: Verify this
            double d = this.getFov(camera, partialTicks, true);
-           matrix.peek().getPositionMatrix().multiply(this.getBasicProjectionMatrix(d));
+           matrix.peek().getPositionMatrix().mul(this.getBasicProjectionMatrix(d));
            MinecraftClient.getInstance().gameRenderer.loadProjectionMatrix(matrix.peek().getPositionMatrix());
            // Camera transformation stack
            matrix.pop();
-           matrix.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(this.camera.getPitch()));
-           matrix.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(this.camera.getYaw() + 180f));
+           matrix.multiply(class_7833.field_40714.rotationDegrees(this.camera.getPitch()));
+           matrix.multiply(class_7833.field_40716.rotationDegrees(this.camera.getYaw() + 180f));
            loadPushPop(renderEventNoBobbing, matrix, partialTicks);
            // Reset projection
            MinecraftClient.getInstance().gameRenderer.loadProjectionMatrix(matrixStack.peek().getPositionMatrix());
@@ -142,7 +141,7 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
             if (operation != null) {
                 operation.run();
             }
-            // Minecraft modifies opacity under water
+            // Minecraft modifies opacity underwater
             GLX.INSTANCE.color(1, 1, 1, 1);
             GLX.INSTANCE.refresh(matrices);
             eventRender2D.create(tickDelta).broadcast();

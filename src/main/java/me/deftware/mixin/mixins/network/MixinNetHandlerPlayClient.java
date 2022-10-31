@@ -7,10 +7,15 @@ import me.deftware.client.framework.world.block.Block;
 import me.deftware.client.framework.world.player.PlayerEntry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.network.message.LastSeenMessagesCollector;
+import net.minecraft.network.message.MessageBody;
+import net.minecraft.network.message.MessageChain;
+import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -26,6 +31,10 @@ import java.util.stream.Collectors;
  */
 @Mixin(ClientPlayNetworkHandler.class)
 public abstract class MixinNetHandlerPlayClient implements NetworkHandler {
+
+    @Shadow private LastSeenMessagesCollector lastSeenMessagesCollector;
+
+    @Shadow private MessageChain.Packer messagePacker;
 
     @Override
     public List<PlayerEntry> _getPlayerList() {
@@ -97,6 +106,18 @@ public abstract class MixinNetHandlerPlayClient implements NetworkHandler {
     @Redirect(method = "onGameJoin", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/ClientBrandRetriever;getClientModName()Ljava/lang/String;", remap = false))
     private String onGameJoin$GetClientBrand() {
         return "vanilla";
+    }
+
+    @Unique
+    @Override
+    public LastSeenMessagesCollector.LastSeenMessages collect() {
+        return lastSeenMessagesCollector.collect();
+    }
+
+    @Unique
+    @Override
+    public MessageSignatureData pack(MessageBody body) {
+        return messagePacker.pack(body);
     }
 
 }

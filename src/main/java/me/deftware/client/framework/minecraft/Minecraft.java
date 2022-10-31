@@ -1,7 +1,5 @@
 package me.deftware.client.framework.minecraft;
 
-import com.mojang.authlib.minecraft.MinecraftSessionService;
-import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import me.deftware.client.framework.entity.Entity;
 import me.deftware.client.framework.entity.types.main.MainEntityPlayer;
 import me.deftware.client.framework.gui.screens.GenericScreen;

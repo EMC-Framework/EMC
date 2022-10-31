@@ -12,7 +12,8 @@ public class InteractableBlock extends Block {
 	}
 
 	public static boolean isInteractable(net.minecraft.block.Block block) {
-		return block instanceof AbstractButtonBlock || block instanceof BlockWithEntity || block instanceof AnvilBlock ||
+		// TODO: FIXME (block instanceof AbstractButtonBlock)
+		return  block instanceof BlockWithEntity || block instanceof AnvilBlock ||
 				block instanceof BedBlock || block instanceof CakeBlock || block instanceof CartographyTableBlock ||
 				block instanceof CauldronBlock || block instanceof AbstractRedstoneGateBlock || block instanceof ComposterBlock ||
 				block instanceof CraftingTableBlock || block instanceof DoorBlock || block instanceof DragonEggBlock ||

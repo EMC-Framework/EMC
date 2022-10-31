@@ -101,12 +101,12 @@ public class MainEntityPlayer extends RotationLogic {
 	}
 
 	public void sendChatMessage(String text) {
-		var player = this.getMinecraftEntity();
+		var networkHandler = this.getMinecraftEntity().networkHandler;
 		if (text.startsWith("/")) {
 			text = text.substring(1);
-			player.sendCommand(text, Text.literal(text));
+			networkHandler.sendChatCommand(text);
 		} else {
-			player.sendChatMessage(text, Text.literal(text));
+			networkHandler.sendChatMessage(text);
 		}
 	}
 

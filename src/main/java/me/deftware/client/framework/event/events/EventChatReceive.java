@@ -17,13 +17,13 @@ public class EventChatReceive extends Event {
     private final boolean signed, expired;
     private MessageType.Parameters arg;
 
-    private UUID sender;
+    private final UUID sender;
 
     public EventChatReceive(MessageType.Parameters arg, SignedMessage message, boolean expired, boolean signed) {
         this.message = new ChatMessage().fromText(message.getContent());
         this.expired = expired;
         this.signed = signed;
-        this.sender = message.signedHeader().sender();
+        this.sender = message.getSender();
         this.arg = arg;
     }
 

@@ -20,6 +20,7 @@ import me.deftware.client.framework.util.minecraft.BlockSwingResult;
 import me.deftware.client.framework.world.ClientWorld;
 import me.deftware.client.framework.world.WorldTimer;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_7853;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ServerInfo;
@@ -103,7 +104,7 @@ public abstract class MixinMinecraft implements Minecraft {
     @Shadow
     @Mutable
     @Final
-    private ProfileKeys profileKeys;
+    private class_7853 profileKeys;
 
     @Shadow
     @Final
@@ -225,11 +226,13 @@ public abstract class MixinMinecraft implements Minecraft {
         return null;
     }
 
+    /* TODO: FIXME
     @Inject(method = "setCurrentServerEntry", at = @At("HEAD"))
     private void onServerConnectionSet(ServerInfo serverEntry, CallbackInfo ci) {
         if (serverEntry != null)
             this.lastConnectedServer = (ServerDetails) serverEntry;
     }
+     */
 
     @Override
     public void setRightClickDelayTimer(int delay) {

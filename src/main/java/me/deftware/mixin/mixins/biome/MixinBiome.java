@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 @Mixin(BuiltinBiomes.class)
 public class MixinBiome {
 
+    /* TODO: FIXME
     @Redirect(method = "getDefaultBiome", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/registry/BuiltinRegistries;add(Lnet/minecraft/util/registry/Registry;Lnet/minecraft/util/registry/RegistryKey;Ljava/lang/Object;)Lnet/minecraft/util/registry/RegistryEntry;"))
     private static <T> RegistryEntry<T> onRegister(Registry<T> registry, RegistryKey<T> key, T biome) {
         RegistryEntry<T> entry = BuiltinRegistries.add(registry, key, biome);
@@ -92,5 +93,6 @@ public class MixinBiome {
             decorator.getDecorators().add(data);
         }
     }
+     */
 
 }

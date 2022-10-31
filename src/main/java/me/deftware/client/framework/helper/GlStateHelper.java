@@ -2,7 +2,7 @@ package me.deftware.client.framework.helper;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.render.DiffuseLighting;
-import net.minecraft.util.math.Matrix4f;
+import org.joml.Matrix4f;
 
 /**
  * @author Deftware

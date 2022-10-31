@@ -1,6 +1,7 @@
 package me.deftware.client.framework.oauth;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ServerInfo;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
@@ -26,9 +27,10 @@ public class OAuth {
                 InetAddress inetaddress = InetAddress.getByName(OAuth.ip);
                 OAuthNetworkManager manager = OAuthNetworkManager.connect(inetaddress, OAuth.port,
                         client.options.useNativeTransport, callback);
-                manager.setPacketListener(new OAuthNetHandler(manager, client, null, callback));
+                ServerInfo server = new ServerInfo("oauth", ip, false);
+                manager.setPacketListener(new OAuthNetHandler(manager, client, null, server, callback));
                 manager.send(new HandshakeC2SPacket(OAuth.ip, OAuth.port, NetworkState.LOGIN));
-                manager.send(new LoginHelloC2SPacket(client.getSession().getUsername(), client.getProfileKeys().method_45104().join(), Optional.ofNullable(
+                manager.send(new LoginHelloC2SPacket(client.getSession().getUsername(), Optional.ofNullable(
                         client.getSession().getProfile().getId()
                 )));
             } catch (Exception ex) {

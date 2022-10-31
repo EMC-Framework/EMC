@@ -61,6 +61,7 @@
     "network.MixinTelemetry",
     "network.ChunkDeltaAccessor",
     "network.MixinMessageHandler",
+    "network.MixinChatScreen",
     "render.MixinBackgroundRenderer",
     "render.MixinBlockFluidRenderer",
     "render.MixinBlockModelRenderer",

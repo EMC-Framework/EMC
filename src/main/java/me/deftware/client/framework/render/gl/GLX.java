@@ -1,9 +1,9 @@
 package me.deftware.client.framework.render.gl;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.class_7833;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3f;
+import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -131,11 +131,11 @@ public class GLX {
         @Override
         public void rotate(float angle, float x, float y, float z) {
             if (x > 0)
-                stack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(angle));
+                stack.multiply(class_7833.field_40714.rotationDegrees(angle));
             if (y > 0)
-                stack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(angle));
+                stack.multiply(class_7833.field_40716.rotationDegrees(angle));
             if (z > 0)
-                stack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(angle));
+                stack.multiply(class_7833.field_40718.rotationDegrees(angle));
         }
 
         @Override

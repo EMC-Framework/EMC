@@ -1,5 +1,6 @@
 package me.deftware.client.framework.render.batching;
 
+import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.systems.RenderSystem;
 import lombok.Getter;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
@@ -8,7 +9,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Matrix4f;
+import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -134,23 +135,18 @@ public abstract class RenderStack<T> implements VertexConstructor {
 	}
 
 	public static VertexFormat.DrawMode translate(int mode) {
-		switch (mode) {
-			case GL11.GL_QUADS:
-				return VertexFormat.DrawMode.QUADS;
-			case GL11.GL_LINE_STRIP:
-				return VertexFormat.DrawMode.DEBUG_LINE_STRIP;
-			case GL11.GL_LINES:
+		return switch (mode) {
+			case GL11.GL_QUADS -> VertexFormat.DrawMode.QUADS;
+			case GL11.GL_LINE_STRIP -> VertexFormat.DrawMode.DEBUG_LINE_STRIP;
+			case GL11.GL_LINES ->
 				// Not sure why DEBUG_LINES behaves differently from LINES
 				// LINES does not work at all.
-				return VertexFormat.DrawMode.DEBUG_LINES;
-			case GL11.GL_TRIANGLE_FAN:
-				return VertexFormat.DrawMode.TRIANGLE_FAN;
-			case GL11.GL_TRIANGLE_STRIP:
-				return VertexFormat.DrawMode.TRIANGLE_STRIP;
-			case GL11.GL_TRIANGLES:
-				return VertexFormat.DrawMode.TRIANGLES;
-		}
-		return VertexFormat.DrawMode.QUADS;
+					VertexFormat.DrawMode.DEBUG_LINES;
+			case GL11.GL_TRIANGLE_FAN -> VertexFormat.DrawMode.TRIANGLE_FAN;
+			case GL11.GL_TRIANGLE_STRIP -> VertexFormat.DrawMode.TRIANGLE_STRIP;
+			case GL11.GL_TRIANGLES -> VertexFormat.DrawMode.TRIANGLES;
+			default -> VertexFormat.DrawMode.QUADS;
+		};
 	}
 
 	protected Matrix4f getModel() {
@@ -225,8 +221,8 @@ public abstract class RenderStack<T> implements VertexConstructor {
 	}
 
 	protected static void setMatrix(float width, float height) {
-		RenderSystem.clear(256, MinecraftClient.IS_SYSTEM_MAC);
-		Matrix4f matrix4f = Matrix4f.projectionMatrix(0.0F, width, 0.0F, height, 1000.0F, 3000.0F);
+		RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
+		Matrix4f matrix4f = new Matrix4f().setOrtho(0.0F, width, height, 0, 1000.0F, 3000.0F);
 		RenderSystem.setProjectionMatrix(matrix4f);
 		MatrixStack matrixStack = RenderSystem.getModelViewStack();
 		matrixStack.loadIdentity();
