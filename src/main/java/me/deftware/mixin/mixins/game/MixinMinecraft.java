@@ -20,10 +20,8 @@ import me.deftware.client.framework.util.minecraft.BlockSwingResult;
 import me.deftware.client.framework.world.ClientWorld;
 import me.deftware.client.framework.world.WorldTimer;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_7853;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.util.ProfileKeys;
@@ -104,7 +102,7 @@ public abstract class MixinMinecraft implements Minecraft {
     @Shadow
     @Mutable
     @Final
-    private class_7853 profileKeys;
+    private ProfileKeys profileKeys;
 
     @Shadow
     @Final
@@ -197,7 +195,7 @@ public abstract class MixinMinecraft implements Minecraft {
         try {
             this.sessionService = session.getSessionService();
             this.userApiService = session.getAuthenticationService().createUserApiService(this.session.getAccessToken());
-            this.profileKeys = new ProfileKeys(this.userApiService, this.session.getProfile().getId(), this.runDirectory.toPath());
+            this.profileKeys = ProfileKeys.create(this.userApiService, this.session, this.runDirectory.toPath()); // TODO: Verify this
         } catch (Exception ex) {
             this.userApiService = UserApiService.OFFLINE;
             LOGGER.error("Failed to authenticate session", ex);

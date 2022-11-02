@@ -11,7 +11,6 @@ import me.deftware.client.framework.render.batching.RenderStack;
 import me.deftware.client.framework.render.gl.GLX;
 import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
 import me.deftware.mixin.imp.IMixinEntityRenderer;
-import net.minecraft.class_7833;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.ShaderEffect;
 import net.minecraft.client.gui.hud.InGameHud;
@@ -25,6 +24,7 @@ import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
@@ -99,8 +99,8 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
            MinecraftClient.getInstance().gameRenderer.loadProjectionMatrix(matrix.peek().getPositionMatrix());
            // Camera transformation stack
            matrix.pop();
-           matrix.multiply(class_7833.field_40714.rotationDegrees(this.camera.getPitch()));
-           matrix.multiply(class_7833.field_40716.rotationDegrees(this.camera.getYaw() + 180f));
+           matrix.multiply(RotationAxis.POSITIVE_X.rotationDegrees(this.camera.getPitch()));
+           matrix.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(this.camera.getYaw() + 180f));
            loadPushPop(renderEventNoBobbing, matrix, partialTicks);
            // Reset projection
            MinecraftClient.getInstance().gameRenderer.loadProjectionMatrix(matrixStack.peek().getPositionMatrix());
