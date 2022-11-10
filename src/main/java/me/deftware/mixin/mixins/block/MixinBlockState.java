@@ -11,6 +11,7 @@ import me.deftware.client.framework.math.position.DoubleBlockPosition;
 import net.minecraft.block.*;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -47,7 +48,7 @@ public abstract class MixinBlockState {
 	public void getLuminance(CallbackInfoReturnable<Integer> callback) {
 		PropertyManager<BlockProperty> blockProperties = Bootstrap.blockProperties;
 		if (blockProperties.isActive()) {
-			int id = Registry.BLOCK.getRawId(this.getBlock());
+			int id = Registries.BLOCK.getRawId(this.getBlock());
 			if (blockProperties.contains(id))
 				callback.setReturnValue(blockProperties.get(id).getLuminance());
 		}
@@ -55,7 +56,7 @@ public abstract class MixinBlockState {
 
 	@Inject(method = "getCollisionShape(Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/ShapeContext;)Lnet/minecraft/util/shape/VoxelShape;", at = @At("HEAD"), cancellable = true)
 	public void getCollisionShape(BlockView world, BlockPos pos, ShapeContext context, CallbackInfoReturnable<VoxelShape> ci) {
-		int id = Registry.BLOCK.getRawId(this.getBlock());
+		int id = Registries.BLOCK.getRawId(this.getBlock());
 		BlockPropertyManager blockProperties = Bootstrap.blockProperties;
 		if (blockProperties.contains(id)) {
 			BlockProperty property = blockProperties.get(id);

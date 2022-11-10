@@ -36,7 +36,7 @@ public interface Button extends Component, Nameable<Button>, Tooltipable {
 		ClickableWidget widget = new ClickableWidget(x, y, widthIn, heightIn, buttonText.build()) {
 
 			@Override
-			public void appendNarrations(NarrationMessageBuilder builder) { }
+			public void method_47399(NarrationMessageBuilder builder) { }
 
 			@Override
 			public boolean mouseClicked(double mouseX, double mouseY, int button) {

@@ -7,6 +7,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.registry.Registries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -19,7 +20,7 @@ public class BlockManagement {
     public static void shouldDrawSide(BlockState state, BlockView world, BlockPos pos, Direction facing, CallbackInfoReturnable<Boolean> callback) {
         BlockPropertyManager blockProperties = Bootstrap.blockProperties;
         if (blockProperties.isActive()) {
-            int id = Registry.BLOCK.getRawId(state.getBlock());
+            int id = Registries.BLOCK.getRawId(state.getBlock());
             if (blockProperties.contains(id) && blockProperties.get(id).isRender()) {
                 if (!blockProperties.isExposedOnly() || isAnySideTouchingBlock(pos, world, Blocks.AIR, Blocks.CAVE_AIR))
                     callback.setReturnValue(true);

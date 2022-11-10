@@ -2,6 +2,7 @@ package me.deftware.client.framework.item.effect;
 
 import net.minecraft.entity.effect.StatusEffectCategory;
 import me.deftware.client.framework.registry.Identifiable;
+import net.minecraft.util.registry.Registries;
 import net.minecraft.util.registry.Registry;
 
 /**
@@ -34,7 +35,7 @@ public class StatusEffect implements Identifiable {
 
 	@Override
 	public String getIdentifierKey() {
-		return Registry.STATUS_EFFECT.getId(statusEffect).getPath();
+		return Registries.STATUS_EFFECT.getId(statusEffect).getPath();
 	}
 
 }

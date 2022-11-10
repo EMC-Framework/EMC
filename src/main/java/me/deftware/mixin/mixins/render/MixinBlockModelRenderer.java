@@ -9,6 +9,7 @@ import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.util.registry.Registries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockRenderView;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,7 +24,7 @@ public abstract class MixinBlockModelRenderer {
     public void render(BlockRenderView world, BakedModel model, BlockState state, BlockPos pos, MatrixStack matrices, VertexConsumer vertexConsumer, boolean cull, Random random, long seed, int overlay, CallbackInfo cir) {
         BlockPropertyManager blockProperties = Bootstrap.blockProperties;
         if (blockProperties.isActive() && !blockProperties.isOpacityMode()) {
-            int id = Registry.BLOCK.getRawId(state.getBlock());
+            int id = Registries.BLOCK.getRawId(state.getBlock());
             if (!(blockProperties.contains(id) && blockProperties.get(id).isRender()))
                 cir.cancel();
         }

@@ -2,6 +2,7 @@ package me.deftware.client.framework.item.enchantment;
 
 import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.registry.Identifiable;
+import net.minecraft.util.registry.Registries;
 import net.minecraft.util.registry.Registry;
 
 /**
@@ -26,7 +27,7 @@ public class Enchantment implements Identifiable {
 
 	@Override
 	public String getIdentifierKey() {
-		return Registry.ENCHANTMENT.getId(enchantment).getPath();
+		return Registries.ENCHANTMENT.getId(enchantment).getPath();
 	}
 
 	public int getMinLevel() {

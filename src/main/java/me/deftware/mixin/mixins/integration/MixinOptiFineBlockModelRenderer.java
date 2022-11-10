@@ -12,6 +12,7 @@ import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.util.registry.Registries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockRenderView;
 import net.minecraftforge.client.model.data.ModelData;
@@ -56,7 +57,7 @@ public abstract class MixinOptiFineBlockModelRenderer {
         try {
             BlockPropertyManager blockProperties = Bootstrap.blockProperties;
             if (blockProperties.isActive() && !blockProperties.isOpacityMode()) {
-                int id = Registry.BLOCK.getRawId(block);
+                int id = Registries.BLOCK.getRawId(block);
                 if (!(blockProperties.contains(id) && blockProperties.get(id).isRender())) {
                     ci.cancel();
                 } else if (cull) {

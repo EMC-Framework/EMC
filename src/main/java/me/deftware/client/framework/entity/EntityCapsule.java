@@ -9,6 +9,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registries;
 import net.minecraft.util.registry.Registry;
 
 import java.util.Objects;
@@ -55,11 +56,11 @@ public class EntityCapsule implements SelectableList.ListItem, Identifiable {
     }
 
     public MinecraftIdentifier getIdentifier() {
-        return new MinecraftIdentifier(Registry.ENTITY_TYPE.getId(entityType));
+        return new MinecraftIdentifier(Registries.ENTITY_TYPE.getId(entityType));
     }
 
     public String getIdentifierKey() {
-        return Registry.ENTITY_TYPE.getId(entityType).getPath();
+        return Registries.ENTITY_TYPE.getId(entityType).getPath();
     }
 
     @Override

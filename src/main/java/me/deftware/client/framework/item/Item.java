@@ -18,6 +18,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.*;
+import net.minecraft.util.registry.Registries;
 import net.minecraft.util.registry.Registry;
 
 /**
@@ -65,7 +66,7 @@ public class Item implements IItem, SelectableList.ListItem, Identifiable {
 	}
 
 	public String getIdentifierKey() {
-		return Registry.ITEM.getId(item).getPath();
+		return Registries.ITEM.getId(item).getPath();
 	}
 
 	public boolean isAir() {

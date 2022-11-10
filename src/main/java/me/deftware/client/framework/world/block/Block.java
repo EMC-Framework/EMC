@@ -17,6 +17,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.Item;
 import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registries;
 import net.minecraft.util.registry.Registry;
 
 import java.io.IOException;
@@ -71,7 +72,7 @@ public class Block implements IItem, SelectableList.ListItem, Identifiable {
 	}
 
 	public InputStream getAsset() throws IOException {
-		Identifier blockResource = Registry.BLOCK.getId(block);
+		Identifier blockResource = Registries.BLOCK.getId(block);
 		Identifier blockTexture = new Identifier(blockResource.getNamespace(), "textures/block/" + blockResource.getPath() + ".png");
 		Optional<Resource> resource = MinecraftClient.getInstance().getResourceManager().getResource(blockTexture);
 		return resource.orElseThrow(() -> new IOException("Unable to find resource")).getInputStream();
@@ -90,7 +91,7 @@ public class Block implements IItem, SelectableList.ListItem, Identifiable {
 	}
 
 	public int getID() {
-		return Registry.BLOCK.getRawId(block);
+		return Registries.BLOCK.getRawId(block);
 	}
 
 	public ChatMessage getName() {
@@ -98,7 +99,7 @@ public class Block implements IItem, SelectableList.ListItem, Identifiable {
 	}
 
 	public String getIdentifierKey() {
-		return Registry.BLOCK.getId(block).getPath();
+		return Registries.BLOCK.getId(block).getPath();
 	}
 
 	public String getTranslationKey() {

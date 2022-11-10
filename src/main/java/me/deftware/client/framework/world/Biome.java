@@ -1,9 +1,7 @@
 package me.deftware.client.framework.world;
 
 import me.deftware.client.framework.world.gen.BiomeDecorator;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 
 public class Biome {
@@ -16,7 +14,8 @@ public class Biome {
 	}
 
 	private Identifier getId() {
-		return MinecraftClient.getInstance().world.getRegistryManager().get(Registry.BIOME_KEY).getId(biome.value());
+		var key = biome.getKey().get();
+		return key.getValue();
 	}
 
 	public String getKey() {
