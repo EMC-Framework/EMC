@@ -108,7 +108,7 @@ public abstract class RenderStack<T> implements VertexConstructor {
 	protected void drawBuffer() {
 		if (RenderSystem.getShader() != null && RenderSystem.getShader().lineWidth != null)
 			RenderSystem.getShader().lineWidth.set(RenderSystem.getShaderLineWidth());
-		BufferRenderer.drawWithShader(builder.end());
+		BufferRenderer.drawWithGlobalProgram(builder.end());
 	}
 
 	public static void noBlend() {
@@ -188,7 +188,7 @@ public abstract class RenderStack<T> implements VertexConstructor {
 
 	protected void setShader() {
 		// POSITION_COLOR
-		RenderSystem.setShader(GameRenderer::getPositionColorShader);
+		RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 	}
 
 	@Getter

@@ -2,8 +2,8 @@ package me.deftware.mixin.mixins.shader;
 
 import me.deftware.mixin.imp.Uniformable;
 import net.minecraft.client.gl.GlUniform;
-import net.minecraft.client.gl.PostProcessShader;
-import net.minecraft.client.gl.ShaderEffect;
+import net.minecraft.client.gl.PostEffectPass;
+import net.minecraft.client.gl.PostEffectProcessor;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -16,12 +16,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Mixin(ShaderEffect.class)
+@Mixin(PostEffectProcessor.class)
 public class MixinShaderEffect implements Uniformable {
 
     @Shadow
     @Final
-    private List<PostProcessShader> passes;
+    private List<PostEffectPass> passes;
 
     @Unique
     private final Map<String, Runnable> modifications = new ConcurrentHashMap<>();
@@ -30,7 +30,7 @@ public class MixinShaderEffect implements Uniformable {
     @Override
     public void registerUniformf(String name, float[] values) {
         Runnable shaderConsumer = () -> {
-            for (PostProcessShader shader : passes) {
+            for (PostEffectPass shader : passes) {
                 GlUniform uniform = shader.getProgram().getUniformByName(name);
                 if (uniform != null) {
                     if (values.length == 4) {
@@ -49,7 +49,7 @@ public class MixinShaderEffect implements Uniformable {
     }
 
     @Override
-    public List<PostProcessShader> getPostShaders() {
+    public List<PostEffectPass> getPostShaders() {
         return passes;
     }
 

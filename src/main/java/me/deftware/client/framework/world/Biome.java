@@ -1,8 +1,8 @@
 package me.deftware.client.framework.world;
 
 import me.deftware.client.framework.world.gen.BiomeDecorator;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.RegistryEntry;
 
 public class Biome {
 

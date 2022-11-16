@@ -40,7 +40,7 @@ public class AppliedStatusEffect {
 	}
 
 	public boolean isPermanent() {
-		return instance.isPermanent();
+		return false;
 	}
 
 	public boolean isAmbient() {

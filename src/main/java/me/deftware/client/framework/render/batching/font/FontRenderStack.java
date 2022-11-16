@@ -58,7 +58,7 @@ public class FontRenderStack extends RenderStack<FontRenderStack> {
 	@Override
 	protected void setShader() {
 		// POSITION_TEXTURE_COLOR
-		RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+		RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
 	}
 
 	@Override

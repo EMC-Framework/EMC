@@ -5,10 +5,9 @@ import me.deftware.client.framework.main.bootstrap.Bootstrap;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.Registries;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 

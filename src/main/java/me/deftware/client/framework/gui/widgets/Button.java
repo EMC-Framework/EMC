@@ -36,9 +36,6 @@ public interface Button extends Component, Nameable<Button>, Tooltipable {
 		ClickableWidget widget = new ClickableWidget(x, y, widthIn, heightIn, buttonText.build()) {
 
 			@Override
-			public void method_47399(NarrationMessageBuilder builder) { }
-
-			@Override
 			public boolean mouseClicked(double mouseX, double mouseY, int button) {
 				if (this.clicked(mouseX, mouseY)) {
 					if (shouldPlaySound)
@@ -47,6 +44,9 @@ public interface Button extends Component, Nameable<Button>, Tooltipable {
 				}
 				return false;
 			}
+
+			@Override
+			protected void appendClickableNarrations(NarrationMessageBuilder builder) { }
 
 		};
 		return (Button) widget;

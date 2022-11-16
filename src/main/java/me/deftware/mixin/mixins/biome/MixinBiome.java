@@ -5,7 +5,6 @@ import me.deftware.client.framework.world.gen.BiomeDecorator;
 import me.deftware.client.framework.world.gen.DecoratorConfig;
 import me.deftware.client.framework.world.block.Block;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.*;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BuiltinBiomes;
 import net.minecraft.world.biome.GenerationSettings;

@@ -12,7 +12,7 @@ import me.deftware.client.framework.render.gl.GLX;
 import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
 import me.deftware.mixin.imp.IMixinEntityRenderer;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.ShaderEffect;
+import net.minecraft.client.gl.PostEffectProcessor;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
@@ -50,7 +50,7 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     private float lastFovMultiplier;
 
     @Shadow
-    abstract void loadShader(Identifier identifier);
+    abstract void loadPostProcessor(Identifier identifier);
 
     @Shadow
     @Final
@@ -64,14 +64,14 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
 
     @Shadow
     @Nullable
-    ShaderEffect shader;
+    PostEffectProcessor postProcessor;
 
     @Shadow
     @Final
     MinecraftClient client;
 
     @Shadow
-    private boolean shadersEnabled;
+    private boolean postProcessorEnabled;
 
     @Unique
     private final EventRender3D eventRender3D = new EventRender3D();
@@ -155,7 +155,7 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
         inGameHud.render(matrices, tickDelta);
     }
 
-    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/Screen;render(Lnet/minecraft/client/util/math/MatrixStack;IIF)V"))
+    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/Screen;renderWithTooltip(Lnet/minecraft/client/util/math/MatrixStack;IIF)V"))
     private void onRenderScreen(Screen screen, MatrixStack matrices, int mouseX, int mouseY, float delta) {
         GLX.INSTANCE.refresh(matrices);
         screen.render(matrices, mouseX, mouseY, delta);
@@ -163,24 +163,24 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
 
     @Override
     public void loadCustomShader(MinecraftIdentifier location) {
-        loadShader(location);
+        loadPostProcessor(location);
     }
 
     @Override
     public void loadShader(Shader shader) {
         if (shader == null) {
-            this.shader = null;
-            this.shadersEnabled = false;
+            this.postProcessor = null;
+            this.postProcessorEnabled = false;
             return;
         }
-        if (this.shader != null)
-            this.shader.close();
+        if (this.postProcessor != null)
+            this.postProcessor.close();
         if (shader.getShaderEffect() == null)
             shader.init();
         else
             shader.getShaderEffect().setupDimensions(client.getWindow().getFramebufferWidth(), client.getWindow().getFramebufferHeight());
-        this.shader = shader.getShaderEffect();
-        this.shadersEnabled = true;
+        this.postProcessor = shader.getShaderEffect();
+        this.postProcessorEnabled = true;
     }
 
     @Redirect(method = "updateTargetedEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/projectile/ProjectileUtil;raycast(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Box;Ljava/util/function/Predicate;D)Lnet/minecraft/util/hit/EntityHitResult;"))

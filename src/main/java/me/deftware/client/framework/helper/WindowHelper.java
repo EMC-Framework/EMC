@@ -38,7 +38,7 @@ public class WindowHelper {
 	}
 
 	public static void disableShader() {
-		MinecraftClient.getInstance().execute(() -> MinecraftClient.getInstance().gameRenderer.disableShader());
+		MinecraftClient.getInstance().execute(() -> MinecraftClient.getInstance().gameRenderer.disablePostProcessor());
 	}
 
 }

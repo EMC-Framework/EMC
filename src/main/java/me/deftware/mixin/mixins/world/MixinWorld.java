@@ -9,7 +9,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.MessageScreen;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.text.Text;
-import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.BlockEntityTickInvoker;
 import org.spongepowered.asm.mixin.Mixin;

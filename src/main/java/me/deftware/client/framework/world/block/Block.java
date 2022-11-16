@@ -17,8 +17,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.Item;
 import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registries;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 import java.io.IOException;
 import java.io.InputStream;

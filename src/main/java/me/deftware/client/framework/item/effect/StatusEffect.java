@@ -2,8 +2,8 @@ package me.deftware.client.framework.item.effect;
 
 import net.minecraft.entity.effect.StatusEffectCategory;
 import me.deftware.client.framework.registry.Identifiable;
-import net.minecraft.util.registry.Registries;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 /**
  * @author Deftware

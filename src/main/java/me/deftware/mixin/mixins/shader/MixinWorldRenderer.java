@@ -63,7 +63,7 @@ public abstract class MixinWorldRenderer implements WorldEntityRenderer {
     @Getter
     private final List<Statue> statues = new ArrayList<>();
 
-    @Inject(method = "loadEntityOutlineShader", at = @At("RETURN"))
+    @Inject(method = "loadEntityOutlinePostProcessor", at = @At("RETURN"))
     private void reload(CallbackInfo ci) {
         initShaders();
     }

@@ -5,8 +5,8 @@ import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
 import me.deftware.mixin.imp.Uniformable;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.GlUniform;
-import net.minecraft.client.gl.PostProcessShader;
-import net.minecraft.client.gl.ShaderEffect;
+import net.minecraft.client.gl.PostEffectPass;
+import net.minecraft.client.gl.PostEffectProcessor;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class Shader {
 
-    private ShaderEffect shaderEffect;
+    private PostEffectProcessor shaderEffect;
     private Framebuffer framebuffer;
 
     private final MinecraftIdentifier identifier;
@@ -30,7 +30,7 @@ public class Shader {
         MinecraftClient client = MinecraftClient.getInstance();
         if (shaderEffect == null) {
             try {
-                shaderEffect = new ShaderEffect(MinecraftClient.getInstance().getTextureManager(), resourceManager, MinecraftClient.getInstance().getFramebuffer(), identifier);
+                shaderEffect = new PostEffectProcessor(MinecraftClient.getInstance().getTextureManager(), resourceManager, MinecraftClient.getInstance().getFramebuffer(), identifier);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -48,8 +48,8 @@ public class Shader {
     }
 
     public void setUniform(String name, float... values) {
-        List<PostProcessShader> passes = getUniformable().getPostShaders();
-        for (PostProcessShader pass : passes) {
+        List<PostEffectPass> passes = getUniformable().getPostShaders();
+        for (PostEffectPass pass : passes) {
             GlUniform uniform = pass.getProgram().getUniformByName(name);
             if (uniform != null) {
                 if (values.length == 4) {
@@ -73,7 +73,7 @@ public class Shader {
         shaderEffect.render(partialTicks);
     }
 
-    public ShaderEffect getShaderEffect() {
+    public PostEffectProcessor getShaderEffect() {
         return shaderEffect;
     }
 

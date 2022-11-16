@@ -104,7 +104,7 @@ public class CubeRenderStack extends RenderStack<CubeRenderStack> {
 		vertex(box.minX, box.maxY, box.maxZ).next();
 		vertex(box.minX, box.maxY, box.minZ).next();
 
-		BufferRenderer.drawWithShader(builder.end());
+		BufferRenderer.drawWithGlobalProgram(builder.end());
 		builder.begin(VertexFormat.DrawMode.DEBUG_LINES, getFormat());
 
 		vertex(box.minX, box.minY, box.minZ).next();
