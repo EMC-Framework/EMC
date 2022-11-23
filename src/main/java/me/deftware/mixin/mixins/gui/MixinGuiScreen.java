@@ -11,6 +11,8 @@ import me.deftware.client.framework.gui.widgets.GenericComponent;
 import me.deftware.client.framework.registry.ItemRegistry;
 import me.deftware.client.framework.render.gl.GLX;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_8000;
+import net.minecraft.class_8001;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
@@ -22,6 +24,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import org.joml.Vector2i;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -55,7 +58,7 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
     protected MinecraftClient client;
 
     @Shadow
-    protected abstract void renderTooltipFromComponents(MatrixStack matrices, List<TooltipComponent> components, int x, int y);
+    protected abstract void renderTooltipFromComponents(MatrixStack matrices, List<TooltipComponent> components, int x, int y, class_8000 arg1);
 
     @Shadow
     protected abstract void clearChildren();
@@ -154,7 +157,7 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
 
     @Override
     public void renderTooltip(int x, int y, List<TooltipComponent> tooltipComponents) {
-        this.renderTooltipFromComponents(GLX.INSTANCE.getStack(), tooltipComponents, x, y);
+        this.renderTooltipFromComponents(GLX.INSTANCE.getStack(), tooltipComponents, x, y, class_8001.field_41687);
     }
 
     @Inject(method = "handleTextClick", at = @At("HEAD"), cancellable = true)
