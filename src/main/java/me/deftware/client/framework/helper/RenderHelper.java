@@ -2,31 +2,31 @@ package me.deftware.client.framework.helper;
 
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.option.AoMode;
+import net.minecraft.client.option.SimpleOption;
 
 /**
  * @author Deftware
  */
 public class RenderHelper {
 
-	private static AoMode aoMode = null;
+	private static SimpleOption<Boolean> aoMode = null;
 
-	public static AoMode getAoMode() {
+	private static boolean getAoMode() {
 		return MinecraftClient.getInstance().options.getAo().getValue();
 	}
 
-	public static void setAoMode(AoMode mode) {
+	private static void setAoMode(boolean mode) {
 		MinecraftClient.getInstance().options.getAo().setValue(mode);
 	}
 
 	public static void reloadRenderers() {
 		if (aoMode == null)
-			aoMode = getAoMode();
+			aoMode = SimpleOption.ofBoolean("dummyAoMode", getAoMode());
 		if (Bootstrap.blockProperties.isActive()) {
-			aoMode = getAoMode();
-			setAoMode(AoMode.OFF);
+			aoMode.setValue(getAoMode());
+			setAoMode(false);
 		} else {
-			setAoMode(aoMode);
+			setAoMode(aoMode.getValue());
 		}
 		MinecraftClient.getInstance().worldRenderer.reload();
 	}

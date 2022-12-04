@@ -195,7 +195,7 @@ public class ItemStack {
 	}
 
 	public boolean isEqualItems(ItemStack stack, boolean ignoreDamage) {
-		return ignoreDamage ? getMinecraftItemStack().isItemEqualIgnoreDamage(stack.getMinecraftItemStack()) : getMinecraftItemStack().isItemEqual(stack.getMinecraftItemStack());
+		return getMinecraftItemStack().isItemEqual(stack.getMinecraftItemStack());
 	}
 
 	public boolean hasStatusEffect(StatusEffect effect) {
