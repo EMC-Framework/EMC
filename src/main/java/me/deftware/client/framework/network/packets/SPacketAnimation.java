@@ -3,7 +3,7 @@ package me.deftware.client.framework.network.packets;
 import me.deftware.client.framework.entity.Entity;
 import me.deftware.client.framework.network.PacketWrapper;
 import me.deftware.client.framework.world.ClientWorld;
-import net.minecraft.network.Packet;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
 
 /**

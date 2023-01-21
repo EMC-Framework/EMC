@@ -5,7 +5,7 @@ import me.deftware.client.framework.network.PacketWrapper;
 import me.deftware.client.framework.world.ClientWorld;
 import me.deftware.client.framework.world.World;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.network.Packet;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.EntityS2CPacket;
 
 import javax.annotation.Nullable;

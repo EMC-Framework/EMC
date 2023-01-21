@@ -4,7 +4,7 @@ import me.deftware.client.framework.network.NetworkHandler;
 import me.deftware.client.framework.network.PacketWrapper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.command.argument.SignedArgumentList;
-import net.minecraft.network.Packet;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.message.*;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;

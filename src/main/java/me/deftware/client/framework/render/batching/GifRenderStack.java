@@ -98,7 +98,7 @@ public class GifRenderStack extends RenderStack<GifRenderStack> {
     public GifRenderStack begin() {
         if (!isAvailable)
             throw new RuntimeException("Cannot render unavailable gif!");
-        RenderSystem.enableTexture();
+        // RenderSystem.enableTexture();
         texture.bind();
         return begin(GL11.GL_QUADS);
     }
@@ -106,7 +106,7 @@ public class GifRenderStack extends RenderStack<GifRenderStack> {
     @Override
     public void end() {
         super.end();
-        RenderSystem.disableTexture();
+        // RenderSystem.disableTexture();
     }
 
     @Override

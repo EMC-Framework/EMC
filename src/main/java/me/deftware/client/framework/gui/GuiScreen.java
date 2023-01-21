@@ -197,14 +197,14 @@ public abstract class GuiScreen extends Screen implements GenericScreen {
 		/**
 		 * A textured background will always be rendered
 		 */
-		BackgroundType Textured = (mouseX, mouseY, delta, parent) -> parent.renderBackgroundTexture(0);
+		BackgroundType Textured = (mouseX, mouseY, delta, parent) -> parent.renderBackgroundTexture(GLX.INSTANCE.getStack());
 
 		/**
 		 * A textured background will be rendered,
 		 * but if a world is loaded, a transparent black
 		 * overlay will be drawn instead
 		 */
-		BackgroundType TexturedOrTransparent = (mouseX, mouseY, delta, parent) -> parent.renderBackground(GLX.INSTANCE.getStack(), 0);
+		BackgroundType TexturedOrTransparent = (mouseX, mouseY, delta, parent) -> parent.renderBackground(GLX.INSTANCE.getStack());
 
 		/**
 		 * Renders the background

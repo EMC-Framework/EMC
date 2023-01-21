@@ -122,7 +122,7 @@ public abstract class RenderStack<T> implements VertexConstructor {
 
 	public static void setupGl() {
 		blend();
-		RenderSystem.disableTexture();
+		// RenderSystem.disableTexture();
 		RenderSystem.disableDepthTest();
 		RenderSystem.depthMask(false);
 	}
@@ -130,7 +130,7 @@ public abstract class RenderStack<T> implements VertexConstructor {
 	public static void restoreGl() {
 		noBlend();
 		RenderSystem.depthMask(true);
-		RenderSystem.enableTexture();
+		// RenderSystem.enableTexture();
 		RenderSystem.enableDepthTest();
 	}
 

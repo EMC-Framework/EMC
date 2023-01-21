@@ -1,6 +1,6 @@
 package me.deftware.client.framework.network.packets;
 
-import net.minecraft.network.Packet;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 
 /**

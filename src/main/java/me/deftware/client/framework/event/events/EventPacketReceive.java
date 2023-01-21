@@ -1,6 +1,6 @@
 package me.deftware.client.framework.event.events;
 
-import net.minecraft.network.Packet;
+import net.minecraft.network.packet.Packet;
 
 /**
  * Triggered when packet is sent from the server to the client

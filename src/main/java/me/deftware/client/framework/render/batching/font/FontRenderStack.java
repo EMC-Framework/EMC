@@ -38,7 +38,7 @@ public class FontRenderStack extends RenderStack<FontRenderStack> {
 	@Override
 	public FontRenderStack begin() {
 		// Bind texture
-		RenderSystem.enableTexture();
+		// RenderSystem.enableTexture();
 		font.getTextureAtlas().bind();
 		// Set up buffer
 		return super.begin(GL11.GL_QUADS);
@@ -47,7 +47,7 @@ public class FontRenderStack extends RenderStack<FontRenderStack> {
 	@Override
 	public void end() {
 		super.end();
-		RenderSystem.disableTexture();
+		// RenderSystem.disableTexture();
 	}
 
 	@Override

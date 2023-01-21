@@ -2,7 +2,7 @@ package me.deftware.client.framework.network;
 
 import me.deftware.mixin.imp.IMixinNetworkManager;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.network.Packet;
+import net.minecraft.network.packet.Packet;
 
 import java.io.IOException;
 

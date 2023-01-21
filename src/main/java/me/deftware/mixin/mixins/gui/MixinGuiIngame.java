@@ -55,7 +55,7 @@ public class MixinGuiIngame {
     private final EventAnimation eventAnimation = new EventAnimation();
 
     @Inject(method = "renderOverlay", at = @At("HEAD"), cancellable = true)
-    private void renderOverlay(Identifier identifier, float scale, CallbackInfo ci) {
+    private void renderOverlay(MatrixStack matrixStack, Identifier identifier, float f, CallbackInfo ci) {
         if (identifier == PUMPKIN_BLUR) { // TODO: Verify this
             eventAnimation.create(EventAnimation.AnimationType.Pumpkin);
             eventAnimation.broadcast();
@@ -66,7 +66,7 @@ public class MixinGuiIngame {
     }
 
     @Inject(method = "renderPortalOverlay", at = @At("HEAD"), cancellable = true)
-    private void renderPortalOverlay(float f, CallbackInfo ci) {
+    private void renderPortalOverlay(MatrixStack matrixStack, float f, CallbackInfo ci) {
         eventAnimation.create(EventAnimation.AnimationType.Portal);
         eventAnimation.broadcast();
         if (eventAnimation.isCanceled()) {
@@ -84,7 +84,7 @@ public class MixinGuiIngame {
     }
 
     @Inject(method = "renderVignetteOverlay", at = @At("HEAD"), cancellable = true)
-    private void renderVignetteOverlay(Entity entity, CallbackInfo ci) {
+    private void renderVignetteOverlay(MatrixStack matrixStack, Entity entity, CallbackInfo ci) {
         eventAnimation.create(EventAnimation.AnimationType.Vignette);
         eventAnimation.broadcast();
         if (eventAnimation.isCanceled()) {

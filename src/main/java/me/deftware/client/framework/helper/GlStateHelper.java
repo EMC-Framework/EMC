@@ -46,7 +46,7 @@ public class GlStateHelper {
 	}
 
 	public static void disableTexture2D() {
-		RenderSystem.disableTexture();
+		// RenderSystem.disableTexture();
 	}
 
 	public static void tryBlendFuncSeparate(int srcFactor, int dstFactor, int srcFactorAlpha, int dstFactorAlpha) {
@@ -54,7 +54,7 @@ public class GlStateHelper {
 	}
 
 	public static void enableTexture2D() {
-		RenderSystem.enableTexture();
+		// RenderSystem.enableTexture();
 	}
 
 	public static void disableStandardItemLighting() {

@@ -68,4 +68,11 @@ public class Label implements Drawable, Element, GenericComponent, Tooltipable {
 		return mouseX > this.x && mouseX < this.x + this.width && mouseY > this.y && mouseY < this.y + this.height;
 	}
 
+	@Override
+	public void setFocused(boolean focused) { }
+
+	@Override
+	public boolean isFocused() {
+		return false;
+	}
 }
