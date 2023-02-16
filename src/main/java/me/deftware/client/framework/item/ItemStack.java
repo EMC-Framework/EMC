@@ -17,14 +17,12 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityGroup;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.text.Text;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.class_8109;
 
 import java.util.*;
 
@@ -119,8 +117,8 @@ public class ItemStack {
 
 	public int getStackProtectionAmount() {
 		var world = MinecraftClient.getInstance().world;
-		var damageSource = world.method_48963();
-		int protection = EnchantmentHelper.getProtectionAmount(Collections.singletonList(itemStack), damageSource.method_48794());
+		var damageSource = world.getDamageSources();
+		int protection = EnchantmentHelper.getProtectionAmount(Collections.singletonList(itemStack), damageSource.generic());
 		if (item.getMinecraftItem() instanceof ArmorItem) {
 			protection += ((ArmorItem) item.getMinecraftItem()).getProtection();
 		}
