@@ -231,23 +231,23 @@ public class ItemStack {
 	}
 
 	public static void setRenderZLevel(float z) {
-		getRenderItem().zOffset = z;
+		// getRenderItem().zOffset = z;
 	}
 
 	public void renderItemIntoGUI(int x, int y) {
-		GLX.INSTANCE.modelViewStack(() -> getRenderItem().renderGuiItemIcon(getMinecraftItemStack(), x, y));
+		GLX.INSTANCE.modelViewStack(() -> getRenderItem().renderGuiItemIcon(GLX.INSTANCE.getStack(), getMinecraftItemStack(), x, y));
 	}
 
 	public void renderItemOverlays(int x, int y) {
-		GLX.INSTANCE.modelViewStack(() -> getRenderItem().renderGuiItemOverlay(MinecraftClient.getInstance().textRenderer, getMinecraftItemStack(), x, y));
+		GLX.INSTANCE.modelViewStack(() -> getRenderItem().renderGuiItemOverlay(GLX.INSTANCE.getStack(), MinecraftClient.getInstance().textRenderer, getMinecraftItemStack(), x, y));
 	}
 
 	public void renderItemAndEffectIntoGUI(int x, int y) {
-		GLX.INSTANCE.modelViewStack(() -> getRenderItem().renderInGui(getMinecraftItemStack(), x, y));
+		GLX.INSTANCE.modelViewStack(() -> getRenderItem().renderInGui(GLX.INSTANCE.getStack(), getMinecraftItemStack(), x, y));
 	}
 
 	public void renderItemOverlayIntoGUI(int x, int y, String text) {
-		GLX.INSTANCE.modelViewStack(() -> getRenderItem().renderGuiItemOverlay(MinecraftClient.getInstance().textRenderer, getMinecraftItemStack(), x, y, text));
+		GLX.INSTANCE.modelViewStack(() -> getRenderItem().renderGuiItemOverlay(GLX.INSTANCE.getStack(), MinecraftClient.getInstance().textRenderer, getMinecraftItemStack(), x, y, text));
 	}
 
 	public boolean hasNbt() {

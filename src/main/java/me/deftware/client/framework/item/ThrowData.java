@@ -1,5 +1,6 @@
 package me.deftware.client.framework.item;
 
+import me.deftware.client.framework.math.position.DoubleBlockPosition;
 import net.minecraft.entity.EyeOfEnderEntity;
 import net.minecraft.util.math.BlockPos;
 
@@ -35,7 +36,7 @@ public class ThrowData {
                 / (d.x * this.z - d.z * this.x);
         double z = (this.z / this.x) * x + this.posZ - (this.z / this.x) * this.posX;
 
-        return new BlockPos(x, 36, z);
+        return DoubleBlockPosition.fromDouble(x, 36, z);
     }
 
     public boolean sameEntity(EyeOfEnderEntity e) {

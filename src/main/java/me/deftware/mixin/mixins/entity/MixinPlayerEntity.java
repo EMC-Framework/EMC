@@ -20,7 +20,7 @@ public class MixinPlayerEntity {
 
     @Shadow @Final private PlayerAbilities abilities;
 
-    @Redirect(method = "adjustMovementForSneaking", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;clipAtLedge()Z", opcode = 180))
+    @Redirect(method = "adjustMovementForSneaking", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;clipAtLedge()Z"))
     private boolean sneakingCheck(PlayerEntity self) {
         if (self == MinecraftClient.getInstance().player) {
             EventSneakingCheck event = new EventSneakingCheck(self.isSneaking());
@@ -30,14 +30,14 @@ public class MixinPlayerEntity {
         return self.isSneaking();
     }
 
-    @Redirect(method = "adjustMovementForSneaking", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/player/PlayerEntity;stepHeight:F", opcode = 180))
+    @Redirect(method = "adjustMovementForSneaking", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;method_49476()F"))
     private float modifyStepHeight(PlayerEntity self, Vec3d origin) {
-        return self == MinecraftClient.getInstance().player ? 0.6f : self.stepHeight;
+        return self == MinecraftClient.getInstance().player ? 0.6f : self.method_49476();
     }
 
-    @Redirect(method = "method_30263", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/player/PlayerEntity;stepHeight:F", opcode = 180))
+    @Redirect(method = "method_30263", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;method_49476()F"))
     private float modifyStepHeight(PlayerEntity self) {
-        return self == MinecraftClient.getInstance().player ? 0.6f : self.stepHeight;
+        return self == MinecraftClient.getInstance().player ? 0.6f : self.method_49476();
     }
 
     @Inject(method = "getBlockBreakingSpeed", at = @At(value = "RETURN"), cancellable = true)

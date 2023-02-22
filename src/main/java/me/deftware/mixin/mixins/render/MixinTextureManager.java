@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 @Mixin(RenderSystem.class)
 public class MixinTextureManager {
 
+    /* TODO: FIX ME
     private static int syncedCount = 0;
 
     @ModifyVariable(method = "setShaderTexture(ILnet/minecraft/util/Identifier;)V", remap = false, at = @At("HEAD"))
@@ -28,5 +29,6 @@ public class MixinTextureManager {
         }
         return resource;
     }
+    */
 
 }

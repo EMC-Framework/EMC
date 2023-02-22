@@ -30,6 +30,7 @@
     "gui.MixinCreativeInventoryScreen",
     "gui.MixinDebugHud",
     "gui.MixinGuiButton",
+    "gui.MixinClickableWidget",
     "gui.MixinGuiContainer",
     "gui.MixinGuiDisconnected",
     "gui.MixinGuiEditSign",

@@ -6,6 +6,7 @@ import me.deftware.client.framework.inventory.EntityInventory;
 import me.deftware.client.framework.item.effect.AppliedStatusEffect;
 import me.deftware.client.framework.item.effect.StatusEffect;
 import me.deftware.client.framework.minecraft.Minecraft;
+import me.deftware.client.framework.render.gl.GLX;
 import me.deftware.mixin.imp.IMixinEntityLivingBase;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
@@ -143,7 +144,8 @@ public class EntityPlayer extends LivingEntity {
 	}
 
 	public void drawPlayer(int posX, int posY, int scale) {
-		InventoryScreen.drawEntity(posX, posY, scale, 0, 0, getMinecraftEntity());
+		// TODO: Is this right?
+		InventoryScreen.drawEntity(GLX.INSTANCE.getStack(), posX, posY, scale, 0, 0, getMinecraftEntity());
 	}
 
 	public Entity clone() {

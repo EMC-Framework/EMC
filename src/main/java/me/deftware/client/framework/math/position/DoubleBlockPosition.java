@@ -1,6 +1,7 @@
 package me.deftware.client.framework.math.position;
 
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 
 /**
  * @author Deftware
@@ -37,8 +38,11 @@ public class DoubleBlockPosition extends BlockPosition {
 
 	@Override
 	public BlockPos getMinecraftBlockPos() {
-		return new BlockPos(x, y, z);
+		return fromDouble(x, y, z);
 	}
 
+	public static BlockPos fromDouble(double x, double y, double z) {
+		return new BlockPos(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z));
+	}
 
 }

@@ -3,9 +3,7 @@ package me.deftware.client.framework.gui.widgets;
 import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.gui.widgets.properties.Nameable;
 import me.deftware.client.framework.gui.widgets.properties.Tooltipable;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.ButtonWidget;
 
 import java.util.function.Function;
 
@@ -33,28 +31,11 @@ public interface Button extends Component, Nameable<Button>, Tooltipable {
 	 * @return A button component instance
 	 */
 	static Button create(int x, int y, int widthIn, int heightIn, ChatMessage buttonText, boolean shouldPlaySound, Function<Integer, Boolean> onClick) {
-		ClickableWidget widget = new ClickableWidget(x, y, widthIn, heightIn, buttonText.build()) {
-
-			@Override
-			public boolean mouseClicked(double mouseX, double mouseY, int button) {
-				if (this.clicked(mouseX, mouseY)) {
-					if (shouldPlaySound)
-						this.playDownSound(MinecraftClient.getInstance().getSoundManager());
-					return onClick.apply(button);
-				}
-				return false;
-			}
-
-			@Override
-			protected void appendClickableNarrations(NarrationMessageBuilder builder) { }
-
-		};
-		return (Button) widget;
-	}
-
-	@Override
-	default boolean isMouseOverComponent(int mouseX, int mouseY) {
-		return ((ClickableWidget) this).isHovered();
+		var button =
+				ButtonWidget.builder(buttonText.build(), btn -> onClick.apply(0))
+						.dimensions(x, y, widthIn, heightIn)
+						.build();
+		return (Button) button;
 	}
 
 }

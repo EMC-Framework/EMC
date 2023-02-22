@@ -229,11 +229,11 @@ public class Entity {
 	}
 
 	public float getStepHeight() {
-		return entity.stepHeight;
+		return entity.method_49476();
 	}
 
 	public void setStepHeight(float height) {
-		entity.stepHeight = height;
+		entity.method_49477(height);
 	}
 
 	public boolean isWithinChunk(ChunkBlockPosition chunkPos) {

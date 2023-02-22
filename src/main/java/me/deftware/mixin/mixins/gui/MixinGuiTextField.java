@@ -22,7 +22,7 @@ import java.util.function.Predicate;
  * @author Deftware
  */
 @Mixin(TextFieldWidget.class)
-public class MixinGuiTextField extends MixinGuiButton implements TextField {
+public class MixinGuiTextField extends MixinClickableWidget implements TextField {
 
     @Unique
     private String overlay = "";
