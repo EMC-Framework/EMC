@@ -30,16 +30,15 @@ public class MixinPlayerEntity {
         return self.isSneaking();
     }
 
-    @Redirect(method = "adjustMovementForSneaking", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;method_49476()F"))
+    @Redirect(method = "adjustMovementForSneaking", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;getStepHeight()F"))
     private float modifyStepHeight(PlayerEntity self, Vec3d origin) {
-        return self == MinecraftClient.getInstance().player ? 0.6f : self.method_49476();
+        return self == MinecraftClient.getInstance().player ? 0.6f : self.getStepHeight();
     }
 
-    @Redirect(method = "method_30263", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;method_49476()F"))
+    @Redirect(method = "method_30263", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;getStepHeight()F"))
     private float modifyStepHeight(PlayerEntity self) {
-        return self == MinecraftClient.getInstance().player ? 0.6f : self.method_49476();
+        return self == MinecraftClient.getInstance().player ? 0.6f : self.getStepHeight();
     }
-
     @Inject(method = "getBlockBreakingSpeed", at = @At(value = "RETURN"), cancellable = true)
     public void onGetBlockBreakingSpeed(BlockState block, CallbackInfoReturnable<Float> cir) {
         EventBlockBreakingSpeed event = new EventBlockBreakingSpeed().broadcast();
