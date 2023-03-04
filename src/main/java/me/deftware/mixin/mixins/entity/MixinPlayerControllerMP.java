@@ -102,20 +102,21 @@ public class MixinPlayerControllerMP implements IMixinPlayerControllerMP {
         this.breakingBlock = state;
     }
 
-    @Redirect(method = "interactItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;use(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/Hand;)Lnet/minecraft/util/TypedActionResult;"))
+    // Lambda function in interactItem
+    @Redirect(method = "method_41929", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/item/ItemStack;use(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/Hand;)Lnet/minecraft/util/TypedActionResult;"))
     private TypedActionResult<ItemStack> onItemUse(ItemStack instance, World world, PlayerEntity user, Hand hand) {
         Item item = instance.getItem();
         TypedActionResult<ItemStack> result = instance.use(world, user, hand);
-
         new EventItemUse(
                 ItemRegistry.INSTANCE.getItem(item),
                 EntityHand.of(hand)
         ).broadcast();
-
         return result;
     }
 
-    @Redirect(method = "breakBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;onBreak(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;Lnet/minecraft/entity/player/PlayerEntity;)V"))
+    @Redirect(method = "breakBlock", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/block/Block;onBreak(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;Lnet/minecraft/entity/player/PlayerEntity;)V"))
     private void onBlockBreak(Block block, World world, BlockPos pos, BlockState state, PlayerEntity player) {
         block.onBreak(world, pos, state, player);
         new EventBlockUpdate(EventBlockUpdate.State.Break,
@@ -125,33 +126,29 @@ public class MixinPlayerControllerMP implements IMixinPlayerControllerMP {
         ).broadcast();
     }
 
-    /*
-    @Redirect(method = "breakBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;onBroken(Lnet/minecraft/world/WorldAccess;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)V"))
-    private void onBlockBroken(Block block, WorldAccess world, BlockPos pos, BlockState state) {
-        block.onBroken(world, pos, state);
-        new EventBlockUpdate(EventBlockUpdate.State.Broken,
-                DoubleBlockPosition.fromMinecraftBlockPos(pos),
-                BlockRegistry.INSTANCE.getBlock(block),
-                EntityHand.MainHand
-        ).broadcast();
-    }
-     */
-
-    @Redirect(method = "interactBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;useOnBlock(Lnet/minecraft/item/ItemUsageContext;)Lnet/minecraft/util/ActionResult;"))
+    @Redirect(method = "interactBlockInternal", at = @At(value = "INVOKE", ordinal = 1,
+            target = "Lnet/minecraft/item/ItemStack;useOnBlock(Lnet/minecraft/item/ItemUsageContext;)Lnet/minecraft/util/ActionResult;"))
     private ActionResult onBlockPlace(ItemStack instance, ItemUsageContext context) {
         Item item = instance.getItem();
         ActionResult result = instance.useOnBlock(context);
 
-        if (result.isAccepted() && item instanceof BlockItem blockItem) {
-            Block block = blockItem.getBlock();
-            BlockPos pos = context.getBlockPos().offset(context.getSide());
+        if (result.isAccepted()) {
+            if (item instanceof BlockItem blockItem) {
+                Block block = blockItem.getBlock();
+                BlockPos pos = context.getBlockPos().offset(context.getSide());
 
-            new EventBlockUpdate(
-                    EventBlockUpdate.State.Place,
-                    DoubleBlockPosition.fromMinecraftBlockPos(pos),
-                    BlockRegistry.INSTANCE.getBlock(block),
-                    EntityHand.of(context.getHand())
-            ).broadcast();
+                new EventBlockUpdate(
+                        EventBlockUpdate.State.Place,
+                        DoubleBlockPosition.fromMinecraftBlockPos(pos),
+                        BlockRegistry.INSTANCE.getBlock(block),
+                        EntityHand.of(context.getHand())
+                ).broadcast();
+            } else {
+                new EventItemUse(
+                        ItemRegistry.INSTANCE.getItem(item),
+                        EntityHand.of(context.getHand())
+                ).broadcast();
+            }
         }
         return result;
     }
