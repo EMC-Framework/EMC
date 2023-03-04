@@ -9,6 +9,7 @@ import net.minecraft.network.PacketCallbacks;
 import net.minecraft.network.listener.PacketListener;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
@@ -19,7 +20,8 @@ public abstract class MixinNetworkManager implements IMixinNetworkManager {
     protected abstract void sendImmediately(Packet<?> packet, PacketCallbacks arg);
 
     @SuppressWarnings("unchecked")
-    @Redirect(method = "channelRead0(Lio/netty/channel/ChannelHandlerContext;Lnet/minecraft/network/Packet;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/ClientConnection;handlePacket(Lnet/minecraft/network/Packet;Lnet/minecraft/network/listener/PacketListener;)V"))
+    @Redirect(method = "channelRead0(Lio/netty/channel/ChannelHandlerContext;Lnet/minecraft/network/packet/Packet;)V",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/network/ClientConnection;handlePacket(Lnet/minecraft/network/packet/Packet;Lnet/minecraft/network/listener/PacketListener;)V"))
     private void channelRead0(Packet<?> packet, PacketListener listener) {
         EventPacketReceive event = new EventPacketReceive(packet).broadcast();
         if (!event.isCanceled()) {
@@ -27,7 +29,8 @@ public abstract class MixinNetworkManager implements IMixinNetworkManager {
         }
     }
 
-    @Redirect(method = "send(Lnet/minecraft/network/Packet;Lnet/minecraft/network/PacketCallbacks;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/ClientConnection;sendImmediately(Lnet/minecraft/network/Packet;Lnet/minecraft/network/PacketCallbacks;)V"))
+    @Redirect(method = "send(Lnet/minecraft/network/packet/Packet;Lnet/minecraft/network/PacketCallbacks;)V",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/network/ClientConnection;sendImmediately(Lnet/minecraft/network/packet/Packet;Lnet/minecraft/network/PacketCallbacks;)V"))
     private void sendPacket$dispatchPacket(ClientConnection instance, Packet<?> packet, PacketCallbacks arg) {
         EventPacketSend event = new EventPacketSend(packet);
         event.broadcast();
@@ -37,6 +40,8 @@ public abstract class MixinNetworkManager implements IMixinNetworkManager {
         sendImmediately(event.getPacket(), arg);
     }
 
+    @Unique
+    @Override
     public void sendPacketImmediately(Packet<?> packet) {
         sendImmediately(packet, null);
     }

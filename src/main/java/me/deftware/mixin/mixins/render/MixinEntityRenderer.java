@@ -118,7 +118,7 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     @Unique
     private final EventHurtcam eventHurtcam = new EventHurtcam();
 
-    @Inject(method = "bobViewWhenHurt", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "bobView", at = @At("HEAD"), cancellable = true)
     private void hurtCameraEffect(MatrixStack stack, float partialTicks, CallbackInfo ci) {
         eventHurtcam.setCanceled(false);
         eventHurtcam.broadcast();

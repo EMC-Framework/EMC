@@ -17,10 +17,11 @@ public abstract class MixinAbstractPig {
         cir.setReturnValue(event.isState());
     }
 
-    @Inject(method = "canBeControlledByRider", at = @At("TAIL"), cancellable = true)
+    @Inject(method = "canBeSaddled", at = @At("TAIL"), cancellable = true)
     public void canBeControlled(CallbackInfoReturnable<Boolean> cir) {
         EventSaddleCheck event = new EventSaddleCheck(cir.getReturnValue());
         event.broadcast();
         cir.setReturnValue(event.isState());
     }
+
 }

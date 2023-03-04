@@ -13,7 +13,7 @@ public class MixinMovementInputFromOptions {
     @Unique
     private final EventSlowdown eventSlowdown = new EventSlowdown();
 
-    @ModifyVariable(method = "tick", at = @At("HEAD"))
+    @ModifyVariable(method = "tick", at = @At("HEAD"), argsOnly = true)
     public boolean onTick(boolean slowDown) {
         eventSlowdown.create(EventSlowdown.SlowdownType.Sneak, 1);
         eventSlowdown.broadcast();

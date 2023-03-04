@@ -47,7 +47,6 @@
     "input.MixinMovementInputFromOptions",
     "item.MixinEnchantments",
     "item.MixinItems",
-    "item.MixinItemStack",
     "item.MixinItemTool",
     "network.MixinCPacketPlayer",
     "network.MixinNetHandlerLoginClient",
