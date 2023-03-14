@@ -25,6 +25,7 @@ public class MixinServerListEntryNormal {
     @Shadow
     private ServerInfo server;
 
+    /*
     @Inject(method = "render", at = @At("HEAD"))
     public void render(MatrixStack matrixStack, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta, CallbackInfo ci) {
         if (server.ping > 1 && !sentEvent) {
@@ -57,5 +58,6 @@ public class MixinServerListEntryNormal {
             server.ping = event.getPingToServer();
         }
     }
+    */
 
 }
