@@ -7,8 +7,8 @@ build:
     # Fabric build
     - ./gradlew publish --stacktrace
     # Forge build
-    # - sed -i -e 's/fabric/forge/g' gradle.properties
-    # - ./gradlew clean publish --stacktrace
+    - sed -i -e 's/fabric/forge/g' gradle.properties
+    - ./gradlew clean publish --stacktrace
   artifacts:
     paths:
       - maven
