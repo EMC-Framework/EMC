@@ -34,7 +34,7 @@ public abstract class MixinGuiEditSign extends MixinGuiScreen implements me.deft
     @Override
     public void _setLine(int line, String newText) {
         text[line] = newText;
-        blockEntity.setTextOnRow(line, Text.of(newText));
+        // blockEntity.setTextOnRow(line, Text.of(newText)); TODO: FIXME
     }
 
     @Override
