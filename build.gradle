@@ -39,7 +39,7 @@ dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraftVersion}"
 	mappings "net.fabricmc:yarn:${project.minecraftVersion}${project.mappingsVer}:v2"
 
-	modImplementation "net.fabricmc:fabric-loader:0.14.13"
+	modImplementation "net.fabricmc:fabric-loader:0.14.18"
 
 	// No longer included in Minecraft
 	implementation 'io.netty:netty-handler-proxy:4.1.76.Final'
