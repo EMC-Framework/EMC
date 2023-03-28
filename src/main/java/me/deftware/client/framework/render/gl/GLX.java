@@ -8,6 +8,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.util.StringJoiner;
+import java.util.function.Consumer;
 
 /**
  * Manages matrix transformations
@@ -41,12 +42,12 @@ public class GLX {
         return stack.peek().getPositionMatrix();
     }
 
-    public void modelViewStack(Runnable action) {
+    public void modelViewStack(Consumer<MatrixStack> action) {
         MatrixStack matrixStack = RenderSystem.getModelViewStack();
         matrixStack.push();
         matrixStack.multiplyPositionMatrix(GLX.INSTANCE.getModel());
         RenderSystem.applyModelViewMatrix();
-        action.run();
+        action.accept(matrixStack);
         matrixStack.pop();
         RenderSystem.applyModelViewMatrix();
     }
