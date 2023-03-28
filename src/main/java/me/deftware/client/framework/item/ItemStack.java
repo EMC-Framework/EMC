@@ -14,7 +14,9 @@ import me.deftware.client.framework.render.gl.GLX;
 import me.deftware.client.framework.util.types.Pair;
 import me.deftware.client.framework.world.block.Block;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.ingame.ShulkerBoxScreen;
 import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.item.ArmorItem;
@@ -25,6 +27,7 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * @author Deftware
@@ -230,24 +233,37 @@ public class ItemStack {
 		return MinecraftClient.getInstance().getItemRenderer();
 	}
 
+	private static float zOffset = 0;
+
 	public static void setRenderZLevel(float z) {
-		// getRenderItem().zOffset = z;
+		zOffset = z;
 	}
 
 	public void renderItemIntoGUI(int x, int y) {
-		GLX.INSTANCE.modelViewStack(() -> getRenderItem().renderGuiItemIcon(GLX.INSTANCE.getStack(), getMinecraftItemStack(), x, y));
+		render(stack -> getRenderItem().renderGuiItemIcon(stack, getMinecraftItemStack(), x, y));
 	}
 
 	public void renderItemOverlays(int x, int y) {
-		GLX.INSTANCE.modelViewStack(() -> getRenderItem().renderGuiItemOverlay(GLX.INSTANCE.getStack(), MinecraftClient.getInstance().textRenderer, getMinecraftItemStack(), x, y));
+		render(stack -> getRenderItem().renderGuiItemOverlay(stack, MinecraftClient.getInstance().textRenderer, getMinecraftItemStack(), x, y));
 	}
 
 	public void renderItemAndEffectIntoGUI(int x, int y) {
-		GLX.INSTANCE.modelViewStack(() -> getRenderItem().renderInGui(GLX.INSTANCE.getStack(), getMinecraftItemStack(), x, y));
+		render(stack -> getRenderItem().renderInGui(stack, getMinecraftItemStack(), x, y));
 	}
 
 	public void renderItemOverlayIntoGUI(int x, int y, String text) {
-		GLX.INSTANCE.modelViewStack(() -> getRenderItem().renderGuiItemOverlay(GLX.INSTANCE.getStack(), MinecraftClient.getInstance().textRenderer, getMinecraftItemStack(), x, y, text));
+		render(stack -> getRenderItem().renderGuiItemOverlay(stack, MinecraftClient.getInstance().textRenderer, getMinecraftItemStack(), x, y, text));
+	}
+
+	private final MatrixStack stack = new MatrixStack();
+
+	private void render(Consumer<MatrixStack> runnable) {
+		GLX.INSTANCE.modelViewStack(s -> {
+			stack.push();
+			stack.translate(0, 0, zOffset);
+			runnable.accept(stack);
+			stack.pop();
+		});
 	}
 
 	public boolean hasNbt() {
