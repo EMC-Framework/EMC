@@ -1,6 +1,7 @@
 package me.deftware.mixin.mixins.gui;
 
 import net.minecraft.block.entity.SignBlockEntity;
+import net.minecraft.block.entity.SignText;
 import net.minecraft.client.gui.screen.ingame.AbstractSignEditScreen;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Final;
@@ -19,7 +20,7 @@ public abstract class MixinGuiEditSign extends MixinGuiScreen implements me.deft
 
     @Shadow
     @Final
-    protected String[] text;
+    protected SignText text;
 
     @Override
     public int _getCurrentLine() {
@@ -28,12 +29,12 @@ public abstract class MixinGuiEditSign extends MixinGuiScreen implements me.deft
 
     @Override
     public String _getLine(int line) {
-        return text[line];
+        return ""; // text[line];
     }
 
     @Override
     public void _setLine(int line, String newText) {
-        text[line] = newText;
+        // text[line] = newText;
         // blockEntity.setTextOnRow(line, Text.of(newText)); TODO: FIXME
     }
 

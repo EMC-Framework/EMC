@@ -24,7 +24,7 @@ public class Material {
 	}
 
 	public boolean isBurnable() {
-		return material.isBurnable();
+		return false; // material.isBurnable(); TODO: FIXME
 	}
 
 }

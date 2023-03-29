@@ -2,10 +2,10 @@ package me.deftware.client.framework.render.batching;
 
 import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.systems.VertexSorter;
 import lombok.Getter;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
 import me.deftware.client.framework.render.gl.GLX;
-import net.minecraft.class_8251;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.Window;
@@ -224,7 +224,7 @@ public abstract class RenderStack<T> implements VertexConstructor {
 	protected static void setMatrix(float width, float height) {
 		RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
 		Matrix4f matrix4f = new Matrix4f().setOrtho(0.0F, width, height, 0, 1000.0F, 3000.0F);
-		RenderSystem.setProjectionMatrix(matrix4f, class_8251.field_43360);
+		RenderSystem.setProjectionMatrix(matrix4f, VertexSorter.BY_DISTANCE);
 		MatrixStack matrixStack = RenderSystem.getModelViewStack();
 		matrixStack.loadIdentity();
 		matrixStack.translate(0.0D, 0.0D, -2000.0D);
