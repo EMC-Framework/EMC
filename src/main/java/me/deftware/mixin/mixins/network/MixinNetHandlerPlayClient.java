@@ -1,16 +1,17 @@
 package me.deftware.mixin.mixins.network;
 
-import me.deftware.client.framework.event.events.EventAnimation;
-import me.deftware.client.framework.event.events.EventChunk;
-import me.deftware.client.framework.event.events.EventChunkDataReceive;
-import me.deftware.client.framework.event.events.EventKnockback;
+import me.deftware.client.framework.event.events.*;
+import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.network.NetworkHandler;
 import me.deftware.client.framework.registry.BlockRegistry;
 import me.deftware.client.framework.world.block.Block;
 import me.deftware.client.framework.world.player.PlayerEntry;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.network.MessageType;
 import net.minecraft.network.packet.s2c.play.*;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import org.spongepowered.asm.mixin.Mixin;
@@ -22,6 +23,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -100,6 +102,14 @@ public class MixinNetHandlerPlayClient implements NetworkHandler {
     @Redirect(method = "onGameJoin", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/ClientBrandRetriever;getClientModName()Ljava/lang/String;"))
     private String onGameJoin$GetClientBrand() {
         return "vanilla";
+    }
+
+    @Redirect(method = "onGameMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;addChatMessage(Lnet/minecraft/network/MessageType;Lnet/minecraft/text/Text;Ljava/util/UUID;)V"))
+    private void onChatMessage(InGameHud instance, MessageType messageType, Text text, UUID sender) {
+        EventChatReceive event = new EventChatReceive((Message) text).broadcast();
+        if (!event.isCanceled()) {
+            instance.addChatMessage(messageType, (Text) event.getMessage(), sender);
+        }
     }
 
 }

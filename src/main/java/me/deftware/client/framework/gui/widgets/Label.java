@@ -1,7 +1,7 @@
 package me.deftware.client.framework.gui.widgets;
 
 import lombok.Getter;
-import me.deftware.client.framework.chat.ChatMessage;
+import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.gui.widgets.properties.Tooltipable;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -29,15 +29,15 @@ public class Label implements Drawable, Element, GenericComponent, Tooltipable {
 	@Getter
 	private int width, height, x, y;
 
-	public Label(int x, int y, ChatMessage... text) {
+	public Label(int x, int y, Message... text) {
 		this.setText(text);
 		this.x = x;
 		this.y = y;
 	}
 
-	public void setText(ChatMessage... text) {
+	public void setText(Message... text) {
 		this.text = Arrays.stream(text)
-				.map(ChatMessage::build)
+				.map(Text.class::cast)
 				.collect(Collectors.toList());
 		this.width = this.text.stream()
 				.map(textRenderer::getWidth)

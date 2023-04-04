@@ -1,7 +1,7 @@
 package me.deftware.client.framework.gui;
 
 import lombok.Setter;
-import me.deftware.client.framework.chat.ChatMessage;
+import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.gui.screens.GenericScreen;
 import me.deftware.client.framework.gui.screens.MinecraftScreen;
 import me.deftware.client.framework.gui.widgets.GenericComponent;
@@ -14,6 +14,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
 /**
@@ -111,16 +112,16 @@ public abstract class GuiScreen extends Screen implements GenericScreen {
 		getMinecraftScreen().addScreenComponent(component);
 	}
 
-	protected GuiScreen addText(int x, int y, ChatMessage text) {
+	protected GuiScreen addText(int x, int y, Message text) {
 		addComponent(
 				new Label(x, y, text)
 		);
 		return this;
 	}
 
-	protected GuiScreen addCenteredText(int x, int y, ChatMessage text) {
+	protected GuiScreen addCenteredText(int x, int y, Message text) {
 		addComponent(
-				new Label(x - MinecraftClient.getInstance().textRenderer.getWidth(text.build()) / 2, y, text)
+				new Label(x - MinecraftClient.getInstance().textRenderer.getWidth((Text) text) / 2, y, text)
 		);
 		return this;
 	}
