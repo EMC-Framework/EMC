@@ -156,7 +156,6 @@ public class Bootstrap {
         CommandRegister.registerCommand(new CommandMods());
         CommandRegister.registerCommand(new CommandUnload());
         CommandRegister.registerCommand(new CommandVersion());
-        CommandRegister.registerCommand(new CommandOAuth());
         CommandRegister.registerCommand(new CommandTrigger());
         CommandRegister.registerCommand(new CommandReload());
         CommandRegister.registerCommand(new CommandScale());
