@@ -1,6 +1,5 @@
 package me.deftware.mixin.mixins.render;
 
-import me.deftware.client.framework.chat.hud.ChatHud;
 import me.deftware.client.framework.event.events.*;
 import me.deftware.client.framework.global.GameKeys;
 import me.deftware.client.framework.global.GameMap;
@@ -136,11 +135,6 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     @Redirect(method = "render", at = @At(value = "INVOKE", opcode = 180, target = "Lnet/minecraft/client/gui/hud/InGameHud;render(Lnet/minecraft/client/util/math/MatrixStack;F)V"))
     private void onRender2D(InGameHud inGameHud, MatrixStack matrices, float tickDelta) {
         if (!WindowHelper.isMinimized()) {
-            // Chat queue
-            Runnable operation = ChatHud.getChatMessageQueue().poll();
-            if (operation != null) {
-                operation.run();
-            }
             // Minecraft modifies opacity underwater
             GLX.INSTANCE.color(1, 1, 1, 1);
             GLX.INSTANCE.refresh(matrices);

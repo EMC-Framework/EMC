@@ -96,11 +96,11 @@ public class MainEntityPlayer extends RotationLogic {
 				.setHorseJumpPower(f);
 	}
 
-	public void sendChatMessage(String text, Class<?> sender) {
+	public void sendMessage(String text, Class<?> sender) {
 		Minecraft.getMinecraftGame().getChatSender().send(text, sender);
 	}
 
-	public void sendChatMessage(String text) {
+	public void sendMessage(String text) {
 		var networkHandler = this.getMinecraftEntity().networkHandler;
 		if (text.startsWith("/")) {
 			text = text.substring(1);

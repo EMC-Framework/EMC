@@ -1,5 +1,6 @@
 package me.deftware.client.framework.minecraft;
 
+import me.deftware.client.framework.message.GameChat;
 import me.deftware.client.framework.entity.Entity;
 import me.deftware.client.framework.entity.types.main.MainEntityPlayer;
 import me.deftware.client.framework.gui.screens.GenericScreen;
@@ -49,6 +50,13 @@ public interface Minecraft {
 		if (this.getClientWorld() == null)
 			return null;
 		return this.getClientWorld().getEntityByReference(MinecraftClient.getInstance().cameraEntity);
+	}
+
+	/**
+	 * @return The in-game chat
+	 */
+	default GameChat getGameChat() {
+		return (GameChat) MinecraftClient.getInstance().inGameHud.getChatHud();
 	}
 
 	WorldEntityRenderer getWorldEntityRenderer();

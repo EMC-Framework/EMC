@@ -1,6 +1,6 @@
 package me.deftware.client.framework.entity;
 
-import me.deftware.client.framework.chat.ChatMessage;
+import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.fonts.FontRenderer;
 import me.deftware.client.framework.gui.widgets.SelectableList;
 import me.deftware.client.framework.registry.Identifiable;
@@ -10,7 +10,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.Identifier;
 import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
 
 import java.util.Objects;
 
@@ -42,8 +41,8 @@ public class EntityCapsule implements SelectableList.ListItem, Identifiable {
         return entityType;
     }
 
-    public ChatMessage getName() {
-        return new ChatMessage().fromText(entityType.getName());
+    public Message getName() {
+        return (Message) entityType.getName();
     }
 
     public void setTexture(Identifier identifier) {

@@ -1,7 +1,6 @@
 package me.deftware.client.framework.gui;
 
 import lombok.Getter;
-import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.gui.screens.MinecraftScreen;
 import me.deftware.client.framework.minecraft.Minecraft;
 import net.minecraft.client.MinecraftClient;
@@ -11,6 +10,7 @@ import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.option.OptionsScreen;
 import net.minecraft.client.gui.screen.world.SelectWorldScreen;
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
+import net.minecraft.text.Text;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -27,7 +27,7 @@ public enum ScreenRegistry {
 
 	IngameMenu(GameMenuScreen.class),
 	Disconnected(DisconnectedScreen.class, args -> new DisconnectedScreen(
-			(Screen) args[0], ((ChatMessage) args[1]).build(), ((ChatMessage) args[2]).build()
+			(Screen) args[0], (Text) args[1], (Text) args[2]
 	)),
 	Container(HandledScreen.class),
 	Chat(ChatScreen.class),
