@@ -1,7 +1,7 @@
 package me.deftware.client.framework.gui.widgets;
 
 import lombok.Setter;
-import me.deftware.client.framework.chat.ChatMessage;
+import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.gui.widgets.properties.Tooltipable;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.EntryListWidget;
@@ -36,7 +36,7 @@ public class SelectableList<T extends SelectableList.ListItem> extends EntryList
 			return true;
 		}
 
-		default ChatMessage[] getTooltip() {
+		default Message[] getTooltip() {
 			return null;
 		}
 
@@ -145,7 +145,7 @@ public class SelectableList<T extends SelectableList.ListItem> extends EntryList
 
 		public ItemEntry(T item) {
 			this.item = item;
-			ChatMessage[] tooltip = item.getTooltip();
+			Message[] tooltip = item.getTooltip();
 			if (tooltip != null && tooltip.length > 0) {
 				SelectableList.this._setTooltip(tooltipComponents, tooltip);
 			}

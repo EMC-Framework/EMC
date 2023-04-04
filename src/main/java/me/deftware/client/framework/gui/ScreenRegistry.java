@@ -1,6 +1,8 @@
 package me.deftware.client.framework.gui;
 
 import lombok.Getter;
+import me.deftware.client.framework.gui.screens.MinecraftScreen;
+import me.deftware.client.framework.minecraft.Minecraft;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.*;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -8,6 +10,7 @@ import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.options.OptionsScreen;
 import net.minecraft.client.gui.screen.world.SelectWorldScreen;
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
+import net.minecraft.text.Text;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -23,7 +26,9 @@ public enum ScreenRegistry {
 	MainMenu(TitleScreen.class, parent -> new TitleScreen()),
 
 	IngameMenu(GameMenuScreen.class),
+
 	Disconnected(DisconnectedScreen.class),
+
 	Container(HandledScreen.class),
 	Chat(ChatScreen.class),
 	Death(DeathScreen.class),

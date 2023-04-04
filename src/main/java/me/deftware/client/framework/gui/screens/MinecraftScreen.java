@@ -1,6 +1,6 @@
 package me.deftware.client.framework.gui.screens;
 
-import me.deftware.client.framework.chat.ChatMessage;
+import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.event.events.EventScreen;
 import me.deftware.client.framework.gui.ScreenRegistry;
 import me.deftware.client.framework.gui.widgets.GenericComponent;
@@ -85,14 +85,14 @@ public interface MinecraftScreen extends GenericScreen {
 	 * Renders a tooltip onscreen
 	 * @param tooltip Tooltip lines
 	 */
-	default void renderTooltip(int x, int y, ChatMessage... tooltip) {
+	default void renderTooltip(int x, int y, Message... tooltip) {
 		this.renderTooltip(x, y, getTooltipList(tooltip));
 	}
 
 	@ApiStatus.Internal
-	static List<OrderedText> getTooltipList(ChatMessage... tooltip) {
+	static List<OrderedText> getTooltipList(Message... tooltip) {
 		return Arrays.stream(tooltip)
-				.map(ChatMessage::build)
+				.map(Text.class::cast)
 				.map(Text::asOrderedText)
 				.collect(Collectors.toList());
 	}

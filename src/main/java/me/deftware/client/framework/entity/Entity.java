@@ -1,6 +1,6 @@
 package me.deftware.client.framework.entity;
 
-import me.deftware.client.framework.chat.ChatMessage;
+import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.entity.types.EntityPlayer;
 import me.deftware.client.framework.entity.types.OwnedEntity;
 import me.deftware.client.framework.entity.types.animals.HorseEntity;
@@ -21,7 +21,6 @@ import me.deftware.client.framework.nbt.NbtCompound;
 import me.deftware.client.framework.util.Util;
 import me.deftware.client.framework.world.ClientWorld;
 import me.deftware.client.framework.world.EnumFacing;
-import me.deftware.client.framework.world.World;
 import me.deftware.mixin.imp.IMixinAbstractClientPlayer;
 import me.deftware.mixin.imp.IMixinEntity;
 import me.deftware.mixin.imp.IMixinNetworkPlayerInfo;
@@ -279,12 +278,12 @@ public class Entity {
 		return this.entity.distanceTo(entity.getMinecraftEntity());
 	}
 
-	public ChatMessage getName() {
-		return new ChatMessage().fromText(entity.getDisplayName());
+	public Message getName() {
+		return (Message) entity.getDisplayName();
 	}
 
 	public String getEntityTypeName() {
-		return new ChatMessage().fromText(entity.getType().getName()).toString(false);
+		return entity.getType().getName().getString();
 	}
 
 	public void setNoClip(boolean state) {
