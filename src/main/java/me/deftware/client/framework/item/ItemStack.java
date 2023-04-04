@@ -1,6 +1,6 @@
 package me.deftware.client.framework.item;
 
-import me.deftware.client.framework.chat.ChatMessage;
+import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.item.effect.StatusEffect;
 import me.deftware.client.framework.item.enchantment.Enchantment;
 import me.deftware.client.framework.item.types.SwordItem;
@@ -23,6 +23,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.DefaultedList;
+import net.minecraft.text.Text;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.math.MathHelper;
 
@@ -179,8 +180,8 @@ public class ItemStack {
 		return itemStack.getMaxDamage();
 	}
 
-	public ChatMessage getDisplayName() {
-		return new ChatMessage().fromText(itemStack.getName());
+	public Message getDisplayName() {
+		return (Message) itemStack.getName();
 	}
 
 	public float getStrVsBlock(BlockPosition pos) {
@@ -204,9 +205,9 @@ public class ItemStack {
 				.anyMatch(e -> e.getEffectType() == effect.getMinecraftStatusEffect());
 	}
 
-	public void setStackDisplayName(ChatMessage name) {
+	public void setStackDisplayName(Message name) {
 		CompoundTag nbt = itemStack.getOrCreateSubTag("display");
-		nbt.putString("Name", LiteralText.Serializer.toJson(name.build()));
+		nbt.putString("Name", LiteralText.Serializer.toJson((Text) name));
 	}
 	
 	public void addEnchantment(Enchantment enchantment, int level) {

@@ -4,17 +4,14 @@ import com.google.common.collect.Lists;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import me.deftware.client.framework.chat.ChatMessage;
-import me.deftware.client.framework.chat.LiteralChatMessage;
-import me.deftware.client.framework.chat.builder.ChatBuilder;
-import me.deftware.client.framework.chat.event.ChatClickEvent;
-import me.deftware.client.framework.chat.hud.ChatHud;
-import me.deftware.client.framework.chat.hud.HudLine;
-import me.deftware.client.framework.chat.style.ChatColors;
 import me.deftware.client.framework.command.CommandBuilder;
 import me.deftware.client.framework.command.CommandRegister;
 import me.deftware.client.framework.command.CommandResult;
 import me.deftware.client.framework.command.EMCModCommand;
+import me.deftware.client.framework.message.Appearance;
+import me.deftware.client.framework.message.DefaultColors;
+import me.deftware.client.framework.message.Message;
+import me.deftware.client.framework.minecraft.Minecraft;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,18 +21,18 @@ import java.util.List;
  */
 public abstract class AbstractPagedOutputCommand extends EMCModCommand {
 
-    protected final ChatMessage title;
+    protected final Message title;
     protected final String command;
     protected int chunkSize = 6;
 
-    public AbstractPagedOutputCommand(String command, ChatMessage title) {
+    public AbstractPagedOutputCommand(String command, Message title) {
         this.command = command;
         this.title = title;
     }
 
-    public abstract List<ChatMessage> list();
+    public abstract List<Message> list();
 
-    public List<List<ChatMessage>> getChunks() {
+    public List<List<Message>> getChunks() {
         return Lists.partition(list(), chunkSize);
     }
 
@@ -52,23 +49,15 @@ public abstract class AbstractPagedOutputCommand extends EMCModCommand {
         );
     }
 
-    private final List<ChatMessage> previousOuput = new ArrayList<>();
+    private final List<String> previousOuput = new ArrayList<>();
 
     protected void removePreviousOutput() {
-        List<HudLine> removalQueue = new ArrayList<>();
-        for (HudLine line : ChatHud.getLines()) {
-            for (ChatMessage message : previousOuput) {
-                if (line.getMessage().toString(false).equalsIgnoreCase(message.toString(false))) {
-                    removalQueue.add(line);
-                }
-            }
-        }
-        removalQueue.forEach(ChatHud::remove);
+        Minecraft.getMinecraftGame().getGameChat().remove(previousOuput::contains);
         previousOuput.clear();
     }
 
-    protected void print(ChatMessage message) {
-        previousOuput.add(message);
+    protected void send(Message message) {
+        previousOuput.add(message.string());
         message.print();
     }
 
@@ -80,36 +69,52 @@ public abstract class AbstractPagedOutputCommand extends EMCModCommand {
             removePreviousOutput();
         }
 
-       if (list().isEmpty()) {
-           print(new ChatBuilder().withMessage(title).build());
-           print(new LiteralChatMessage("Nothing added", ChatColors.GRAY));
-       } else {
-           // Get chunk
-           List<List<ChatMessage>> chunks = getChunks();
-           if (page < 0) page = 0;
-           if (page >= chunks.size()) page = chunks.size() - 1;
-           List<ChatMessage> chunk = chunks.get(page);
+        if (list().isEmpty()) {
+            send(title);
+            send(Message.of("Nothing added").style(Appearance.of(DefaultColors.GRAY)));
+        } else {
+            // Get chunk
+            List<List<Message>> chunks = getChunks();
+            if (page < 0) page = 0;
+            if (page >= chunks.size()) page = chunks.size() - 1;
+            List<Message> chunk = chunks.get(page);
 
-           // Send title
-           print(new ChatBuilder().withMessage(title).withSpace()
-                   .withText(String.format("Page (%s/%s)", page + 1, chunks.size())).withColor(ChatColors.AQUA)
-                   .build());
+            // Send title
+            Appearance aqua = Appearance.of(DefaultColors.AQUA);
+            send(
+                    new Message.Builder()
+                            .append(title)
+                            .append(" ")
+                            .append(String.format("Page (%s/%s)", page + 1, chunks.size()), aqua)
+                            .build()
+            );
 
-           // Send chunk
-           chunk.forEach(this::print);
+            // Send chunk
+            chunk.forEach(this::send);
 
-           if (chunks.size() > 1) {
-               // Send navigation buttons
-               ChatBuilder navigationButtons = new ChatBuilder();
-               if (page > 0) navigationButtons.withText("<<").withColor(ChatColors.AQUA).withClickEvent(
-                       new ChatClickEvent(ChatClickEvent.EventType.RUN_COMMAND, String.format("%s%s %s", prefix, command, page))
-               ).withHover("Previous page").append().withSpace();
-               if (page + 1 < chunks.size()) navigationButtons.withText(">>").withColor(ChatColors.AQUA).withClickEvent(
-                       new ChatClickEvent(ChatClickEvent.EventType.RUN_COMMAND, String.format("%s%s %s", prefix, command, page + 2))
-               ).withHover("Next page").append();
-               print(navigationButtons.build());
-           }
-       }
+            if (chunks.size() > 1) {
+                Message.Builder navigation = new Message.Builder();
+                if (page > 0) {
+                    Message left = Message.of("<< ")
+                            .style(
+                                    Appearance.of(DefaultColors.AQUA)
+                                            .withClickEvent(Appearance.ClickAction.RUN_COMMAND, String.format("%s%s %s", prefix, command, page))
+                                            .withTextHoverEvent(Message.of("Previous page"))
+                            );
+                    navigation.append(left);
+                }
+                if (page + 1 < chunks.size()) {
+                    Message right = Message.of(">>")
+                            .style(
+                                    Appearance.of(DefaultColors.AQUA)
+                                            .withClickEvent(Appearance.ClickAction.RUN_COMMAND, String.format("%s%s %s", prefix, command, page + 2))
+                                            .withTextHoverEvent(Message.of("Next page"))
+                            );
+                    navigation.append(right);
+                }
+                send(navigation.build());
+            }
+        }
 
         return 1;
     }

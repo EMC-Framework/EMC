@@ -1,8 +1,10 @@
 package me.deftware.mixin.mixins.gui;
 
+import me.deftware.client.framework.message.MessageUtils;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
-import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.gui.widgets.Button;
+import me.deftware.client.framework.message.Message;
+import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -70,15 +72,13 @@ public class MixinGuiButton implements Button {
     }
 
     @Override
-    public ChatMessage getComponentLabel() {
-        return new ChatMessage().fromString(
-                ((AbstractButtonWidget) (Object) this).getMessage()
-        );
+    public Message getComponentLabel() {
+        return MessageUtils.parse(((AbstractButtonWidget) (Object) this).getMessage());
     }
 
     @Override
-    public Button setComponentLabel(ChatMessage text) {
-        ((AbstractButtonWidget) (Object) this).setMessage(text.toString(true));
+    public Button setComponentLabel(Message text) {
+        ((AbstractButtonWidget) (Object) this).setMessage(((Text) text).asFormattedString());
         return this;
     }
 

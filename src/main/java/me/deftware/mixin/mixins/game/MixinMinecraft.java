@@ -26,6 +26,7 @@ import net.minecraft.client.util.Session;
 import net.minecraft.client.util.Window;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.world.level.LevelInfo;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
@@ -84,9 +85,9 @@ public abstract class MixinMinecraft implements Minecraft {
     @Unique
     private String worldName;
 
-    @Inject(method = "startIntegratedServer(Ljava/lang/String;)V", at = @At("HEAD"))
-    private void onIntegratedServer(String worldName, CallbackInfo ci) {
-        this.worldName = worldName;
+    @Inject(method = "startIntegratedServer", at = @At("HEAD"))
+    private void onIntegratedServer(String name, String displayName, LevelInfo levelInfo, CallbackInfo ci) {
+        this.worldName = name;
     }
 
     @Override

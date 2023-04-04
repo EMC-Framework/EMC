@@ -1,6 +1,5 @@
 package me.deftware.mixin.mixins.gui;
 
-import me.deftware.client.framework.chat.ChatMessage;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.item.TooltipContext;
@@ -22,11 +21,11 @@ public class MixinCreativeInventoryScreen {
      * Uses {@link MixinGuiScreen#onGetTooltipFromItem(ItemStack, CallbackInfoReturnable)}
      * to get a modified tooltip. Only called in the search tab in a creative inventory
      */
-    @Redirect(method = "renderTooltip", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;getTooltip(Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/client/item/TooltipContext;)Ljava/util/List;"))
+    /*@Redirect(method = "renderTooltip", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;getTooltip(Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/client/item/TooltipContext;)Ljava/util/List;"))
     private List<Text> onGetStackTooltip(ItemStack itemStack, PlayerEntity player, TooltipContext context) {
         return (((Screen) (Object) this).getTooltipFromItem(itemStack))
                 .stream().map(s -> new ChatMessage().fromString(s).build())
                 .collect(Collectors.toList());
-    }
+    }*/
 
 }
