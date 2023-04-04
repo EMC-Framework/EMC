@@ -1,7 +1,6 @@
 package me.deftware.mixin.mixins.render;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.deftware.client.framework.chat.hud.ChatHud;
 import me.deftware.client.framework.event.events.*;
 import me.deftware.client.framework.event.events.EventHurtcam;
 import me.deftware.client.framework.event.events.EventRender2D;
@@ -11,6 +10,7 @@ import me.deftware.client.framework.global.GameKeys;
 import me.deftware.client.framework.global.GameMap;
 import me.deftware.client.framework.helper.GlStateHelper;
 import me.deftware.client.framework.helper.WindowHelper;
+import me.deftware.client.framework.minecraft.Minecraft;
 import me.deftware.client.framework.render.shader.Shader;
 import me.deftware.client.framework.render.batching.RenderStack;
 import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
@@ -131,7 +131,7 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     private void onRender2D(InGameHud inGameHud, float tickDelta) {
         if (!WindowHelper.isMinimized()) {
             // Chat queue
-            Runnable operation = ChatHud.getChatMessageQueue().poll();
+            Runnable operation = Minecraft.getMinecraftGame().pollRenderThread();
             if (operation != null) {
                 operation.run();
             }

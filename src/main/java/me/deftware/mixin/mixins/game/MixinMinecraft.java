@@ -2,7 +2,6 @@ package me.deftware.mixin.mixins.game;
 
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import lombok.Getter;
-import me.deftware.client.framework.chat.hud.ChatHud;
 import me.deftware.client.framework.entity.Entity;
 import me.deftware.client.framework.event.events.EventScreen;
 import me.deftware.client.framework.gui.screens.GenericScreen;
@@ -26,6 +25,7 @@ import net.minecraft.client.util.Session;
 import net.minecraft.client.util.Window;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.world.level.LevelInfo;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
@@ -38,6 +38,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Function;
 
 @Mixin(MinecraftClient.class)
@@ -86,9 +87,9 @@ public abstract class MixinMinecraft implements Minecraft {
     @Unique
     private String worldName;
 
-    @Inject(method = "startIntegratedServer(Ljava/lang/String;)V", at = @At("HEAD"))
-    private void onIntegratedServer(String worldName, CallbackInfo ci) {
-        this.worldName = worldName;
+    @Inject(method = "startIntegratedServer", at = @At("HEAD"))
+    private void onIntegratedServer(String name, String displayName, LevelInfo levelInfo, CallbackInfo ci) {
+        this.worldName = name;
     }
 
     @Override
@@ -149,9 +150,17 @@ public abstract class MixinMinecraft implements Minecraft {
         return ((MinecraftClient) (Object) this).crosshairTarget != null;
     }
 
+    @Unique
+    private final Queue<Runnable> renderQueue = new ArrayDeque<>();
+
     @Override
-    public void runOnRenderThread(Runnable runnable) {
-        ChatHud.getChatMessageQueue().add(runnable);
+    public synchronized void runOnRenderThread(Runnable runnable) {
+        renderQueue.add(runnable);
+    }
+
+    @Override
+    public synchronized Runnable pollRenderThread() {
+        return renderQueue.poll();
     }
 
     @Override
