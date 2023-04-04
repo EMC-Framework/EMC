@@ -1,9 +1,10 @@
 package me.deftware.mixin.mixins.entity;
 
-import me.deftware.client.framework.chat.LiteralChatMessage;
-import me.deftware.client.framework.chat.style.ChatColors;
 import me.deftware.client.framework.command.CommandRegister;
 import me.deftware.client.framework.event.events.*;
+import me.deftware.client.framework.message.Appearance;
+import me.deftware.client.framework.message.DefaultColors;
+import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.minecraft.Chat;
 import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
 import me.deftware.mixin.imp.IMixinEntityPlayerSP;
@@ -166,7 +167,7 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
                 try {
                     CommandRegister.getDispatcher().execute(text, MinecraftClient.getInstance().player.getCommandSource());
                 } catch (Exception ex) {
-                    new LiteralChatMessage(ex.getMessage(), ChatColors.RED).print();
+                    Message.of(ex.getMessage()).style(Appearance.of(DefaultColors.RED)).print();
                 }
                 return;
             }

@@ -2,7 +2,7 @@ package me.deftware.client.framework.event.events;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.deftware.client.framework.chat.ChatMessage;
+
 import me.deftware.client.framework.event.Event;
 import me.deftware.client.framework.world.ClientWorld;
 import me.deftware.client.framework.world.World;

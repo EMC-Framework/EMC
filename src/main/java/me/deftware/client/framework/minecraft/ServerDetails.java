@@ -1,6 +1,6 @@
 package me.deftware.client.framework.minecraft;
 
-import me.deftware.client.framework.chat.ChatMessage;
+import me.deftware.client.framework.message.Message;
 
 /**
  * @since 17.0.0
@@ -21,12 +21,12 @@ public interface ServerDetails {
 	/**
 	 * @return Message of the day
 	 */
-	ChatMessage _getMotd();
+	Message _getMotd();
 
 	/**
 	 * @return The players tooltip
 	 */
-	ChatMessage _getPlayers();
+	Message _getPlayers();
 
 	/**
 	 * @return If the server is online

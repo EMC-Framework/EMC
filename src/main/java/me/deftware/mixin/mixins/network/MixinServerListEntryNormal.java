@@ -1,6 +1,6 @@
 package me.deftware.mixin.mixins.network;
 
-import me.deftware.client.framework.chat.ChatMessage;
+import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.event.events.EventServerPinged;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerServerListWidget;
 import net.minecraft.client.network.ServerInfo;
@@ -12,9 +12,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Mixin(MultiplayerServerListWidget.ServerEntry.class)
 public class MixinServerListEntryNormal {
@@ -29,30 +26,17 @@ public class MixinServerListEntryNormal {
     public void render(MatrixStack matrixStack, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta, CallbackInfo ci) {
         if (server.ping > 1 && !sentEvent) {
             sentEvent = true;
-            List<ChatMessage> populationInfo = new ArrayList<>();
-            if (server.playerListSummary != null) {
-                for (Text text : server.playerListSummary) {
-                    populationInfo.add(new ChatMessage().fromText(text));
-                }
-            }
             EventServerPinged event = new EventServerPinged(
-                    new ChatMessage().fromText(server.label),
-                    new ChatMessage().fromText(server.playerCountLabel),
-                    new ChatMessage().fromText(server.version),
-                    populationInfo,
+                    (Message) server.label,
+                    (Message) server.playerCountLabel,
+                    (Message) server.version,
                     server.protocolVersion,
                     server.ping
             );
             event.broadcast();
-            server.label = event.getServerMOTD().build();
-            if (server.playerListSummary != null) {
-                server.playerListSummary.clear();
-                for (ChatMessage player : event.getPopulationInfo()) {
-                    server.playerListSummary.add(player.build());
-                }
-            }
-            server.version = event.getGameVersion().build();
-            server.playerCountLabel = event.getPlayerList().build();
+            server.label = (Text) event.getServerMOTD();
+            server.version = (Text) event.getGameVersion();
+            server.playerCountLabel = (Text) event.getPlayerList();
             server.protocolVersion = event.getVersion();
             server.ping = event.getPingToServer();
         }
