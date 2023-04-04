@@ -1,6 +1,6 @@
 package me.deftware.client.framework.item;
 
-import me.deftware.client.framework.chat.ChatMessage;
+import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.item.effect.StatusEffect;
 import me.deftware.client.framework.item.enchantment.Enchantment;
 import me.deftware.client.framework.item.types.SwordItem;
@@ -14,7 +14,6 @@ import me.deftware.client.framework.render.gl.GLX;
 import me.deftware.client.framework.util.types.Pair;
 import me.deftware.client.framework.world.block.Block;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ingame.ShulkerBoxScreen;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -182,8 +181,8 @@ public class ItemStack {
 		return itemStack.getMaxDamage();
 	}
 
-	public ChatMessage getDisplayName() {
-		return new ChatMessage().fromText(itemStack.getName());
+	public Message getDisplayName() {
+		return (Message) itemStack.getName();
 	}
 
 	public float getStrVsBlock(BlockPosition pos) {
@@ -207,9 +206,9 @@ public class ItemStack {
 				.anyMatch(e -> e.getEffectType() == effect.getMinecraftStatusEffect());
 	}
 
-	public void setStackDisplayName(ChatMessage name) {
+	public void setStackDisplayName(Message name) {
 		net.minecraft.nbt.NbtCompound nbt = itemStack.getOrCreateSubNbt("display");
-		nbt.putString("Name", Text.Serializer.toJson(name.build()));
+		nbt.putString("Name", Text.Serializer.toJson((Text) name));
 	}
 	
 	public void addEnchantment(Enchantment enchantment, int level) {

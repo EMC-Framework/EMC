@@ -26,7 +26,7 @@ public abstract class MixinMessageHandler {
     private EventChatReceive event;
 
     @Inject(method = "onChatMessage", at = @At("HEAD"), cancellable = true)
-    private void onChatMessage(SignedMessage signedMessage, GameProfile sender, MessageType.Parameters params, CallbackInfo ci) {
+    private void onMessage(SignedMessage signedMessage, GameProfile sender, MessageType.Parameters params, CallbackInfo ci) {
         Text text = params.applyChatDecoration(signedMessage.getContent());
         Instant instant = Instant.now();
 
@@ -45,9 +45,9 @@ public abstract class MixinMessageHandler {
     }
 
     @Redirect(method = "processChatMessageInternal", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/ChatHud;addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignatureData;Lnet/minecraft/client/gui/hud/MessageIndicator;)V"))
-    private void onAddChatMessage(ChatHud instance, Text original, MessageSignatureData signature, MessageIndicator indicator) {
+    private void onAddMessage(ChatHud instance, Text original, MessageSignatureData signature, MessageIndicator indicator) {
         var arg = this.event.getArg();
-        Text message = this.event.getMessage().build();
+        Text message = (Text) this.event.getMessage();
         Text text = arg.applyChatDecoration(message);
         instance.addMessage(text, signature, indicator);
     }

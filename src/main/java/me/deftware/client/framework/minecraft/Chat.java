@@ -1,8 +1,9 @@
 package me.deftware.client.framework.minecraft;
 
-import me.deftware.client.framework.chat.LiteralChatMessage;
-import me.deftware.client.framework.chat.style.ChatColors;
 import me.deftware.client.framework.command.CommandRegister;
+import me.deftware.client.framework.message.Appearance;
+import me.deftware.client.framework.message.DefaultColors;
+import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.event.events.EventChatSend;
 import net.minecraft.client.MinecraftClient;
 import org.jetbrains.annotations.ApiStatus;
@@ -34,7 +35,7 @@ public interface Chat {
                 try {
                     CommandRegister.getDispatcher().execute(text, MinecraftClient.getInstance().player.getCommandSource());
                 } catch (Exception ex) {
-                    new LiteralChatMessage(ex.getMessage(), ChatColors.RED).print();
+                    Message.of(ex.getMessage()).style(Appearance.of(DefaultColors.RED)).print();
                 }
                 return;
             }

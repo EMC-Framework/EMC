@@ -2,7 +2,7 @@ package me.deftware.client.framework.world.block;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.deftware.client.framework.chat.ChatMessage;
+import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.fonts.FontRenderer;
 import me.deftware.client.framework.gui.widgets.SelectableList;
 import me.deftware.client.framework.item.IItem;
@@ -18,7 +18,6 @@ import net.minecraft.item.Item;
 import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;
 import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -94,8 +93,8 @@ public class Block implements IItem, SelectableList.ListItem, Identifiable {
 		return Registries.BLOCK.getRawId(block);
 	}
 
-	public ChatMessage getName() {
-		return new ChatMessage().fromText(block.getName());
+	public Message getName() {
+		return (Message) block.getName();
 	}
 
 	public String getIdentifierKey() {

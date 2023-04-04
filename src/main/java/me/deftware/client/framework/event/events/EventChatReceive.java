@@ -1,9 +1,10 @@
 package me.deftware.client.framework.event.events;
 
-import me.deftware.client.framework.chat.ChatMessage;
+import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.event.Event;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SignedMessage;
+import net.minecraft.text.Text;
 
 import java.util.UUID;
 
@@ -12,7 +13,7 @@ import java.util.UUID;
  */
 public class EventChatReceive extends Event {
 
-    private ChatMessage message;
+    private Message message;
 
     private final boolean signed, expired;
     private MessageType.Parameters arg;
@@ -20,18 +21,18 @@ public class EventChatReceive extends Event {
     private final UUID sender;
 
     public EventChatReceive(MessageType.Parameters arg, SignedMessage message, boolean expired, boolean signed) {
-        this.message = new ChatMessage().fromText(message.getContent());
+        this.message = (Message) message.getContent();
         this.expired = expired;
         this.signed = signed;
         this.sender = message.getSender();
         this.arg = arg;
     }
 
-    public void setMessage(ChatMessage message) {
+    public void setMessage(Message message) {
         this.message = message;
     }
 
-    public ChatMessage getMessage() {
+    public Message getMessage() {
         return message;
     }
 
@@ -43,8 +44,8 @@ public class EventChatReceive extends Event {
         return expired;
     }
 
-    public ChatMessage getSenderName() {
-        return new ChatMessage().fromText(arg.name());
+    public Message getSenderName() {
+        return (Message) arg.name();
     }
 
     public MessageType.Parameters getArg() {
@@ -55,8 +56,8 @@ public class EventChatReceive extends Event {
         return sender;
     }
 
-    public void setSender(ChatMessage name) {
-        this.arg = new MessageType.Parameters(arg.type(), name.build(), arg.targetName());
+    public void setSender(Message name) {
+        this.arg = new MessageType.Parameters(arg.type(), (Text) name, arg.targetName());
     }
 
 }
