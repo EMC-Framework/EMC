@@ -1,9 +1,10 @@
 package me.deftware.client.framework.event.events;
 
-import me.deftware.client.framework.chat.ChatMessage;
+import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.event.Event;
 import net.minecraft.network.message.MessageSender;
 import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
+import net.minecraft.text.Text;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -13,23 +14,23 @@ import java.util.UUID;
  */
 public class EventChatReceive extends Event {
 
-    private ChatMessage message;
+    private Message message;
 
     private final boolean signed, expired;
     private MessageSender sender;
 
     public EventChatReceive(ChatMessageS2CPacket packet, boolean signed) {
-        this.message = new ChatMessage().fromText(packet.signedContent());
+        this.message = (Message) packet.signedContent();
         this.expired = packet.isExpired(Instant.now());
         this.signed = signed;
         this.sender = packet.sender();
     }
 
-    public void setMessage(ChatMessage message) {
+    public void setMessage(Message message) {
         this.message = message;
     }
 
-    public ChatMessage getMessage() {
+    public Message getMessage() {
         return message;
     }
 
@@ -45,16 +46,16 @@ public class EventChatReceive extends Event {
         return this.sender;
     }
 
-    public ChatMessage getSenderName() {
-        return new ChatMessage().fromText(sender.name());
+    public Message getSenderName() {
+        return (Message) sender.name();
     }
 
     public UUID getSenderId() {
         return sender.uuid();
     }
 
-    public void setSender(ChatMessage name) {
-        this.sender = new MessageSender(this.sender.uuid(), name.build());
+    public void setSender(Message name) {
+        this.sender = new MessageSender(this.sender.uuid(), (Text) name);
     }
 
 }

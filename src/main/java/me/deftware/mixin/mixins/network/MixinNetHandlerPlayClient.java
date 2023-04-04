@@ -121,7 +121,7 @@ public abstract class MixinNetHandlerPlayClient implements NetworkHandler {
     @Redirect(method = "handleMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;onChatMessage(Lnet/minecraft/network/message/MessageType;Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSender;)V"))
     private void onChatMessage$Notify(InGameHud instance, MessageType type, Text message, MessageSender sender) {
         if (!this.event.isCanceled()) {
-            instance.onChatMessage(type, this.event.getMessage().build(), this.event.getSender());
+            instance.onChatMessage(type, (Text) this.event.getMessage(), this.event.getSender());
         }
     }
 

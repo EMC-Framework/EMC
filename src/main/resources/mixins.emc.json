@@ -36,7 +36,6 @@
     "gui.MixinGuiGameOver",
     "gui.MixinGuiIngame",
     "gui.MixinGuiMainMenu",
-    "gui.MixinGuiNewChat",
     "gui.MixinGuiScreen",
     "gui.MixinGuiTextField",
     "gui.MixinShulkerBoxScreenHandler",
@@ -97,6 +96,9 @@
     "biome.RarityAccessor",
     "world.MixinChunk",
     "world.MixinChunkSection",
-    "world.MixinChunkManager"
+    "world.MixinChunkManager",
+    "chat.MixinStyle",
+    "chat.MixinText",
+    "chat.MixinChatHud"
   ]
 }
