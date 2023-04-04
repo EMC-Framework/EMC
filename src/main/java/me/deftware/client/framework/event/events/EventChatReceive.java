@@ -1,23 +1,25 @@
 package me.deftware.client.framework.event.events;
 
-import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.event.Event;
+import me.deftware.client.framework.message.Message;
 
 /**
  * Triggered by Minecraft chat listener at the moment the message is drawn to screen
  */
 public class EventChatReceive extends Event {
-    private ChatMessage message;
 
-    public EventChatReceive(ChatMessage message) {
+    private Message message;
+
+    public EventChatReceive(Message message) {
         this.message = message;
     }
 
-    public ChatMessage getMessage() {
-        return this.message;
+    public Message getMessage() {
+        return message;
     }
 
-    public void setMessage(final ChatMessage message) {
+    public void setMessage(Message message) {
         this.message = message;
     }
+
 }

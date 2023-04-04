@@ -4,8 +4,10 @@ import me.deftware.client.framework.gui.Drawable;
 import me.deftware.client.framework.gui.Element;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
-import me.deftware.client.framework.chat.ChatMessage;
+import me.deftware.client.framework.message.MessageUtils;
 import me.deftware.client.framework.gui.widgets.Button;
+import me.deftware.client.framework.message.Message;
+import net.minecraft.util.text.ITextComponent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -73,15 +75,13 @@ public class MixinGuiButton implements Button, Drawable, Element {
     }
 
     @Override
-    public ChatMessage getComponentLabel() {
-        return new ChatMessage().fromString(
-                ((GuiButton) (Object) this).displayString
-        );
+    public Message getComponentLabel() {
+        return MessageUtils.parse(((GuiButton) (Object) this).displayString);
     }
 
     @Override
-    public Button setComponentLabel(ChatMessage text) {
-        ((GuiButton) (Object) this).displayString = text.toString(true);
+    public Button setComponentLabel(Message text) {
+        ((GuiButton) (Object) this).displayString = (((ITextComponent) text).getFormattedText());
         return this;
     }
 

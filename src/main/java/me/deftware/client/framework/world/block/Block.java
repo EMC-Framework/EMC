@@ -1,10 +1,11 @@
 package me.deftware.client.framework.world.block;
 
-import me.deftware.client.framework.chat.ChatMessage;
+import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.fonts.FontRenderer;
 import me.deftware.client.framework.gui.widgets.SelectableList;
 import me.deftware.client.framework.item.IItem;
 import me.deftware.client.framework.math.position.BlockPosition;
+import me.deftware.client.framework.message.MessageUtils;
 import me.deftware.client.framework.registry.Identifiable;
 import me.deftware.client.framework.render.ItemRenderer;
 import me.deftware.client.framework.world.block.types.CropBlock;
@@ -88,8 +89,8 @@ public class Block implements IItem, SelectableList.ListItem, Identifiable {
 		return net.minecraft.block.Block.REGISTRY.getIDForObject(block);
 	}
 
-	public ChatMessage getName() {
-		return new ChatMessage().fromString(block.getLocalizedName());
+	public Message getName() {
+		return MessageUtils.parse(block.getLocalizedName());
 	}
 
 	public String getIdentifierKey() {

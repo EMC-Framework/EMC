@@ -1,9 +1,9 @@
 package me.deftware.mixin.mixins.render;
 
-import me.deftware.client.framework.chat.hud.ChatHud;
 import me.deftware.client.framework.event.events.*;
 import me.deftware.client.framework.helper.WindowHelper;
 import me.deftware.client.framework.minecraft.GameSetting;
+import me.deftware.client.framework.minecraft.Minecraft;
 import me.deftware.client.framework.render.shader.Shader;
 import me.deftware.client.framework.render.batching.RenderStack;
 import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
@@ -120,7 +120,7 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     @Inject(method = "updateCameraAndRender", at = @At("HEAD"))
     private void onRender(float partialTicks, long nanoTime, CallbackInfo ci) {
         // Chat queue
-        Runnable operation = ChatHud.getChatMessageQueue().poll();
+        Runnable operation = Minecraft.getMinecraftGame().pollRenderThread();
         if (operation != null) {
             operation.run();
         }
@@ -191,10 +191,12 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
         }
     }
 
-    @Redirect(method = "updateCameraAndRender(FJ)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;isSpectator()Z", opcode = 180))
+    /* TODO
+    @Redirect(method = "updateCameraAndRender(FJ)V", at = @At(value = "INVOKE", target = "is", opcode = 180))
     public boolean isSpectator(EntityPlayerSP entityPlayerSP) {
         return entityPlayerSP.isSpectator() || CameraEntityMan.isActive();
     }
+     */
 
     @Redirect(method = "updateLightmap", at = @At(value = "FIELD", target = "Lnet/minecraft/client/settings/GameSettings;gammaSetting:F"))
     private float onGetMaxFps(GameSettings instance) {

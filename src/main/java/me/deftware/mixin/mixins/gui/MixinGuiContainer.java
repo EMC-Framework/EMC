@@ -1,7 +1,7 @@
 package me.deftware.mixin.mixins.gui;
 
-import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.gui.screens.ContainerScreen;
+import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.inventory.Inventory;
 import me.deftware.client.framework.util.Lazy;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -43,20 +43,13 @@ public abstract class MixinGuiContainer extends MixinGuiScreen implements Contai
         return inventoryLazy.get();
     }
 
-    @Unique
-    private final Lazy<ChatMessage> inventoryTitle = new Lazy<>(() -> {
+    @Override
+    public Message getInventoryName() {
         if (getScreenHandler() instanceof ContainerChest) {
             ContainerChest chest = (ContainerChest) getScreenHandler();
-            return new ChatMessage().fromText(
-                chest.getLowerChestInventory().getDisplayName()
-            );
+            return (Message) chest.getLowerChestInventory().getDisplayName();
         }
         return null;
-    });
-
-    @Override
-    public ChatMessage getInventoryName() {
-        return inventoryTitle.get();
     }
 
     @Inject(method = "drawScreen", at = @At("RETURN"))

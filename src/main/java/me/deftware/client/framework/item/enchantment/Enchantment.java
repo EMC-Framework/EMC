@@ -1,8 +1,8 @@
 package me.deftware.client.framework.item.enchantment;
 
-import me.deftware.client.framework.chat.ChatMessage;
+import me.deftware.client.framework.message.Message;
+import me.deftware.client.framework.message.MessageUtils;
 import me.deftware.client.framework.registry.Identifiable;
-import net.minecraft.util.registry.IRegistry;
 
 /**
  * @author Deftware
@@ -37,8 +37,8 @@ public class Enchantment implements Identifiable {
 		return enchantment.getMaxLevel();
 	}
 
-	public ChatMessage getName(int level) {
-		return new ChatMessage().fromString(enchantment.getTranslatedName(level));
+	public Message getName(int level) {
+		return MessageUtils.parse(enchantment.getTranslatedName(level));
 	}
 
 }

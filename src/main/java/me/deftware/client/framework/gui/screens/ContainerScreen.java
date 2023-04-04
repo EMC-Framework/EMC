@@ -1,6 +1,6 @@
 package me.deftware.client.framework.gui.screens;
 
-import me.deftware.client.framework.chat.ChatMessage;
+import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.inventory.Inventory;
 import me.deftware.client.framework.item.ItemStack;
 import me.deftware.mixin.imp.IMixinShulkerBoxScreenHandler;
@@ -24,7 +24,7 @@ public interface ContainerScreen extends MinecraftScreen {
 
 	Inventory getContainerInventory();
 
-	ChatMessage getInventoryName();
+	Message getInventoryName();
 
 	/*
 		Hovered

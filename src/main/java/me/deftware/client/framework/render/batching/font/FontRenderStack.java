@@ -1,8 +1,7 @@
 package me.deftware.client.framework.render.batching.font;
 
-import me.deftware.client.framework.chat.ChatMessage;
-import me.deftware.client.framework.chat.ChatSection;
-import me.deftware.client.framework.chat.style.ChatStyle;
+import me.deftware.client.framework.message.DefaultColors;
+import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.fonts.AtlasTextureFont;
 import me.deftware.client.framework.registry.font.IFontProvider;
 import me.deftware.client.framework.render.batching.RenderStack;
@@ -11,10 +10,14 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import me.deftware.client.framework.render.batching.VertexConstructor;
+
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author Deftware
@@ -60,28 +63,36 @@ public class FontRenderStack extends RenderStack<FontRenderStack> {
 	}
 
 	public FontRenderStack drawString(int x, int y, String message) {
-		renderCharBuffer(message.toCharArray(), x, y, lastColor);
+		renderCharBuffer(message.split(""), x, y, lastColor.getRGB());
 		offset = 0;
 		return this;
 	}
 
-	public FontRenderStack drawString(double x, double y, ChatMessage message) {
+	public FontRenderStack drawString(double x, double y, Message message) {
 		return drawString((int) x, (int) y, message);
 	}
 
-	public FontRenderStack drawString(int x, int y, ChatMessage message) {
-		for (ChatSection section : message.getSectionList()) {
-			ChatStyle style = section.getStyle();
-			Color color = Color.white;
-			if (style.getColor() != null)
-				color = style.getColor().getColor();
-			renderCharBuffer(section.getText().toCharArray(), x, y, color);
-		}
+	public FontRenderStack drawString(int x, int y, Message message) {
+		message.visit((style, text) -> {
+			TextFormatting textColor = ((Style) style).getColor();
+			int color = Color.WHITE.getRGB();
+			if (style.getFormatting().isPresent()) {
+				color = style.getFormatting().get().getColor();
+			} else if (textColor != null && textColor.isColor()) {
+				color = DefaultColors.fromTextFormatting(textColor);
+			}
+			renderCharBuffer(text.split(""), x, y, color);
+			return Optional.empty();
+		});
 		offset = 0;
 		return this;
 	}
 
-	private void renderCharBuffer(char[] buffer, int x, int y, Color color) {
+	public void reset() {
+		offset = 0;
+	}
+
+	public void renderCharBuffer(String[] buffer, int x, int y, int color) {
 		// Scale position
 		if (scaled) {
 			x *= RenderStack.getScale();
@@ -93,18 +104,23 @@ public class FontRenderStack extends RenderStack<FontRenderStack> {
 		Map<Character, AtlasTextureFont.CharData> characterMap = font.getCharacterMap();
 
 		for (int character = 0; character < buffer.length; character++) {
+			if (buffer[character].isEmpty()) {
+				continue;
+			}
+			char letter = buffer[character].charAt(0);
+
 			// Skip spaces
-			if (buffer[character] == ' ') {
+			if (letter == ' ') {
 				offset += font.getStringWidth(" ");
 				continue;
 			}
 
 			// Replace unknown characters with a question mark
-			if (!font.characterMap.containsKey(buffer[character]))
-				buffer[character] = '?';
+			if (!font.characterMap.containsKey(letter))
+				letter = '?';
 
 			// Get character data
-			AtlasTextureFont.CharData data = characterMap.get(buffer[character]);
+			AtlasTextureFont.CharData data = characterMap.get(letter);
 
 			// Draw shadow
 			if (shadow > 0) {
@@ -127,8 +143,8 @@ public class FontRenderStack extends RenderStack<FontRenderStack> {
 		return (int) (font.getStringWidth(text) / (scaled ? RenderStack.getScale() : 1f));
 	}
 
-	public int getStringWidth(ChatMessage text) {
-		return getStringWidth(text.toString(false));
+	public int getStringWidth(Message text) {
+		return getStringWidth(text.string());
 	}
 
 	private void drawCharacter(int x, int y, AtlasTextureFont.CharData data) {
@@ -140,7 +156,7 @@ public class FontRenderStack extends RenderStack<FontRenderStack> {
 		drawTexture(x, x + width, y, y + height, 0, width, height, u, v, font.getTextureWidth(), font.getTextureHeight());
 	}
 
-	/*
+    /*
 		Draw
 	 */
 

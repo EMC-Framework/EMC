@@ -1,17 +1,16 @@
 package me.deftware.mixin.mixins.network;
 
 import io.netty.buffer.Unpooled;
-import me.deftware.client.framework.event.events.EventAnimation;
-import me.deftware.client.framework.event.events.EventChunk;
-import me.deftware.client.framework.event.events.EventChunkDataReceive;
-import me.deftware.client.framework.event.events.EventKnockback;
+import me.deftware.client.framework.event.events.*;
 import net.minecraft.client.ClientBrandRetriever;
+import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.network.NetworkHandler;
 import me.deftware.client.framework.registry.BlockRegistry;
 import me.deftware.client.framework.world.block.Block;
 import me.deftware.client.framework.world.player.PlayerEntry;
 import me.deftware.mixin.imp.IMixinMultiBlockChange;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -20,6 +19,8 @@ import net.minecraft.network.play.client.CPacketCustomPayload;
 import net.minecraft.network.play.server.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.text.ChatType;
+import net.minecraft.util.text.ITextComponent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -127,6 +128,14 @@ public class MixinNetHandlerPlayClient implements NetworkHandler {
                 chunkPos.x, section, chunkPos.z,
                 positions, blocks
         ).broadcast();
+    }
+
+    @Redirect(method = "handleChat", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiIngame;addChatMessage(Lnet/minecraft/util/text/ChatType;Lnet/minecraft/util/text/ITextComponent;)V"))
+    private void onChatMessage(GuiIngame instance, ChatType type, ITextComponent message) {
+        EventChatReceive event = new EventChatReceive((Message) message).broadcast();
+        if (!event.isCanceled()) {
+            instance.addChatMessage(type, (ITextComponent) event.getMessage());
+        }
     }
 
 }

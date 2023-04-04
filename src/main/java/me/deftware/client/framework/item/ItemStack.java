@@ -1,11 +1,12 @@
 package me.deftware.client.framework.item;
 
-import me.deftware.client.framework.chat.ChatMessage;
+import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.item.effect.StatusEffect;
 import me.deftware.client.framework.item.enchantment.Enchantment;
 import me.deftware.client.framework.item.types.SwordItem;
 import me.deftware.client.framework.item.types.WeaponItem;
 import me.deftware.client.framework.math.position.BlockPosition;
+import me.deftware.client.framework.message.MessageUtils;
 import me.deftware.client.framework.nbt.NbtCompound;
 import me.deftware.client.framework.nbt.NbtList;
 import me.deftware.client.framework.registry.EnchantmentRegistry;
@@ -184,8 +185,8 @@ public class ItemStack {
 		return itemStack.getMaxDamage();
 	}
 
-	public ChatMessage getDisplayName() {
-		return new ChatMessage().fromString(itemStack.getDisplayName());
+	public Message getDisplayName() {
+		return MessageUtils.parse(itemStack.getDisplayName());
 	}
 
 	public float getStrVsBlock(BlockPosition pos) {
@@ -209,9 +210,9 @@ public class ItemStack {
 				.anyMatch(e -> e.getPotion() == effect.getMinecraftStatusEffect());
 	}
 
-	public void setStackDisplayName(String name) {
+	public void setStackDisplayName(Message name) {
 		NBTTagCompound nbttagcompound = itemStack.getOrCreateSubCompound("display");
-		nbttagcompound.setString("Name", ITextComponent.Serializer.componentToJson(new TextComponentString(name)));
+		nbttagcompound.setString("Name", ITextComponent.Serializer.componentToJson((ITextComponent) name));
 	}
 	
 	public void addEnchantment(Enchantment enchantment, int level) {

@@ -1,11 +1,12 @@
 package me.deftware.client.framework.gui.widgets;
 
-import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.gui.Drawable;
 import me.deftware.client.framework.gui.Element;
+import me.deftware.client.framework.message.Message;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import me.deftware.client.framework.gui.widgets.properties.Tooltipable;
+import net.minecraft.util.text.ITextComponent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,15 +24,16 @@ public class Label implements Drawable, Element, GenericComponent, Tooltipable {
 	private int width, height, x, y;
 	private final FontRenderer textRenderer = Minecraft.getMinecraft().fontRenderer;
 
-	public Label(int x, int y, ChatMessage... text) {
+	public Label(int x, int y, Message... text) {
 		this.setText(text);
 		this.x = x;
 		this.y = y;
 	}
 
-	public void setText(ChatMessage... text) {
+	public void setText(Message... text) {
 		this.text = Arrays.stream(text)
-				.map(m -> m.toString(true))
+				.map(ITextComponent.class::cast)
+				.map(ITextComponent::getFormattedText)
 				.collect(Collectors.toList());
 		this.width = this.text.stream()
 				.map(textRenderer::getStringWidth)

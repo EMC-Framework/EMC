@@ -1,6 +1,7 @@
 package me.deftware.mixin.mixins.network;
 
-import me.deftware.client.framework.chat.ChatMessage;
+import me.deftware.client.framework.message.Message;
+import me.deftware.client.framework.message.MessageUtils;
 import me.deftware.client.framework.minecraft.ServerDetails;
 import net.minecraft.client.multiplayer.ServerData;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,13 +20,13 @@ public class MixinServerInfo implements ServerDetails {
 	}
 
 	@Override
-	public ChatMessage _getMotd() {
-		return new ChatMessage().fromString(((ServerData) (Object) this).serverMOTD);
+	public Message _getMotd() {
+		return MessageUtils.parse(((ServerData) (Object) this).serverMOTD);
 	}
 
 	@Override
-	public ChatMessage _getPlayers() {
-		return new ChatMessage().fromString(((ServerData) (Object) this).playerList);
+	public Message _getPlayers() {
+		return MessageUtils.parse(((ServerData) (Object) this).playerList);
 	}
 
 	@Override
