@@ -34,7 +34,6 @@
     "gui.MixinGuiGameOver",
     "gui.MixinGuiIngame",
     "gui.MixinGuiMainMenu",
-    "gui.MixinGuiNewChat",
     "gui.MixinGuiScreen",
     "gui.MixinGuiTextField",
     "gui.MixinCreativeInventoryScreen",
@@ -85,6 +84,9 @@
     "shader.MixinWorldRenderer",
     "world.MixinChunk",
     "world.MixinChunkSection",
-    "world.MixinChunkManager"
+    "world.MixinChunkManager",
+    "chat.MixinStyle",
+    "chat.MixinText",
+    "chat.MixinChatHud"
   ]
 }

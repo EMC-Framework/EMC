@@ -1,8 +1,8 @@
 package me.deftware.mixin.mixins.render;
 
-import me.deftware.client.framework.chat.hud.ChatHud;
 import me.deftware.client.framework.event.events.*;
 import me.deftware.client.framework.helper.WindowHelper;
+import me.deftware.client.framework.minecraft.Minecraft;
 import me.deftware.client.framework.render.shader.Shader;
 import me.deftware.client.framework.render.batching.RenderStack;
 import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
@@ -114,7 +114,7 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     @Inject(method = "updateCameraAndRender(FJZ)V", at = @At("HEAD"))
     private void onRender(float partialTicks, long nanoTime, boolean renderWorldIn, CallbackInfo ci) {
         // Chat queue
-        Runnable operation = ChatHud.getChatMessageQueue().poll();
+        Runnable operation = Minecraft.getMinecraftGame().pollRenderThread();
         if (operation != null) {
             operation.run();
         }

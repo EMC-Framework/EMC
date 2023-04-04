@@ -1,6 +1,6 @@
 package me.deftware.client.framework.item;
 
-import me.deftware.client.framework.chat.ChatMessage;
+import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.item.effect.StatusEffect;
 import me.deftware.client.framework.item.enchantment.Enchantment;
 import me.deftware.client.framework.item.types.SwordItem;
@@ -186,8 +186,8 @@ public class ItemStack {
 		return itemStack.getMaxDamage();
 	}
 
-	public ChatMessage getDisplayName() {
-		return new ChatMessage().fromText(itemStack.getDisplayName());
+	public Message getDisplayName() {
+		return (Message) itemStack.getDisplayName();
 	}
 
 	public float getStrVsBlock(BlockPosition pos) {
@@ -211,9 +211,9 @@ public class ItemStack {
 				.anyMatch(e -> e.getPotion() == effect.getMinecraftStatusEffect());
 	}
 
-	public void setStackDisplayName(ChatMessage name) {
+	public void setStackDisplayName(Message name) {
 		NBTTagCompound nbttagcompound = itemStack.getOrCreateChildTag("display");
-		nbttagcompound.putString("Name", ITextComponent.Serializer.toJson(name.build()));
+		nbttagcompound.putString("Name", ITextComponent.Serializer.toJson((ITextComponent) name));
 	}
 	
 	public void addEnchantment(Enchantment enchantment, int level) {

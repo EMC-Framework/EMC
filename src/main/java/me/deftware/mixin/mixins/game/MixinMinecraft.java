@@ -12,9 +12,7 @@ import net.minecraft.util.Session;
 import net.minecraft.util.Timer;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.WorldSettings;
-import net.minecraft.world.dimension.DimensionType;
 import org.spongepowered.asm.mixin.*;
-import me.deftware.client.framework.chat.hud.ChatHud;
 import me.deftware.client.framework.event.events.EventScreen;
 import me.deftware.client.framework.gui.screens.MinecraftScreen;
 import me.deftware.client.framework.minecraft.ClientOptions;
@@ -24,15 +22,16 @@ import me.deftware.client.framework.render.camera.GameCamera;
 import me.deftware.client.framework.util.minecraft.BlockSwingResult;
 import me.deftware.client.framework.world.ClientWorld;
 import me.deftware.client.framework.world.WorldTimer;
-
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 import java.util.function.Function;
 
 @Mixin(Minecraft.class)
@@ -142,9 +141,17 @@ public abstract class MixinMinecraft implements me.deftware.client.framework.min
         return ((Minecraft) (Object) this).objectMouseOver != null;
     }
 
+    @Unique
+    private final Queue<Runnable> renderQueue = new ArrayDeque<>();
+
     @Override
-    public void runOnRenderThread(Runnable runnable) {
-        ChatHud.getChatMessageQueue().add(runnable);
+    public synchronized void runOnRenderThread(Runnable runnable) {
+        renderQueue.add(runnable);
+    }
+
+    @Override
+    public synchronized Runnable pollRenderThread() {
+        return renderQueue.poll();
     }
 
     @Override

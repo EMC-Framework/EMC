@@ -1,10 +1,9 @@
 package me.deftware.client.framework.gui.widgets;
 
-import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.fonts.FontRenderer;
-import me.deftware.client.framework.util.types.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiListExtended;
+import me.deftware.client.framework.message.Message;
 
 /**
  * @author Deftware
@@ -19,7 +18,7 @@ public class StringList extends GuiListExtended<StringList.StringEntry> implemen
 		this.getChildren().clear();
 	}
 
-	public void addItem(ChatMessage text) {
+	public void addItem(Message text) {
 		this.getChildren().add(new StringEntry(text));
 	}
 
@@ -35,20 +34,15 @@ public class StringList extends GuiListExtended<StringList.StringEntry> implemen
 
 	public static class StringEntry extends GuiListExtended.IGuiListEntry<StringList.StringEntry> {
 
-		private final ChatMessage string;
-		private final Pair<Integer, ChatMessage> compiledText = new Pair<>(0, null);
+		private final Message string;
 
-		public StringEntry(ChatMessage string) {
+		public StringEntry(Message string) {
 			this.string = string;
 		}
 
 		@Override
 		public void drawEntry(int width, int height, int mouseX, int mouseY, boolean p_194999_5_, float partialTicks) {
-			if (compiledText.getRight() == null || compiledText.getLeft() != width) {
-				compiledText.setLeft(width);
-				compiledText.setRight(string.trimToWidth(width));
-			}
-			FontRenderer.drawString(compiledText.getRight(), getX(), getY(), 0xFFFFFF);
+			FontRenderer.drawString(string, getX(), getY(), 0xFFFFFF);
 		}
 
 	}

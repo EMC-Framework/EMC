@@ -1,6 +1,6 @@
 package me.deftware.client.framework.world.block;
 
-import me.deftware.client.framework.chat.ChatMessage;
+import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.fonts.FontRenderer;
 import me.deftware.client.framework.gui.widgets.SelectableList;
 import me.deftware.client.framework.item.IItem;
@@ -88,8 +88,8 @@ public class Block implements IItem, SelectableList.ListItem, Identifiable {
 		return IRegistry.BLOCK.getId(block);
 	}
 
-	public ChatMessage getName() {
-		return new ChatMessage().fromText(block.getNameTextComponent());
+	public Message getName() {
+		return (Message) block.getNameTextComponent();
 	}
 
 	public String getIdentifierKey() {

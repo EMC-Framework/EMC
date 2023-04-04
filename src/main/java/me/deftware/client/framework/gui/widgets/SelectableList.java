@@ -3,7 +3,7 @@ package me.deftware.client.framework.gui.widgets;
 import me.deftware.client.framework.gui.screens.MinecraftScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiSlot;
-import me.deftware.client.framework.chat.ChatMessage;
+import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.gui.widgets.properties.Tooltipable;
 
 import java.util.List;
@@ -34,7 +34,7 @@ public class SelectableList<T extends SelectableList.ListItem> extends GuiSlot i
 			return true;
 		}
 
-		default ChatMessage[] getTooltip() {
+		default Message[] getTooltip() {
 			return null;
 		}
 
@@ -95,7 +95,7 @@ public class SelectableList<T extends SelectableList.ListItem> extends GuiSlot i
 	public List<String> getTooltipComponents(int mouseX, int mouseY) {
 		int entry = this.getEntryAt(mouseX, mouseY);
 		if (entry != -1) {
-			ChatMessage[] tooltip = delegate.get(entry).getTooltip();
+			Message[] tooltip = delegate.get(entry).getTooltip();
 			if (tooltip != null && tooltip.length > 0) {
 				return MinecraftScreen.getTooltipList(tooltip);
 			}

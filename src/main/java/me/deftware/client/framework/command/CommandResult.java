@@ -2,7 +2,7 @@ package me.deftware.client.framework.command;
 
 import com.mojang.brigadier.arguments.*;
 import com.mojang.brigadier.context.CommandContext;
-import me.deftware.client.framework.chat.ChatMessage;
+import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.entity.Entity;
 
 /**
@@ -26,7 +26,7 @@ public class CommandResult {
 		return null;
 	}
 
-	public ChatMessage getEntityName(String node) throws Exception {
+	public Message getEntityName(String node) throws Exception {
 		return getEntity(node).getName();
 	}
 

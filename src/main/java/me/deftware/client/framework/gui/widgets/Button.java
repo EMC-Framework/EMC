@@ -1,10 +1,11 @@
 package me.deftware.client.framework.gui.widgets;
 
-import me.deftware.client.framework.chat.ChatMessage;
+import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.gui.widgets.properties.Nameable;
 import me.deftware.client.framework.gui.widgets.properties.Tooltipable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.util.text.ITextComponent;
 
 import java.util.function.Function;
 
@@ -15,7 +16,7 @@ import java.util.function.Function;
 public interface Button extends Component, Nameable<Button>, Tooltipable {
 
 	@Deprecated
-	static Button create(int id, int x, int y, int widthIn, int heightIn, ChatMessage buttonText, boolean shouldPlaySound, Function<Integer, Boolean> onClick) {
+	static Button create(int id, int x, int y, int widthIn, int heightIn, Message buttonText, boolean shouldPlaySound, Function<Integer, Boolean> onClick) {
 		return create(x, y, widthIn, heightIn, buttonText, shouldPlaySound, onClick);
 	}
 
@@ -31,8 +32,8 @@ public interface Button extends Component, Nameable<Button>, Tooltipable {
 	 * @param onClick Button click handler
 	 * @return A button component instance
 	 */
-	static Button create(int x, int y, int widthIn, int heightIn, ChatMessage buttonText, boolean shouldPlaySound, Function<Integer, Boolean> onClick) {
-		GuiButton widget = new GuiButton(0, x, y, widthIn, heightIn, buttonText.toString(true)) {
+	static Button create(int x, int y, int widthIn, int heightIn, Message buttonText, boolean shouldPlaySound, Function<Integer, Boolean> onClick) {
+		GuiButton widget = new GuiButton(0, x, y, widthIn, heightIn, ((ITextComponent) buttonText).getFormattedText()) {
 
 			@Override
 			public boolean mouseClicked(double mouseX, double mouseY, int button) {

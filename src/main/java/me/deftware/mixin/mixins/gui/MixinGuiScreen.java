@@ -1,6 +1,5 @@
 package me.deftware.mixin.mixins.gui;
 
-import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.event.events.EventGetItemToolTip;
 import me.deftware.client.framework.event.events.EventScreen;
 import me.deftware.client.framework.gui.Drawable;
@@ -8,21 +7,23 @@ import me.deftware.client.framework.gui.widgets.properties.Tooltipable;
 import me.deftware.client.framework.gui.screens.MinecraftScreen;
 import me.deftware.client.framework.gui.widgets.NativeComponent;
 import me.deftware.client.framework.gui.widgets.GenericComponent;
-import net.minecraft.client.Minecraft;
+import me.deftware.client.framework.registry.ItemRegistry;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.IGuiEventListener;
-import me.deftware.client.framework.registry.ItemRegistry;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.ITextComponent;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,15 +87,11 @@ public class MixinGuiScreen implements MinecraftScreen {
         return event;
     }
 
-    @Inject(method = "getItemToolTip", at = @At(value = "TAIL"), cancellable = true)
-    private void onGetTooltipFromItem(ItemStack stack, CallbackInfoReturnable<List<String>> cir) {
-        List<ChatMessage> list = cir.getReturnValue().stream()
-                .map(t -> new ChatMessage().fromString(t))
-                .collect(Collectors.toList());
-        new EventGetItemToolTip(list, ItemRegistry.INSTANCE.getItem(stack.getItem()), Minecraft.getInstance().gameSettings.advancedItemTooltips).broadcast();
-        cir.setReturnValue(
-                list.stream().map(ChatMessage::toString).collect(Collectors.toList())
-        );
+    @Redirect(method = "getItemToolTip", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;getTooltip(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/client/util/ITooltipFlag;)Ljava/util/List;"))
+    private List<ITextComponent> onGetTooltip(ItemStack stack, EntityPlayer player, ITooltipFlag context) {
+        List<ITextComponent> list = stack.getTooltip(player, context);
+        new EventGetItemToolTip(list, ItemRegistry.INSTANCE.getItem(stack.getItem()), context.isAdvanced()).broadcast();
+        return list;
     }
 
     @Inject(method = "render", at = @At("HEAD"))

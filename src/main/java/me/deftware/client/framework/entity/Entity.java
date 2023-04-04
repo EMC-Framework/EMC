@@ -1,6 +1,6 @@
 package me.deftware.client.framework.entity;
 
-import me.deftware.client.framework.chat.ChatMessage;
+import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.entity.types.EntityPlayer;
 import me.deftware.client.framework.entity.types.OwnedEntity;
 import me.deftware.client.framework.entity.types.animals.HorseEntity;
@@ -284,12 +284,12 @@ public class Entity {
 		return this.entity.getDistance(entity.getMinecraftEntity());
 	}
 
-	public ChatMessage getName() {
-		return new ChatMessage().fromText(entity.getDisplayName());
+	public Message getName() {
+		return (Message) entity.getDisplayName();
 	}
 
 	public String getEntityTypeName() {
-		return new ChatMessage().fromText(entity.getType().getName()).toString(false);
+		return entity.getType().getName().getString();
 	}
 
 	public void setNoClip(boolean state) {
