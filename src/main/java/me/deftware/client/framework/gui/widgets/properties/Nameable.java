@@ -1,6 +1,6 @@
 package me.deftware.client.framework.gui.widgets.properties;
 
-import me.deftware.client.framework.chat.ChatMessage;
+import me.deftware.client.framework.message.Message;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -16,7 +16,7 @@ public interface Nameable<T> {
 	/**
 	 * @return The component label
 	 */
-	ChatMessage getComponentLabel();
+	Message getComponentLabel();
 
 	/**
 	 * Sets the current label
@@ -24,7 +24,7 @@ public interface Nameable<T> {
 	 * @param label Some text
 	 * @return The component
 	 */
-	T setComponentLabel(ChatMessage label);
+	T setComponentLabel(Message label);
 
 	/**
 	 * Sets the label to some text
@@ -33,7 +33,7 @@ public interface Nameable<T> {
 	 * @param ms Delay in ms
 	 * @param text Some text
 	 */
-	default void resetToAfter(int ms, ChatMessage text) {
+	default void resetToAfter(int ms, Message text) {
 		Executors.newSingleThreadScheduledExecutor().schedule(() -> {
 			setComponentLabel(text);
 		}, ms, TimeUnit.MILLISECONDS);

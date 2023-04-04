@@ -3,10 +3,8 @@ package me.deftware.client.framework.command.commands;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import me.deftware.client.framework.chat.builder.ChatBuilder;
-import me.deftware.client.framework.chat.style.ChatColors;
+
 import me.deftware.client.framework.command.CommandBuilder;
-import me.deftware.client.framework.command.CommandResult;
 import me.deftware.client.framework.command.EMCModCommand;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
 import me.deftware.client.framework.render.batching.RenderStack;
@@ -16,6 +14,12 @@ import me.deftware.client.framework.render.batching.RenderStack;
  */
 public class CommandScale extends EMCModCommand {
 
+    private void setScale(float scale) {
+        RenderStack.setScale(scale);
+        Bootstrap.EMCSettings.putPrimitive("RENDER_SCALE", scale);
+        print("Scale has been set to '" + scale + "'!");
+    }
+
     @Override
     public CommandBuilder<?> getCommandBuilder() {
         return new CommandBuilder<>().set(LiteralArgumentBuilder.literal("scale")
@@ -24,12 +28,7 @@ public class CommandScale extends EMCModCommand {
                                 .then(
                                         RequiredArgumentBuilder.argument("size", FloatArgumentType.floatArg(0.2f, 4.0f))
                                                 .executes(c -> {
-                                                    CommandResult r = new CommandResult(c);
-                                                    RenderStack.setScale(r.getFloat("size"));
-                                                    Bootstrap.EMCSettings.putPrimitive("RENDER_SCALE", r.getFloat("size"));
-                                                    new ChatBuilder().withPrefix().withText(
-                                                            String.format("Gui scale has been set to \"%s\"", r.getFloat("size"))
-                                                    ).withColor(ChatColors.GRAY).build().print();
+                                                    setScale(c.getArgument("size", Float.class));
                                                     return 1;
                                                 })
                                 )
@@ -37,9 +36,7 @@ public class CommandScale extends EMCModCommand {
                 .then(
                         LiteralArgumentBuilder.literal("reset")
                                 .executes(c -> {
-                                    RenderStack.setScale(1.0f);
-                                    Bootstrap.EMCSettings.putPrimitive("RENDER_SCALE", 1.0f);
-                                    new ChatBuilder().withPrefix().withText("Scale has been reset to \"1.0\"!").withColor(ChatColors.GRAY).build().print();
+                                    setScale(1.0f);
                                     return 1;
                                 })
                 )
