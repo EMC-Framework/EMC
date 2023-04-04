@@ -1,6 +1,6 @@
 package me.deftware.client.framework.item;
 
-import me.deftware.client.framework.chat.ChatMessage;
+import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.fonts.FontRenderer;
 import me.deftware.client.framework.gui.widgets.SelectableList;
 import me.deftware.client.framework.item.types.BlockItem;
@@ -80,8 +80,8 @@ public class Item implements IItem, SelectableList.ListItem, Identifiable {
 		return net.minecraft.item.Item.getRawId(item);
 	}
 
-	public ChatMessage getName() {
-		return new ChatMessage().fromText(item.getName());
+	public Message getName() {
+		return (Message) item.getName();
 	}
 
 	@Override

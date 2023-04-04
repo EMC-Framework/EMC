@@ -1,6 +1,6 @@
 package me.deftware.mixin.mixins.gui;
 
-import me.deftware.client.framework.chat.ChatMessage;
+
 import me.deftware.client.framework.command.CommandRegister;
 import me.deftware.client.framework.event.events.EventGetItemToolTip;
 import me.deftware.client.framework.event.events.EventScreen;
@@ -22,7 +22,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import org.checkerframework.checker.units.qual.A;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -99,15 +98,10 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
         return event;
     }
 
-    @Inject(method = "getTooltipFromItem", at = @At(value = "TAIL"), cancellable = true)
+    @Inject(method = "getTooltipFromItem", at = @At(value = "TAIL"))
     private void onGetTooltipFromItem(ItemStack stack, CallbackInfoReturnable<List<Text>> cir) {
-        List<ChatMessage> list = cir.getReturnValue().stream()
-                .map(t -> new ChatMessage().fromText(t))
-                .collect(Collectors.toList());
+        var list = cir.getReturnValue();
         new EventGetItemToolTip(list, ItemRegistry.INSTANCE.getItem(stack.getItem()), client.options.advancedItemTooltips).broadcast();
-        cir.setReturnValue(
-                list.stream().map(ChatMessage::build).collect(Collectors.toList())
-        );
     }
 
     @Inject(method = "render", at = @At("HEAD"))

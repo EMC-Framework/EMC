@@ -1,6 +1,7 @@
 package me.deftware.mixin.mixins.game;
 
-import me.deftware.client.framework.chat.ChatMessage;
+
+import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.event.events.EventSound;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.sound.SoundManager;
@@ -27,7 +28,7 @@ public class MixinSoundSystem {
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/sound/SoundInstance;getVolume()F"), method = "play(Lnet/minecraft/client/sound/SoundInstance;)V", cancellable = true)
     public void onPlay(SoundInstance instance, CallbackInfo info) {
         Text soundName = instance.getSoundSet(loader).getSubtitle();
-        EventSound event = new EventSound(instance, soundName == null ? null : new ChatMessage().fromText(soundName));
+        EventSound event = new EventSound(instance, (Message) soundName);
         event.broadcast();
         if (event.isCanceled()) {
             info.cancel();

@@ -4,6 +4,6 @@ public interface IMixinEntityPlayerSP {
 
 	void setHorseJumpPower(float height);
 
-	void sendChatMessageWithSender(String message, Class<?> sender);
+	void sendMessageWithSender(String message, Class<?> sender);
 
 }
