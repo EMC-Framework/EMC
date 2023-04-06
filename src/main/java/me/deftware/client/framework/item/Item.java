@@ -1,7 +1,7 @@
 package me.deftware.client.framework.item;
 
-import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.world.block.Block;
+import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.fonts.FontRenderer;
 import me.deftware.client.framework.gui.widgets.SelectableList;
 import me.deftware.client.framework.item.types.BlockItem;
@@ -10,7 +10,7 @@ import me.deftware.client.framework.item.types.PotionItem;
 import me.deftware.client.framework.item.types.RangedWeaponItem;
 import me.deftware.client.framework.item.types.ToolItem;
 import me.deftware.client.framework.item.types.*;
-import me.deftware.client.framework.registry.ItemRegistry;
+import me.deftware.client.framework.message.MessageUtils;
 import me.deftware.client.framework.registry.BlockRegistry;
 import me.deftware.client.framework.registry.Identifiable;
 import me.deftware.client.framework.render.ItemRenderer;
@@ -78,8 +78,8 @@ public class Item implements IItem, SelectableList.ListItem, Identifiable {
 		return net.minecraft.item.Item.getIdFromItem(item);
 	}
 
-	public ChatMessage getName() {
-		return new ChatMessage().fromString(item.getItemStackDisplayName(new ItemStack(item, 1)));
+	public Message getName() {
+		return MessageUtils.parse(item.getItemStackDisplayName(new ItemStack(item, 1)));
 	}
 
 	@Override

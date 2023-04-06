@@ -1,6 +1,6 @@
 package me.deftware.client.framework.world.player;
 
-import me.deftware.client.framework.chat.ChatMessage;
+import me.deftware.client.framework.message.Message;
 import java.util.UUID;
 
 /**
@@ -21,6 +21,6 @@ public interface PlayerEntry {
     /**
      * @return The name as shown in the tab view
      */
-    ChatMessage _getDisplayName();
+    Message _getDisplayName();
 
 }

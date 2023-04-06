@@ -17,9 +17,9 @@ public abstract class MixinCreativeInventoryScreen {
      * Uses {@link MixinGuiScreen#onGetTooltipFromItem(ItemStack, CallbackInfoReturnable)}
      * to get a modified tooltip. Only called in the search tab in a creative inventory
      */
-    @Redirect(method = "renderToolTip", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;getTooltip(Lnet/minecraft/entity/player/EntityPlayer;Z)Ljava/util/List;"))
+    /*@Redirect(method = "renderToolTip", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;getTooltip(Lnet/minecraft/entity/player/EntityPlayer;Z)Ljava/util/List;"))
     private List<String> onGetStackTooltip(ItemStack itemStack, EntityPlayer playerIn, boolean advanced) {
         return ((MinecraftScreen) this)._getItemStackTooltip(itemStack);
-    }
+    }*/
 
 }

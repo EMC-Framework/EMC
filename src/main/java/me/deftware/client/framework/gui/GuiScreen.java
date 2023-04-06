@@ -1,10 +1,10 @@
 package me.deftware.client.framework.gui;
 
-import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.gui.widgets.TextField;
 import me.deftware.client.framework.gui.widgets.GenericComponent;
 import me.deftware.client.framework.input.Mouse;
 import net.minecraft.client.Minecraft;
+import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.gui.screens.GenericScreen;
 import me.deftware.client.framework.gui.screens.MinecraftScreen;
 import me.deftware.client.framework.gui.widgets.Label;
@@ -142,16 +142,16 @@ public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen imple
 		getMinecraftScreen().addScreenComponent(component);
 	}
 
-	protected GuiScreen addText(int x, int y, ChatMessage text) {
+	protected GuiScreen addText(int x, int y, Message text) {
 		addComponent(
 				new Label(x, y, text)
 		);
 		return this;
 	}
 
-	protected GuiScreen addCenteredText(int x, int y, ChatMessage text) {
+	protected GuiScreen addCenteredText(int x, int y, Message text) {
 		addComponent(
-				new Label(x - Minecraft.getMinecraft().fontRendererObj.getStringWidth(text.toString()) / 2, y, text)
+				new Label(x - Minecraft.getMinecraft().fontRendererObj.getStringWidth(text.string()) / 2, y, text)
 		);
 		return this;
 	}

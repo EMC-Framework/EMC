@@ -1,11 +1,10 @@
 package me.deftware.mixin.mixins.entity;
 
-import me.deftware.client.framework.chat.builder.ChatBuilder;
-import me.deftware.client.framework.chat.style.ChatColors;
 import me.deftware.client.framework.command.CommandRegister;
 import me.deftware.client.framework.command.CustomSuggestionProvider;
 import me.deftware.client.framework.event.events.*;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
+import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
 import me.deftware.mixin.imp.IMixinEntityPlayerSP;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -121,7 +120,7 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
                     CommandRegister.getDispatcher().execute(message.substring(CommandRegister.getCommandTrigger().length()), new CustomSuggestionProvider());
                 } catch (Exception ex) {
                     Bootstrap.logger.error("Failed to execute command", ex);
-                    new ChatBuilder().withText(ex.getMessage()).withColor(ChatColors.RED).build().print();
+                    Message.of("Failed to execute command: " + ex.getMessage()).print();
                 }
             }
         }

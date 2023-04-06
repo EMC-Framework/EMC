@@ -1,6 +1,5 @@
 package me.deftware.mixin.mixins.gui;
 
-import me.deftware.client.framework.chat.ChatMessage;
 import me.deftware.client.framework.event.events.EventGetItemToolTip;
 import me.deftware.client.framework.event.events.EventScreen;
 import me.deftware.client.framework.gui.Drawable;
@@ -10,13 +9,15 @@ import me.deftware.client.framework.gui.widgets.properties.Tooltipable;
 import me.deftware.client.framework.gui.screens.MinecraftScreen;
 import me.deftware.client.framework.gui.widgets.NativeComponent;
 import me.deftware.client.framework.gui.widgets.GenericComponent;
-import net.minecraft.client.Minecraft;
+import me.deftware.client.framework.message.Message;
+import me.deftware.client.framework.message.MessageUtils;
+import me.deftware.client.framework.registry.ItemRegistry;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
-import me.deftware.client.framework.registry.ItemRegistry;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IChatComponent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -89,18 +90,10 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
     }
 
     @Redirect(method = "renderToolTip", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;getTooltip(Lnet/minecraft/entity/player/EntityPlayer;Z)Ljava/util/List;"))
-    private List<String> onGetTooltip(ItemStack itemStack, EntityPlayer playerIn, boolean advanced) {
-        return this._getItemStackTooltip(itemStack);
-    }
-
-    @Override
-    public List<String> _getItemStackTooltip(ItemStack stack) {
-        List<ChatMessage> list = stack.getTooltip(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().gameSettings.advancedItemTooltips)
-                .stream()
-                .map(t -> new ChatMessage().fromString(t))
-                .collect(Collectors.toList());
-        new EventGetItemToolTip(list, ItemRegistry.INSTANCE.getItem(stack.getItem()), Minecraft.getMinecraft().gameSettings.advancedItemTooltips).broadcast();
-        return list.stream().map(ChatMessage::toString).collect(Collectors.toList());
+    private List<String> onGetTooltip(ItemStack stack, EntityPlayer player, boolean advanced) {
+        List<Message> list = stack.getTooltip(player, advanced).stream().map(MessageUtils::parse).collect(Collectors.toList());
+        EventGetItemToolTip event = new EventGetItemToolTip(list, ItemRegistry.INSTANCE.getItem(stack.getItem()), advanced).broadcast();
+        return event.getList().stream().map(IChatComponent.class::cast).map(IChatComponent::getFormattedText).collect(Collectors.toList());
     }
 
     @Inject(method = "drawScreen", at = @At("HEAD"))

@@ -1,17 +1,16 @@
 package me.deftware.mixin.mixins.network;
 
 import io.netty.buffer.Unpooled;
-import me.deftware.client.framework.event.events.EventAnimation;
-import me.deftware.client.framework.event.events.EventChunk;
-import me.deftware.client.framework.event.events.EventChunkDataReceive;
-import me.deftware.client.framework.event.events.EventKnockback;
+import me.deftware.client.framework.event.events.*;
 import net.minecraft.client.ClientBrandRetriever;
+import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.network.NetworkHandler;
 import me.deftware.client.framework.registry.BlockRegistry;
 import me.deftware.client.framework.world.block.Block;
 import me.deftware.client.framework.world.player.PlayerEntry;
 import me.deftware.mixin.imp.IMixinMultiBlockChange;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiNewChat;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -22,6 +21,7 @@ import net.minecraft.network.play.server.S21PacketChunkData;
 import net.minecraft.network.play.server.S27PacketExplosion;
 import net.minecraft.network.play.server.*;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.IChatComponent;
 import net.minecraft.world.ChunkCoordIntPair;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -130,6 +130,14 @@ public class MixinNetHandlerPlayClient implements NetworkHandler {
                 chunkPos.chunkXPos, section, chunkPos.chunkZPos,
                 positions, blocks
         ).broadcast();
+    }
+
+    @Redirect(method = "handleChat", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiNewChat;printChatMessage(Lnet/minecraft/util/IChatComponent;)V"))
+    private void onChatMessage(GuiNewChat instance, IChatComponent message) {
+        EventChatReceive event = new EventChatReceive((Message) message).broadcast();
+        if (!event.isCanceled()) {
+            instance.printChatMessage((IChatComponent) event.getMessage());
+        }
     }
 
 }

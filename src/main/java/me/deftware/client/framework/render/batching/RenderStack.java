@@ -84,6 +84,14 @@ public abstract class RenderStack<T> implements VertexConstructor {
 		return (T) this;
 	}
 
+	public T glColor(int rgb, float alpha) {
+		this.red = ((rgb >> 16) & 0xFF) / 255f;
+		this.green = ((rgb >> 8) & 0xFF) / 255f;
+		this.blue = (rgb & 0xFF) / 255f;
+		this.alpha = alpha / 255f;
+		return (T) this;
+	}
+
 	public T glColor(Color color) {
 		return glColor(color, color.getAlpha());
 	}
