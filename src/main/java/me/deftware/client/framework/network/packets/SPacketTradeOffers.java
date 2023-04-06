@@ -28,7 +28,7 @@ public class SPacketTradeOffers extends PacketWrapper {
             if (!offer.getSecondBuyItem().isEmpty()) {
                 trade.add("second", getItem(offer.getSecondBuyItem()));
             }
-            trade.add("sell", getItem(offer.getSellItem()));
+            trade.add("sell", getItem(offer.copySellItem()));
             // Meta
             trade.addProperty("xp", offer.getMerchantExperience());
             trade.addProperty("uses", offer.getUses());

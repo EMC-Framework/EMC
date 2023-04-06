@@ -18,8 +18,6 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ArmorItem;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -98,9 +96,9 @@ public class ItemStack {
 	}
 
 	public List<Pair<Enchantment, Integer>> getEnchantments() {
-		CompoundTag tag = itemStack.getTag();
+		net.minecraft.nbt.NbtCompound tag = itemStack.getTag();
 		if (tag != null && tag.contains("Enchantments", 9)) {
-			ListTag list = tag.getList("Enchantments", 10);
+			net.minecraft.nbt.NbtList list = tag.getList("Enchantments", 10);
 			if (!list.isEmpty()) {
 				// Found active enchantments
 				if (enchantments.size() != list.size()) {
@@ -206,7 +204,7 @@ public class ItemStack {
 	}
 
 	public void setStackDisplayName(Message name) {
-		CompoundTag nbt = itemStack.getOrCreateSubTag("display");
+		net.minecraft.nbt.NbtCompound nbt = itemStack.getOrCreateSubTag("display");
 		nbt.putString("Name", LiteralText.Serializer.toJson((Text) name));
 	}
 	
@@ -265,12 +263,12 @@ public class ItemStack {
 
 	public static ArrayList<ItemStack> loadAllItems(NbtCompound compound, int size) {
 		DefaultedList<ItemStack> list = DefaultedList.ofSize(size, ItemStack.EMPTY);
-		ListTag itemTag = compound.getMinecraftCompound().getList("Items", 10);
+		net.minecraft.nbt.NbtList itemTag = compound.getMinecraftCompound().getList("Items", 10);
 		for(int index = 0; index < itemTag.size(); index++) {
-			CompoundTag item = itemTag.getCompound(index);
+			net.minecraft.nbt.NbtCompound item = itemTag.getCompound(index);
 			int slotData = item.getByte("Slot") & 255;
 			if (slotData < list.size()) {
-				list.set(slotData, new ItemStack(net.minecraft.item.ItemStack.fromTag(new NbtCompound(item).getMinecraftCompound())));
+				list.set(slotData, new ItemStack(net.minecraft.item.ItemStack.fromNbt(new NbtCompound(item).getMinecraftCompound())));
 			}
 		}
 		return new ArrayList<>(list);

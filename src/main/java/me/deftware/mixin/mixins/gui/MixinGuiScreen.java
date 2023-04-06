@@ -12,8 +12,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.OrderedText;
@@ -52,7 +52,7 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
 
     @Shadow
     @Final
-    protected List<AbstractButtonWidget> buttons;
+    protected List<ClickableWidget> buttons;
 
     @Override
     public <T extends GenericComponent> List<T> getChildren(Class<T> clazz) {

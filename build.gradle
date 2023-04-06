@@ -1,10 +1,19 @@
 plugins {
-	id 'fabric-loom' version '0.7-SNAPSHOT'
-	id "io.freefair.lombok" version "6.0.0-m2"
+	id 'dev.architectury.loom' version '1.1-SNAPSHOT'
+	id "io.freefair.lombok" version "6.3.0"
 	id 'maven-publish'
 }
 
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.encoding = "UTF-8"
+	if (JavaVersion.current().isJava9Compatible()) {
+		it.options.release = 8
+	}
+}
+
+def forgeBuild = project.properties["loom.platform"] == "forge"
 
 def getVersionFromJava() {
 	def ver = 0.0, patch = 0
@@ -23,48 +32,85 @@ def getVersionFromJava() {
 version = getVersionFromJava()
 
 repositories {
-	mavenCentral()
-	maven { url = 'https://jitpack.io' }
-	maven { url = 'https://maven.fabricmc.net' }
+	maven { url 'https://jitpack.io' }
 	maven { url = 'https://gitlab.com/EMC-Framework/maven/raw/master/' }
 }
 
 dependencies {
+	if (forgeBuild) {
+		forge "net.minecraftforge:forge:${project.forge_version}"
+	} else {
+		modImplementation 'com.github.Chocohead:Fabric-ASM:v2.3'
+		include 'com.github.Chocohead:Fabric-ASM:v2.3'
+	}
 	minecraft "com.mojang:minecraft:${project.minecraftVersion}"
 	mappings "net.fabricmc:yarn:${project.minecraftVersion}${project.mappingsVer}:v2"
 
-	modImplementation "net.fabricmc:fabric-loader:0.11.7"
-	modImplementation 'com.github.Chocohead:Fabric-ASM:v2.3'
+	modImplementation "net.fabricmc:fabric-loader:0.14.13"
 
+	// No longer included in Minecraft
+	implementation 'io.netty:netty-handler-proxy:4.1.76.Final'
 	implementation 'com.google.code.findbugs:jsr305:3.0.2'
 	implementation files("deps/mocked.jar")
-
-	include 'com.github.Chocohead:Fabric-ASM:v2.3'
 }
 
-sourceSets {
-
-	mock {
-		compileClasspath += main.compileClasspath
+loom {
+	if (forgeBuild) {
+		forge {
+			mixinConfig "mixins.emc.json"
+		}
 	}
-
+	mixin {
+		useLegacyMixinAp = true
+		defaultRefmapName = 'mixins.emc.refmap.json'
+	}
 }
 
-task mockJar(type: Jar) {
-	archiveFileName = "mocked.jar"
-	from sourceSets.mock.output
-}
-
-minecraft {
-	refmapName = 'mixins.emc.refmap.json'
+if (forgeBuild) {
+	jar {
+		manifest {
+			attributes([
+					"Specification-Title": "${archivesBaseName}",
+					"Specification-Vendor": "${group}",
+					"Specification-Version": "1",
+					"Implementation-Title": "${archivesBaseName}",
+					"Implementation-Version": "${version}",
+					"Implementation-Vendor" :"${group}",
+					"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+					"MixinConfigs": "mixins.emc.json"
+			])
+		}
+	}
+} else {
+	sourceSets {
+		main {
+			java {
+				srcDir 'src'
+				exclude '**/deftware/client/framework/main/ForgeMod**'
+				exclude '**/deftware/launch/MixinConnector**'
+			}
+		}
+	}
 }
 
 publishing {
 	publications {
-		mavenJava(MavenPublication) {
+		emc(MavenPublication) {
 			groupId 'me.deftware'
-			artifactId "EMC-F-v2"
+			if (forgeBuild) {
+				artifactId "EMC-Forge"
+			} else {
+				artifactId "EMC-F-v2"
+			}
 			version "${version}-${project.minecraftVersion}"
+
+			from components['java']
+		}
+	}
+
+	repositories {
+		maven {
+			url "$rootDir/maven/"
 		}
 	}
 }
@@ -77,34 +123,9 @@ processResources {
 	}
 }
 
-tasks.withType(GenerateMavenPom).all {
-	destination = layout.buildDirectory.file("../maven/me/deftware/EMC-F-v2/${version}-${project.minecraftVersion}/EMC-F-v2-${version}-${project.minecraftVersion}.pom").get().asFile
-}
-
 task generateApiDocumentation(type: Javadoc) {
 	source = ['src/main/java/me/deftware/client']
 	title = "EMC Framework Documentation"
 	destinationDir = file("docs")
 	failOnError false
-}
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-	archiveClassifier.set('sources')
-	from sourceSets.main.allSource
-}
-
-task copyBuilds(type: Copy) {
-	from "$rootDir/build/libs/EMC-${version}.jar"
-	into "$rootDir/maven/me/deftware/EMC-F-v2/${version}-${project.minecraftVersion}/"
-	rename { String fileName ->
-		fileName.replace(version.toString(), "${version}-${project.minecraftVersion}".toString()).replace("EMC", "EMC-F-v2")
-	}
-	doLast {
-		project.ant.checksum(file: "$rootDir/maven/me/deftware/EMC-F-v2/${version}-${project.minecraftVersion}/EMC-F-v2-${version}-${project.minecraftVersion}.jar", algorithm: "sha1", todir: "$rootDir/maven/me/deftware/EMC-F-v2/${version}-${project.minecraftVersion}/")
-	}
-}
-
-build {
-	dependsOn(generatePomFileForMavenJavaPublication)
-	finalizedBy(copyBuilds)
 }

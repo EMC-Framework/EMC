@@ -2,8 +2,10 @@ package me.deftware.client.framework.main.bootstrap.discovery;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import me.deftware.client.framework.FrameworkConstants;
 import me.deftware.client.framework.main.EMCMod;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
+import me.deftware.client.framework.main.bootstrap.ChildFirstClassLoader;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -61,9 +63,15 @@ public class DirectoryModDiscovery extends AbstractModDiscovery {
 			String path = getFile().toURI().toURL().getFile();
 			JarURLConnection connection = (JarURLConnection) new URL("jar", "", "file:" + path + "!/client.json").openConnection();
 			// Create classLoader
-			classLoader = URLClassLoader.newInstance(
-					new URL[]{new URL("jar", "", "file:" + path + "!/")},
-					Bootstrap.class.getClassLoader());
+			if (FrameworkConstants.MAPPING_LOADER == FrameworkConstants.MappingsLoader.Forge) {
+				classLoader = new ChildFirstClassLoader(
+						new URL[]{new URL("jar", "", "file:" + path + "!/")},
+						Bootstrap.class.getClassLoader());
+			} else {
+				classLoader = URLClassLoader.newInstance(
+						new URL[]{new URL("jar", "", "file:" + path + "!/")},
+						Bootstrap.class.getClassLoader());
+			}
 			// Open and read json file
 			BufferedReader buffer = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 			json = new Gson().fromJson(buffer.lines().collect(Collectors.joining("\n")), JsonObject.class);

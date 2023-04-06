@@ -45,7 +45,6 @@
     "input.MixinMouseListener",
     "input.MixinMovementInputFromOptions",
     "item.MixinEnchantments",
-    "item.MixinItemStack",
     "item.MixinItemTool",
     "network.MixinCPacketPlayer",
     "network.MixinNetHandlerLoginClient",

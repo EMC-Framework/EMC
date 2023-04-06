@@ -3,8 +3,7 @@ package me.deftware.client.framework.render.camera.entity;
 import me.deftware.client.framework.entity.Entity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.input.KeyboardInput;
-import net.minecraft.client.options.Perspective;
-
+import net.minecraft.client.option.Perspective;
 import java.util.Objects;
 
 /**

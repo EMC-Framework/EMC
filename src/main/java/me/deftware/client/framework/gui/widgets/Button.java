@@ -4,7 +4,7 @@ import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.gui.widgets.properties.Nameable;
 import me.deftware.client.framework.gui.widgets.properties.Tooltipable;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.text.Text;
 
 import java.util.function.Function;
@@ -33,7 +33,7 @@ public interface Button extends Component, Nameable<Button>, Tooltipable {
 	 * @return A button component instance
 	 */
 	static Button create(int x, int y, int widthIn, int heightIn, Message buttonText, boolean shouldPlaySound, Function<Integer, Boolean> onClick) {
-		AbstractButtonWidget widget = new AbstractButtonWidget(x, y, widthIn, heightIn, (Text) buttonText) {
+		ClickableWidget widget = new ClickableWidget(x, y, widthIn, heightIn, (Text) buttonText) {
 
 			@Override
 			public boolean mouseClicked(double mouseX, double mouseY, int button) {
@@ -51,7 +51,7 @@ public interface Button extends Component, Nameable<Button>, Tooltipable {
 
 	@Override
 	default boolean isMouseOverComponent(int mouseX, int mouseY) {
-		return ((AbstractButtonWidget) this).isHovered();
+		return ((ClickableWidget) this).isHovered();
 	}
 
 }

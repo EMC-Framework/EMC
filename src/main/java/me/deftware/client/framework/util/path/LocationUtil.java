@@ -1,14 +1,15 @@
 package me.deftware.client.framework.util.path;
 
+import me.deftware.client.framework.FrameworkConstants;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
-import me.deftware.client.framework.minecraft.Minecraft;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Path;
 
 /**
  * @author Deftware
@@ -27,6 +28,24 @@ public class LocationUtil {
 
     private LocationUtil(File file) {
         this.file = file;
+    }
+
+    private static File getModFileById(String id) throws Exception {
+        Class<?> clazz = Class.forName("net.minecraftforge.fml.ModList");
+        Class<?> fileInfoClass = Class.forName("net.minecraftforge.forgespi.language.IModFileInfo");
+        Class<?> modFileClass = Class.forName("net.minecraftforge.forgespi.locating.IModFile");
+
+        Method getInstance = clazz.getDeclaredMethod("get");
+        Method getModFileById = clazz.getDeclaredMethod("getModFileById", String.class);
+        Method getFile = fileInfoClass.getDeclaredMethod("getFile");
+        Method getFilePath = modFileClass.getDeclaredMethod("getFilePath");
+
+        Object modList = getInstance.invoke(null);
+        Object fileInfo = getModFileById.invoke(modList, id);
+        Object modFile = getFile.invoke(fileInfo);
+        Path path = (Path) getFilePath.invoke(modFile);
+
+        return path.toFile();
     }
 
     @Nonnull
@@ -59,6 +78,13 @@ public class LocationUtil {
 
     @Nonnull
     public static LocationUtil getEMC() {
+        if (FrameworkConstants.MAPPING_LOADER == FrameworkConstants.MappingsLoader.Forge) {
+            try {
+                return new LocationUtil(getModFileById("emc"));
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
         return getClassPhysicalLocation(Bootstrap.class);
     }
 
@@ -77,8 +103,7 @@ public class LocationUtil {
                     path = "file:/" + path.substring(5);
                 }
                 return new File(new URL(path).toURI());
-            } catch (MalformedURLException | URISyntaxException ignored) {
-            }
+            } catch (Throwable ignored) { }
             if (path.startsWith("file:")) {
                 return new File(path.substring(5));
             }

@@ -1,7 +1,7 @@
 package me.deftware.mixin.mixins.gui;
 
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import me.deftware.client.framework.gui.widgets.Button;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.text.OrderedText;
 import me.deftware.client.framework.message.Message;
 import net.minecraft.text.Text;
@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * @author Deftware
  */
-@Mixin(AbstractButtonWidget.class)
+@Mixin(ClickableWidget.class)
 public class MixinGuiButton implements Button {
 
     @Shadow
@@ -23,42 +23,42 @@ public class MixinGuiButton implements Button {
 
     @Override
     public int getPositionX() {
-        return ((AbstractButtonWidget) (Object) this).x;
+        return ((ClickableWidget) (Object) this).x;
     }
 
     @Override
     public int getPositionY() {
-        return ((AbstractButtonWidget) (Object) this).y;
+        return ((ClickableWidget) (Object) this).y;
     }
 
     @Override
     public int getComponentWidth() {
-        return ((AbstractButtonWidget) (Object) this).getWidth();
+        return ((ClickableWidget) (Object) this).getWidth();
     }
 
     @Override
     public int getComponentHeight() {
-        return ((AbstractButtonWidget) (Object) this).getHeight();
+        return ((ClickableWidget) (Object) this).getHeight();
     }
 
     @Override
     public boolean isActive() {
-        return ((AbstractButtonWidget) (Object) this).active;
+        return ((ClickableWidget) (Object) this).active;
     }
 
     @Override
     public void setPositionX(int x) {
-        ((AbstractButtonWidget) (Object) this).x = x;
+        ((ClickableWidget) (Object) this).x = x;
     }
 
     @Override
     public void setPositionY(int y) {
-        ((AbstractButtonWidget) (Object) this).y = y;
+        ((ClickableWidget) (Object) this).y = y;
     }
 
     @Override
     public void setComponentWidth(int width) {
-        ((AbstractButtonWidget) (Object) this).setWidth(width);
+        ((ClickableWidget) (Object) this).setWidth(width);
     }
 
     @Override
@@ -68,17 +68,17 @@ public class MixinGuiButton implements Button {
 
     @Override
     public void setActive(boolean state) {
-        ((AbstractButtonWidget) (Object) this).active = state;
+        ((ClickableWidget) (Object) this).active = state;
     }
 
     @Override
     public Message getComponentLabel() {
-        return (Message) ((AbstractButtonWidget) (Object) this).getMessage();
+        return (Message) ((ClickableWidget) (Object) this).getMessage();
     }
 
     @Override
     public Button setComponentLabel(Message text) {
-        ((AbstractButtonWidget) (Object) this).setMessage((Text) text);
+        ((ClickableWidget) (Object) this).setMessage((Text) text);
         return this;
     }
 

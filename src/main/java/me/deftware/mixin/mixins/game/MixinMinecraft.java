@@ -8,6 +8,8 @@ import me.deftware.client.framework.entity.Entity;
 import me.deftware.client.framework.event.events.EventScreen;
 import me.deftware.client.framework.gui.screens.GenericScreen;
 import me.deftware.client.framework.gui.screens.MinecraftScreen;
+import me.deftware.client.framework.main.EMCMod;
+import me.deftware.client.framework.main.bootstrap.Bootstrap;
 import me.deftware.client.framework.minecraft.ClientOptions;
 import me.deftware.client.framework.minecraft.GameSetting;
 import me.deftware.client.framework.minecraft.Minecraft;
@@ -20,8 +22,9 @@ import me.deftware.client.framework.world.WorldTimer;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.network.ServerInfo;
-import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.util.Session;
 import net.minecraft.client.util.Window;
@@ -89,10 +92,9 @@ public abstract class MixinMinecraft implements Minecraft {
     @Unique
     private String worldName;
 
-    @Redirect(method = "startIntegratedServer(Ljava/lang/String;Lnet/minecraft/util/registry/DynamicRegistryManager$Impl;Ljava/util/function/Function;Lcom/mojang/datafixers/util/Function4;ZLnet/minecraft/client/MinecraftClient$WorldLoadAction;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/storage/LevelStorage;createSession(Ljava/lang/String;)Lnet/minecraft/world/level/storage/LevelStorage$Session;"))
-    private LevelStorage.Session onIntegratedServer(LevelStorage instance, String directoryName) throws IOException {
+    @Inject(method = "startIntegratedServer", at = @At(value = "INVOKE"))
+    private void onIntegratedServer(String directoryName, CallbackInfo ci) {
         this.worldName = directoryName;
-        return instance.createSession(directoryName);
     }
 
     @Override
@@ -247,7 +249,7 @@ public abstract class MixinMinecraft implements Minecraft {
         cir.setReturnValue(SharedConstants.getGameVersion().getName());
     }
 
-    @Redirect(method = "tick", at = @At(value = "FIELD", target = "Lnet/minecraft/client/options/GameOptions;debugEnabled:Z"))
+    @Redirect(method = "tick", at = @At(value = "FIELD", target = "Lnet/minecraft/client/option/GameOptions;debugEnabled:Z"))
     private boolean onScreenTick(GameOptions options) {
         Screen screen = ((MinecraftClient) (Object) this).currentScreen;
         if (screen instanceof MinecraftScreen) {

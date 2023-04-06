@@ -11,7 +11,6 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -21,6 +20,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Stream;
@@ -34,10 +34,6 @@ public abstract class MixinWorld implements me.deftware.client.framework.world.W
 	@Shadow
 	public abstract BlockEntity getBlockEntity(BlockPos pos);
 
-	@Shadow
-	@Final
-	protected List<BlockEntity> unloadedBlockEntities;
-
 	@Unique
 	public final HashMap<BlockEntity, TileEntity> emcTileEntities = new HashMap<>();
 
@@ -46,11 +42,12 @@ public abstract class MixinWorld implements me.deftware.client.framework.world.W
 		emcTileEntities.put(blockEntity, TileEntity.newInstance(blockEntity));
 	}
 
-	@Inject(method = "tickBlockEntities", at = @At(value = "INVOKE", target = "Ljava/util/List;removeAll(Ljava/util/Collection;)Z", ordinal = 1))
-	private void onRemoveEntityIf(CallbackInfo info) {
-		for (BlockEntity entity : this.unloadedBlockEntities) {
+	@Redirect(method = "tickBlockEntities", at = @At(value = "INVOKE", target = "Ljava/util/List;removeAll(Ljava/util/Collection;)Z", ordinal = 0))
+	private boolean onRemoveEntity(List<BlockEntity> list, Collection<BlockEntity> entities) {
+		for (BlockEntity entity : entities) {
 			new EventTileBlockRemoved(emcTileEntities.remove(entity)).broadcast();
 		}
+		return list.removeAll(entities);
 	}
 
 	@Redirect(method = "tickBlockEntities", at = @At(value = "INVOKE", target = "Ljava/util/List;remove(Ljava/lang/Object;)Z"))
