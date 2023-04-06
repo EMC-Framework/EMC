@@ -3,9 +3,8 @@ package me.deftware.mixin.mixins.render;
 import me.deftware.client.framework.main.EMCMod;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.SplashOverlay;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Util;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -17,18 +16,13 @@ public class MixinSplashScreen {
 
     @Inject(method = "init", at = @At("HEAD"))
     private static void init(MinecraftClient client, CallbackInfo ci) {
-        if (!Bootstrap.initialized) {
-            Bootstrap.init();
-        }
+        Bootstrap.init();
     }
 
-    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Util;getMeasuringTimeMs()J", ordinal = 1))
-    private long render(MatrixStack matrixStack, int mouseX, int mouseY, float tickDelta) {
-        if (!Bootstrap.initialized) {
-            Bootstrap.initialized = true;
-            Bootstrap.getMods().values().forEach(EMCMod::postInit);
-        }
-        return Util.getMeasuringTimeMs();
+    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/Screen;init(Lnet/minecraft/client/MinecraftClient;II)V"))
+    private void onInit(Screen instance, MinecraftClient client, int width, int height) {
+        Bootstrap.getMods().values().forEach(EMCMod::postInit);
+        client.currentScreen.init(client, width, height);
     }
 
 }

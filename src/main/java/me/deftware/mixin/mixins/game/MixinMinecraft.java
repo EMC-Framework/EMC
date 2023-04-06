@@ -89,10 +89,9 @@ public abstract class MixinMinecraft implements Minecraft {
     @Unique
     private String worldName;
 
-    @Redirect(method = "startIntegratedServer(Ljava/lang/String;Lnet/minecraft/util/registry/DynamicRegistryManager$Impl;Ljava/util/function/Function;Lcom/mojang/datafixers/util/Function4;ZLnet/minecraft/client/MinecraftClient$WorldLoadAction;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/storage/LevelStorage;createSession(Ljava/lang/String;)Lnet/minecraft/world/level/storage/LevelStorage$Session;"))
-    private LevelStorage.Session onIntegratedServer(LevelStorage instance, String directoryName) throws IOException {
+    @Inject(method = "startIntegratedServer", at = @At(value = "INVOKE"))
+    private void onIntegratedServer(String directoryName, CallbackInfo ci) {
         this.worldName = directoryName;
-        return instance.createSession(directoryName);
     }
 
     @Override
