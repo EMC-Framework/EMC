@@ -3,6 +3,8 @@ build:
   stage: build
   variables:
     GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+  before_script:
+    - microdnf install findutils
   script:
     - chmod +x gradlew
     # Fabric build
