@@ -77,6 +77,7 @@
     "world.MixinChunkManager",
     "chat.MixinStyle",
     "chat.MixinText",
-    "chat.MixinChatHud"
+    "chat.MixinChatHud",
+    "chat.MixinTextBase"
   ]
 }

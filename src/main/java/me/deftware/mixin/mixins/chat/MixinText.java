@@ -9,7 +9,7 @@ public interface MixinText extends Message {
 
     @Override
     default String getString() {
-        return ((IChatComponent) this).getUnformattedTextForChat();
+        return ((IChatComponent) this).getUnformattedText();
     }
 
 }
