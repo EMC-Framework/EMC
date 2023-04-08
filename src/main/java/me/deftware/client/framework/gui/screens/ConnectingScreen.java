@@ -23,7 +23,7 @@ public interface ConnectingScreen {
 			ConnectScreen.connect(
 					new MultiplayerScreen(
 							MinecraftClient.getInstance().currentScreen
-					), MinecraftClient.getInstance(), ServerAddress.parse(server._getAddress()), (ServerInfo) server
+					), MinecraftClient.getInstance(), ServerAddress.parse(server._getAddress()), (ServerInfo) server, false
 			);
 		}
 	}

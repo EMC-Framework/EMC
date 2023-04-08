@@ -16,7 +16,7 @@ public class Material {
 	}
 
 	public boolean isLiquid() {
-		return material.isLiquid();
+		return false; // material.isLiquid();
 	}
 
 	public boolean isSolid() {
