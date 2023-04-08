@@ -1,5 +1,6 @@
 package me.deftware.mixin.mixins.gui;
 
+import me.deftware.client.framework.message.Message;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.SignText;
 import net.minecraft.client.gui.screen.ingame.AbstractSignEditScreen;
@@ -13,14 +14,21 @@ public abstract class MixinGuiEditSign extends MixinGuiScreen implements me.deft
 
     @Final
     @Shadow
-    protected SignBlockEntity blockEntity;
+    private SignBlockEntity blockEntity;
 
     @Shadow
     private int currentRow;
 
     @Shadow
+    private SignText text;
+
+    @Shadow
     @Final
-    protected SignText text;
+    private boolean front;
+
+    @Shadow
+    @Final
+    private String[] messages;
 
     @Override
     public int _getCurrentLine() {
@@ -29,13 +37,15 @@ public abstract class MixinGuiEditSign extends MixinGuiScreen implements me.deft
 
     @Override
     public String _getLine(int line) {
-        return ""; // text[line];
+        return text.getMessage(line, false).getString();
     }
 
     @Override
-    public void _setLine(int line, String newText) {
-        // text[line] = newText;
-        // blockEntity.setTextOnRow(line, Text.of(newText)); TODO: FIXME
+    public void _setLine(int line, String text) {
+        Message message = Message.of(text);
+        messages[line] = text;
+        this.text = this.text.withMessage(line, (Text) message);
+        blockEntity.setText(this.text, this.front);
     }
 
     @Override
