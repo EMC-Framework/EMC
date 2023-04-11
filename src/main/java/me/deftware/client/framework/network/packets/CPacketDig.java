@@ -1,10 +1,11 @@
 package me.deftware.client.framework.network.packets;
 
-import me.deftware.client.framework.math.position.BlockPosition;
+import me.deftware.client.framework.math.BlockPosition;
 import me.deftware.client.framework.network.PacketWrapper;
 import me.deftware.client.framework.world.EnumFacing;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
+import net.minecraft.util.math.BlockPos;
 
 /**
  * @author Deftware
@@ -16,7 +17,7 @@ public class CPacketDig extends PacketWrapper {
     }
 
     public CPacketDig(IDigAction action, BlockPosition pos, EnumFacing facing) {
-        super(new PlayerActionC2SPacket(getAction(action), pos.getMinecraftBlockPos(), facing.getFacing()));
+        super(new PlayerActionC2SPacket(getAction(action), (BlockPos) pos, facing.getFacing()));
     }
 
     public static PlayerActionC2SPacket.Action getAction(IDigAction action) {

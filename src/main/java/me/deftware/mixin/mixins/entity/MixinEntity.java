@@ -1,9 +1,9 @@
 package me.deftware.mixin.mixins.entity;
 
+import me.deftware.client.framework.math.Vector3;
 import me.deftware.client.framework.event.events.*;
 import me.deftware.client.framework.global.GameKeys;
 import me.deftware.client.framework.global.GameMap;
-import me.deftware.client.framework.math.vector.Vector3d;
 import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
 import me.deftware.client.framework.world.ClientWorld;
 import me.deftware.mixin.imp.IMixinEntity;
@@ -75,9 +75,9 @@ public abstract class MixinEntity implements IMixinEntity {
             opcode = 182))
     private void applyFluidVelocity(Entity entity, Vec3d velocity) {
         if (entity == MinecraftClient.getInstance().player) {
-            EventFluidVelocity event = new EventFluidVelocity(new Vector3d(velocity)).broadcast();
+            EventFluidVelocity event = new EventFluidVelocity((Vector3<Double>) velocity).broadcast();
             if (!event.isCanceled()) {
-                entity.setVelocity(event.getVector3d().getMinecraftVector());
+                entity.setVelocity((Vec3d) event.getVector3d());
             }
         } else {
             entity.setVelocity(velocity);
