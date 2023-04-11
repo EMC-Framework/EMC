@@ -1,11 +1,11 @@
 package me.deftware.client.framework.item;
 
+import me.deftware.client.framework.math.BlockPosition;
 import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.item.effect.StatusEffect;
 import me.deftware.client.framework.item.enchantment.Enchantment;
 import me.deftware.client.framework.item.types.SwordItem;
 import me.deftware.client.framework.item.types.WeaponItem;
-import me.deftware.client.framework.math.position.BlockPosition;
 import me.deftware.client.framework.nbt.NbtCompound;
 import me.deftware.client.framework.nbt.NbtList;
 import me.deftware.client.framework.registry.EnchantmentRegistry;
@@ -25,6 +25,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.text.Text;
 import net.minecraft.util.Rarity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.*;
@@ -185,7 +186,7 @@ public class ItemStack {
 	}
 
 	public float getStrVsBlock(BlockPosition pos) {
-		return itemStack.getMiningSpeed(Objects.requireNonNull(MinecraftClient.getInstance().world).getBlockState(pos.getMinecraftBlockPos()));
+		return itemStack.getMiningSpeed(Objects.requireNonNull(MinecraftClient.getInstance().world).getBlockState((BlockPos) pos));
 	}
 
 	@Override

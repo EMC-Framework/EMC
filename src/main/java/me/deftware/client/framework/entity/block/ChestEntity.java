@@ -1,6 +1,6 @@
 package me.deftware.client.framework.entity.block;
 
-import me.deftware.client.framework.math.box.BoundingBox;
+import me.deftware.client.framework.math.BoundingBox;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.EnderChestBlockEntity;

@@ -1,8 +1,7 @@
 package me.deftware.client.framework.world.block.types;
 
-import me.deftware.client.framework.math.box.BoundingBox;
-import me.deftware.client.framework.math.box.DoubleBoundingBox;
-import me.deftware.client.framework.math.position.BlockPosition;
+import me.deftware.client.framework.math.BlockPosition;
+import me.deftware.client.framework.math.BoundingBox;
 import me.deftware.client.framework.world.block.BlockState;
 import net.minecraft.block.Block;
 import net.minecraft.block.enums.ChestType;
@@ -25,20 +24,21 @@ public class ChestBlock extends StorageBlock {
 		if (isDouble) {
 			switch (net.minecraft.block.ChestBlock.getFacing(state)) {
 				case NORTH:
-					return new DoubleBoundingBox(position.getX(), position.getY(), position.getZ() - 1,
-							position.getX() + 1.0, position.getY() + 1.0, position.getZ() + 1.0);
+					return BoundingBox.of(position.getX(), position.getY(), position.getZ() - 1,
+							position.getX() + 1, position.getY() + 1, position.getZ() + 1);
 				case SOUTH:
-					return new DoubleBoundingBox(position.getX(), position.getY(), position.getZ(),
-							position.getX() + 1.0, position.getY() + 1.0, position.getZ() + 2.0);
+					return BoundingBox.of(position.getX(), position.getY(), position.getZ(),
+							position.getX() + 1, position.getY() + 1, position.getZ() + 2);
 				case WEST:
-					return new DoubleBoundingBox(position.getX() - 1, position.getY(), position.getZ(),
-							position.getX() + 1.0, position.getY() + 1.0, position.getZ() + 1.0);
+					return BoundingBox.of(position.getX() - 1, position.getY(), position.getZ(),
+							position.getX() + 1, position.getY() + 1, position.getZ() + 1);
 				case EAST:
-					return new DoubleBoundingBox(position.getX(), position.getY(), position.getZ(),
-							position.getX() + 2.0, position.getY() + 1.0, position.getZ() + 1.0);
+					return BoundingBox.of(position.getX(), position.getY(), position.getZ(),
+							position.getX() + 2, position.getY() + 1, position.getZ() + 1);
 			}
 		}
-		return position.getBoundingBox();
+		return BoundingBox.of(position.getX(), position.getY(), position.getZ(),
+				position.getX() + 1, position.getY() + 1, position.getZ() + 1);
 	}
 
 	public boolean isFirst(BlockState state) {

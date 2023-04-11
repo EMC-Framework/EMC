@@ -1,10 +1,11 @@
 package me.deftware.client.framework.entity.types.main;
 
+import me.deftware.client.framework.math.BlockPosition;
+import me.deftware.client.framework.math.Vector3;
 import me.deftware.client.framework.entity.Entity;
 import me.deftware.client.framework.entity.EntityHand;
+import me.deftware.client.framework.entity.types.EntityPlayer;
 import me.deftware.client.framework.item.ItemStack;
-import me.deftware.client.framework.math.position.BlockPosition;
-import me.deftware.client.framework.math.vector.Vector3d;
 import me.deftware.client.framework.minecraft.Minecraft;
 import me.deftware.client.framework.world.EnumFacing;
 import me.deftware.mixin.imp.IMixinEntityPlayerSP;
@@ -23,6 +24,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 
 import java.util.Objects;
 import java.util.Set;
@@ -32,7 +34,7 @@ import java.util.Set;
  *
  * @author Deftware
  */
-public class MainEntityPlayer extends RotationLogic {
+public class MainEntityPlayer extends EntityPlayer {
 
 	public MainEntityPlayer(PlayerEntity entity) {
 		super(entity);
@@ -43,12 +45,12 @@ public class MainEntityPlayer extends RotationLogic {
 		return (ClientPlayerEntity) entity;
 	}
 
-	public boolean processRightClickBlock(BlockPosition pos, EnumFacing facing, Vector3d vector3d) {
+	public boolean processRightClickBlock(BlockPosition pos, EnumFacing facing, Vector3<Double> vector3d) {
 		return processRightClickBlock(pos, facing, vector3d, EntityHand.MainHand);
 	}
 
-	public boolean processRightClickBlock(BlockPosition pos, EnumFacing facing, Vector3d vector3d, EntityHand hand) {
-		BlockHitResult customHitResult = new BlockHitResult(vector3d.getMinecraftVector(), facing.getFacing(), pos.getMinecraftBlockPos(), false);
+	public boolean processRightClickBlock(BlockPosition pos, EnumFacing facing, Vector3<Double> vector3d, EntityHand hand) {
+		BlockHitResult customHitResult = new BlockHitResult((Vec3d) vector3d, facing.getFacing(), (BlockPos) pos, false);
 		return Objects.requireNonNull(MinecraftClient.getInstance().interactionManager).interactBlock(MinecraftClient.getInstance().player,
 				MinecraftClient.getInstance().world, hand.getMinecraftHand(), customHitResult) == ActionResult.SUCCESS;
 	}

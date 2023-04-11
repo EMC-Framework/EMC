@@ -30,8 +30,8 @@ public class LivingEntity extends Entity {
 		return getMinecraftEntity().getMaximumHealth();
 	}
 
-	public void setMovementMultiplier(float multiplier) {
-		getMinecraftEntity().field_6281 = multiplier;
+	public void setMovementMultiplier(double multiplier) {
+		getMinecraftEntity().field_6281 = (float) multiplier;
 	}
 
 	public float getMovementMultiplier() {
