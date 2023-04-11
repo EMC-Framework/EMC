@@ -1,7 +1,8 @@
 package me.deftware.client.framework.world;
 
+import me.deftware.client.framework.math.BlockPosition;
+import me.deftware.client.framework.math.Vector3;
 import me.deftware.client.framework.entity.block.TileEntity;
-import me.deftware.client.framework.math.position.BlockPosition;
 import me.deftware.client.framework.registry.BlockRegistry;
 import me.deftware.client.framework.world.block.Block;
 import me.deftware.client.framework.world.block.BlockState;
@@ -76,6 +77,8 @@ public interface World {
 	 * @return The state for a given position
 	 */
 	BlockState _getBlockState(BlockPosition position);
+
+	boolean rayTraceBlocks(Vector3<Double> start, Vector3<Double> end);
 
 	/**
 	 * @param position A block position

@@ -1,8 +1,8 @@
 package me.deftware.mixin.mixins.render;
 
+import me.deftware.client.framework.math.Vector3;
 import me.deftware.client.framework.event.events.EventAnimation;
 import me.deftware.client.framework.event.events.EventCameraClip;
-import me.deftware.client.framework.math.vector.Vector3d;
 import me.deftware.client.framework.render.camera.GameCamera;
 import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
 import net.minecraft.client.MinecraftClient;
@@ -64,8 +64,8 @@ public class MixinCamera implements GameCamera {
     }
 
     @Override
-    public Vector3d getCameraPosition() {
-        return new Vector3d(((Camera) (Object) this).getPos());
+    public Vector3<Double> getCameraPosition() {
+        return (Vector3<Double>) ((Camera) (Object) this).getPos();
     }
 
     @Override
