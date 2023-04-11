@@ -1,13 +1,13 @@
 package me.deftware.client.framework.render.camera;
 
-import me.deftware.client.framework.math.vector.Vector3d;
+import me.deftware.client.framework.math.Vector3;
 
 /**
  * @author Deftware
  */
 public interface GameCamera {
 	
-	Vector3d getCameraPosition();
+	Vector3<Double> getCameraPosition();
 
 	float _getRotationPitch();
 
