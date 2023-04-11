@@ -3,136 +3,146 @@ package me.deftware.client.framework.event;
 import me.deftware.client.framework.event.events.EventMatrixRender;
 import me.deftware.client.framework.event.events.EventRender2D;
 import me.deftware.client.framework.event.events.EventRender3D;
-import me.deftware.client.framework.helper.Logger;
-import me.deftware.client.framework.maps.MultiMap;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
- * @author Deftware, Ananas
+ * @author Deftware
  */
-public class EventBus {
+public final class EventBus {
 
-	private static final Logger LOGGER = new Logger(EventBus.class);
+    public final static EventBus INSTANCE = new EventBus();
 
-	private static final Object lock = new Object();
-	public static final MultiMap<Class<?>, Listener> listeners = new MultiMap<>();
+    private final Map<Class<? extends Event>, Manager> managers = new HashMap<>();
 
-	public static void registerClass(Class<?> clazz, Object instance) {
-		registerClass(clazz, instance, null);
-	}
+    private final Logger logger = LogManager.getLogger(EventBus.class);
 
-	public static void registerClass(Class<?> clazz, Object instance, BiConsumer<Class<? extends Event>, Listener> consumer) {
-		synchronized (lock) {
-			LOGGER.debug("Walking methods in class {}", clazz.getSimpleName());
-			walkMethods(clazz, method -> {
-				Class<? extends Event> eventType = method.getParameterTypes()[0].asSubclass(Event.class);
-				int priority = method.getAnnotation(EventHandler.class).priority();
-				Listener listener = new Listener(method, instance, priority);
-				if (consumer != null) {
-					consumer.accept(eventType, listener);
-				}
-				List<Listener> listeners = EventBus.listeners.getOrCreate(eventType);
-				listeners.add(listener);
-				listeners.sort(Comparator.comparingInt(Listener::getPriority));
-				LOGGER.debug("Registering event {} with priority {}", eventType.getSimpleName(), priority);
-			});
-		}
-	}
+    public synchronized Manager getManager(Class<? extends Event> event) {
+        if (!managers.containsKey(event)) {
+            managers.put(event, new Manager());
+        }
+        return managers.get(event);
+    }
 
-	public static void walkMethods(Class<?> clazz, Consumer<Method> consumer) {
-		while (clazz != null) {
-			for (Method method : clazz.getDeclaredMethods()) {
-				if (method.isAnnotationPresent(EventHandler.class)) {
-					method.setAccessible(true);
-					consumer.accept(method);
-				}
-			}
-			clazz = clazz.getSuperclass();
-		}
-	}
+    public void broadcast(Event event) {
+        getManager(event.getClass()).broadcast(event);
+    }
 
-	public static void unRegisterClass(Class<?> clazz) {
-		synchronized (lock) {
-			LOGGER.debug("Removing all registered events for class {}", clazz.getSimpleName());
-			for (Class<?> event : listeners.keySet()) {
-				List<Listener> collection = listeners.get(event);
-				if (!collection.isEmpty()) {
-					collection.removeIf(listener -> {
-						return listener.getClassInstance().getClass() == clazz;
-					});
-				}
-			}
-		}
-	}
+    private final class Manager {
 
-	public static void clearEvents() {
-		LOGGER.warn("Clearing all registered events ({})", listeners.keySet().size());
-		synchronized (lock) {
-			listeners.clear();
-		}
-		System.gc();
-	}
+        private final List<Listener> listeners = new ArrayList<>();
 
-	private static final Runnable abortRendering = () -> {
-		BufferBuilder builder = Tessellator.getInstance().getBuffer();
-		if (builder.isBuilding()) {
-			LOGGER.warn("Closing open buffer builder");
-			builder.end();
-		}
-	};
+        public synchronized void register(Listener listener) {
+            listeners.add(listener);
+            listeners.sort(Comparator.comparingInt(Listener::getPriority));
+        }
 
-	private static final Map<Class<? extends Event>, Runnable> cleanupHandlers;
+        public synchronized void unregister(Object instance, Method method) {
+            listeners.removeIf(listener ->
+                listener.getClassInstance() == instance && listener.getMethod().equals(method)
+            );
+        }
 
-	static {
-		cleanupHandlers = new HashMap<>();
+        public synchronized void broadcast(Event event) {
+            Iterator<Listener> iterator = listeners.iterator();
+            while (iterator.hasNext()) {
+                Listener listener = iterator.next();
+                try {
+                    listener.invoke(event);
+                } catch (Throwable ex) {
+                    error(ex.getCause(), listener, event);
+                    iterator.remove();
+                }
+            }
+        }
+
+        private void error(Throwable cause, Listener listener, Event event) {
+            Class<?> clazz = listener.getClassInstance().getClass();
+            logger.error("\"{}\" occurred whilst dispatching \"{}\" to method \"{}\" in class \"{}\" due to \"{}\"",
+                    cause.getClass().getSimpleName(),
+                    event.getClass().getSimpleName(),
+                    listener.getMethod().getName(),
+                    clazz.getSimpleName(),
+                    cause.getMessage()
+            );
+            Consumer<Throwable> consumer = listener.getExceptionHandler();
+            if (consumer != null) {
+                consumer.accept(cause);
+            }
+            cause.printStackTrace();
+            Runnable cleanup = cleanupHandlers.get(event.getClass());
+            if (cleanup != null) {
+                cleanup.run();
+            }
+        }
+
+    }
+
+    /* Helper methods */
+
+    public void registerClass(Object instance) {
+        registerClass(instance, null);
+    }
+
+    public void registerClass(Object instance, Consumer<Throwable> exceptionHandler) {
+        walkMethods(instance.getClass(), (event, handler, method) -> {
+            Manager manager = getManager(event);
+            Listener listener = new Listener(method, instance, handler.priority());
+            listener.setExceptionHandler(exceptionHandler);
+            manager.register(listener);
+        });
+    }
+
+    public void unRegisterClass(Object instance) {
+        walkMethods(instance.getClass(), (event, handler, method) -> {
+            Manager manager = getManager(event);
+            manager.unregister(instance, method);
+        });
+    }
+
+    private void walkMethods(Class<?> clazz, EventMethod consumer) {
+        while (clazz != null) {
+            for (Method method : clazz.getDeclaredMethods()) {
+                if (method.isAnnotationPresent(EventHandler.class)) {
+                    method.setAccessible(true);
+                    consumer.accept(
+                            method.getParameterTypes()[0].asSubclass(Event.class),
+                            method.getAnnotation(EventHandler.class),
+                            method
+                    );
+                }
+            }
+            clazz = clazz.getSuperclass();
+        }
+    }
+
+    private final Runnable abortRendering = () -> {
+        BufferBuilder builder = Tessellator.getInstance().getBuffer();
+        if (builder.isBuilding()) {
+            logger.warn("Closing open buffer builder");
+            builder.end();
+        }
+    };
+
+    private final Map<Class<? extends Event>, Runnable> cleanupHandlers = new HashMap<>();
+
+	private EventBus() {
 		cleanupHandlers.put(EventMatrixRender.class, abortRendering);
 		cleanupHandlers.put(EventRender3D.class, abortRendering);
 		cleanupHandlers.put(EventRender2D.class, abortRendering);
 	}
 
-	public static void sendEvent(Event event) {
-		synchronized (lock) {
-			List<Listener> listeners = EventBus.listeners.get(event.getClass());
-			if (listeners != null && !listeners.isEmpty()) {
-				Iterator<Listener> iterator = listeners.iterator();
-				while (iterator.hasNext()) {
-					Listener listener = iterator.next();
-					try {
-						listener.invoke(event);
-					} catch (Throwable ex) {
-						Throwable cause = ex.getCause();
-						Class<?> clazz = listener.getClassInstance().getClass();
-						LOGGER.error("\"{}\" occurred whilst dispatching \"{}\" to method \"{}\" in class \"{}\" due to \"{}\"",
-								cause.getClass().getSimpleName(),
-								event.getClass().getSimpleName(),
-								listener.getMethod().getName(),
-								clazz.getSimpleName(),
-								cause.getMessage()
-						);
-						Consumer<Throwable> consumer = listener.getExceptionHandler();
-						if (consumer != null) {
-							consumer.accept(cause);
-						}
-						LOGGER.warn("Removing event {} for class {}", event.getClass().getSimpleName(), clazz.getSimpleName());
-						LOGGER.debug("Event dispatch stack:", ex);
-						cause.printStackTrace();
-						iterator.remove();
+    @FunctionalInterface
+    private interface EventMethod {
 
-						// Run cleanup handlers
-						Runnable cleanup = cleanupHandlers.get(event.getClass());
-						if (cleanup != null) {
-							cleanup.run();
-						}
-					}
-				}
-			}
-		}
-	}
+        void accept(Class<? extends Event> event, EventHandler handler, Method method);
+
+    }
 
 }

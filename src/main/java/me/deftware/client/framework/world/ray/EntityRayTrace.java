@@ -1,7 +1,7 @@
 package me.deftware.client.framework.world.ray;
 
+import me.deftware.client.framework.math.Vector3;
 import me.deftware.client.framework.entity.Entity;
-import me.deftware.client.framework.math.vector.Vector3d;
 import me.deftware.client.framework.util.minecraft.EntitySwingResult;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.projectile.ProjectileUtil;
@@ -17,9 +17,9 @@ import net.minecraft.world.RaycastContext;
 public class EntityRayTrace extends RayTrace<EntitySwingResult> {
 
     private final double maxDistance;
-    private final Vector3d rotation;
+    private final Vector3<Double> rotation;
 
-    public EntityRayTrace(Vector3d start, Vector3d end, Vector3d rotation, double distance, RayProfile profile) {
+    public EntityRayTrace(Vector3<Double> start, Vector3<Double> end, Vector3<Double> rotation, double distance, RayProfile profile) {
         super(start, end, profile);
         this.maxDistance = distance;
         this.rotation = rotation;
@@ -34,14 +34,14 @@ public class EntityRayTrace extends RayTrace<EntitySwingResult> {
 
         double distance = maxDistance * maxDistance;
         if (hitResult != null && hitResult.getType() == HitResult.Type.BLOCK)
-            distance = hitResult.getPos().squaredDistanceTo(start.getMinecraftVector());
+            distance = hitResult.getPos().squaredDistanceTo((Vec3d) start);
 
-        Box box = entity.getBoundingBox().stretch(rotation.getMinecraftVector().multiply(maxDistance)).expand(1.0D, 1.0D, 1.0D);
+        Box box = entity.getBoundingBox().stretch((Vec3d) rotation.multiply(maxDistance)).expand(1.0D, 1.0D, 1.0D);
 
-        EntityHitResult result = ProjectileUtil.raycast(entity, start.getMinecraftVector(), end.getMinecraftVector(), box, e -> (!e.isSpectator() && e.collides()), distance);
+        EntityHitResult result = ProjectileUtil.raycast(entity, (Vec3d) start, (Vec3d) end, box, e -> (!e.isSpectator() && e.collides()), distance);
 
         if (result != null) {
-            double g = start.getMinecraftVector().squaredDistanceTo(result.getPos());
+            double g = start.distanceTo((Vector3<Double>) result.getPos());
             if (g < distance) {
                 return new EntitySwingResult(result);
             }
@@ -50,8 +50,8 @@ public class EntityRayTrace extends RayTrace<EntitySwingResult> {
         return null;
     }
 
-    public HitResult raycast(Vector3d start, Vector3d end, net.minecraft.entity.Entity entity) {
-        return MinecraftClient.getInstance().world.raycast(new RaycastContext(start.getMinecraftVector(), end.getMinecraftVector(), RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, entity));
+    public HitResult raycast(Vector3<Double> start, Vector3<Double> end, net.minecraft.entity.Entity entity) {
+        return MinecraftClient.getInstance().world.raycast(new RaycastContext((Vec3d) start, (Vec3d) end, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, entity));
     }
 
 }
