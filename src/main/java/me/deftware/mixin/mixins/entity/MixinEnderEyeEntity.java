@@ -2,7 +2,6 @@ package me.deftware.mixin.mixins.entity;
 
 import me.deftware.client.framework.event.events.EventStructureLocation;
 import me.deftware.client.framework.item.ThrowData;
-import me.deftware.client.framework.math.position.DoubleBlockPosition;
 import net.minecraft.entity.EyeOfEnderEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -31,7 +30,7 @@ public class MixinEnderEyeEntity {
 
     @Inject(method = "initTargetPos", at = @At("HEAD"))
     public void moveTowards(BlockPos pos, CallbackInfo ci) {
-        EventStructureLocation event = new EventStructureLocation(DoubleBlockPosition.fromMinecraftBlockPos(pos), EventStructureLocation.StructureType.Stronghold);
+        EventStructureLocation event = new EventStructureLocation(pos.getX(), pos.getY(), pos.getZ(), EventStructureLocation.StructureType.Stronghold);
         event.broadcast();
     }
 
@@ -63,7 +62,7 @@ public class MixinEnderEyeEntity {
         Vec3d vel = ((EyeOfEnderEntity)(Object)this).getVelocity();
 
         if (firstThrow != null && secondThrow != null && Math.abs(vel.x * vel.z) <= .0000001 && Math.abs(vel.y) != 0.0D) {
-            EventStructureLocation event = new EventStructureLocation(DoubleBlockPosition.fromMinecraftBlockPos(firstThrow.calculateIntersection(secondThrow)), EventStructureLocation.StructureType.Stronghold);
+            EventStructureLocation event = new EventStructureLocation(firstThrow.calculateIntersection(secondThrow), EventStructureLocation.StructureType.Stronghold);
             event.broadcast();
         }
     }
