@@ -197,7 +197,7 @@ public class Bootstrap {
     }
 
     public static void ejectMods() {
-        EventBus.clearEvents();
+        // TODO EventBus.clearEvents();
         logger.warn("Ejecting all loaded mods");
         for (EMCMod mod : mods.values()) {
             try {
