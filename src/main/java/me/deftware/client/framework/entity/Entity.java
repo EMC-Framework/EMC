@@ -1,5 +1,9 @@
 package me.deftware.client.framework.entity;
 
+import me.deftware.client.framework.math.BlockPosition;
+import me.deftware.client.framework.math.BoundingBox;
+import me.deftware.client.framework.math.ChunkPosition;
+import me.deftware.client.framework.math.Vector3;
 import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.entity.types.EntityPlayer;
 import me.deftware.client.framework.entity.types.OwnedEntity;
@@ -13,10 +17,6 @@ import me.deftware.client.framework.entity.types.objects.EndCrystalEntity;
 import me.deftware.client.framework.entity.types.objects.ItemEntity;
 import me.deftware.client.framework.entity.types.objects.ProjectileEntity;
 import me.deftware.client.framework.item.ItemStack;
-import me.deftware.client.framework.math.box.BoundingBox;
-import me.deftware.client.framework.math.position.BlockPosition;
-import me.deftware.client.framework.math.position.ChunkBlockPosition;
-import me.deftware.client.framework.math.vector.Vector3d;
 import me.deftware.client.framework.nbt.NbtCompound;
 import me.deftware.client.framework.util.Util;
 import me.deftware.client.framework.world.ClientWorld;
@@ -32,6 +32,7 @@ import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.Vec3d;
 
 import java.util.Collections;
 import java.util.List;
@@ -47,8 +48,6 @@ public class Entity {
 	private Entity vehicle;
 
 	protected final net.minecraft.entity.Entity entity;
-	protected final BlockPosition blockPosition;
-	protected final BoundingBox boundingBox;
 
 	public static Entity newInstance(net.minecraft.entity.Entity entity) {
 		if (entity == MinecraftClient.getInstance().player) {
@@ -82,8 +81,6 @@ public class Entity {
 
 	protected Entity(net.minecraft.entity.Entity entity) {
 		this.entity = entity;
-		this.boundingBox = new BoundingBox(entity);
-		this.blockPosition = new BlockPosition(entity);
 		if (entity.getVehicle() != null)
 			this.vehicle = ClientWorld.getClientWorld().getEntityByReference(entity.getVehicle());
 		if (entity.getArmorItems() instanceof DefaultedList<net.minecraft.item.ItemStack> defaultedList)
@@ -95,7 +92,7 @@ public class Entity {
 	}
 
 	public BlockPosition getBlockPosition() {
-		return blockPosition;
+		return (BlockPosition) getMinecraftEntity().getBlockPos();
 	}
 
 	public net.minecraft.entity.Entity getMinecraftEntity() {
@@ -103,7 +100,7 @@ public class Entity {
 	}
 
 	public BoundingBox getBoundingBox() {
-		return boundingBox;
+		return (BoundingBox) getMinecraftEntity().getBoundingBox();
 	}
 
 	public boolean isSpectating() {
@@ -235,7 +232,7 @@ public class Entity {
 		entity.setStepHeight(height);
 	}
 
-	public boolean isWithinChunk(ChunkBlockPosition chunkPos) {
+	public boolean isWithinChunk(ChunkPosition chunkPos) {
 		return getPosX() >= chunkPos.getStartX() && getPosX() <= chunkPos.getEndX() && getPosZ() >= chunkPos.getStartZ() && getPosZ() <= chunkPos.getEndZ();
 	}
 
@@ -306,12 +303,12 @@ public class Entity {
 		return entity.lastRenderZ;
 	}
 
-	public Vector3d getRotationVector() {
-		return new Vector3d(getMinecraftEntity().getRotationVector());
+	public Vector3<Double> getRotationVector() {
+		return (Vector3<Double>) getMinecraftEntity().getRotationVector();
 	}
 
-	public Vector3d getPosition() {
-		return new Vector3d(getPosX(), getPosY(), getPosZ());
+	public Vector3<Double> getPosition() {
+		return (Vector3<Double>) getMinecraftEntity().getPos();
 	}
 
 	public int getChunkX() {
@@ -374,8 +371,8 @@ public class Entity {
 		entity.refreshPositionAndAngles(x, y, z, yaw, pitch);
 	}
 
-	public Vector3d getEyesPos() {
-		return new Vector3d(entity.getX(), entity.getY() + entity.getEyeHeight(entity.getPose()), entity.getZ());
+	public Vector3<Double> getEyesPos() {
+		return Vector3.ofDouble(entity.getX(), entity.getY() + entity.getEyeHeight(entity.getPose()), entity.getZ());
 	}
 
 	public boolean getFlag(int id) {
@@ -386,12 +383,12 @@ public class Entity {
 		entity.setVelocity(x, y, z);
 	}
 
-	public void setVelocity(Vector3d vector3d) {
-		entity.setVelocity(vector3d.getMinecraftVector());
+	public void setVelocity(Vector3<Double> vector3d) {
+		entity.setVelocity((Vec3d) vector3d);
 	}
 
-	public Vector3d getVelocity() {
-		return new Vector3d(entity.getVelocity());
+	public Vector3<Double> getVelocity() {
+		return (Vector3<Double>) entity.getVelocity();
 	}
 
 	@Override

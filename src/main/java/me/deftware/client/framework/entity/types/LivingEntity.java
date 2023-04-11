@@ -31,7 +31,7 @@ public class LivingEntity extends Entity {
 		return getMinecraftEntity().getMaxHealth();
 	}
 
-	public void setMovementMultiplier(float multiplier) {
+	public void setMovementMultiplier(double multiplier) {
 		// getMinecraftEntity().airStrafingSpeed = multiplier; TODO: FIXME
 	}
 
