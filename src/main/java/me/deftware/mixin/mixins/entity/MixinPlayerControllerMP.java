@@ -1,5 +1,6 @@
 package me.deftware.mixin.mixins.entity;
 
+import me.deftware.client.framework.math.BlockPosition;
 import me.deftware.client.framework.entity.EntityHand;
 import me.deftware.client.framework.event.events.EventAttackEntity;
 import me.deftware.client.framework.event.events.EventBlockBreakingCooldown;
@@ -7,7 +8,6 @@ import me.deftware.client.framework.event.events.EventBlockUpdate;
 import me.deftware.client.framework.event.events.EventItemUse;
 import me.deftware.client.framework.global.GameKeys;
 import me.deftware.client.framework.global.GameMap;
-import me.deftware.client.framework.math.position.DoubleBlockPosition;
 import me.deftware.client.framework.network.packets.CPacketUseEntity;
 import me.deftware.client.framework.registry.BlockRegistry;
 import me.deftware.client.framework.registry.ItemRegistry;
@@ -31,7 +31,6 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -120,7 +119,7 @@ public class MixinPlayerControllerMP implements IMixinPlayerControllerMP {
     private void onBlockBreak(Block block, World world, BlockPos pos, BlockState state, PlayerEntity player) {
         block.onBreak(world, pos, state, player);
         new EventBlockUpdate(EventBlockUpdate.State.Break,
-                DoubleBlockPosition.fromMinecraftBlockPos(pos),
+                (BlockPosition) pos,
                 BlockRegistry.INSTANCE.getBlock(block),
                 EntityHand.MainHand
         ).broadcast();
@@ -139,7 +138,7 @@ public class MixinPlayerControllerMP implements IMixinPlayerControllerMP {
 
                 new EventBlockUpdate(
                         EventBlockUpdate.State.Place,
-                        DoubleBlockPosition.fromMinecraftBlockPos(pos),
+                        (BlockPosition) pos,
                         BlockRegistry.INSTANCE.getBlock(block),
                         EntityHand.of(context.getHand())
                 ).broadcast();

@@ -1,35 +1,34 @@
 package me.deftware.client.framework.event.events;
 
+import me.deftware.client.framework.math.Vector3;
 import me.deftware.client.framework.event.Event;
-import me.deftware.client.framework.math.position.BlockPosition;
-import me.deftware.client.framework.math.position.DoubleBlockPosition;
 
 public class EventStructureLocation extends Event {
 
-    private final BlockPosition pos;
+    private final Vector3<Double> pos;
     private final StructureType type;
 
     public EventStructureLocation(double posX, double posY, double posZ, StructureType type) {
-        this.pos = new DoubleBlockPosition(posX, posY, posZ);
+        this.pos = Vector3.ofDouble(posX, posY, posZ);
         this.type = type;
     }
 
     public EventStructureLocation(double posX, double posY, double posZ) {
-        this.pos = new DoubleBlockPosition(posX, posY, posZ);
+        this.pos = Vector3.ofDouble(posX, posY, posZ);
         this.type = StructureType.Stronghold;
     }
 
-    public EventStructureLocation(BlockPosition pos, StructureType type) {
+    public EventStructureLocation(Vector3<Double> pos, StructureType type) {
         this.pos = pos;
         this.type = type;
     }
 
-    public EventStructureLocation(BlockPosition pos) {
+    public EventStructureLocation(Vector3<Double> pos) {
         this.pos = pos;
         this.type = StructureType.Stronghold;
     }
 
-    public BlockPosition getPos() {
+    public Vector3<Double> getPos() {
         return pos;
     }
 

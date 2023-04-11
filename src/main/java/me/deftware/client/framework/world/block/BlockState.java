@@ -1,6 +1,6 @@
 package me.deftware.client.framework.world.block;
 
-import me.deftware.client.framework.math.position.BlockPosition;
+import me.deftware.client.framework.math.BlockPosition;
 import me.deftware.client.framework.registry.BlockRegistry;
 import me.deftware.client.framework.world.ClientWorld;
 import net.minecraft.block.*;
