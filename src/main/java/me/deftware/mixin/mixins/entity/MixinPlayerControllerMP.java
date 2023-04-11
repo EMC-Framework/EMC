@@ -1,5 +1,6 @@
 package me.deftware.mixin.mixins.entity;
 
+import me.deftware.client.framework.math.BlockPosition;
 import me.deftware.client.framework.entity.EntityHand;
 import me.deftware.client.framework.event.events.EventAttackEntity;
 import me.deftware.client.framework.event.events.EventBlockBreakingCooldown;
@@ -7,14 +8,13 @@ import me.deftware.client.framework.event.events.EventBlockUpdate;
 import me.deftware.client.framework.event.events.EventItemUse;
 import me.deftware.client.framework.global.GameKeys;
 import me.deftware.client.framework.global.GameMap;
+import me.deftware.client.framework.registry.BlockRegistry;
+import me.deftware.client.framework.registry.ItemRegistry;
 import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
 import me.deftware.mixin.imp.IMixinPlayerControllerMP;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import me.deftware.client.framework.math.position.DoubleBlockPosition;
-import me.deftware.client.framework.registry.BlockRegistry;
-import me.deftware.client.framework.registry.ItemRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.BlockItem;
@@ -108,7 +108,7 @@ public class MixinPlayerControllerMP implements IMixinPlayerControllerMP {
     private void onBlockBreak(Block block, World world, BlockPos pos, BlockState state, PlayerEntity player) {
         block.onBreak(world, pos, state, player);
         new EventBlockUpdate(EventBlockUpdate.State.Break,
-                DoubleBlockPosition.fromMinecraftBlockPos(pos),
+                (BlockPosition) pos,
                 BlockRegistry.INSTANCE.getBlock(block),
                 EntityHand.MainHand
         ).broadcast();
@@ -137,7 +137,7 @@ public class MixinPlayerControllerMP implements IMixinPlayerControllerMP {
 
             new EventBlockUpdate(
                     EventBlockUpdate.State.Place,
-                    DoubleBlockPosition.fromMinecraftBlockPos(pos),
+                    (BlockPosition) pos,
                     BlockRegistry.INSTANCE.getBlock(block),
                     EntityHand.of(context.getHand())
             ).broadcast();

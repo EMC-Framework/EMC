@@ -1,5 +1,6 @@
 package me.deftware.mixin.mixins.block;
 
+import me.deftware.client.framework.math.BlockPosition;
 import me.deftware.client.framework.event.events.EventCollideCheck;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -10,7 +11,6 @@ import me.deftware.client.framework.global.types.BlockProperty;
 import me.deftware.client.framework.global.types.BlockPropertyManager;
 import me.deftware.client.framework.global.types.PropertyManager;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
-import me.deftware.client.framework.math.position.DoubleBlockPosition;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.EntityContext;
@@ -40,7 +40,7 @@ public abstract class MixinBlockState {
 	public void getOutlineShape(BlockView world, BlockPos pos, EntityContext context, CallbackInfoReturnable<VoxelShape> ci) {
 		EventCollideCheck event = new EventCollideCheck(
 				me.deftware.client.framework.world.block.Block.newInstance(this.getBlock()),
-				DoubleBlockPosition.fromMinecraftBlockPos(pos)
+				(BlockPosition) pos
 		).broadcast();
 		if (event.updated) {
 			if (event.canCollide) {
@@ -66,7 +66,7 @@ public abstract class MixinBlockState {
 		if (blockProperties.contains(id)) {
 			BlockProperty property = blockProperties.get(id);
 			if (property.getVoxelShape() != null) {
-				ci.setReturnValue(property.getVoxelShape().getMinecraftVoxelShape());
+				ci.setReturnValue((VoxelShape) property.getVoxelShape());
 				return;
 			}
 		}

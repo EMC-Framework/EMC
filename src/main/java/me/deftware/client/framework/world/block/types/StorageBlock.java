@@ -1,6 +1,6 @@
 package me.deftware.client.framework.world.block.types;
 
-import me.deftware.client.framework.math.box.BoundingBox;
+import me.deftware.client.framework.math.BoundingBox;
 import me.deftware.client.framework.world.block.BlockState;
 import me.deftware.client.framework.world.block.InteractableBlock;
 import net.minecraft.block.ChestBlock;
@@ -18,7 +18,10 @@ public class StorageBlock extends InteractableBlock {
 	}
 
 	public BoundingBox getBoundingBox(BlockState state) {
-		return getBlockPosition().getBoundingBox();
+		int x = getBlockPosition().getX();
+		int y = getBlockPosition().getY();
+		int z = getBlockPosition().getZ();
+		return BoundingBox.of(x, y, z, x + 1, y + 1, z + 1);
 	}
 	
 	protected StorageBlock(net.minecraft.block.Block block) {
