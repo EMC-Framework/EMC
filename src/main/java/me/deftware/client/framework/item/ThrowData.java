@@ -1,7 +1,7 @@
 package me.deftware.client.framework.item;
 
+import me.deftware.client.framework.math.Vector3;
 import net.minecraft.entity.EyeOfEnderEntity;
-import net.minecraft.util.math.BlockPos;
 
 public class ThrowData {
     private final EyeOfEnderEntity entity;
@@ -30,12 +30,11 @@ public class ThrowData {
      * 1 = d
      * 2 = this
      */
-    public BlockPos calculateIntersection(ThrowData d) {
+    public Vector3<Double> calculateIntersection(ThrowData d) {
         double x = (-d.z * d.posX * this.x + d.x * d.posZ * this.x + d.x * this.z * this.posX + d.x * -this.x * this.posZ)
                 / (d.x * this.z - d.z * this.x);
         double z = (this.z / this.x) * x + this.posZ - (this.z / this.x) * this.posX;
-
-        return new BlockPos(x, 36, z);
+        return Vector3.ofDouble(x, 36, z);
     }
 
     public boolean sameEntity(EyeOfEnderEntity e) {

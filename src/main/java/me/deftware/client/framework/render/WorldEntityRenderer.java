@@ -2,8 +2,8 @@ package me.deftware.client.framework.render;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import me.deftware.client.framework.math.Vector3;
 import me.deftware.client.framework.entity.Entity;
-import me.deftware.client.framework.math.vector.Vector3d;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ public interface WorldEntityRenderer {
 	class Statue {
 
 		protected Entity entity;
-		protected Vector3d position;
+		protected Vector3<Double> position;
 
 	}
 

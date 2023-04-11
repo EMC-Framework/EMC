@@ -4,8 +4,6 @@ import me.deftware.mixin.imp.IMixinNetworkManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.Packet;
 
-import java.io.IOException;
-
 /**
  * Describes the packet structure with all of it's data
  *
@@ -14,7 +12,6 @@ import java.io.IOException;
 public class PacketWrapper {
 
     protected Packet<?> packet;
-    private PacketBuffer packetBuffer;
 
     public PacketWrapper(Packet<?> packet) {
         this.packet = packet;
@@ -22,16 +19,6 @@ public class PacketWrapper {
 
     public Packet<?> getPacket() {
         return packet;
-    }
-
-    public PacketBuffer getPacketBuffer() {
-        if (packetBuffer == null)
-            packetBuffer = new PacketBuffer();
-        return packetBuffer;
-    }
-
-    public void setPacketBuffer(PacketBuffer buffer) throws IOException {
-        packet.write(buffer.buffer);
     }
 
     public void sendPacket() {
