@@ -1,12 +1,12 @@
 package me.deftware.client.framework.entity.types.objects;
 
+import me.deftware.client.framework.math.Vector3;
 import me.deftware.client.framework.entity.Entity;
-import me.deftware.client.framework.math.vector.Vector3d;
 import net.minecraft.entity.projectile.EntityArrow;
 
 public class ProjectileEntity extends Entity {
 
-    private Vector3d lastPos;
+    private Vector3<Double> lastPos;
 
     public ProjectileEntity(net.minecraft.entity.Entity entity) {
         super(entity);

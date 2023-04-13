@@ -1,10 +1,10 @@
 package me.deftware.client.framework.entity.types.main;
 
+import me.deftware.client.framework.math.BlockPosition;
+import me.deftware.client.framework.math.Vector3;
 import me.deftware.client.framework.entity.Entity;
 import me.deftware.client.framework.entity.EntityHand;
 import me.deftware.client.framework.item.ItemStack;
-import me.deftware.client.framework.math.position.BlockPosition;
-import me.deftware.client.framework.math.vector.Vector3d;
 import me.deftware.client.framework.minecraft.Minecraft;
 import me.deftware.client.framework.world.EnumFacing;
 import me.deftware.mixin.imp.IMixinEntityPlayerSP;
@@ -14,7 +14,9 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EnumPlayerModelParts;
 import net.minecraft.network.play.client.C10PacketCreativeInventoryAction;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovementInput;
+import net.minecraft.util.Vec3;
 
 import java.util.Objects;
 import java.util.Set;
@@ -24,7 +26,7 @@ import java.util.Set;
  *
  * @author Deftware
  */
-public class MainEntityPlayer extends RotationLogic {
+public class MainEntityPlayer extends me.deftware.client.framework.entity.types.EntityPlayer {
 
 	public MainEntityPlayer(EntityPlayer entity) {
 		super(entity);
@@ -35,13 +37,13 @@ public class MainEntityPlayer extends RotationLogic {
 		return (EntityPlayerSP) entity;
 	}
 
-	public boolean processRightClickBlock(BlockPosition pos, EnumFacing facing, Vector3d vector3d) {
+	public boolean processRightClickBlock(BlockPosition pos, EnumFacing facing, Vector3<Double> vector3d) {
 		return processRightClickBlock(pos, facing, vector3d, EntityHand.MainHand);
 	}
 
-	public boolean processRightClickBlock(BlockPosition pos, EnumFacing facing, Vector3d vector3d, EntityHand hand) {
+	public boolean processRightClickBlock(BlockPosition pos, EnumFacing facing, Vector3<Double> vector3d, EntityHand hand) {
 		return Objects.requireNonNull(net.minecraft.client.Minecraft.getMinecraft().playerController).onPlayerRightClick(net.minecraft.client.Minecraft.getMinecraft().thePlayer,
-				net.minecraft.client.Minecraft.getMinecraft().theWorld, net.minecraft.client.Minecraft.getMinecraft().thePlayer.getHeldItem(), pos.getMinecraftBlockPos(), facing.getFacing(), vector3d.getMinecraftVector());
+				net.minecraft.client.Minecraft.getMinecraft().theWorld, net.minecraft.client.Minecraft.getMinecraft().thePlayer.getHeldItem(), (BlockPos) pos, facing.getFacing(), (Vec3) vector3d);
 	}
 
 	public void swapHands() { }

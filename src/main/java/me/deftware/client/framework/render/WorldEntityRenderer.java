@@ -1,7 +1,7 @@
 package me.deftware.client.framework.render;
 
+import me.deftware.client.framework.math.Vector3;
 import me.deftware.client.framework.entity.Entity;
-import me.deftware.client.framework.math.vector.Vector3d;
 
 import java.util.List;
 
@@ -15,9 +15,9 @@ public interface WorldEntityRenderer {
 	class Statue {
 
 		protected Entity entity;
-		protected Vector3d position;
+		protected Vector3<Double> position;
 
-		public Statue(Entity entity, Vector3d position) {
+		public Statue(Entity entity, Vector3<Double> position) {
 			this.entity = entity;
 			this.position = position;
 		}
@@ -26,7 +26,7 @@ public interface WorldEntityRenderer {
 			return entity;
 		}
 
-		public Vector3d getPosition() {
+		public Vector3<Double> getPosition() {
 			return position;
 		}
 

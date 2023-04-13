@@ -1,10 +1,10 @@
 package me.deftware.client.framework.world.block;
 
+import me.deftware.client.framework.math.BlockPosition;
 import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.fonts.FontRenderer;
 import me.deftware.client.framework.gui.widgets.SelectableList;
 import me.deftware.client.framework.item.IItem;
-import me.deftware.client.framework.math.position.BlockPosition;
 import me.deftware.client.framework.message.MessageUtils;
 import me.deftware.client.framework.registry.Identifiable;
 import me.deftware.client.framework.render.ItemRenderer;
@@ -14,6 +14,7 @@ import net.minecraft.block.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.ResourceLocation;
 
 import java.io.IOException;
@@ -115,7 +116,7 @@ public class Block implements IItem, SelectableList.ListItem, Identifiable {
 	}
 
 	public BlockState getLocationBlockState() {
-		this.locationBlockState.pos = blockPosition.getMinecraftBlockPos();
+		this.locationBlockState.pos = (BlockPos) blockPosition;
 		return this.locationBlockState;
 	}
 

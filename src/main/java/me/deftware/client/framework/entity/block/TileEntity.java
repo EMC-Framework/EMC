@@ -1,24 +1,18 @@
 package me.deftware.client.framework.entity.block;
 
+import me.deftware.client.framework.math.BlockPosition;
+import me.deftware.client.framework.math.BoundingBox;
 import me.deftware.client.framework.entity.Entity;
-import me.deftware.client.framework.math.box.BoundingBox;
-import me.deftware.client.framework.math.position.BlockPosition;
-import me.deftware.client.framework.math.position.TileBlockPosition;
-import me.deftware.client.framework.registry.BlockRegistry;
-import me.deftware.client.framework.world.block.Block;
 import net.minecraft.tileentity.TileEntityEnderChest;
 import net.minecraft.tileentity.TileEntityLockable;
-
-import java.util.Optional;
+import me.deftware.client.framework.world.block.Block;
 
 /**
  * @author Deftware
  */
 public class TileEntity {
 
-	private BoundingBox SINGLE;
 	protected final net.minecraft.tileentity.TileEntity entity;
-	protected final BlockPosition position;
 
 	protected Block block;
 
@@ -30,10 +24,10 @@ public class TileEntity {
 	}
 
 	public BoundingBox getBoundingBox() {
-		if (SINGLE == null) {
-			SINGLE = getBlockPosition().getBoundingBox();
-		}
-		return SINGLE;
+		int x = entity.getPos().getX();
+		int y = entity.getPos().getY();
+		int z = entity.getPos().getZ();
+		return BoundingBox.of(x, y, z, x + 1, y + 1, z + 1);
 	}
 
 	public net.minecraft.tileentity.TileEntity getMinecraftEntity() {
@@ -42,7 +36,6 @@ public class TileEntity {
 
 	protected TileEntity(net.minecraft.tileentity.TileEntity entity) {
 		this.entity = entity;
-		this.position = new TileBlockPosition(entity);
 		/*if (entity.getBlockType() != null) {
 			this.block = BlockRegistry.INSTANCE.getBlock(entity.getBlockType());
 		}*/
@@ -57,11 +50,11 @@ public class TileEntity {
 	}
 
 	public BlockPosition getBlockPosition() {
-		return position;
+		return (BlockPosition) getMinecraftEntity().getPos();
 	}
 
-	public float distanceTo(Entity entity) {
-		return position.distanceTo(entity.getBlockPosition());
+	public double distanceTo(Entity entity) {
+		return getBlockPosition().distanceTo(entity.getBlockPosition());
 	}
 
 }

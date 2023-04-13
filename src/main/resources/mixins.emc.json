@@ -78,6 +78,11 @@
     "chat.MixinStyle",
     "chat.MixinText",
     "chat.MixinChatHud",
-    "chat.MixinTextBase"
+    "chat.MixinTextBase",
+    "math.MixinVector3i",
+    "math.MixinVector3d",
+    "math.MixinBlockPos",
+    "math.MixinBox",
+    "math.MixinChunkPos"
   ]
 }

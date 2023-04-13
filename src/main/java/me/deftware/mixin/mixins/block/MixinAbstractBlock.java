@@ -1,17 +1,10 @@
 package me.deftware.mixin.mixins.block;
 
-import me.deftware.client.framework.event.events.EventCollideCheck;
 import me.deftware.client.framework.global.types.BlockProperty;
 import me.deftware.client.framework.global.types.PropertyManager;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
-import me.deftware.client.framework.math.position.DoubleBlockPosition;
 import me.deftware.mixin.imp.IMixinAbstractBlock;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.BlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.BlockPos;
-import net.minecraft.world.World;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Block.class)
 public abstract class MixinAbstractBlock implements IMixinAbstractBlock {
 
-    @Shadow @Final
+    @Shadow
     public float slipperiness;
 
     /* FIXMEW

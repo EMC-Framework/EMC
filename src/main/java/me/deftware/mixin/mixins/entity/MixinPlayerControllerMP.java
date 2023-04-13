@@ -1,5 +1,6 @@
 package me.deftware.mixin.mixins.entity;
 
+import me.deftware.client.framework.math.BlockPosition;
 import me.deftware.client.framework.entity.EntityHand;
 import me.deftware.client.framework.event.events.EventAttackEntity;
 import me.deftware.client.framework.event.events.EventBlockBreakingCooldown;
@@ -7,6 +8,8 @@ import me.deftware.client.framework.event.events.EventBlockUpdate;
 import me.deftware.client.framework.event.events.EventItemUse;
 import me.deftware.client.framework.global.GameKeys;
 import me.deftware.client.framework.global.GameMap;
+import me.deftware.client.framework.registry.BlockRegistry;
+import me.deftware.client.framework.registry.ItemRegistry;
 import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
 import me.deftware.mixin.imp.IMixinPlayerControllerMP;
 import net.minecraft.block.state.IBlockState;
@@ -17,9 +20,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
-import me.deftware.client.framework.math.position.DoubleBlockPosition;
-import me.deftware.client.framework.registry.BlockRegistry;
-import me.deftware.client.framework.registry.ItemRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.world.World;
@@ -104,7 +104,7 @@ public class MixinPlayerControllerMP implements IMixinPlayerControllerMP {
     private void onBlockBreak(Block block, World world, BlockPos pos, IBlockState state) {
         block.onBlockDestroyedByPlayer(world, pos, state);
         new EventBlockUpdate(EventBlockUpdate.State.Break,
-                DoubleBlockPosition.fromMinecraftBlockPos(pos),
+                (BlockPosition) pos,
                 BlockRegistry.INSTANCE.getBlock(block),
                 EntityHand.MainHand
         ).broadcast();
@@ -121,7 +121,7 @@ public class MixinPlayerControllerMP implements IMixinPlayerControllerMP {
 
             new EventBlockUpdate(
                     EventBlockUpdate.State.Place,
-                    DoubleBlockPosition.fromMinecraftBlockPos(offset),
+                    (BlockPosition) offset,
                     BlockRegistry.INSTANCE.getBlock(block),
                     EntityHand.MainHand
             ).broadcast();

@@ -1,11 +1,11 @@
 package me.deftware.client.framework.item;
 
+import me.deftware.client.framework.math.BlockPosition;
 import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.item.effect.StatusEffect;
 import me.deftware.client.framework.item.enchantment.Enchantment;
 import me.deftware.client.framework.item.types.SwordItem;
 import me.deftware.client.framework.item.types.WeaponItem;
-import me.deftware.client.framework.math.position.BlockPosition;
 import me.deftware.client.framework.message.MessageUtils;
 import me.deftware.client.framework.nbt.NbtCompound;
 import me.deftware.client.framework.nbt.NbtList;
@@ -24,10 +24,7 @@ import net.minecraft.item.ItemArmor;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.IChatComponent;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.*;
 
 import java.util.*;
 
@@ -189,7 +186,7 @@ public class ItemStack {
 	}
 
 	public float getStrVsBlock(BlockPosition pos) {
-		return itemStack.getStrVsBlock(Objects.requireNonNull(net.minecraft.client.Minecraft.getMinecraft().theWorld).getBlockState(pos.getMinecraftBlockPos()).getBlock());
+		return itemStack.getStrVsBlock(Objects.requireNonNull(net.minecraft.client.Minecraft.getMinecraft().theWorld).getBlockState((BlockPos) pos).getBlock());
 	}
 
 	@Override

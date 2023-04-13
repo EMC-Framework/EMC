@@ -1,7 +1,7 @@
 package me.deftware.mixin.mixins.render;
 
+import me.deftware.client.framework.math.Vector3;
 import me.deftware.client.framework.event.events.EventStructureLocation;
-import me.deftware.client.framework.math.position.DoubleBlockPosition;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -46,7 +46,7 @@ public class MixinHeldItemRenderer {
             icons.forEach((icon) -> {
                 if (icon instanceof NBTTagCompound) {
                     EventStructureLocation event = new EventStructureLocation(
-                        new DoubleBlockPosition(((NBTTagCompound) icon).getDouble("x"), 0,
+                        Vector3.ofDouble(((NBTTagCompound) icon).getDouble("x"), 0d,
                             ((NBTTagCompound) icon).getDouble("z")),
                         structure);
                     event.broadcast();
