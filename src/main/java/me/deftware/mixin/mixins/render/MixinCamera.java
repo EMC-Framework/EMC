@@ -3,7 +3,7 @@ package me.deftware.mixin.mixins.render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import me.deftware.client.framework.math.vector.Vector3d;
+import me.deftware.client.framework.math.Vector3;
 import me.deftware.client.framework.render.camera.GameCamera;
 
 /**
@@ -22,8 +22,8 @@ public class MixinCamera implements GameCamera {
 	private double renderPosZ;
 
     @Override
-    public Vector3d getCameraPosition() {
-        return new Vector3d(renderPosX, renderPosY, renderPosZ);
+    public Vector3<Double> getCameraPosition() {
+        return Vector3.ofDouble(renderPosX, renderPosY, renderPosZ);
     }
 
     @Override

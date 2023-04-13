@@ -74,7 +74,7 @@ public abstract class MixinBlock {
         if (blockProperties.contains(id)) {
             BlockProperty property = blockProperties.get(id);
             if (property.getVoxelShape() != null) {
-                ci.setReturnValue(property.getVoxelShape().getMinecraftVoxelShape());
+                ci.setReturnValue((VoxelShape) property.getVoxelShape());
                 return;
             }
         }

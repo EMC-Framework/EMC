@@ -4,7 +4,7 @@ import me.deftware.client.framework.event.events.EventCollideCheck;
 import me.deftware.client.framework.global.types.BlockProperty;
 import me.deftware.client.framework.global.types.PropertyManager;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
-import me.deftware.client.framework.math.position.DoubleBlockPosition;
+import me.deftware.client.framework.math.BlockPosition;
 import me.deftware.mixin.imp.IMixinAbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -30,7 +30,7 @@ public abstract class MixinAbstractBlock implements IMixinAbstractBlock {
     public void getOutlineShape(IBlockState blockState_1, IBlockReader blockView_1, BlockPos blockPos_1, CallbackInfoReturnable<VoxelShape> ci) {
         EventCollideCheck event = new EventCollideCheck(
                 me.deftware.client.framework.world.block.Block.newInstance(blockState_1.getBlock()),
-                DoubleBlockPosition.fromMinecraftBlockPos(blockPos_1)
+                (BlockPosition) blockPos_1
         ).broadcast();
         if (event.updated) {
             if (event.canCollide) {

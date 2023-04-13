@@ -1,11 +1,10 @@
 package me.deftware.client.framework.entity.block;
 
-import me.deftware.client.framework.math.box.BoundingBox;
-import me.deftware.client.framework.world.block.types.ChestBlock;
 import net.minecraft.block.BlockChest;
 import net.minecraft.state.properties.ChestType;
 import net.minecraft.tileentity.TileEntityEnderChest;
 import net.minecraft.tileentity.TileEntityTrappedChest;
+import me.deftware.client.framework.math.BoundingBox;
 
 /**
  * @author Deftware

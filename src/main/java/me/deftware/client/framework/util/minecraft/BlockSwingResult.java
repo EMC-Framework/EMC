@@ -1,24 +1,25 @@
 package me.deftware.client.framework.util.minecraft;
 
-import me.deftware.client.framework.math.position.BlockPosition;
-import me.deftware.client.framework.math.position.DoubleBlockPosition;
-import me.deftware.client.framework.math.vector.Vector3d;
 import me.deftware.client.framework.world.ClientWorld;
 import me.deftware.client.framework.world.EnumFacing;
 import me.deftware.client.framework.world.block.Block;
 import net.minecraft.util.math.RayTraceResult;
+import me.deftware.client.framework.math.BlockPosition;
+import me.deftware.client.framework.math.Vector3;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 /**
  * @author Deftware
  */
 public class BlockSwingResult extends RayTraceResult {
 
-	public BlockSwingResult(Vector3d vector3d, EnumFacing facing, BlockPosition position, boolean inBlock) {
+	public BlockSwingResult(Vector3<Double> vector3d, EnumFacing facing, BlockPosition position, boolean inBlock) {
 		super(
 				Type.BLOCK,
-				vector3d.getMinecraftVector(),
+				(Vec3d) vector3d,
 				facing.getFacing(),
-				position.getMinecraftBlockPos()
+				(BlockPos) position
 		);
 	}
 
@@ -35,7 +36,7 @@ public class BlockSwingResult extends RayTraceResult {
 	}
 
 	public BlockPosition getBlockPosition() {
-		return DoubleBlockPosition.fromMinecraftBlockPos(getBlockPos());
+		return (BlockPosition) getBlockPos();
 	}
 
 	public EnumFacing getFacing() {

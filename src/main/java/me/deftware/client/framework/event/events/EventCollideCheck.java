@@ -1,7 +1,7 @@
 package me.deftware.client.framework.event.events;
 
+import me.deftware.client.framework.math.BlockPosition;
 import me.deftware.client.framework.event.Event;
-import me.deftware.client.framework.math.position.BlockPosition;
 import me.deftware.client.framework.world.block.Block;
 
 /**

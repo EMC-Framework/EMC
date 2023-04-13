@@ -1,10 +1,10 @@
 package me.deftware.client.framework.entity.types.main;
 
+import me.deftware.client.framework.math.BlockPosition;
+import me.deftware.client.framework.math.Vector3;
 import me.deftware.client.framework.entity.Entity;
 import me.deftware.client.framework.entity.EntityHand;
 import me.deftware.client.framework.item.ItemStack;
-import me.deftware.client.framework.math.position.BlockPosition;
-import me.deftware.client.framework.math.vector.Vector3d;
 import me.deftware.client.framework.minecraft.Minecraft;
 import me.deftware.client.framework.world.EnumFacing;
 import me.deftware.mixin.imp.IMixinEntityPlayerSP;
@@ -20,6 +20,7 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.MovementInput;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 import java.util.Objects;
 import java.util.Set;
@@ -29,7 +30,7 @@ import java.util.Set;
  *
  * @author Deftware
  */
-public class MainEntityPlayer extends RotationLogic {
+public class MainEntityPlayer extends me.deftware.client.framework.entity.types.EntityPlayer {
 
 	public MainEntityPlayer(EntityPlayer entity) {
 		super(entity);
@@ -40,13 +41,13 @@ public class MainEntityPlayer extends RotationLogic {
 		return (EntityPlayerSP) entity;
 	}
 
-	public boolean processRightClickBlock(BlockPosition pos, EnumFacing facing, Vector3d vector3d) {
+	public boolean processRightClickBlock(BlockPosition pos, EnumFacing facing, Vector3<Double> vector3d) {
 		return processRightClickBlock(pos, facing, vector3d, EntityHand.MainHand);
 	}
 
-	public boolean processRightClickBlock(BlockPosition pos, EnumFacing facing, Vector3d vector3d, EntityHand hand) {
+	public boolean processRightClickBlock(BlockPosition pos, EnumFacing facing, Vector3<Double> vector3d, EntityHand hand) {
 		return Objects.requireNonNull(net.minecraft.client.Minecraft.getInstance().playerController).processRightClickBlock(net.minecraft.client.Minecraft.getInstance().player,
-				net.minecraft.client.Minecraft.getInstance().world, pos.getMinecraftBlockPos(), facing.getFacing(), vector3d.getMinecraftVector(), hand.getMinecraftHand()) == EnumActionResult.SUCCESS;
+				net.minecraft.client.Minecraft.getInstance().world, (BlockPos) pos, facing.getFacing(), (Vec3d) vector3d, hand.getMinecraftHand()) == EnumActionResult.SUCCESS;
 	}
 
 	public void swapHands() {
