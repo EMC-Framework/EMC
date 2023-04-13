@@ -29,8 +29,8 @@ public class LivingEntity extends Entity {
 		return getLivingEntity().getMaxHealth();
 	}
 
-	public void setMovementMultiplier(float multiplier) {
-		getLivingEntity().jumpMovementFactor = multiplier;
+	public void setMovementMultiplier(double multiplier) {
+		getLivingEntity().jumpMovementFactor = (float) multiplier;
 	}
 
 	public float getMovementMultiplier() {

@@ -1,9 +1,9 @@
 package me.deftware.client.framework.entity.types.objects;
 
+import me.deftware.client.framework.math.Vector3;
 import me.deftware.client.framework.entity.Entity;
 import net.minecraft.client.Minecraft;
-import me.deftware.client.framework.math.position.BlockPosition;
-import net.minecraft.world.Explosion;
+import net.minecraft.util.math.Vec3d;
 
 public class EndCrystalEntity extends Entity {
 
@@ -15,8 +15,8 @@ public class EndCrystalEntity extends Entity {
 		return Minecraft.getMinecraft().world.getBlockDensity(entity.getMinecraftEntity().getPositionVector(), entity.getMinecraftEntity().getEntityBoundingBox());
 	}
 	
-	public static float getExplosionExposure(BlockPosition pos, Entity entity) {
-		return Minecraft.getMinecraft().world.getBlockDensity(pos.getVector().getMinecraftVector(), entity.getMinecraftEntity().getEntityBoundingBox());
+	public static float getExplosionExposure(Vector3<Double> vec, Entity entity) {
+		return Minecraft.getMinecraft().world.getBlockDensity((Vec3d) vec, entity.getMinecraftEntity().getEntityBoundingBox());
 	}
 
 }

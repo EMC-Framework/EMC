@@ -1,10 +1,11 @@
 package me.deftware.client.framework.entity.block;
 
-import me.deftware.client.framework.math.box.BoundingBox;
 import me.deftware.client.framework.world.block.types.ChestBlock;
 import net.minecraft.block.BlockChest;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityEnderChest;
+import me.deftware.client.framework.math.BoundingBox;
+import net.minecraft.util.math.BlockPos;
 
 /**
  * @author Deftware
@@ -21,11 +22,11 @@ public class ChestEntity extends StorageEntity {
 	}
 
 	public boolean isFirst() {
-		return ChestBlock.isFirstChest(getBlockPosition().getMinecraftBlockPos());
+		return ChestBlock.isFirstChest((BlockPos) getBlockPosition());
 	}
 
 	public boolean isDouble() {
-		return ChestBlock.getChestShape(getBlockPosition().getMinecraftBlockPos()) != ChestBlock.ChestShape.SINGLE;
+		return ChestBlock.getChestShape((BlockPos) getBlockPosition()) != ChestBlock.ChestShape.SINGLE;
 	}
 
 	public boolean isEnderChest() {

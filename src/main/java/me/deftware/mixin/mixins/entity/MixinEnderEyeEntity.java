@@ -2,10 +2,8 @@ package me.deftware.mixin.mixins.entity;
 
 import me.deftware.client.framework.event.events.EventStructureLocation;
 import me.deftware.client.framework.item.ThrowData;
-import me.deftware.client.framework.math.position.DoubleBlockPosition;
 import net.minecraft.entity.item.EntityEnderEye;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -32,7 +30,7 @@ public class MixinEnderEyeEntity {
 
     @Inject(method = "moveTowards", at = @At("HEAD"))
     public void moveTowards(BlockPos pos, CallbackInfo ci) {
-        EventStructureLocation event = new EventStructureLocation(DoubleBlockPosition.fromMinecraftBlockPos(pos), EventStructureLocation.StructureType.Stronghold);
+        EventStructureLocation event = new EventStructureLocation(pos.getX(), pos.getY(), pos.getZ(), EventStructureLocation.StructureType.Stronghold);
         event.broadcast();
     }
 
@@ -59,12 +57,12 @@ public class MixinEnderEyeEntity {
         }
     }
 
-    @Inject(method = "onUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;setPosition(DDD)V"))
+    @Inject(method = "onUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/item/EntityEnderEye;setPosition(DDD)V"))
     public void setPos(CallbackInfo info) {
         double velX = ((EntityEnderEye)(Object)this).motionX, velZ = ((EntityEnderEye)(Object)this).motionZ, velY = ((EntityEnderEye)(Object)this).motionY;
 
         if (firstThrow != null && secondThrow != null && Math.abs(velX * velZ) <= .0000001 && Math.abs(velY) != 0.0D) {
-            EventStructureLocation event = new EventStructureLocation(DoubleBlockPosition.fromMinecraftBlockPos(firstThrow.calculateIntersection(secondThrow)), EventStructureLocation.StructureType.Stronghold);
+            EventStructureLocation event = new EventStructureLocation(firstThrow.calculateIntersection(secondThrow), EventStructureLocation.StructureType.Stronghold);
             event.broadcast();
         }
     }

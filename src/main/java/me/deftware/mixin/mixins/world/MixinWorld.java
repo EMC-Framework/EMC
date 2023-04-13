@@ -1,12 +1,15 @@
 package me.deftware.mixin.mixins.world;
 
+import me.deftware.client.framework.math.BlockPosition;
+import me.deftware.client.framework.math.Vector3;
 import me.deftware.client.framework.entity.block.TileEntity;
 import me.deftware.client.framework.event.events.EventTileBlockRemoved;
-import me.deftware.client.framework.math.position.BlockPosition;
 import me.deftware.client.framework.world.Biome;
 import net.minecraft.client.Minecraft;
 import me.deftware.client.framework.world.chunk.ChunkAccessor;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -84,7 +87,7 @@ public abstract class MixinWorld implements me.deftware.client.framework.world.W
 
 	@Override
 	public int _getBlockLightLevel(BlockPosition position) {
-		return ((World) (Object) this).getLight(position.getMinecraftBlockPos());
+		return ((World) (Object) this).getLight((BlockPos) position);
 	}
 
 	@Override
@@ -105,7 +108,7 @@ public abstract class MixinWorld implements me.deftware.client.framework.world.W
 	@Override
 	public me.deftware.client.framework.world.block.BlockState _getBlockState(BlockPosition position) {
 		return new me.deftware.client.framework.world.block.BlockState(
-				((World) (Object) this).getBlockState(position.getMinecraftBlockPos())
+				((World) (Object) this).getBlockState((BlockPos) position)
 		);
 	}
 
@@ -128,6 +131,13 @@ public abstract class MixinWorld implements me.deftware.client.framework.world.W
 						Minecraft.getMinecraft().player.getPosition()
 				)
 		);
+	}
+
+	@Unique
+	@Override
+	public boolean rayTraceBlocks(Vector3<Double> start, Vector3<Double> end) {
+		RayTraceResult result = Minecraft.getMinecraft().world.rayTraceBlocks((Vec3d) start, (Vec3d) end);
+		return result != null && result.typeOfHit != RayTraceResult.Type.MISS;
 	}
 
 }

@@ -4,17 +4,13 @@ import me.deftware.client.framework.event.events.EventCollideCheck;
 import me.deftware.client.framework.global.types.BlockProperty;
 import me.deftware.client.framework.global.types.PropertyManager;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
-import me.deftware.client.framework.math.position.DoubleBlockPosition;
+import me.deftware.client.framework.math.BlockPosition;
 import me.deftware.mixin.imp.IMixinAbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.IRegistry;
 import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -24,14 +20,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Block.class)
 public abstract class MixinAbstractBlock implements IMixinAbstractBlock {
 
-    @Shadow @Final
-    private float slipperiness;
+    @Shadow
+    public float slipperiness;
 
     @Inject(method = "getBoundingBox", at = @At("HEAD"), cancellable = true)
     public void getOutlineShape(IBlockState blockState_1, IBlockAccess blockView_1, BlockPos blockPos_1, CallbackInfoReturnable<AxisAlignedBB> ci) {
         EventCollideCheck event = new EventCollideCheck(
                 me.deftware.client.framework.world.block.Block.newInstance(blockState_1.getBlock()),
-                DoubleBlockPosition.fromMinecraftBlockPos(blockPos_1)
+                (BlockPosition) blockPos_1
         ).broadcast();
         if (event.updated) {
             if (event.canCollide) {
