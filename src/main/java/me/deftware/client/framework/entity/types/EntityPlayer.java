@@ -3,13 +3,9 @@ package me.deftware.client.framework.entity.types;
 import me.deftware.client.framework.entity.Entity;
 import me.deftware.client.framework.entity.types.objects.ClonedPlayerMP;
 import me.deftware.client.framework.inventory.EntityInventory;
-import me.deftware.client.framework.item.effect.AppliedStatusEffect;
-import me.deftware.client.framework.item.effect.StatusEffect;
 import me.deftware.client.framework.minecraft.Minecraft;
 import me.deftware.mixin.imp.IMixinEntityLivingBase;
 import net.minecraft.client.gui.inventory.GuiInventory;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
 
 import java.util.*;
 
@@ -19,7 +15,6 @@ import java.util.*;
 public class EntityPlayer extends LivingEntity {
 
 	private final EntityInventory inventory;
-	private final Map<Potion, AppliedStatusEffect> statusEffects = new HashMap<>();
 
 	public EntityPlayer(net.minecraft.entity.player.EntityPlayer entity) {
 		super(entity);
@@ -48,43 +43,6 @@ public class EntityPlayer extends LivingEntity {
 
 	public EntityInventory getInventory() {
 		return inventory;
-	}
-
-	public AppliedStatusEffect getStatusEffect(StatusEffect effect) {
-		return statusEffects.get(effect.getMinecraftStatusEffect());
-	}
-
-	public void removeStatusEffect(StatusEffect effect) {
-		getMinecraftEntity().removePotionEffect(effect.getMinecraftStatusEffect().getId());
-	}
-
-	public boolean hasStatusEffect(StatusEffect effect) {
-		return getMinecraftEntity().isPotionActive(effect.getMinecraftStatusEffect());
-	}
-
-	public void addStatusEffect(AppliedStatusEffect effect) {
-		getMinecraftEntity().addPotionEffect(effect.getMinecraftStatusEffectInstance());
-	}
-
-	public Collection<AppliedStatusEffect> getStatusEffects() {
-		net.minecraft.entity.player.EntityPlayer player = getMinecraftEntity();
-		int size = player.getActivePotionEffects().size();
-		if (size != 0) {
-			if (statusEffects.keySet().size() != size) {
-				for (PotionEffect effect : player.getActivePotionEffects()) {
-					Potion potion = Potion.potionTypes[effect.getPotionID()];
-					if (!statusEffects.containsKey(potion))
-						statusEffects.put(potion, new AppliedStatusEffect(effect));
-					else
-						statusEffects.get(potion).setInstance(effect);
-				}
-				// Remove old effects
-				if (statusEffects.keySet().size() != size)
-					statusEffects.keySet().removeIf(e -> !player.isPotionActive(e));
-			}
-			return statusEffects.values();
-		}
-		return Collections.emptyList();
 	}
 
 	public float getSaturationLevel() {

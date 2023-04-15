@@ -1,9 +1,8 @@
 package me.deftware.client.framework.item;
 
+import me.deftware.client.framework.entity.effect.Effect;
 import me.deftware.client.framework.math.BlockPosition;
 import me.deftware.client.framework.message.Message;
-import me.deftware.client.framework.item.effect.StatusEffect;
-import me.deftware.client.framework.item.enchantment.Enchantment;
 import me.deftware.client.framework.item.types.SwordItem;
 import me.deftware.client.framework.item.types.WeaponItem;
 import me.deftware.client.framework.message.MessageUtils;
@@ -23,6 +22,7 @@ import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.*;
 
@@ -98,16 +98,16 @@ public class ItemStack {
 
 	public List<Pair<Enchantment, Integer>> getEnchantments() {
 		NBTTagCompound tag = itemStack.getTagCompound();
-		if (tag != null && tag.hasKey("Enchantments", 9)) {
-			NBTTagList list = tag.getTagList("Enchantments", 10);
+		if (tag != null && tag.hasKey("ench", 9)) {
+			NBTTagList list = tag.getTagList("ench", 10);
 			if (!list.hasNoTags()) {
 				// Found active enchantments
 				if (enchantments.size() != list.tagCount()) {
 					enchantments.clear();
 					Map<Integer, Integer> stackEnchantments = EnchantmentHelper.getEnchantments(itemStack);
 					for (Integer enchantment : stackEnchantments.keySet()) {
-						EnchantmentRegistry.INSTANCE.enchantments.values().stream()
-								.filter(e -> e.getMinecraftEnchantment().effectId == enchantment)
+						EnchantmentRegistry.INSTANCE.stream()
+								.filter(e -> ((net.minecraft.enchantment.Enchantment) e).effectId == enchantment)
 								.findFirst().ifPresent(e -> {
 									enchantments.add(new Pair<>(e, stackEnchantments.get(enchantment)));
 								});
@@ -201,9 +201,9 @@ public class ItemStack {
 		return ignoreDamage ? getMinecraftItemStack().isItemEqual(stack.getMinecraftItemStack()) : getMinecraftItemStack().getIsItemStackEqual(stack.getMinecraftItemStack());
 	}
 
-	public boolean hasStatusEffect(StatusEffect effect) {
+	public boolean hasStatusEffect(Effect effect) {
 		return Items.potionitem.getEffects(itemStack).stream()
-				.anyMatch(e -> e.getPotionID() == effect.getMinecraftStatusEffect().getId());
+				.anyMatch(e -> e.getPotionID() == ((Potion) effect).getId());
 	}
 
 	public void setStackDisplayName(Message name) {
@@ -212,7 +212,20 @@ public class ItemStack {
 	}
 	
 	public void addEnchantment(Enchantment enchantment, int level) {
-		itemStack.addEnchantment(enchantment.getMinecraftEnchantment(), level);
+		NBTTagCompound nbt = itemStack.getTagCompound();
+		if (nbt == null) {
+			itemStack.setTagCompound(nbt = new NBTTagCompound());
+		}
+
+		if (!nbt.hasKey("ench", 9)) {
+			nbt.setTag("ench", new NBTTagList());
+		}
+
+		NBTTagList nbttaglist = nbt.getTagList("ench", 10);
+		NBTTagCompound nbttagcompound = new NBTTagCompound();
+		nbttagcompound.setShort("id", (short) ((net.minecraft.enchantment.Enchantment) enchantment).effectId);
+		nbttagcompound.setShort("lvl", (short) level);
+		nbttaglist.appendTag(nbttagcompound);
 	}
 
 	public int getRarity() {

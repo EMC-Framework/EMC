@@ -1,7 +1,13 @@
 package me.deftware.client.framework.entity.types;
 
 import me.deftware.client.framework.entity.Entity;
+import me.deftware.client.framework.entity.effect.AppliedEffect;
+import me.deftware.client.framework.entity.effect.Effect;
 import me.deftware.client.framework.item.ItemStack;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
+
+import java.util.stream.Stream;
 
 /**
  * @author Deftware
@@ -64,5 +70,32 @@ public class LivingEntity extends Entity {
 	public ItemStack getEntityHeldItem(boolean offhand) {
 		return main.setStack(getLivingEntity().getHeldItem());
 	}
-	
+
+	public AppliedEffect getStatusEffect(Effect effect) {
+		return (AppliedEffect) getLivingEntity().getActivePotionEffect((Potion) effect);
+	}
+
+	public void removeStatusEffect(Effect effect) {
+		getLivingEntity().removePotionEffect(((Potion) effect).getId());
+	}
+
+	public boolean hasStatusEffect(Effect effect) {
+		return getLivingEntity().isPotionActive((Potion) effect);
+	}
+
+	public void addStatusEffect(AppliedEffect effect) {
+		getLivingEntity().addPotionEffect((PotionEffect) effect);
+	}
+
+	public Stream<AppliedEffect> getStatusEffects() {
+		return getLivingEntity()
+				.getActivePotionEffects()
+				.stream()
+				.map(AppliedEffect.class::cast);
+	}
+
+	public int getActiveStatusEffects() {
+		return getLivingEntity().getActivePotionEffects().size();
+	}
+
 }
