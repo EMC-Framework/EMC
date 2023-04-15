@@ -12,7 +12,9 @@ public interface IRegistry<Type, InternalType> {
 
 	Stream<Type> stream();
 
-	void register(String id, InternalType object);
+	default void register(String id, InternalType object) {
+		throw new RuntimeException("Not implemented");
+	}
 
 	interface IdentifiableRegistry<T extends Identifiable, I> extends IRegistry<T, I> {
 
