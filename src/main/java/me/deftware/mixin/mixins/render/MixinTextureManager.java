@@ -12,13 +12,12 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 @Mixin(RenderSystem.class)
 public class MixinTextureManager {
 
-    /* TODO: FIX ME
     private static int syncedCount = 0;
 
     @ModifyVariable(method = "setShaderTexture(ILnet/minecraft/util/Identifier;)V", remap = false, at = @At("HEAD"))
     private static Identifier setShaderTexture(Identifier resource) {
         if (GameMap.INSTANCE.get(GameKeys.RAINBOW_ITEM_GLINT, false)) {
-            if (resource.equals(ItemRenderer.ENCHANTED_ITEM_GLINT)) {
+            if (resource.equals(ItemRenderer.ITEM_ENCHANTMENT_GLINT)) {
                 if (syncedCount > 50) { // One tick as Normal Enchant Glint
                     resource = new Identifier(
                             "emc/enchanted_item_glint_rainbow.png");
@@ -29,6 +28,5 @@ public class MixinTextureManager {
         }
         return resource;
     }
-    */
 
 }
