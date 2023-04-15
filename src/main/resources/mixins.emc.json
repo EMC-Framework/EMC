@@ -20,7 +20,6 @@
     "entity.MixinEntityPlayerSP",
     "entity.MixinPlayerControllerMP",
     "entity.MixinPlayerEntity",
-    "entity.MixinStatusEffects",
     "entity.MixinEntityType",
     "game.MixinClientBrandRetriever",
     "game.MixinMinecraft",
@@ -44,9 +43,7 @@
     "input.MixinKeyboardListener",
     "input.MixinMouseListener",
     "input.MixinMovementInputFromOptions",
-    "item.MixinEnchantments",
     "item.MixinItems",
-    "item.MixinItemStack",
     "item.MixinItemTool",
     "network.MixinCPacketPlayer",
     "network.MixinNetHandlerLoginClient",
@@ -94,6 +91,9 @@
     "math.MixinBlockPos",
     "math.MixinVoxelShape",
     "math.MixinBox",
-    "math.MixinChunkPos"
+    "math.MixinChunkPos",
+    "entity.MixinEffect",
+    "entity.MixinAppliedEffect",
+    "item.MixinEnchantment"
   ]
 }
