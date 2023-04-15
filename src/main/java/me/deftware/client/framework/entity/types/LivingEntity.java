@@ -1,9 +1,16 @@
 package me.deftware.client.framework.entity.types;
 
 import me.deftware.client.framework.entity.Entity;
+import me.deftware.client.framework.entity.effect.AppliedEffect;
+import me.deftware.client.framework.entity.effect.Effect;
 import me.deftware.client.framework.item.ItemStack;
 import me.deftware.mixin.imp.IMixinEntity;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.util.Hand;
+
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  * @author Deftware
@@ -69,5 +76,32 @@ public class LivingEntity extends Entity {
 			return this.offhand.setStack(getMinecraftEntity().getStackInHand(Hand.OFF_HAND));
 		return main.setStack(getMinecraftEntity().getStackInHand(Hand.MAIN_HAND));
 	}
-	
+
+	public AppliedEffect getStatusEffect(Effect effect) {
+		return (AppliedEffect) getMinecraftEntity().getStatusEffect((StatusEffect) effect);
+	}
+
+	public void removeStatusEffect(Effect effect) {
+		getMinecraftEntity().removeStatusEffect((StatusEffect) effect);
+	}
+
+	public boolean hasStatusEffect(Effect effect) {
+		return getMinecraftEntity().hasStatusEffect((StatusEffect) effect);
+	}
+
+	public void addStatusEffect(AppliedEffect effect) {
+		getMinecraftEntity().addStatusEffect((StatusEffectInstance) effect);
+	}
+
+	public Stream<AppliedEffect> getStatusEffects() {
+		return getMinecraftEntity()
+				.getStatusEffects()
+				.stream()
+				.map(AppliedEffect.class::cast);
+	}
+
+	public int getActiveStatusEffects() {
+		return getMinecraftEntity().getStatusEffects().size();
+	}
+
 }
