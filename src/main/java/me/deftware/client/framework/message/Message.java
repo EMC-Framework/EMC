@@ -14,6 +14,10 @@ import java.util.function.BiFunction;
  */
 public interface Message extends com.mojang.brigadier.Message {
 
+    Message SPACE = (Message) Text.of(" ");
+
+    Message EMPTY = (Message) Text.of("");
+
     String CHEVRON = String.valueOf((char) 187);
 
     /**
@@ -64,6 +68,13 @@ public interface Message extends com.mojang.brigadier.Message {
             return Optional.empty();
         });
         return builder.build();
+    }
+
+    /**
+     * @return A copy of the message
+     */
+    default Message copy() {
+        return (Message) ((Text) this).copy();
     }
 
     /**

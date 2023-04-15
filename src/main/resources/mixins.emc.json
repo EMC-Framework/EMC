@@ -19,7 +19,6 @@
     "entity.MixinEntityPlayerSP",
     "entity.MixinPlayerControllerMP",
     "entity.MixinPlayerEntity",
-    "entity.MixinStatusEffects",
     "entity.MixinStrider",
     "entity.MixinEntityType",
     "game.MixinClientBrandRetriever",
@@ -44,8 +43,8 @@
     "input.MixinKeyboardListener",
     "input.MixinMouseListener",
     "input.MixinMovementInputFromOptions",
-    "item.MixinEnchantments",
     "item.MixinItemTool",
+    "item.MixinEnchantmentHelper",
     "network.MixinCPacketPlayer",
     "network.MixinNetHandlerLoginClient",
     "network.MixinNetHandlerPlayClient",
@@ -96,6 +95,9 @@
     "math.MixinBlockPos",
     "math.MixinVoxelShape",
     "math.MixinBox",
-    "math.MixinChunkPos"
+    "math.MixinChunkPos",
+    "entity.MixinEffect",
+    "entity.MixinAppliedEffect",
+    "item.MixinEnchantment"
   ]
 }
