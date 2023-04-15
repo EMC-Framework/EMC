@@ -1,9 +1,8 @@
 package me.deftware.client.framework.item;
 
+import me.deftware.client.framework.entity.effect.Effect;
 import me.deftware.client.framework.math.BlockPosition;
 import me.deftware.client.framework.message.Message;
-import me.deftware.client.framework.item.effect.StatusEffect;
-import me.deftware.client.framework.item.enchantment.Enchantment;
 import me.deftware.client.framework.item.types.SwordItem;
 import me.deftware.client.framework.item.types.WeaponItem;
 import me.deftware.client.framework.nbt.NbtCompound;
@@ -18,6 +17,7 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.text.LiteralText;
@@ -200,9 +200,9 @@ public class ItemStack {
 		return ignoreDamage ? getMinecraftItemStack().isItemEqualIgnoreDamage(stack.getMinecraftItemStack()) : getMinecraftItemStack().isItemEqual(stack.getMinecraftItemStack());
 	}
 
-	public boolean hasStatusEffect(StatusEffect effect) {
+	public boolean hasStatusEffect(Effect effect) {
 		return PotionUtil.getPotionEffects(itemStack).stream()
-				.anyMatch(e -> e.getEffectType() == effect.getMinecraftStatusEffect());
+				.anyMatch(e -> e.getEffectType() == (StatusEffect) effect);
 	}
 
 	public void setStackDisplayName(Message name) {
@@ -211,7 +211,12 @@ public class ItemStack {
 	}
 	
 	public void addEnchantment(Enchantment enchantment, int level) {
-		itemStack.addEnchantment(enchantment.getMinecraftEnchantment(), level);
+		var nbt = itemStack.getOrCreateTag();
+		if (!nbt.contains("Enchantments", 9)) {
+			nbt.put("Enchantments", new net.minecraft.nbt.NbtList());
+		}
+		var list = nbt.getList("Enchantments", 10);
+		list.add(EnchantmentHelper.createNbt(EnchantmentHelper.getEnchantmentId((net.minecraft.enchantment.Enchantment) enchantment), level));
 	}
 
 	public int getRarity() {
