@@ -27,11 +27,6 @@ public abstract class MixinGuiContainer<T extends ScreenHandler> extends MixinGu
     @Final
     protected T handler;
 
-    @Unique
-    private final Lazy<Inventory> inventoryLazy = new Lazy<>(() -> new Inventory(
-            getHandlerInventory()
-    ));
-
     @Override
     public Slot getMinecraftSlot() {
         return focusedSlot;
@@ -44,9 +39,7 @@ public abstract class MixinGuiContainer<T extends ScreenHandler> extends MixinGu
 
     @Override
     public Inventory getContainerInventory() {
-        if (getHandlerInventory() == null)
-            return null;
-        return inventoryLazy.get();
+        return (Inventory) getHandlerInventory();
     }
 
     @Override
