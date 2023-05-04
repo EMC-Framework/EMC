@@ -123,9 +123,7 @@ public abstract class MixinWorld implements me.deftware.client.framework.world.W
 
 	@Override
 	public me.deftware.client.framework.world.block.BlockState _getBlockState(BlockPosition position) {
-		return new me.deftware.client.framework.world.block.BlockState(
-				((World) (Object) this).getBlockState((BlockPos) position)
-		);
+		return (me.deftware.client.framework.world.block.BlockState) ((World) (Object) this).getBlockState((BlockPos) position);
 	}
 
 	@Override
