@@ -1,6 +1,5 @@
 package me.deftware.mixin.mixins.biome;
 
-import me.deftware.client.framework.registry.BlockRegistry;
 import me.deftware.client.framework.world.gen.BiomeDecorator;
 import me.deftware.client.framework.world.gen.DecoratorConfig;
 import me.deftware.client.framework.world.block.Block;
@@ -73,7 +72,7 @@ public class MixinBiome {
             OreFeatureConfig oreFeatureConfig = (OreFeatureConfig) featureConfig;
             data.setSize(oreFeatureConfig.size);
             // data.setDiscardOnAirChance(oreFeatureConfig.discardOnAirChance);
-            Block block = BlockRegistry.INSTANCE.getBlock(oreFeatureConfig.state.getBlock());
+            Block block = (Block) oreFeatureConfig.state.getBlock();
             if (block != null) {
                 data.getBlockList().add(block);
             }

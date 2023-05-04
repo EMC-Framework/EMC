@@ -17,5 +17,6 @@
     "mm:early_risers": [
       "me.deftware.launch.EarlyRiser"
     ]
-  }
+  },
+  "accessWidener" : "emc.accesswidener"
 }
