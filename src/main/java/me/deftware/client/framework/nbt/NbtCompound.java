@@ -2,55 +2,25 @@ package me.deftware.client.framework.nbt;
 
 import net.minecraft.nbt.CompoundTag;
 
-import java.util.UUID;
-
 /**
  * @author Deftware
  */
-public class NbtCompound {
+public interface NbtCompound {
 
-	private final CompoundTag compound;
-
-	public NbtCompound(CompoundTag compound) {
-		this.compound = compound;
+	static NbtCompound create() {
+		return (NbtCompound) new CompoundTag();
 	}
 
-	public NbtCompound() {
-		this.compound = new CompoundTag();
-	}
+	boolean contains(String key);
 
-	public boolean isValid() {
-		return compound != null;
-	}
+	boolean contains(String key, int type);
 
-	public boolean contains(String key) {
-		return compound.contains(key);
-	}
+	NbtCompound get(String key);
 
-	public boolean getBoolean(String key) {
-		return getMinecraftCompound().getBoolean(key);
-	}
+	NbtList getList(String items, int type);
 
-	public UUID getUUID(String key) {
-		if (getMinecraftCompound().containsUuid(key))
-			return getMinecraftCompound().getUuid(key);
-		return null;
-	}
+	int getByte(String key);
 
-	public boolean contains(String key, int type) {
-		return compound.contains(key, type);
-	}
-
-	public NbtCompound get(String key) {
-		return new NbtCompound(compound.getCompound(key));
-	}
-
-	public CompoundTag getMinecraftCompound() {
-		return compound;
-	}
-
-	public void setTagInfo(String key, NbtList list) {
-		compound.put(key, list.getMinecraftListTag());
-	}
+	void put(String key, NbtList list);
 
 }

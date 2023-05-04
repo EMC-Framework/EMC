@@ -1,23 +1,17 @@
-import net.fabricmc.loom.LoomGradlePlugin
-import org.gradle.internal.os.OperatingSystem
-
-buildscript {
-	repositories {
-		maven { url = "https://maven.fabricmc.net/" }
-		maven { url = "https://plugins.gradle.org/m2/" }
-		mavenCentral()
-	}
-	dependencies {
-		classpath "io.freefair.gradle:lombok-plugin:5.1.1"
-		classpath "net.fabricmc:fabric-loom:0.7-SNAPSHOT"
-	}
+plugins {
+	id 'fabric-loom' version '0.12-SNAPSHOT'
+	id "io.freefair.lombok" version "6.3.0"
+	id 'maven-publish'
 }
 
-apply plugin: "io.freefair.lombok"
-apply plugin: LoomGradlePlugin
-apply plugin: 'maven'
+sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
 
-sourceCompatibility = targetCompatibility = 1.8
+tasks.withType(JavaCompile).configureEach {
+	it.options.encoding = "UTF-8"
+	if (JavaVersion.current().isJava9Compatible()) {
+		it.options.release = 8
+	}
+}
 
 def getVersionFromJava() {
 	def ver = 0.0, patch = 0
@@ -33,101 +27,67 @@ def getVersionFromJava() {
 	return "${ver}.${patch}".toString()
 }
 
-def minecraftRoot = System.getenv('APPDATA') + "/.minecraft"
-if (OperatingSystem.current().isMacOsX()) {
-	minecraftRoot = System.getenv('HOME') + "/Library/Application Support/minecraft"
-} else if (OperatingSystem.current().isLinux()) {
-	minecraftRoot = System.getenv('HOME') + "/.minecraft"
-}
-def mcVersion = "${project.minecraftVersion}"
-def mappingsVer = "${mcVersion}${project.mappingsVer}"
 version = getVersionFromJava()
 
 repositories {
-	maven { url = 'https://jitpack.io' }
-	maven { url = 'https://maven.fabricmc.net' }
+	maven { url 'https://jitpack.io' }
 	maven { url = 'https://gitlab.com/EMC-Framework/maven/raw/master/' }
-	mavenCentral()
 }
 
 dependencies {
-	minecraft "com.mojang:minecraft:${mcVersion}"
-	mappings "net.fabricmc:yarn:${mappingsVer}:v2"
-	implementation 'com.google.code.findbugs:jsr305:3.0.2'
+	minecraft "com.mojang:minecraft:${project.minecraftVersion}"
+	mappings "net.fabricmc:yarn:${project.minecraftVersion}${project.mappingsVer}:v2"
 
 	modImplementation "net.fabricmc:fabric-loader:0.11.7"
 	modImplementation 'com.github.Chocohead:Fabric-ASM:v2.3'
-	include 'com.github.Chocohead:Fabric-ASM:v2.3'
 
+	// No longer included in Minecraft
+	implementation 'io.netty:netty-handler-proxy:4.1.76.Final'
+	implementation 'com.google.code.findbugs:jsr305:3.0.2'
 	implementation files("deps/mocked.jar")
+
+	include 'com.github.Chocohead:Fabric-ASM:v2.3'
 }
 
-sourceSets {
+loom {
+	mixin {
+		useLegacyMixinAp = true
+		defaultRefmapName = 'mixins.emc.refmap.json'
+	}
+	accessWidenerPath = file("src/main/resources/emc.accesswidener")
+}
 
-	mock {
-		compileClasspath += main.compileClasspath
+def artifactVersion = project.hasProperty("av") ? project.property("av").toString() : project.minecraftVersion
+
+publishing {
+	publications {
+		emc(MavenPublication) {
+			groupId 'me.deftware'
+			artifactId "EMC-F-v2"
+			version "${version}-${artifactVersion}"
+
+			from components['java']
+		}
 	}
 
-}
-
-task mockJar(type: Jar) {
-	archiveFileName = "mocked.jar"
-	from sourceSets.mock.output
-}
-
-minecraft {
-	refmapName = 'mixins.emc.refmap.json'
-}
-
-//noinspection GroovyAssignabilityCheck
-task createPom {
-	doLast {
-		pom {
-			//noinspection GroovyAssignabilityCheck
-			project {
-				groupId "me.deftware"
-				artifactId "EMC-F-v2"
-				version "${version}-${mcVersion}"
-			}
-		}.writeTo("maven/me/deftware/EMC-F-v2/${version}-${mcVersion}/EMC-F-v2-${version}-${mcVersion}.pom")
+	repositories {
+		maven {
+			url "$rootDir/maven/"
+		}
 	}
 }
 
-//noinspection GroovyAssignabilityCheck
+processResources {
+	inputs.property "version", project.version
+
+	filesMatching("fabric.mod.json") {
+		expand "version": project.version
+	}
+}
+
 task generateApiDocumentation(type: Javadoc) {
 	source = ['src/main/java/me/deftware/client']
 	title = "EMC Framework Documentation"
 	destinationDir = file("docs")
 	failOnError false
 }
-
-//noinspection GroovyAssignabilityCheck
-task sourcesJar(type: Jar, dependsOn: classes) {
-	archiveClassifier = 'sources'
-	from sourceSets.main.allSource
-}
-
-//noinspection GroovyAssignabilityCheck
-task copyBuilds(type: Copy) {
-	from "$rootDir/build/libs/EMC-${version}.jar"
-	into "$rootDir/maven/me/deftware/EMC-F-v2/${version}-${mcVersion}/"
-	rename { String fileName ->
-		fileName.replace("${version}", "${version}-${mcVersion}").replace("EMC", "EMC-F-v2")
-	}
-	doLast {
-		project.ant.checksum(file: "$rootDir/maven/me/deftware/EMC-F-v2/${version}-${mcVersion}/EMC-F-v2-${version}-${mcVersion}.jar", algorithm: "sha1", todir: "$rootDir/maven/me/deftware/EMC-F-v2/${version}-${mcVersion}/")
-	}
-}
-
-//noinspection GroovyAssignabilityCheck
-task copyToMinecraft(type: Copy) {
-	from "$rootDir/build/libs/EMC-${version}.jar"
-	into "${minecraftRoot}/libraries/me/deftware/EMC-F-v2/${version}-${mcVersion}/"
-	rename { String fileName ->
-		fileName.replace("EMC", "EMC-F-v2").replace(".jar", "-${mcVersion}.jar")
-	}
-}
-
-build.dependsOn(createPom)
-build.finalizedBy(copyBuilds)
-copyToMinecraft.dependsOn(build)

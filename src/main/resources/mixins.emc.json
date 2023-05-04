@@ -4,10 +4,8 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "mixins.emc.refmap.json",
   "mixins": [
-    "block.MixinAbstractBlock",
     "block.MixinBlock",
     "block.MixinBlockCactus",
-    "block.MixinBlocks",
     "block.MixinBlockSoulSand",
     "block.MixinBlockState",
     "block.MixinSweetBerryBushBlock",
@@ -43,8 +41,15 @@
     "input.MixinKeyboardListener",
     "input.MixinMouseListener",
     "input.MixinMovementInputFromOptions",
-    "item.MixinItems",
     "item.MixinItemTool",
+    "item.MixinItemStack",
+    "item.MixinItem",
+    "item.MixinMiningToolItem",
+    "item.MixinArmorItem",
+    "item.MixinItemSword",
+    "item.MixinItemBlock",
+    "item.MixinInventory",
+    "item.MixinEntityInventory",
     "network.MixinCPacketPlayer",
     "network.MixinNetHandlerLoginClient",
     "network.MixinNetHandlerPlayClient",
@@ -94,6 +99,8 @@
     "math.MixinChunkPos",
     "entity.MixinEffect",
     "entity.MixinAppliedEffect",
-    "item.MixinEnchantment"
+    "item.MixinEnchantment",
+    "misc.MixinNbt",
+    "misc.MixinNbtList"
   ]
 }

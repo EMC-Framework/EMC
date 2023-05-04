@@ -16,7 +16,7 @@ public class CPacketEditBook extends PacketWrapper {
     }
 
     public CPacketEditBook(ItemStack book) {
-        super(new BookUpdateC2SPacket(book.getMinecraftItemStack(), true, Hand.MAIN_HAND));
+        super(new BookUpdateC2SPacket((net.minecraft.item.ItemStack) book, true, Hand.MAIN_HAND));
     }
 
 }

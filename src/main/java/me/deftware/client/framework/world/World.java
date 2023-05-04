@@ -84,11 +84,7 @@ public interface World {
 	 * @return The block in a given position
 	 */
 	default Block _getBlockFromPosition(BlockPosition position) {
-		BlockState blockState = _getBlockState(position);
-		Block block = BlockRegistry.INSTANCE.getBlock(blockState.getMinecraftBlockState().getBlock());
-		block.setBlockPosition(position);
-		block.setLocationBlockState(blockState);
-		return block;
+		return _getBlockState(position).getBlock();
 	}
 
 	/**
