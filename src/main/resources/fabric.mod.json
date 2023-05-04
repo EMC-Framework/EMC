@@ -24,5 +24,6 @@
   },
   "custom": {
     "fabric-renderer-indigo:force_compatibility" : true
-  }
+  },
+  "accessWidener" : "emc.accesswidener"
 }

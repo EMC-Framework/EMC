@@ -74,8 +74,7 @@ public class MixinBiome {
                     data.setSize(oreFeatureConfig.size);
                     data.setDiscardOnAirChance(oreFeatureConfig.discardOnAirChance);
                     for (OreFeatureConfig.Target targets : oreFeatureConfig.targets) {
-                        Block block = BlockRegistry.INSTANCE.getBlock(targets.state.getBlock());
-                        data.getBlockList().add(block);
+                        data.getBlockList().add((Block) targets.state.getBlock());
                     }
                 }
             }
