@@ -6,6 +6,7 @@ import me.deftware.client.framework.gui.widgets.properties.Tooltipable;
 import me.deftware.client.framework.gui.screens.MinecraftScreen;
 import me.deftware.client.framework.gui.widgets.NativeComponent;
 import me.deftware.client.framework.gui.widgets.GenericComponent;
+import me.deftware.client.framework.item.Item;
 import me.deftware.client.framework.registry.ItemRegistry;
 import me.deftware.client.framework.render.gl.GLX;
 import net.minecraft.client.MinecraftClient;
@@ -96,7 +97,7 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
     @Inject(method = "getTooltipFromItem", at = @At(value = "TAIL"))
     private void onGetTooltipFromItem(ItemStack stack, CallbackInfoReturnable<List<Text>> cir) {
         var list = cir.getReturnValue();
-        new EventGetItemToolTip(list, ItemRegistry.INSTANCE.getItem(stack.getItem()), client.options.advancedItemTooltips).broadcast();
+        new EventGetItemToolTip(list, (Item) stack.getItem(), client.options.advancedItemTooltips).broadcast();
     }
 
     @Inject(method = "render", at = @At("HEAD"))

@@ -1,6 +1,5 @@
 package me.deftware.client.framework.entity.block;
 
-import me.deftware.client.framework.math.BoundingBox;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.block.DoubleBlockProperties;
 import net.minecraft.block.entity.BlockEntity;
@@ -15,11 +14,6 @@ public class ChestEntity extends StorageEntity {
 
 	public ChestEntity(BlockEntity entity, BlockEntityTickInvoker ticker) {
 		super(entity, ticker);
-	}
-
-	@Override
-	public BoundingBox getBoundingBox() {
-		return me.deftware.client.framework.world.block.types.ChestBlock.getChestBoundingBox(isDouble(), getBlockPosition(), entity.getCachedState());
 	}
 
 	public boolean isFirst() {
