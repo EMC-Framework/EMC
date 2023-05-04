@@ -47,6 +47,7 @@ loom {
 		useLegacyMixinAp = true
 		defaultRefmapName = 'mixins.emc.refmap.json'
 	}
+	accessWidenerPath = file("src/main/resources/emc.accesswidener")
 }
 
 def artifactVersion = project.hasProperty("av") ? project.property("av").toString() : project.minecraftVersion
