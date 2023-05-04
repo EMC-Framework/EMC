@@ -151,7 +151,7 @@ public class MainEntityPlayer extends EntityPlayer {
 		for (int index = 0; index < 9; index++) {
 			if (Objects.requireNonNull(Minecraft.getMinecraftGame()._getPlayer()).getInventory().getStackInSlot(index).isEmpty()) {
 				Objects.requireNonNull(MinecraftClient.getInstance().player).networkHandler
-						.sendPacket(new CreativeInventoryActionC2SPacket(36 + index, stack.getMinecraftItemStack()));
+						.sendPacket(new CreativeInventoryActionC2SPacket(36 + index, (net.minecraft.item.ItemStack) stack));
 				return true;
 			}
 		}
