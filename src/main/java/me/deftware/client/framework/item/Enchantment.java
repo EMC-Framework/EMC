@@ -9,6 +9,10 @@ public interface Enchantment extends Identifiable {
 
     int getMaxLevel();
 
+    int getProtection(int level);
+
+    float getDamage(int level);
+
     Message getName(int level);
 
 }

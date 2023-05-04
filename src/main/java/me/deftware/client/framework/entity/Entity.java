@@ -1,5 +1,6 @@
 package me.deftware.client.framework.entity;
 
+import me.deftware.client.framework.item.Item;
 import me.deftware.client.framework.math.BlockPosition;
 import me.deftware.client.framework.math.BoundingBox;
 import me.deftware.client.framework.math.ChunkPosition;
@@ -37,6 +38,7 @@ import net.minecraft.util.math.Vec3d;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * @author Deftware
@@ -83,8 +85,6 @@ public class Entity {
 		this.entity = entity;
 		if (entity.getVehicle() != null)
 			this.vehicle = ClientWorld.getClientWorld().getEntityByReference(entity.getVehicle());
-		if (entity.getArmorItems() instanceof DefaultedList<net.minecraft.item.ItemStack> defaultedList)
-			ItemStack.init(defaultedList, this.armourItems = Util.getEmptyStackList(defaultedList.size()));
 	}
 
 	public EnumFacing getHorizontalFacing() {
@@ -135,10 +135,8 @@ public class Entity {
 		return ItemStack.EMPTY;
 	}
 
-	public List<ItemStack> getArmourInventory() {
-		if (!armourItems.isEmpty())
-			ItemStack.copyReferences(entity.getArmorItems(), armourItems);
-		return armourItems;
+	public void armorInventory(Consumer<ItemStack> consumer) {
+		entity.getArmorItems().forEach(itemStack -> consumer.accept((ItemStack) itemStack));
 	}
 
 	public void setInPortal(boolean inPortal) {
@@ -177,7 +175,7 @@ public class Entity {
 	}
 
 	public NbtCompound getNbt() {
-		return new NbtCompound(entity.writeNbt(new net.minecraft.nbt.NbtCompound()));
+		return (NbtCompound) entity.writeNbt(new net.minecraft.nbt.NbtCompound());
 	}
 
 	public int getTicksExisted() {
