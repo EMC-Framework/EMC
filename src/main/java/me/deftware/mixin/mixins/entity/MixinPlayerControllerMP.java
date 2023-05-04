@@ -107,7 +107,7 @@ public class MixinPlayerControllerMP implements IMixinPlayerControllerMP {
         TypedActionResult<ItemStack> result = instance.use(world, user, hand);
 
         new EventItemUse(
-                ItemRegistry.INSTANCE.getItem(item),
+                (me.deftware.client.framework.item.Item) item,
                 EntityHand.of(hand)
         ).broadcast();
 
@@ -119,7 +119,7 @@ public class MixinPlayerControllerMP implements IMixinPlayerControllerMP {
         block.onBreak(world, pos, state, player);
         new EventBlockUpdate(EventBlockUpdate.State.Break,
                 (BlockPosition) pos,
-                BlockRegistry.INSTANCE.getBlock(block),
+                (me.deftware.client.framework.world.block.Block) block,
                 EntityHand.MainHand
         ).broadcast();
     }
@@ -148,7 +148,7 @@ public class MixinPlayerControllerMP implements IMixinPlayerControllerMP {
             new EventBlockUpdate(
                     EventBlockUpdate.State.Place,
                     (BlockPosition) pos,
-                    BlockRegistry.INSTANCE.getBlock(block),
+                    (me.deftware.client.framework.world.block.Block) block,
                     EntityHand.of(context.getHand())
             ).broadcast();
         }

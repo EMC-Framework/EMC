@@ -58,12 +58,14 @@ loom {
 	if (forgeBuild) {
 		forge {
 			mixinConfig "mixins.emc.json"
+			convertAccessWideners = true
 		}
 	}
 	mixin {
 		useLegacyMixinAp = true
 		defaultRefmapName = 'mixins.emc.refmap.json'
 	}
+	accessWidenerPath = file("src/main/resources/emc.accesswidener")
 }
 
 if (forgeBuild) {
