@@ -41,7 +41,7 @@ public interface ContainerScreen extends MinecraftScreen {
 	}
 
 	default ItemStack getHoveredItemStack() {
-		return new ItemStack(getMinecraftSlot().getStack());
+		return (ItemStack) getMinecraftSlot().getStack();
 	}
 
 	/*

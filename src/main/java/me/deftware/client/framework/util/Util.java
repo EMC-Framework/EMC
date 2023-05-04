@@ -12,7 +12,7 @@ import java.util.function.Function;
 public class Util {
 
 	public static List<ItemStack> getEmptyStackList(int size) {
-		return getFilledList(size, i -> ItemStack.getEmpty());
+		return getFilledList(size, i -> ItemStack.EMPTY);
 	}
 
 	public static <T> List<T> getFilledList(int size, Function<Integer, T> supplier) {
