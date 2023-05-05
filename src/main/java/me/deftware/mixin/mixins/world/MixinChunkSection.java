@@ -1,6 +1,5 @@
 package me.deftware.mixin.mixins.world;
 
-import me.deftware.client.framework.registry.BlockRegistry;
 import me.deftware.client.framework.world.block.Block;
 import me.deftware.client.framework.world.chunk.SectionAccessor;
 import net.minecraft.world.chunk.ChunkSection;
@@ -11,7 +10,7 @@ public class MixinChunkSection implements SectionAccessor {
 
     @Override
     public Block getBlock(int x, int y, int z) {
-        return BlockRegistry.INSTANCE.getBlock(((ChunkSection) (Object) this).get(x, y, z).getBlock());
+        return (Block) ((ChunkSection) (Object) this).get(x, y, z).getBlock();
     }
 
 }

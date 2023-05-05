@@ -51,6 +51,7 @@ minecraft {
     mappings = project.mappingsVer
     makeObfSourceJar = true
     tweakClass = 'me.deftware.launch.Launcher'
+    at(file('src/main/resources/META-INF/accesstransformer.cfg'))
 }
 
 repositories {

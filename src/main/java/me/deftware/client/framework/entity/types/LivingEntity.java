@@ -1,6 +1,7 @@
 package me.deftware.client.framework.entity.types;
 
 import me.deftware.client.framework.entity.Entity;
+import me.deftware.client.framework.entity.EntityHand;
 import me.deftware.client.framework.entity.effect.AppliedEffect;
 import me.deftware.client.framework.entity.effect.Effect;
 import me.deftware.client.framework.item.ItemStack;
@@ -65,13 +66,16 @@ public class LivingEntity extends Entity {
 		getLivingEntity().setPosition(getPosX(), getPosY(), getPosZ());
 	}
 
-	private final ItemStack main = ItemStack.getEmpty(), offhand = ItemStack.getEmpty();
+	public ItemStack getEntityHeldItem(EntityHand hand) {
+		if (hand == EntityHand.OffHand)
+			return (ItemStack) getLivingEntity().getHeldItem(EnumHand.OFF_HAND);
+		return (ItemStack) getLivingEntity().getHeldItem(EnumHand.MAIN_HAND);
+	}
 
+	@Deprecated
 	@Override
 	public ItemStack getEntityHeldItem(boolean offhand) {
-		if (offhand)
-			return this.offhand.setStack(getLivingEntity().getHeldItem(EnumHand.OFF_HAND));
-		return main.setStack(getLivingEntity().getHeldItem(EnumHand.MAIN_HAND));
+		return getEntityHeldItem(offhand ? EntityHand.OffHand : EntityHand.MainHand);
 	}
 
 	public AppliedEffect getStatusEffect(Effect effect) {

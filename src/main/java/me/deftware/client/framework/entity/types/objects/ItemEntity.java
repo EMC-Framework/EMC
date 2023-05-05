@@ -9,14 +9,14 @@ import net.minecraft.entity.item.EntityItem;
  */
 public class ItemEntity extends Entity {
 
-	private final ItemStack stack = ItemStack.getEmpty();
+	private final ItemStack stack = ItemStack.EMPTY;
 
 	public ItemEntity(net.minecraft.entity.Entity entity) {
 		super(entity);
 	}
 
 	public ItemStack getStack() {
-		return stack.setStack(getMinecraftEntity().getItem());
+		return (ItemStack) getMinecraftEntity().getItem();
 	}
 
 	public EntityItem getMinecraftEntity() {

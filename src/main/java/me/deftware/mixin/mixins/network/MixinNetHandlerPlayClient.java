@@ -99,8 +99,8 @@ public class MixinNetHandlerPlayClient implements NetworkHandler {
         int x = pos.getX() - (chunkX << 4), z = pos.getZ() - (chunkZ << 4), y = pos.getY() & 0xF;
 
         short[] positions = { (short) ((x << 8) | (z << 4) | y) };
-        Block[] blocks = { BlockRegistry.INSTANCE.getBlock(packet.getState().getBlock()) };
-        
+        Block[] blocks = { (Block) packet.getState().getBlock() };
+
         new EventChunk.EventDeltaChunk(
                 chunkX, chunkY, chunkZ,
                 positions, blocks
@@ -111,7 +111,7 @@ public class MixinNetHandlerPlayClient implements NetworkHandler {
     private void onChunkDeltaPacket(SPacketMultiBlockChange packet, CallbackInfo ci) {
         IMixinMultiBlockChange accessor = (IMixinMultiBlockChange) packet;
         Block[] blocks = Arrays.stream(accessor.getRecords())
-                .map(s -> BlockRegistry.INSTANCE.getBlock(s.getBlockState().getBlock()))
+                .map(s -> (Block) s.getBlockState().getBlock())
                 .toArray(Block[]::new);
         int section = 0;
         short[] positions = new short[accessor.getRecords().length];

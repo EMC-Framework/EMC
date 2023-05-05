@@ -2,6 +2,8 @@ package me.deftware.mixin.mixins.item;
 
 import me.deftware.client.framework.message.Message;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.CreatureAttribute;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.registry.IRegistry;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -19,6 +21,18 @@ public class MixinEnchantment implements me.deftware.client.framework.item.Encha
     @Override
     public int getMaxLevel() {
         return ((Enchantment) (Object) this).getMaxLevel();
+    }
+
+    @Unique
+    @Override
+    public int getProtection(int level) {
+        return ((Enchantment) (Object) this).calcModifierDamage(level, DamageSource.GENERIC);
+    }
+
+    @Unique
+    @Override
+    public float getDamage(int level) {
+        return ((Enchantment) (Object) this).calcDamageByCreature(level, CreatureAttribute.UNDEFINED);
     }
 
     @Unique

@@ -15,7 +15,7 @@ public class CPacketEditBook extends PacketWrapper {
     }
 
     public CPacketEditBook(ItemStack book) {
-        super(new net.minecraft.network.play.client.CPacketEditBook(book.getMinecraftItemStack(), true, EnumHand.MAIN_HAND));
+        super(new net.minecraft.network.play.client.CPacketEditBook((net.minecraft.item.ItemStack) book, true, EnumHand.MAIN_HAND));
     }
 
 }

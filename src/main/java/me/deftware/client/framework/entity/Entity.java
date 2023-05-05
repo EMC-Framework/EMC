@@ -18,7 +18,6 @@ import me.deftware.client.framework.entity.types.objects.ItemEntity;
 import me.deftware.client.framework.entity.types.objects.ProjectileEntity;
 import me.deftware.client.framework.item.ItemStack;
 import me.deftware.client.framework.nbt.NbtCompound;
-import me.deftware.client.framework.util.Util;
 import me.deftware.client.framework.world.ClientWorld;
 import me.deftware.client.framework.world.EnumFacing;
 import me.deftware.mixin.imp.IMixinAbstractClientPlayer;
@@ -44,6 +43,7 @@ import net.minecraft.util.NonNullList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * @author Deftware
@@ -90,10 +90,6 @@ public class Entity {
 		this.entity = entity;
 		if (entity.getRidingEntity() != null)
 			this.vehicle = ClientWorld.getClientWorld().getEntityByReference(entity.getRidingEntity());
-		if (entity.getArmorInventoryList() instanceof NonNullList) {
-			NonNullList<net.minecraft.item.ItemStack> defaultedList = (NonNullList<net.minecraft.item.ItemStack>) entity.getArmorInventoryList();
-			ItemStack.init(defaultedList, this.armourItems = Util.getEmptyStackList(defaultedList.size()));
-		}
 	}
 
 	public EnumFacing getHorizontalFacing() {
@@ -147,10 +143,8 @@ public class Entity {
 		return ItemStack.EMPTY;
 	}
 
-	public List<ItemStack> getArmourInventory() {
-		if (!armourItems.isEmpty())
-			ItemStack.copyReferences(entity.getArmorInventoryList(), armourItems);
-		return armourItems;
+	public void armorInventory(Consumer<ItemStack> consumer) {
+		entity.getArmorInventoryList().forEach(itemStack -> consumer.accept((ItemStack) itemStack));
 	}
 
 	public void setInPortal(boolean inPortal) {
@@ -187,7 +181,7 @@ public class Entity {
 	}
 
 	public NbtCompound getNbt() {
-		return new NbtCompound(entity.writeWithoutTypeId(new NBTTagCompound()));
+		return (NbtCompound) entity.writeWithoutTypeId(new NBTTagCompound());
 	}
 
 	public int getTicksExisted() {

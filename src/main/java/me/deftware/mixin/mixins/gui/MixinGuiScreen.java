@@ -7,6 +7,7 @@ import me.deftware.client.framework.gui.widgets.properties.Tooltipable;
 import me.deftware.client.framework.gui.screens.MinecraftScreen;
 import me.deftware.client.framework.gui.widgets.NativeComponent;
 import me.deftware.client.framework.gui.widgets.GenericComponent;
+import me.deftware.client.framework.item.Item;
 import me.deftware.client.framework.registry.ItemRegistry;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -90,7 +91,7 @@ public class MixinGuiScreen implements MinecraftScreen {
     @Redirect(method = "getItemToolTip", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;getTooltip(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/client/util/ITooltipFlag;)Ljava/util/List;"))
     private List<ITextComponent> onGetTooltip(ItemStack stack, EntityPlayer player, ITooltipFlag context) {
         List<ITextComponent> list = stack.getTooltip(player, context);
-        new EventGetItemToolTip(list, ItemRegistry.INSTANCE.getItem(stack.getItem()), context.isAdvanced()).broadcast();
+        new EventGetItemToolTip(list, (Item) stack.getItem(), context.isAdvanced()).broadcast();
         return list;
     }
 

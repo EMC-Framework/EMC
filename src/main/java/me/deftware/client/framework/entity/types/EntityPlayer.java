@@ -15,11 +15,8 @@ import java.util.*;
  */
 public class EntityPlayer extends LivingEntity {
 
-	private final EntityInventory inventory;
-
 	public EntityPlayer(net.minecraft.entity.player.EntityPlayer entity) {
 		super(entity);
-		inventory = new EntityInventory(entity);
 	}
 
 	public boolean isUsingItem() {
@@ -43,7 +40,7 @@ public class EntityPlayer extends LivingEntity {
 	}
 
 	public EntityInventory getInventory() {
-		return inventory;
+		return (EntityInventory) getMinecraftEntity().inventory;
 	}
 
 	public float getSaturationLevel() {

@@ -4,7 +4,6 @@ import net.minecraft.block.BlockChest;
 import net.minecraft.state.properties.ChestType;
 import net.minecraft.tileentity.TileEntityEnderChest;
 import net.minecraft.tileentity.TileEntityTrappedChest;
-import me.deftware.client.framework.math.BoundingBox;
 
 /**
  * @author Deftware
@@ -13,11 +12,6 @@ public class ChestEntity extends StorageEntity {
 
 	public ChestEntity(net.minecraft.tileentity.TileEntity entity) {
 		super(entity);
-	}
-
-	@Override
-	public BoundingBox getBoundingBox() {
-		return me.deftware.client.framework.world.block.types.ChestBlock.getChestBoundingBox(isDouble(), getBlockPosition(), entity.getBlockState());
 	}
 
 	public boolean isFirst() {

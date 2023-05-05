@@ -34,6 +34,7 @@ public class Launcher implements ITweaker {
 
     @Override
     public void injectIntoClassLoader(LaunchClassLoader classLoader) {
+        classLoader.registerTransformer("me.deftware.launch.AccessTransformer");
         MixinBootstrap.init();
         Mixins.addConfiguration("mixins.emc.json");
         MixinEnvironment.getDefaultEnvironment().setSide(MixinEnvironment.Side.CLIENT);
