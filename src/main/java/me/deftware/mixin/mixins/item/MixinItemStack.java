@@ -154,7 +154,7 @@ public class MixinItemStack implements me.deftware.client.framework.item.ItemSta
      * Removes (byte) cast from the level, allowing higher enchantment levels
      */
     @Redirect(method = "addEnchantment", at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/nbt/NBTTagCompound;setShort(Ljava/lang/String;S)V"))
+            target = "Lnet/minecraft/nbt/NBTTagCompound;setShort(Ljava/lang/String;S)V", ordinal = 1))
     private void onEnchant$CreateNbt(NBTTagCompound instance, String key, short value) {
         instance.setShort(key, (short) enchant$level);
     }
