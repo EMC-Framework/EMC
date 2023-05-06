@@ -3,14 +3,12 @@ package me.deftware.mixin.mixins.gui;
 import me.deftware.client.framework.gui.screens.ContainerScreen;
 import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.inventory.Inventory;
-import me.deftware.client.framework.util.Lazy;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -20,11 +18,6 @@ public abstract class MixinGuiContainer extends MixinGuiScreen implements Contai
 
     @Shadow
     private Slot theSlot;
-
-    @Unique
-    private final Lazy<Inventory> inventoryLazy = new Lazy<>(() -> new Inventory(
-            getHandlerInventory()
-    ));
 
     @Override
     public Slot getMinecraftSlot() {
@@ -38,9 +31,7 @@ public abstract class MixinGuiContainer extends MixinGuiScreen implements Contai
 
     @Override
     public Inventory getContainerInventory() {
-        if (getHandlerInventory() == null)
-            return null;
-        return inventoryLazy.get();
+        return (Inventory) getHandlerInventory();
     }
 
     @Override

@@ -1,7 +1,12 @@
 package me.deftware.client.framework.registry;
 
+import net.minecraft.util.RegistryNamespaced;
+import net.minecraft.util.ResourceLocation;
+
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * @author Deftware
@@ -25,6 +30,15 @@ public interface IRegistry<Type, InternalType> {
 					.findFirst();
 		}
 
+	}
+
+	static <T> Stream<T> streamOf(RegistryNamespaced<ResourceLocation, T> registry) {
+		return streamOf(registry.iterator());
+	}
+
+	static <T> Stream<T> streamOf(Iterator<T> iterator) {
+		Iterable<T> iterable = () -> iterator;
+		return StreamSupport.stream(iterable.spliterator(), false);
 	}
 
 }

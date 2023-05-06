@@ -1,9 +1,7 @@
 package me.deftware.client.framework.entity.block;
 
 import me.deftware.client.framework.math.BlockPosition;
-import me.deftware.client.framework.math.BoundingBox;
 import me.deftware.client.framework.entity.Entity;
-import me.deftware.client.framework.registry.BlockRegistry;
 import net.minecraft.tileentity.TileEntityEnderChest;
 import net.minecraft.tileentity.TileEntityLockable;
 import me.deftware.client.framework.world.block.Block;
@@ -24,13 +22,6 @@ public class TileEntity {
 		return new TileEntity(entity);
 	}
 
-	public BoundingBox getBoundingBox() {
-		int x = entity.getPos().getX();
-		int y = entity.getPos().getY();
-		int z = entity.getPos().getZ();
-		return BoundingBox.of(x, y, z, x + 1, y + 1, z + 1);
-	}
-
 	public net.minecraft.tileentity.TileEntity getMinecraftEntity() {
 		return entity;
 	}
@@ -46,7 +37,7 @@ public class TileEntity {
 	public synchronized Block getBlock() {
 		if (block == null) {
 			if (entity.getBlockType() != null) {
-				this.block = BlockRegistry.INSTANCE.getBlock(entity.getBlockType());
+				this.block = (Block) entity.getBlockType();
 			}
 		}
 		return block;

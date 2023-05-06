@@ -139,7 +139,7 @@ public class MainEntityPlayer extends me.deftware.client.framework.entity.types.
 		for (int index = 0; index < 9; index++) {
 			if (Objects.requireNonNull(Minecraft.getMinecraftGame()._getPlayer()).getInventory().getStackInSlot(index).isEmpty()) {
 				Objects.requireNonNull(net.minecraft.client.Minecraft.getMinecraft().thePlayer).sendQueue
-						.addToSendQueue(new C10PacketCreativeInventoryAction(36 + index, stack.getMinecraftItemStack()));
+						.addToSendQueue(new C10PacketCreativeInventoryAction(36 + index, (net.minecraft.item.ItemStack) stack));
 				return true;
 			}
 		}

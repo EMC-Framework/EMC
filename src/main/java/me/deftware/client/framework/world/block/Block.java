@@ -1,20 +1,14 @@
 package me.deftware.client.framework.world.block;
 
-import me.deftware.client.framework.math.BlockPosition;
 import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.fonts.FontRenderer;
 import me.deftware.client.framework.gui.widgets.SelectableList;
-import me.deftware.client.framework.item.IItem;
-import me.deftware.client.framework.message.MessageUtils;
-import me.deftware.client.framework.registry.Identifiable;
+import me.deftware.client.framework.item.Item;
+import me.deftware.client.framework.item.Itemizable;
+import me.deftware.client.framework.item.items.BlockItem;
 import me.deftware.client.framework.render.ItemRenderer;
-import me.deftware.client.framework.world.block.types.CropBlock;
-import me.deftware.client.framework.world.block.types.StorageBlock;
-import net.minecraft.block.*;
+
 import net.minecraft.client.Minecraft;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.ResourceLocation;
 
 import java.io.IOException;
@@ -23,107 +17,29 @@ import java.io.InputStream;
 /**
  * @author Deftware
  */
-public class Block implements IItem, SelectableList.ListItem, Identifiable {
+public interface Block extends Itemizable, SelectableList.ListItem {
 
-	protected final net.minecraft.block.Block block;
-	protected BlockPosition blockPosition;
-	private BlockState locationBlockState = null;
+    int getID();
 
-	public static Block newInstance(net.minecraft.block.Block block) {
-		if (block instanceof BlockCrops) {
-			return new CropBlock(block);
-		} else if (block instanceof BlockChest || block instanceof BlockEnderChest) {
-			return StorageBlock.newInstance(block);
-		} else if (InteractableBlock.isInteractable(block)) {
-			return new InteractableBlock(block);
-		}
-		return new Block(block);
-	}
+    Message getName();
 
-	protected Block(net.minecraft.block.Block block) {
-		this.block = block;
-	}
+    default InputStream getAsset() throws IOException {
+        ResourceLocation blockResource = net.minecraft.block.Block.blockRegistry.getNameForObject((net.minecraft.block.Block) this);
+		ResourceLocation blockTexture = new ResourceLocation(blockResource.getResourceDomain(), "textures/block/" + blockResource.getResourcePath() + ".png");
+        return Minecraft.getMinecraft().getResourceManager().getResource(blockTexture).getInputStream();
+    }
 
-	public void setBlockPosition(BlockPosition position) {
-		this.blockPosition = position;
-	}
+    @Override
+    default void render(int index, int x, int y, int entryWidth, int entryHeight, int mouseX, int mouseY, float tickDelta) {
+        ItemRenderer.getInstance().drawBlock(x, y + 5, this);
+        FontRenderer.drawString(getName(), x + 28, y + ((entryHeight / 2) - (FontRenderer.getFontHeight() / 2)) - 3, 0xFFFFFF);
+    }
 
-	public BlockPosition getBlockPosition() {
-		return blockPosition;
-	}
-
-	public net.minecraft.block.Block getMinecraftBlock() {
-		return block;
-	}
-
-	public String getTranslationKey() {
-		return block.getUnlocalizedName();
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		if (object instanceof Block) {
-			return ((Block) object).getMinecraftBlock() == getMinecraftBlock() || ((Block) object).getMinecraftBlock().getUnlocalizedName().equalsIgnoreCase(getMinecraftBlock().getUnlocalizedName());
-		}
-		return false;
-	}
-
-	public InputStream getAsset() throws IOException {
-		ResourceLocation blockResource = net.minecraft.block.Block.blockRegistry.getNameForObject(block);
-		ResourceLocation blockTexture = new ResourceLocation(blockResource.getResourceDomain(), "textures/blocks/" + blockResource.getResourcePath() + ".png");
-		return Minecraft.getMinecraft().getResourceManager().getResource(blockTexture).getInputStream();
-	}
-
-	public boolean isAir() {
-		return block instanceof BlockAir;
-	}
-
-	public boolean isCaveAir() {
-		return false; // Does not exist in <1.13
-	}
-
-	public boolean isLiquid() {
-		return block == Blocks.water || block == Blocks.lava || block instanceof BlockLiquid;
-	}
-
-	public int getID() {
-		return net.minecraft.block.Block.blockRegistry.getIDForObject(block);
-	}
-
-	public Message getName() {
-		return MessageUtils.parse(block.getLocalizedName());
-	}
-
-	public String getIdentifierKey() {
-		return net.minecraft.block.Block.blockRegistry.getNameForObject(block).getResourcePath();
-	}
-
-	public String getUnlocalizedName() {
-		return block.getUnlocalizedName();
-	}
-
-	public boolean instanceOf(BlockType type) {
-		return type.instanceOf(this);
-	}
-
-	@Override
-	public Item getAsItem() {
-		return Item.getItemFromBlock(getMinecraftBlock());
-	}
-
-	public void setLocationBlockState(final BlockState locationBlockState) {
-		this.locationBlockState = locationBlockState;
-	}
-
-	public BlockState getLocationBlockState() {
-		this.locationBlockState.pos = (BlockPos) blockPosition;
-		return this.locationBlockState;
-	}
-
-	@Override
-	public void render(int index, int x, int y, int entryWidth, int entryHeight, int mouseX, int mouseY, float tickDelta) {
-		ItemRenderer.drawBlock(x, y + 5, this);
-		FontRenderer.drawString(getName(), x + 28, y + ((entryHeight / 2) - (FontRenderer.getFontHeight() / 2)) - 3, 0xFFFFFF);
-	}
+    static Block of(Item item) {
+        if (!(item instanceof BlockItem)) {
+            throw new IllegalArgumentException("Supplied item must be a block item");
+        }
+        return (Block) net.minecraft.block.Block.getBlockFromItem((net.minecraft.item.Item) item);
+    }
 
 }

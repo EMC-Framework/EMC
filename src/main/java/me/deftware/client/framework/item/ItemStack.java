@@ -1,299 +1,74 @@
 package me.deftware.client.framework.item;
 
-import me.deftware.client.framework.entity.effect.Effect;
-import me.deftware.client.framework.math.BlockPosition;
+import me.deftware.client.framework.entity.effect.AppliedEffect;
 import me.deftware.client.framework.message.Message;
-import me.deftware.client.framework.item.types.SwordItem;
-import me.deftware.client.framework.item.types.WeaponItem;
-import me.deftware.client.framework.message.MessageUtils;
 import me.deftware.client.framework.nbt.NbtCompound;
-import me.deftware.client.framework.nbt.NbtList;
-import me.deftware.client.framework.registry.EnchantmentRegistry;
-import me.deftware.client.framework.registry.ItemRegistry;
-import me.deftware.client.framework.util.types.Pair;
 import me.deftware.client.framework.world.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.EnumCreatureAttribute;
-import net.minecraft.init.Items;
-import net.minecraft.item.EnumRarity;
-import net.minecraft.item.ItemArmor;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.*;
 
-import java.util.*;
+import me.deftware.client.framework.world.block.BlockState;
+
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 /**
  * @author Deftware
  */
-public class ItemStack {
+public interface ItemStack {
 
-	public static final ItemStack EMPTY = new ItemStack(null) {
-		@Override
-		public ItemStack setStack(net.minecraft.item.ItemStack itemStack) {
-			if (item != null)
-				throw new IllegalStateException("Cannot update reference of global empty stack!");
-			return super.setStack(itemStack);
-		}
-	};
+    ItemStack EMPTY = (ItemStack) new net.minecraft.item.ItemStack((net.minecraft.item.Item) null);
 
-	protected final List<Pair<Enchantment, Integer>> enchantments = new ArrayList<>();
+    int getCount();
 
-	protected net.minecraft.item.ItemStack itemStack;
-	protected Item item;
+    int getMaxCount();
 
-	public ItemStack(IItem item, int size) {
-		this(ItemRegistry.INSTANCE.getItem(item.getAsItem()), size);
-	}
+    void setCount(int count);
 
-	public ItemStack(Block item, int size) {
-		this.itemStack = new net.minecraft.item.ItemStack(net.minecraft.item.Item.getItemFromBlock(item.getMinecraftBlock()), size);
-		this.item = ItemRegistry.INSTANCE.getItem(itemStack.getItem());
-	}
+    Item getItem();
 
-	public ItemStack(Item item, int size) {
-		this.itemStack = new net.minecraft.item.ItemStack(item.getMinecraftItem(), size);
-		this.item = item;
-	}
+    void effects(Consumer<AppliedEffect> consumer);
 
-	public ItemStack(net.minecraft.item.ItemStack itemStack) {
-		setStack(itemStack);
-	}
+    void enchantments(BiConsumer<Integer, Enchantment> consumer);
 
-	public ItemStack setStack(net.minecraft.item.ItemStack itemStack) {
-		if (itemStack != null) {
-			this.itemStack = itemStack;
-			this.item = ItemRegistry.INSTANCE.getItem(itemStack.getItem());
-		}
-		return this;
-	}
+    void enchant(Enchantment enchantment, int level);
 
-	public static ItemStack getEmpty() {
-		return new ItemStack(null);
-	}
+    Message getName();
 
-	public static void init(List<net.minecraft.item.ItemStack> original, List<ItemStack> stack) {
-		for (int i = 0; i < original.size(); i++)
-			stack.set(i, new ItemStack(original.get(i)));
-	}
+    void setName(Message name);
 
-	public static void copyReferences(Iterable<net.minecraft.item.ItemStack> original, List<ItemStack> stack) {
-		int index = 0;
-		for (net.minecraft.item.ItemStack item : original)
-			stack.get(index++).setStack(item);
-	}
+    Rarity getRarity();
 
-	public net.minecraft.item.ItemStack getMinecraftItemStack() {
-		return itemStack;
-	}
+    int getDamage();
 
-	public Item getItem() {
-		return item;
-	}
+    int getMaxDamage();
 
-	public List<Pair<Enchantment, Integer>> getEnchantments() {
-		NBTTagCompound tag = itemStack.getTagCompound();
-		if (tag != null && tag.hasKey("ench", 9)) {
-			NBTTagList list = tag.getTagList("ench", 10);
-			if (!list.hasNoTags()) {
-				// Found active enchantments
-				if (enchantments.size() != list.tagCount()) {
-					enchantments.clear();
-					Map<Integer, Integer> stackEnchantments = EnchantmentHelper.getEnchantments(itemStack);
-					for (Integer enchantment : stackEnchantments.keySet()) {
-						EnchantmentRegistry.INSTANCE.stream()
-								.filter(e -> ((net.minecraft.enchantment.Enchantment) e).effectId == enchantment)
-								.findFirst().ifPresent(e -> {
-									enchantments.add(new Pair<>(e, stackEnchantments.get(enchantment)));
-								});
-					}
-				}
-				return enchantments;
-			}
-		}
-		return Collections.emptyList();
-	}
+    boolean isDamaged();
 
-	public int getStackProtectionAmount() {
-		int protection = EnchantmentHelper.getEnchantmentModifierDamage(new net.minecraft.item.ItemStack[] {itemStack}, DamageSource.generic);
-		if (item.getMinecraftItem() instanceof ItemArmor) {
-			protection += ((ItemArmor) item.getMinecraftItem()).damageReduceAmount;
-		}
-		return protection;
-	}
+    boolean isDamageable();
 
-	public float getStackAttackDamage() {
-		float damage = EnchantmentHelper.getModifierForCreature(itemStack, EnumCreatureAttribute.UNDEFINED);
-		if (item instanceof SwordItem) {
-			damage += ((SwordItem) item).getAttackDamage();
-		} else if (item instanceof WeaponItem) {
-			damage += ((WeaponItem) item).getAttackDamage();
-		}
-		return damage;
-	}
+    NbtCompound getNbt();
 
-	public boolean isEnchantable() {
-		return itemStack.isItemEnchantable();
-	}
+    void setNbt(NbtCompound nbt);
 
-	public boolean isDamageable() {
-		return itemStack.isItemStackDamageable();
-	}
+    float getMiningSpeed(BlockState state);
 
-	public boolean isDamaged() {
-		return itemStack.isItemDamaged();
-	}
+    boolean isEmpty();
 
-	public boolean isEmpty() {
-		return item == null || item.getID() == 0 || item.isAir();
-	}
+    boolean isItemEqual(ItemStack stack);
 
-	public int getMaxSize() {
-		return itemStack.getMaxStackSize();
-	}
+    static ItemStack of(Block block, int count) {
+        return of(block.getItem(), count);
+    }
 
-	public int getCount() {
-		return itemStack.stackSize;
-	}
+    static ItemStack of(Item item, int count) {
+        return (ItemStack) new net.minecraft.item.ItemStack((net.minecraft.item.Item) item, count);
+    }
 
-	public void setCount(int count) {
-		itemStack.stackSize = count;
-	}
+    static ItemStack of(NbtCompound compound) {
+		throw new IllegalArgumentException("Cannot create item from nbt"); // TODO
+    }
 
-	public int getDamage() {
-		return MathHelper.clamp_int(getRawDamage(), 0, getMaxDamage());
-	}
-
-	public int getRawDamage() {
-		return itemStack.getItemDamage();
-	}
-
-	public int getMaxDamage() {
-		return Math.max(getRawMaxDamage(), 0);
-	}
-
-	public int getRawMaxDamage() {
-		return itemStack.getMaxDamage();
-	}
-
-	public Message getDisplayName() {
-		return MessageUtils.parse(itemStack.getDisplayName());
-	}
-
-	public float getStrVsBlock(BlockPosition pos) {
-		return itemStack.getStrVsBlock(Objects.requireNonNull(net.minecraft.client.Minecraft.getMinecraft().theWorld).getBlockState((BlockPos) pos).getBlock());
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		if (object instanceof ItemStack) {
-			return net.minecraft.item.ItemStack.areItemsEqual(getMinecraftItemStack(), ((ItemStack) object).getMinecraftItemStack());
-		}
-		return false;
-	}
-
-	public boolean isEqualItems(ItemStack stack, boolean ignoreDamage) {
-		return ignoreDamage ? getMinecraftItemStack().isItemEqual(stack.getMinecraftItemStack()) : getMinecraftItemStack().getIsItemStackEqual(stack.getMinecraftItemStack());
-	}
-
-	public boolean hasStatusEffect(Effect effect) {
-		return Items.potionitem.getEffects(itemStack).stream()
-				.anyMatch(e -> e.getPotionID() == ((Potion) effect).getId());
-	}
-
-	public void setStackDisplayName(Message name) {
-		NBTTagCompound nbttagcompound = itemStack.getSubCompound("display", true);
-		nbttagcompound.setString("Name", IChatComponent.Serializer.componentToJson((IChatComponent) name));
-	}
-	
-	public void addEnchantment(Enchantment enchantment, int level) {
-		NBTTagCompound nbt = itemStack.getTagCompound();
-		if (nbt == null) {
-			itemStack.setTagCompound(nbt = new NBTTagCompound());
-		}
-
-		if (!nbt.hasKey("ench", 9)) {
-			nbt.setTag("ench", new NBTTagList());
-		}
-
-		NBTTagList nbttaglist = nbt.getTagList("ench", 10);
-		NBTTagCompound nbttagcompound = new NBTTagCompound();
-		nbttagcompound.setShort("id", (short) ((net.minecraft.enchantment.Enchantment) enchantment).effectId);
-		nbttagcompound.setShort("lvl", (short) level);
-		nbttaglist.appendTag(nbttagcompound);
-	}
-
-	public int getRarity() {
-		if (itemStack.getRarity() == EnumRarity.COMMON) {
-			return 0;
-		} else if (itemStack.getRarity() == EnumRarity.UNCOMMON) {
-			return 1;
-		} else if (itemStack.getRarity() == EnumRarity.RARE) {
-			return 2;
-		} else if (itemStack.getRarity() == EnumRarity.EPIC) {
-			return 3;
-		}
-		return 0;
-	}
-
-	private static RenderItem getRenderItem() {
-		return net.minecraft.client.Minecraft.getMinecraft().getRenderItem();
-	}
-
-	public static void setRenderZLevel(float z) {
-		getRenderItem().zLevel = z;
-	}
-
-	public void renderItemIntoGUI(int x, int y) {
-		getRenderItem().renderItemIntoGUI(getMinecraftItemStack(), x, y);
-		RenderHelper.disableStandardItemLighting();
-	}
-
-	public void renderItemOverlays(int x, int y) {
-		getRenderItem().renderItemOverlays(Minecraft.getMinecraft().fontRendererObj, getMinecraftItemStack(), x, y);
-		RenderHelper.disableStandardItemLighting();
-	}
-
-	public void renderItemAndEffectIntoGUI(int x, int y) {
-		getRenderItem().renderItemAndEffectIntoGUI(getMinecraftItemStack(), x, y);
-		RenderHelper.disableStandardItemLighting();
-	}
-
-	public void renderItemOverlayIntoGUI(int x, int y, String text) {
-		getRenderItem().renderItemOverlayIntoGUI(net.minecraft.client.Minecraft.getMinecraft().fontRendererObj, getMinecraftItemStack(), x, y, text);
-		RenderHelper.disableStandardItemLighting();
-	}
-
-	public boolean hasNbt() {
-		return itemStack.hasTagCompound();
-	}
-
-	public NbtCompound getNbt() {
-		return new NbtCompound(itemStack.getTagCompound());
-	}
-
-	public void setNbtList(String key, NbtList compound) {
-		itemStack.setTagInfo(key, compound.getMinecraftListTag());
-	}
-
-	public static ArrayList<ItemStack> loadAllItems(NbtCompound compound, int size) {
-		ItemStack[] objects = new ItemStack[size];
-		Arrays.fill(objects, ItemStack.EMPTY);
-		List<ItemStack> list = Arrays.asList(objects);
-		NBTTagList itemTag = compound.getMinecraftCompound().getTagList("Items", 10);
-		for(int index = 0; index < itemTag.tagCount(); index++) {
-			NBTTagCompound item = itemTag.getCompoundTagAt(index);
-			int slotData = item.getByte("Slot") & 255;
-			if (slotData < list.size()) {
-				list.set(slotData, new ItemStack(net.minecraft.item.ItemStack.loadItemStackFromNBT(new NbtCompound(item).getMinecraftCompound())));
-			}
-		}
-		return new ArrayList<>(list);
-	}
+	enum Rarity {
+        Common, Uncommon, Rare, Epic
+    }
 
 }

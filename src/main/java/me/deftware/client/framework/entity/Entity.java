@@ -18,7 +18,6 @@ import me.deftware.client.framework.entity.types.objects.ItemEntity;
 import me.deftware.client.framework.entity.types.objects.ProjectileEntity;
 import me.deftware.client.framework.item.ItemStack;
 import me.deftware.client.framework.nbt.NbtCompound;
-import me.deftware.client.framework.util.Util;
 import me.deftware.client.framework.world.ClientWorld;
 import me.deftware.client.framework.world.EnumFacing;
 import me.deftware.mixin.imp.IMixinAbstractClientPlayer;
@@ -43,6 +42,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * @author Deftware
@@ -91,12 +91,6 @@ public class Entity {
 		this.entity = entity;
 		if (entity.ridingEntity != null)
 			this.vehicle = ClientWorld.getClientWorld().getEntityByReference(entity.ridingEntity);
-		/* TODO
-		if (entity.getArmorInventoryList() instanceof List) {
-			List<net.minecraft.item.ItemStack> defaultedList = (List<net.minecraft.item.ItemStack>) entity.getArmorInventoryList();
-			ItemStack.init(defaultedList, this.armourItems = Util.getEmptyStackList(defaultedList.size()));
-		}
-		 */
 	}
 
 	public EnumFacing getHorizontalFacing() {
@@ -150,12 +144,9 @@ public class Entity {
 		return ItemStack.EMPTY;
 	}
 
-	public List<ItemStack> getArmourInventory() {
-		/* TODO
-		if (!armourItems.isEmpty())
-			ItemStack.copyReferences(entity.getArmorInventoryList(), armourItems);
-		 */
-		return armourItems;
+	public void armorInventory(Consumer<ItemStack> consumer) {
+		// TODO
+		// entity.getArmorInventoryList().forEach(itemStack -> consumer.accept((ItemStack) itemStack));
 	}
 
 	public void setInPortal(boolean inPortal) {
@@ -188,13 +179,13 @@ public class Entity {
 	}
 
 	public boolean hasNbt() {
-		return !getNbt().getMinecraftCompound().hasNoTags();
+		return !entity.getNBTTagCompound().hasNoTags();
 	}
 
 	public NbtCompound getNbt() {
 		NBTTagCompound nbt = new NBTTagCompound();
 		entity.writeToNBT(nbt);
-		return new NbtCompound(nbt);
+		return (NbtCompound) nbt;
 	}
 
 	public int getTicksExisted() {
