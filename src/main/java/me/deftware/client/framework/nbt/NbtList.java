@@ -1,29 +1,20 @@
 package me.deftware.client.framework.nbt;
 
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
 
 /**
  * @author Deftware
  */
-public class NbtList {
+public interface NbtList {
 
-	private final NBTTagList list;
+    static NbtList empty() {
+        return (NbtList) new NBTTagList();
+    }
 
-	public NbtList(NBTTagList list) {
-		this.list = list;
-	}
+    int size();
 
-	public NbtList() {
-		this(new NBTTagList());
-	}
+    NbtCompound getCompound(int index);
 
-	public void appendTag(String tag) {
-		list.appendTag(new NBTTagString(tag));
-	}
+    void append(String text);
 
-	public NBTTagList getMinecraftListTag() {
-		return list;
-	}
-	
 }

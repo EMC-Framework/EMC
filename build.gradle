@@ -59,6 +59,7 @@ minecraft {
     if (!forgeBuild) {
         tweakClass = 'me.deftware.launch.Launcher'
     }
+    at(file('src/main/resources/META-INF/accesstransformer.cfg'))
 }
 
 repositories {

@@ -11,7 +11,7 @@ import me.deftware.client.framework.gui.widgets.NativeComponent;
 import me.deftware.client.framework.gui.widgets.GenericComponent;
 import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.message.MessageUtils;
-import me.deftware.client.framework.registry.ItemRegistry;
+import me.deftware.client.framework.item.Item;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 
@@ -91,7 +91,7 @@ public class MixinGuiScreen implements MinecraftScreen {
     @Redirect(method = "getItemToolTip", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;getTooltip(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/client/util/ITooltipFlag;)Ljava/util/List;"))
     private List<String> onGetTooltip(ItemStack stack, EntityPlayer player, ITooltipFlag context) {
         List<Message> list = stack.getTooltip(player, context).stream().map(MessageUtils::parse).collect(Collectors.toList());
-        EventGetItemToolTip event = new EventGetItemToolTip(list, ItemRegistry.INSTANCE.getItem(stack.getItem()), context.isAdvanced()).broadcast();
+        EventGetItemToolTip event = new EventGetItemToolTip(list, (Item) stack.getItem(), context.isAdvanced()).broadcast();
         return event.getList().stream().map(ITextComponent.class::cast).map(ITextComponent::getFormattedText).collect(Collectors.toList());
     }
 

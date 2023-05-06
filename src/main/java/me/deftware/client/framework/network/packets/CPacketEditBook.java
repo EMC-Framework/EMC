@@ -20,7 +20,7 @@ public class CPacketEditBook extends PacketWrapper {
     public CPacketEditBook(ItemStack book) {
         super(null);
         PacketBuffer packetbuffer = new PacketBuffer(Unpooled.buffer());
-        packetbuffer.writeItemStack(book.getMinecraftItemStack());
+        packetbuffer.writeItemStack((net.minecraft.item.ItemStack) book);
         packet = new CPacketCustomPayload("MC|BEdit", packetbuffer);
     }
 

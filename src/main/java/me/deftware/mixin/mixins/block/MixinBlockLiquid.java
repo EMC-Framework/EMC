@@ -19,7 +19,7 @@ public class MixinBlockLiquid {
 
 	@Inject(method = "getCollisionBoundingBox", at = @At("HEAD"), cancellable = true)
 	public void getCollisionBoundingBox(IBlockState p_getShapeForCollision_1_, IBlockAccess p_getShapeForCollision_2_, BlockPos p_getShapeForCollision_3_, CallbackInfoReturnable<AxisAlignedBB> ci) {
-		EventVoxelShape event = new EventVoxelShape(Block.NULL_AABB, me.deftware.client.framework.world.block.Block.newInstance((Block) (Object) this));
+		EventVoxelShape event = new EventVoxelShape(Block.NULL_AABB, (me.deftware.client.framework.world.block.Block) this);
 		event.broadcast();
 		if (event.modified) {
 			ci.setReturnValue(event.shape);
