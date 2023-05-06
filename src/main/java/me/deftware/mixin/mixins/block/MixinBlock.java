@@ -3,6 +3,7 @@ package me.deftware.mixin.mixins.block;
 import me.deftware.client.framework.event.events.EventSlowdown;
 import me.deftware.client.framework.global.types.BlockProperty;
 import me.deftware.client.framework.global.types.BlockPropertyManager;
+import me.deftware.client.framework.global.types.PropertyManager;
 import me.deftware.client.framework.item.Item;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
 import net.minecraft.block.Block;
@@ -31,10 +32,6 @@ public class MixinBlock implements me.deftware.client.framework.world.block.Bloc
     @Final
     private float slipperiness;
 
-    @Shadow
-    @Final
-    protected boolean blocksMovement;
-
     @Unique
     private final EventSlowdown eventSlowdown = new EventSlowdown();
 
@@ -56,6 +53,16 @@ public class MixinBlock implements me.deftware.client.framework.world.block.Bloc
         }
     }
 
+    @Inject(method = "getLightValue", at = @At("HEAD"), cancellable = true)
+    public void getLuminance(IBlockState blockState_1, CallbackInfoReturnable<Integer> callback) {
+        PropertyManager<BlockProperty> blockProperties = Bootstrap.blockProperties;
+        if (blockProperties.isActive()) {
+            int id = IRegistry.BLOCK.getId(blockState_1.getBlock());
+            if (blockProperties.contains(id))
+                callback.setReturnValue(blockProperties.get(id).getLuminance());
+        }
+    }
+
     @Inject(method = "shouldSideBeRendered", at = @At("HEAD"), cancellable = true)
     private static void shouldDrawSide(IBlockState blockState_1, IBlockReader blockView_1, BlockPos blockPos_1, EnumFacing direction_1, CallbackInfoReturnable<Boolean> callback) {
         BlockManagement.shouldDrawSide(blockState_1, blockView_1, blockPos_1, direction_1, callback);
@@ -71,7 +78,6 @@ public class MixinBlock implements me.deftware.client.framework.world.block.Bloc
             BlockProperty property = blockProperties.get(id);
             if (property.getVoxelShape() != null) {
                 ci.setReturnValue((VoxelShape) property.getVoxelShape());
-                return;
             }
         }
     }
