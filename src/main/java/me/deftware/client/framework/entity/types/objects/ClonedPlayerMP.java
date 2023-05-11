@@ -29,7 +29,7 @@ public class ClonedPlayerMP extends OtherClientPlayerEntity {
 			totalExperience = oldPlayer.totalExperience;
 			setScore(oldPlayer.getScore());
 			copyFrom(oldPlayer);
-		} else if (world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY) || oldPlayer.isSpectator()) {
+		} else if (getWorld().getGameRules().getBoolean(GameRules.KEEP_INVENTORY) || oldPlayer.isSpectator()) {
 			getInventory().clone(oldPlayer.getInventory());
 			experienceLevel = oldPlayer.experienceLevel;
 			experienceProgress = oldPlayer.experienceProgress;

@@ -7,6 +7,7 @@ import me.deftware.client.framework.fonts.AtlasTextureFont;
 import me.deftware.client.framework.registry.font.IFontProvider;
 import me.deftware.client.framework.render.batching.RenderStack;
 import me.deftware.client.framework.render.batching.VertexConstructor;
+import me.deftware.client.framework.render.gl.GLX;
 import net.minecraft.client.render.*;
 import net.minecraft.text.Style;
 import org.lwjgl.opengl.GL11;
@@ -36,12 +37,12 @@ public class FontRenderStack extends RenderStack<FontRenderStack> {
 	}
 
 	@Override
-	public FontRenderStack begin() {
+	public FontRenderStack begin(GLX context) {
 		// Bind texture
 		// RenderSystem.enableTexture();
 		font.getTextureAtlas().bind();
 		// Set up buffer
-		return super.begin(GL11.GL_QUADS);
+		return super.begin(context, GL11.GL_QUADS);
 	}
 
 	@Override

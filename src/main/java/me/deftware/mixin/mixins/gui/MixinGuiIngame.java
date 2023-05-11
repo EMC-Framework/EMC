@@ -7,8 +7,8 @@ import me.deftware.client.framework.global.GameMap;
 import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
 import me.deftware.client.framework.render.gl.GLX;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
@@ -37,7 +37,7 @@ public class MixinGuiIngame {
     }
 
     @Inject(method = "renderStatusEffectOverlay", at = @At("HEAD"), cancellable = true)
-    private void renderStatusEffectOverlay(MatrixStack matrices, CallbackInfo ci) {
+    private void renderStatusEffectOverlay(DrawContext context, CallbackInfo ci) {
         if (!GameMap.INSTANCE.get(GameKeys.EFFECT_OVERLAY, true))
             ci.cancel();
     }
@@ -46,8 +46,8 @@ public class MixinGuiIngame {
     private final EventRenderHotbar eventRenderHotbar = new EventRenderHotbar();
 
     @Inject(method = "renderHotbar", at = @At("HEAD"))
-    private void renderHotbar(float partialTicks, MatrixStack matrixStack, CallbackInfo ci) {
-        GLX.INSTANCE.refresh(matrixStack);
+    private void renderHotbar(float tickDelta, DrawContext context, CallbackInfo ci) {
+        eventRenderHotbar.setContext(GLX.of(context));
         eventRenderHotbar.broadcast();
     }
 
@@ -55,8 +55,8 @@ public class MixinGuiIngame {
     private final EventAnimation eventAnimation = new EventAnimation();
 
     @Inject(method = "renderOverlay", at = @At("HEAD"), cancellable = true)
-    private void renderOverlay(MatrixStack matrixStack, Identifier identifier, float f, CallbackInfo ci) {
-        if (identifier == PUMPKIN_BLUR) { // TODO: Verify this
+    private void renderOverlay(DrawContext context, Identifier texture, float opacity, CallbackInfo ci) {
+        if (texture == PUMPKIN_BLUR) { // TODO: Verify this
             eventAnimation.create(EventAnimation.AnimationType.Pumpkin);
             eventAnimation.broadcast();
             if (eventAnimation.isCanceled()) {
@@ -66,7 +66,7 @@ public class MixinGuiIngame {
     }
 
     @Inject(method = "renderPortalOverlay", at = @At("HEAD"), cancellable = true)
-    private void renderPortalOverlay(MatrixStack matrixStack, float f, CallbackInfo ci) {
+    private void renderPortalOverlay(DrawContext context, float nauseaStrength, CallbackInfo ci) {
         eventAnimation.create(EventAnimation.AnimationType.Portal);
         eventAnimation.broadcast();
         if (eventAnimation.isCanceled()) {
@@ -84,7 +84,7 @@ public class MixinGuiIngame {
     }
 
     @Inject(method = "renderVignetteOverlay", at = @At("HEAD"), cancellable = true)
-    private void renderVignetteOverlay(MatrixStack matrixStack, Entity entity, CallbackInfo ci) {
+    private void renderVignetteOverlay(DrawContext context, Entity entity, CallbackInfo ci) {
         eventAnimation.create(EventAnimation.AnimationType.Vignette);
         eventAnimation.broadcast();
         if (eventAnimation.isCanceled()) {

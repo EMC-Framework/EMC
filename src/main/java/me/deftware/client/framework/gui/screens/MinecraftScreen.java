@@ -4,11 +4,13 @@ import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.event.events.EventScreen;
 import me.deftware.client.framework.gui.ScreenRegistry;
 import me.deftware.client.framework.gui.widgets.GenericComponent;
+import me.deftware.client.framework.render.gl.GLX;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
+import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -97,20 +99,24 @@ public interface MinecraftScreen extends GenericScreen {
 	 * Renders a tooltip onscreen
 	 * @param tooltip Tooltip lines
 	 */
-	default void renderTooltip(int x, int y, Message... tooltip) {
-		this.renderTooltip(x, y, getTooltipList(tooltip));
+	default void renderTooltip(GLX context, int x, int y, Message... tooltip) {
+		this.renderTooltip(context, x, y, getTooltipList(tooltip));
 	}
 
 	@ApiStatus.Internal
-	static List<TooltipComponent> getTooltipList(Message... tooltip) {
+	static List<OrderedText> getTooltipList(Message... tooltip) {
 		return Arrays.stream(tooltip)
 				.map(Text.class::cast)
 				.map(Text::asOrderedText)
-				.map(TooltipComponent::of)
 				.collect(Collectors.toList());
 	}
 
 	@ApiStatus.Internal
-	void renderTooltip(int x, int y, List<TooltipComponent> tooltipComponents);
+	default void renderTooltip(GLX context, int x, int y, List<OrderedText> tooltipComponents) {
+		context.getContext().drawTooltip(
+				MinecraftClient.getInstance().textRenderer,
+				tooltipComponents, HoveredTooltipPositioner.INSTANCE, x, y
+		);
+	}
 
 }

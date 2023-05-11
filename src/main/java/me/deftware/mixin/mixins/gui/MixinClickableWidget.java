@@ -4,6 +4,7 @@ import me.deftware.client.framework.gui.widgets.Component;
 import me.deftware.client.framework.gui.widgets.properties.Tooltipable;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.text.OrderedText;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -74,10 +75,10 @@ public class MixinClickableWidget implements Component, Tooltipable {
     }
 
     @Unique
-    private final List<TooltipComponent> tooltipComponents = new ArrayList<>();
+    private final List<OrderedText> tooltipComponents = new ArrayList<>();
 
     @Override
-    public List<TooltipComponent> getTooltipComponents(int mouseX, int mouseY) {
+    public List<OrderedText> getTooltipComponents(int mouseX, int mouseY) {
         return this.tooltipComponents;
     }
 

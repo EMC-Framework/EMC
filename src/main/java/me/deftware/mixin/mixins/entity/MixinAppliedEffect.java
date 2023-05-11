@@ -59,7 +59,7 @@ public class MixinAppliedEffect implements AppliedEffect {
         if (isPermanent()) {
             return Message.of("Infinite");
         }
-        return (Message) StatusEffectUtil.durationToString((StatusEffectInstance) (Object) this, 1.0F);
+        return (Message) StatusEffectUtil.getDurationText((StatusEffectInstance) (Object) this, 1.0F);
     }
 
 }

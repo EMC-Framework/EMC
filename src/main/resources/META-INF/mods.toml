@@ -48,6 +48,6 @@ Provides an API for EMC with Forge.
 [[dependencies.emc]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.19.4]"
+    versionRange="[1.20]"
     ordering="NONE"
     side="BOTH"

@@ -3,11 +3,14 @@ package me.deftware.client.framework.gui.widgets;
 import lombok.Setter;
 import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.gui.widgets.properties.Tooltipable;
+import me.deftware.client.framework.render.gl.GLX;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.OrderedText;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,7 +34,7 @@ public class SelectableList<T extends SelectableList.ListItem> extends EntryList
 
 	public interface ListItem {
 
-		void render(int index, int x, int y, int entryWidth, int entryHeight, int mouseX, int mouseY, float tickDelta);
+		void render(GLX context, int index, int x, int y, int entryWidth, int entryHeight, int mouseX, int mouseY, float tickDelta);
 
 		default boolean onMouseClicked(double mouseX, double mouseY, int button) {
 			return true;
@@ -85,10 +88,10 @@ public class SelectableList<T extends SelectableList.ListItem> extends EntryList
 		return this.getHoveredItem(mouseX, mouseY) != null;
 	}
 
-	private final List<TooltipComponent> tooltipComponents = new ArrayList<>();
+	private final List<OrderedText> tooltipComponents = new ArrayList<>();
 
 	@Override
-	public List<TooltipComponent> getTooltipComponents(int mouseX, int mouseY) {
+	public List<OrderedText> getTooltipComponents(int mouseX, int mouseY) {
 		ItemEntry entry = this.getEntryAtPosition(mouseX, mouseY);
 		if (entry != null) {
 			Message[] tooltip = entry.item.getTooltip();
@@ -118,7 +121,7 @@ public class SelectableList<T extends SelectableList.ListItem> extends EntryList
 
 	protected void onSelectionUpdate(T item) { }
 
-	protected void onDrawItem(T item, int index, int x, int y, int entryWidth, int entryHeight, int mouseX, int mouseY, float tickDelta) { }
+	protected void onDrawItem(GLX context, T item, int index, int x, int y, int entryWidth, int entryHeight, int mouseX, int mouseY, float tickDelta) { }
 
 	/*
 		1.14+ logic
@@ -127,7 +130,7 @@ public class SelectableList<T extends SelectableList.ListItem> extends EntryList
 	private final Map<T, ItemEntry> map = new HashMap<>();
 
 	@Override
-	public void render(MatrixStack matrixStack, int mouseX, int mouseY, float tickDelta) {
+	public void render(DrawContext matrixStack, int mouseX, int mouseY, float tickDelta) {
 		if (this.delegate.size() != this.map.size()) {
 			this.rebuild();
 		}
@@ -154,10 +157,11 @@ public class SelectableList<T extends SelectableList.ListItem> extends EntryList
 		}
 
 		@Override
-		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			x += 8;
-			this.item.render(index, x, y, entryWidth, entryHeight, mouseX, mouseY, tickDelta);
-			SelectableList.this.onDrawItem(item, index, x, y, entryWidth, entryHeight, mouseX, mouseY, tickDelta);
+			GLX glx = GLX.of(context);
+			this.item.render(glx, index, x, y, entryWidth, entryHeight, mouseX, mouseY, tickDelta);
+			SelectableList.this.onDrawItem(glx, item, index, x, y, entryWidth, entryHeight, mouseX, mouseY, tickDelta);
 		}
 
 		@Override

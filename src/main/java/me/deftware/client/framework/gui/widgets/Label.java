@@ -5,10 +5,12 @@ import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.gui.widgets.properties.Tooltipable;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 
 import java.util.ArrayList;
@@ -47,19 +49,19 @@ public class Label implements Drawable, Element, GenericComponent, Tooltipable {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public void render(DrawContext matrices, int mouseX, int mouseY, float delta) {
 		int x = this.x, y = this.y;
 		for (Text line : this.text) {
 			int center = x + this.width / 2 - textRenderer.getWidth(line) / 2;
-			textRenderer.drawWithShadow(matrices, line, center, y, 0xFFFFFF);
+			matrices.drawTextWithShadow(textRenderer, line, center, y, 0xFFFFFF);
 			y += textRenderer.fontHeight;
 		}
 	}
 
-	private final List<TooltipComponent> tooltipComponents = new ArrayList<>();
+	private final List<OrderedText> tooltipComponents = new ArrayList<>();
 
 	@Override
-	public List<TooltipComponent> getTooltipComponents(int mouseX, int mouseY) {
+	public List<OrderedText> getTooltipComponents(int mouseX, int mouseY) {
 		return this.tooltipComponents;
 	}
 

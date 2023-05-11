@@ -1,6 +1,7 @@
 package me.deftware.client.framework.render.gl;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.RotationAxis;
 import org.joml.Matrix4f;
@@ -17,35 +18,33 @@ import java.util.function.Consumer;
  */
 public class GLX {
 
-    public static final GLX INSTANCE = new GLX();
-
     private GLXProvider provider = new GLXMatrixProvider();
-    private MatrixStack stack = new MatrixStack();
+
+    private static final GLX instance = new GLX();
+
+    private DrawContext context;
 
     /*
         Internal functions
      */
 
-    public void refresh(MatrixStack stack) {
-        this.stack = stack;
+    public DrawContext getContext() {
+        return context;
     }
 
-    public void refresh() {
-        refresh(new MatrixStack());
-    }
-
-    public MatrixStack getStack() {
-        return stack;
+    public static GLX of(DrawContext context) {
+        instance.context = context;
+        return instance;
     }
 
     public Matrix4f getModel() {
-        return stack.peek().getPositionMatrix();
+        return context.getMatrices().peek().getPositionMatrix();
     }
 
     public void modelViewStack(Consumer<MatrixStack> action) {
         MatrixStack matrixStack = RenderSystem.getModelViewStack();
         matrixStack.push();
-        matrixStack.multiplyPositionMatrix(GLX.INSTANCE.getModel());
+        matrixStack.multiplyPositionMatrix(getModel());
         RenderSystem.applyModelViewMatrix();
         action.accept(matrixStack);
         matrixStack.pop();
@@ -55,10 +54,6 @@ public class GLX {
     /*
         Public
      */
-
-    public void setGLXProvider(GLXProvider provider) {
-        this.provider = provider;
-    }
 
     public void isolate(Runnable action) {
         push();
@@ -116,12 +111,12 @@ public class GLX {
 
         @Override
         public void translate(float x, float y, float z) {
-            stack.translate(x, y, z);
+            context.getMatrices().translate(x, y, z);
         }
 
         @Override
         public void scale(float x, float y, float z) {
-            stack.scale(x, y, z);
+            context.getMatrices().scale(x, y, z);
         }
 
         @Override
@@ -131,27 +126,28 @@ public class GLX {
 
         @Override
         public void rotate(float angle, float x, float y, float z) {
+            var matrices = context.getMatrices();
             if (x > 0)
-                stack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(angle));
+                matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(angle));
             if (y > 0)
-                stack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(angle));
+                matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(angle));
             if (z > 0)
-                stack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(angle));
+                matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(angle));
         }
 
         @Override
         public void push() {
-            stack.push();
+            context.getMatrices().push();
         }
 
         @Override
         public void pop() {
-            stack.pop();
+            context.getMatrices().pop();
         }
 
         @Override
         public String id() {
-            return "Modern MatrixStack";
+            return "DrawContext";
         }
 
     }

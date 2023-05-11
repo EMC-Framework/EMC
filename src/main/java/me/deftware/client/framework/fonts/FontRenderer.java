@@ -3,7 +3,8 @@ package me.deftware.client.framework.fonts;
 import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.render.gl.GLX;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 
 /**
@@ -11,16 +12,16 @@ import net.minecraft.text.Text;
  */
 public class FontRenderer {
 
-	public static void drawString(Message text, int x, int y, int color) {
-		MinecraftClient.getInstance().textRenderer.draw(getStack(), (Text) text, x, y, color);
+	public static void drawString(GLX context, Message text, int x, int y, int color) {
+		context.getContext().drawText(getTextRenderer(), (Text) text, x, y, color, false);
 	}
 
-	public static void drawCenteredString(Message text, int x, int y, int color) {
-		MinecraftClient.getInstance().textRenderer.drawWithShadow(getStack(), (Text) text, x - MinecraftClient.getInstance().textRenderer.getWidth((Text) text) / 2f, y, color);
+	public static void drawCenteredString(GLX context, Message text, int x, int y, int color) {
+		context.getContext().drawTextWithShadow(getTextRenderer(), (Text) text, x - getTextRenderer().getWidth((Text) text) / 2, y, color);
 	}
 
-	public static void drawStringWithShadow(Message text, int x, int y, int color) {
-		MinecraftClient.getInstance().textRenderer.drawWithShadow(getStack(), (Text) text, x, y, color);
+	public static void drawStringWithShadow(GLX context, Message text, int x, int y, int color) {
+		context.getContext().drawTextWithShadow(getTextRenderer(), (Text) text, x, y, color);
 	}
 
 	public static int getFontHeight() {
@@ -35,8 +36,8 @@ public class FontRenderer {
 		return MinecraftClient.getInstance().textRenderer.getWidth(string);
 	}
 
-	private static MatrixStack getStack() {
-		return GLX.INSTANCE.getStack();
+	private static TextRenderer getTextRenderer() {
+		return MinecraftClient.getInstance().textRenderer;
 	}
 
 }

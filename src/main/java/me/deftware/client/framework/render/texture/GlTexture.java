@@ -10,7 +10,9 @@ import me.deftware.client.framework.util.ResourceUtils;
 import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.render.*;
 import net.minecraft.client.texture.AbstractTexture;
+import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -70,18 +72,17 @@ public class GlTexture implements GuiScreen.BackgroundType {
         this.upload(getImageBuffer(image), false);
     }
 
-    public GlTexture draw(int x, int y, int width, int height) {
-        return draw(x, y, width, height, 0, 0, width, height);
+    public GlTexture draw(GLX context, int x, int y, int width, int height) {
+        return draw(context, x, y, width, height, 0, 0, width, height);
     }
 
-    public GlTexture draw(int x, int y, int width, int height, int u, int v, int textureWidth, int textureHeight) {
-        drawTexture(x, y, width, height, u, v, textureWidth, textureHeight);
+    public GlTexture draw(GLX context, int x, int y, int width, int height, int u, int v, int textureWidth, int textureHeight) {
+        drawTexture(context, x, y, width, height, u, v, textureWidth, textureHeight);
         return this;
     }
 
-    public static void drawTexture(int x, int y, int width, int height, int u, int v, int textureWidth, int textureHeight) {
-        // Render call to Minecraft, highly version dependent
-        Screen.drawTexture(GLX.INSTANCE.getStack(), x, y, u, v, width, height, textureWidth, textureHeight);
+    public static void drawTexture(GLX context, int x, int y, int width, int height, int u, int v, int textureWidth, int textureHeight) {
+        drawTexture(context, x, x + width, y, y + height, 0, width, height, u, v, textureWidth, textureHeight);
     }
 
     public GlTexture bind() {
@@ -131,14 +132,14 @@ public class GlTexture implements GuiScreen.BackgroundType {
     }
 
     @Override
-    public void renderBackground(int mouseX, int mouseY, float delta, GuiScreen parent) {
-        GLX.INSTANCE.color(1, 1, 1, 1);
+    public void renderBackground(GLX context, int mouseX, int mouseY, float delta, GuiScreen parent) {
+        context.color(1, 1, 1, 1);
         int width = parent.getGuiScreenWidth(), height = parent.getGuiScreenHeight();
         if (RenderStack.isInCustomMatrix()) {
             width = GuiScreen.getDisplayWidth();
             height = GuiScreen.getDisplayHeight();
         }
-        bind().draw(0,0, width, height).unbind();
+        bind().draw(context, 0,0, width, height).unbind();
     }
 
     public static ByteBuffer getImageBuffer(BufferedImage image) {
@@ -167,6 +168,22 @@ public class GlTexture implements GuiScreen.BackgroundType {
     public static void bindTexture(MinecraftIdentifier id) {
         AbstractTexture texture = MinecraftClient.getInstance().getTextureManager().getTexture(id);
         bindTexture(texture.getGlId());
+    }
+
+    private static void drawTexture(GLX context, int x0, int x1, int y0, int y1, int z, int regionWidth, int regionHeight, float u, float v, int textureWidth, int textureHeight) {
+        drawTexturedQuad(context, x0, x1, y0, y1, z, u / textureWidth, (u + regionWidth) / textureWidth, v / textureHeight, (v + regionHeight) / textureHeight);
+    }
+
+    private static void drawTexturedQuad(GLX context, int x0, int x1, int y0, int y1, int z, float u0, float u1, float v0, float v1) {
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+        Matrix4f matrix4f = context.getContext().getMatrices().peek().getPositionMatrix();
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        bufferBuilder.vertex(matrix4f, x0, y1, z).texture(u0, v1).next();
+        bufferBuilder.vertex(matrix4f, x1, y1, z).texture(u1, v1).next();
+        bufferBuilder.vertex(matrix4f, x1, y0, z).texture(u1, v0).next();
+        bufferBuilder.vertex(matrix4f, x0, y0, z).texture(u0, v0).next();
+        BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
     }
 
 }

@@ -10,6 +10,7 @@ import me.deftware.client.framework.gui.widgets.TextField;
 import me.deftware.client.framework.input.Mouse;
 import me.deftware.client.framework.render.gl.GLX;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
@@ -50,14 +51,14 @@ public abstract class GuiScreen extends Screen implements GenericScreen {
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+	public void render(DrawContext context, int mouseX, int mouseY, float partialTicks) {
 		Mouse.updateMousePosition();
-		GLX.INSTANCE.refresh();
+		GLX glx = GLX.of(context);
 		if (backgroundType != null)
-			backgroundType.renderBackground(mouseX, mouseY, partialTicks, this);
-		super.render(matrixStack, mouseX, mouseY, partialTicks);
-		onDraw(mouseX, mouseY, partialTicks);
-		onPostDraw(mouseX, mouseY, partialTicks);
+			backgroundType.renderBackground(glx, mouseX, mouseY, partialTicks, this);
+		super.render(context, mouseX, mouseY, partialTicks);
+		onDraw(glx, mouseX, mouseY, partialTicks);
+		onPostDraw(glx, mouseX, mouseY, partialTicks);
 	}
 
 	@Override
@@ -142,9 +143,9 @@ public abstract class GuiScreen extends Screen implements GenericScreen {
 
 	protected abstract void onInitGui();
 
-	protected void onPostDraw(int mouseX, int mouseY, float partialTicks) { }
+	protected void onPostDraw(GLX context, int mouseX, int mouseY, float partialTicks) { }
 
-	protected abstract void onDraw(int mouseX, int mouseY, float partialTicks);
+	protected abstract void onDraw(GLX context, int mouseX, int mouseY, float partialTicks);
 
 	protected void onUpdate() { }
 
@@ -192,24 +193,24 @@ public abstract class GuiScreen extends Screen implements GenericScreen {
 		/**
 		 * No background will be rendered
 		 */
-		BackgroundType None = (mouseX, mouseY, delta, parent) -> { };
+		BackgroundType None = (context, mouseX, mouseY, delta, parent) -> { };
 
 		/**
 		 * A textured background will always be rendered
 		 */
-		BackgroundType Textured = (mouseX, mouseY, delta, parent) -> parent.renderBackgroundTexture(GLX.INSTANCE.getStack());
+		BackgroundType Textured = (context, mouseX, mouseY, delta, parent) -> parent.renderBackgroundTexture(context.getContext());
 
 		/**
 		 * A textured background will be rendered,
 		 * but if a world is loaded, a transparent black
 		 * overlay will be drawn instead
 		 */
-		BackgroundType TexturedOrTransparent = (mouseX, mouseY, delta, parent) -> parent.renderBackground(GLX.INSTANCE.getStack());
+		BackgroundType TexturedOrTransparent = (context, mouseX, mouseY, delta, parent) -> parent.renderBackground(context.getContext());
 
 		/**
 		 * Renders the background
 		 */
-		void renderBackground(int mouseX, int mouseY, float delta, GuiScreen parent);
+		void renderBackground(GLX context, int mouseX, int mouseY, float delta, GuiScreen parent);
 
 	}
 

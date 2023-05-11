@@ -5,7 +5,6 @@ import lombok.Setter;
 
 import me.deftware.client.framework.event.Event;
 import me.deftware.client.framework.world.ClientWorld;
-import me.deftware.client.framework.world.World;
 import net.minecraft.entity.Entity;
 
 /**

@@ -12,9 +12,10 @@ import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
 import me.deftware.mixin.imp.IMixinEntityRenderer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.PostEffectProcessor;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
+import net.minecraft.client.render.BufferBuilderStorage;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -38,6 +39,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 @Mixin(GameRenderer.class)
 public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
@@ -72,27 +74,26 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     @Shadow
     private boolean postProcessorEnabled;
 
+    @Shadow
+    @Final
+    private BufferBuilderStorage buffers;
+
     @Unique
     private final EventRender3D eventRender3D = new EventRender3D();
 
     @Unique
     private final EventRender3DNoBobbing eventRender3DNoBobbing = new EventRender3DNoBobbing();
 
-    @Unique
-    private final Consumer<Float> renderEvent = partialTicks -> eventRender3D.create(partialTicks).broadcast();
-
-    @Unique
-    private final Consumer<Float> renderEventNoBobbing = partialTicks -> eventRender3DNoBobbing.create(partialTicks).broadcast();
-
     @Inject(method = "renderHand", at = @At("HEAD"))
     private void renderHand(MatrixStack matrixStack, Camera camera, float partialTicks, CallbackInfo ci) {
        if (!WindowHelper.isMinimized()) {
            // Normal 3d event
-           loadPushPop(renderEvent, matrixStack, partialTicks);
+           DrawContext drawContext = MixinDrawContextInvoker.create(this.client, matrixStack, this.buffers.getEntityVertexConsumers());
+           loadPushPop(() -> eventRender3D, drawContext, partialTicks);
            // Camera model stack without bobbing applied
-           MatrixStack matrix = new MatrixStack();
+           drawContext = new DrawContext(this.client, this.buffers.getEntityVertexConsumers());
+           MatrixStack matrix = drawContext.getMatrices();
            matrix.push();
-           // TODO: Verify this
            double d = this.getFov(camera, partialTicks, true);
            matrix.peek().getPositionMatrix().mul(this.getBasicProjectionMatrix(d));
            MinecraftClient.getInstance().gameRenderer.loadProjectionMatrix(matrix.peek().getPositionMatrix());
@@ -100,18 +101,20 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
            matrix.pop();
            matrix.multiply(RotationAxis.POSITIVE_X.rotationDegrees(this.camera.getPitch()));
            matrix.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(this.camera.getYaw() + 180f));
-           loadPushPop(renderEventNoBobbing, matrix, partialTicks);
+           loadPushPop(() -> eventRender3DNoBobbing, drawContext, partialTicks);
+           drawContext.draw();
            // Reset projection
            MinecraftClient.getInstance().gameRenderer.loadProjectionMatrix(matrixStack.peek().getPositionMatrix());
            GlStateHelper.enableLighting();
-           GLX.INSTANCE.refresh(matrixStack);
        }
     }
 
     @Unique
-    private void loadPushPop(Consumer<Float> action, MatrixStack stack, float partialTicks) {
-        GLX.INSTANCE.refresh(stack);
-        action.accept(partialTicks);
+    private <T extends EventRender3D> void loadPushPop(Supplier<T> supplier, DrawContext context, float partialTicks) {
+        T event = supplier.get();
+        event.create(partialTicks);
+        event.setContext(GLX.of(context));
+        event.broadcast();
     }
 
     @Unique
@@ -132,27 +135,23 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     @Unique
     private final EventMatrixRender eventMatrixRender = new EventMatrixRender();
 
-    @Redirect(method = "render", at = @At(value = "INVOKE", opcode = 180, target = "Lnet/minecraft/client/gui/hud/InGameHud;render(Lnet/minecraft/client/util/math/MatrixStack;F)V"))
-    private void onRender2D(InGameHud inGameHud, MatrixStack matrices, float tickDelta) {
+    @Redirect(method = "render", at = @At(value = "INVOKE", opcode = 180, target = "Lnet/minecraft/client/gui/hud/InGameHud;render(Lnet/minecraft/client/gui/DrawContext;F)V"))
+    private void onRender2D(InGameHud inGameHud, DrawContext context, float tickDelta) {
         if (!WindowHelper.isMinimized()) {
+            GLX glx = GLX.of(context);
             // Minecraft modifies opacity underwater
-            GLX.INSTANCE.color(1, 1, 1, 1);
-            GLX.INSTANCE.refresh(matrices);
+            glx.color(1, 1, 1, 1);
+            eventRender2D.setContext(glx);
             eventRender2D.create(tickDelta).broadcast();
             // Render with custom matrix
             RenderStack.reloadCustomMatrix();
             RenderStack.setupGl();
+            eventMatrixRender.setContext(glx);
             eventMatrixRender.create(tickDelta).broadcast();
             RenderStack.restoreGl();
             RenderStack.reloadMinecraftMatrix();
         }
-        inGameHud.render(matrices, tickDelta);
-    }
-
-    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/Screen;renderWithTooltip(Lnet/minecraft/client/util/math/MatrixStack;IIF)V"))
-    private void onRenderScreen(Screen screen, MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        GLX.INSTANCE.refresh(matrices);
-        screen.render(matrices, mouseX, mouseY, delta);
+        inGameHud.render(context, tickDelta);
     }
 
     @Override

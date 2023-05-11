@@ -100,9 +100,9 @@ public class EntityPlayer extends LivingEntity {
 		return getMinecraftEntity().getItemUseTimeLeft();
 	}
 
-	public void drawPlayer(int posX, int posY, int scale) {
+	public void drawPlayer(GLX context, int posX, int posY, int scale) {
 		// TODO: Is this right?
-		InventoryScreen.drawEntity(GLX.INSTANCE.getStack(), posX, posY, scale, 0, 0, getMinecraftEntity());
+		InventoryScreen.drawEntity(context.getContext(), posX, posY, scale, 0, 0, getMinecraftEntity());
 	}
 
 	public Entity clone() {

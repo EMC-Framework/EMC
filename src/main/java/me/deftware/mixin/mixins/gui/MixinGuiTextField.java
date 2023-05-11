@@ -2,6 +2,7 @@ package me.deftware.mixin.mixins.gui;
 
 import me.deftware.client.framework.gui.widgets.TextField;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.OrderedText;
@@ -38,7 +39,7 @@ public class MixinGuiTextField extends MixinClickableWidget implements TextField
     private TextRenderer textRenderer;
 
     @Inject(method = "renderButton", at = @At("RETURN"))
-    public void drawTextFieldReturn(MatrixStack matrixStack, int mouseX, int mouseY, float tickDelta, CallbackInfo ci) {
+    public void drawTextFieldReturn(DrawContext matrixStack, int mouseX, int mouseY, float tickDelta, CallbackInfo ci) {
         TextFieldWidget self = (TextFieldWidget) (Object) this;
         if (!overlay.isEmpty()) {
             int currentWidth = textRenderer.getWidth(self.getText());
@@ -47,7 +48,7 @@ public class MixinGuiTextField extends MixinClickableWidget implements TextField
                 x += 4;
                 y += (getComponentHeight() - 8) / 2;
             }
-            textRenderer.drawWithShadow(matrixStack, overlay, x + currentWidth - 3, y - 2, Color.GRAY.getRGB());
+            matrixStack.drawTextWithShadow(textRenderer, overlay, x + currentWidth - 3, y - 2, Color.GRAY.getRGB());
         }
     }
 

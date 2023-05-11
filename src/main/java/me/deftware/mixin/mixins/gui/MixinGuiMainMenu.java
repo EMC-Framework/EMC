@@ -4,6 +4,7 @@ import me.deftware.client.framework.FrameworkConstants;
 import me.deftware.client.framework.global.GameKeys;
 import me.deftware.client.framework.global.GameMap;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,9 +16,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MixinGuiMainMenu {
 
     @Inject(method = "render", at = @At("RETURN"))
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+    public void render(DrawContext matrixStack, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
         if (GameMap.INSTANCE.get(GameKeys.EMC_MAIN_MENU_OVERLAY, true))
-            MinecraftClient.getInstance().textRenderer.drawWithShadow(matrixStack, FrameworkConstants.toDataString(), 2, 2, 0xFFFFFF);
+            matrixStack.drawTextWithShadow(MinecraftClient.getInstance().textRenderer, FrameworkConstants.toDataString(), 2, 2, 0xFFFFFF);
     }
 
 }
