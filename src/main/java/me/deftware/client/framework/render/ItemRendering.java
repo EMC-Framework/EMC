@@ -59,6 +59,16 @@ public class ItemRendering {
 		}
 	}
 
+	public void drawStackLabel(GLX context, ItemStack stack, int x, int y, String count) {
+		drawStackLabel(context, stack, x, y, 0, count);
+	}
+
+	public void drawStackLabel(GLX context, ItemStack stack, int x, int y, int z, String count) {
+		render(context, z, ctx ->
+				ctx.drawItemInSlot(MinecraftClient.getInstance().textRenderer,
+						(net.minecraft.item.ItemStack) stack, x, y, count));
+	}
+
 	private final Supplier<DrawContext> context = Suppliers.memoize(() -> {
 		var mc = MinecraftClient.getInstance();
 		var consumers = mc.getBufferBuilders().getEntityVertexConsumers();
