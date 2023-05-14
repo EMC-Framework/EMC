@@ -11,6 +11,7 @@ import me.deftware.client.framework.global.GameMap;
 import me.deftware.client.framework.global.types.BlockPropertyManager;
 import me.deftware.client.framework.input.Keyboard;
 import me.deftware.client.framework.main.EMCMod;
+import me.deftware.client.framework.main.SSLUtil;
 import me.deftware.client.framework.main.bootstrap.discovery.AbstractModDiscovery;
 import me.deftware.client.framework.main.bootstrap.discovery.ClasspathModDiscovery;
 import me.deftware.client.framework.main.bootstrap.discovery.DirectoryModDiscovery;
@@ -59,6 +60,12 @@ public class Bootstrap {
     public static final BlockPropertyManager blockProperties = new BlockPropertyManager();
 
     public static void init() {
+        try {
+            SSLUtil.init();
+        } catch (Exception ex) {
+            System.err.println("Unable to register SSL certificates");
+            ex.printStackTrace();
+        }
         try {
             Keyboard.populateCodePoints();
             for (int i = 0; i < 200; i++) {
