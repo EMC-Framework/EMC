@@ -11,6 +11,7 @@ import me.deftware.client.framework.global.GameMap;
 import me.deftware.client.framework.global.types.BlockPropertyManager;
 import me.deftware.client.framework.input.Keyboard;
 import me.deftware.client.framework.main.EMCMod;
+import me.deftware.client.framework.main.SSLUtil;
 import me.deftware.client.framework.main.bootstrap.discovery.AbstractModDiscovery;
 import me.deftware.client.framework.main.bootstrap.discovery.ClasspathModDiscovery;
 import me.deftware.client.framework.main.bootstrap.discovery.DirectoryModDiscovery;
@@ -62,6 +63,12 @@ public class Bootstrap {
         if (bootstrapped) {
             logger.warn("Tried to call bootstrap init twice! If running with OptiFine you can ignore this.");
             return;
+        }
+        try {
+            SSLUtil.init();
+        } catch (Exception ex) {
+            System.err.println("Unable to register SSL certificates");
+            ex.printStackTrace();
         }
         bootstrapped = true;
         try {
