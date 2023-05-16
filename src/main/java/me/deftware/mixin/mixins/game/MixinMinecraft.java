@@ -224,14 +224,6 @@ public abstract class MixinMinecraft implements Minecraft {
         return null;
     }
 
-    /* TODO: FIXME
-    @Inject(method = "setCurrentServerEntry", at = @At("HEAD"))
-    private void onServerConnectionSet(ServerInfo serverEntry, CallbackInfo ci) {
-        if (serverEntry != null)
-            this.lastConnectedServer = (ServerDetails) serverEntry;
-    }
-     */
-
     @Override
     public void setRightClickDelayTimer(int delay) {
         this.itemUseCooldown = delay;
@@ -295,6 +287,12 @@ public abstract class MixinMinecraft implements Minecraft {
     @Override
     public Chat getChatSender() {
         return (Chat) ((MinecraftClient) (Object) this).player;
+    }
+
+    @Unique
+    @Override
+    public void setLastConnected(ServerDetails details) {
+        this.lastConnectedServer = details;
     }
 
 }
