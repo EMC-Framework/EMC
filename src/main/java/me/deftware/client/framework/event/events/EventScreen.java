@@ -1,13 +1,12 @@
 package me.deftware.client.framework.event.events;
 
-import me.deftware.client.framework.event.Event;
 import me.deftware.client.framework.gui.screens.MinecraftScreen;
 import net.minecraft.client.gui.GuiScreen;
 
 /**
  * @author Deftware
  */
-public class EventScreen extends Event {
+public class EventScreen extends EventRenderBase {
 
 	private final GuiScreen screen;
 

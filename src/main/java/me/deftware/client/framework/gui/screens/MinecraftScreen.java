@@ -7,6 +7,7 @@ import me.deftware.client.framework.gui.widgets.GenericComponent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.text.ITextComponent;
+import me.deftware.client.framework.render.gl.GLX;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Arrays;
@@ -84,7 +85,7 @@ public interface MinecraftScreen extends GenericScreen {
 	 * Renders a tooltip onscreen
 	 * @param tooltip Tooltip lines
 	 */
-	default void renderTooltip(int x, int y, Message... tooltip) {
+	default void renderTooltip(GLX context, int x, int y, Message... tooltip) {
 		this.renderTooltip(x, y, getTooltipList(tooltip));
 	}
 

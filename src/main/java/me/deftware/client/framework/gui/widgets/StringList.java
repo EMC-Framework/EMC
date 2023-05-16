@@ -4,6 +4,7 @@ import me.deftware.client.framework.fonts.FontRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiListExtended;
 import me.deftware.client.framework.message.Message;
+import me.deftware.client.framework.render.gl.GLX;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +58,7 @@ public class StringList extends GuiListExtended implements GenericComponent {
 
 		@Override
 		public void drawEntry(int slotIndex, int x, int y, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean p_194999_5_, float partialTicks) {
-			FontRenderer.drawString(string, x, y, 0xFFFFFF);
+			FontRenderer.drawString(GLX.getInstance(), string, x, y, 0xFFFFFF);
 		}
 
 		@Override

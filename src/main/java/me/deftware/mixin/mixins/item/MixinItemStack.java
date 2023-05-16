@@ -1,6 +1,7 @@
 package me.deftware.mixin.mixins.item;
 
 import me.deftware.client.framework.entity.effect.AppliedEffect;
+import me.deftware.client.framework.event.events.EventGetItemToolTip;
 import me.deftware.client.framework.item.Enchantment;
 import me.deftware.client.framework.item.Item;
 import me.deftware.client.framework.message.Message;
@@ -8,6 +9,7 @@ import me.deftware.client.framework.nbt.NbtCompound;
 import me.deftware.client.framework.world.block.BlockState;
 import net.minecraft.block.state.BlockStateBase;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionUtils;
@@ -18,7 +20,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -66,7 +70,6 @@ public class MixinItemStack implements me.deftware.client.framework.item.ItemSta
     @Unique
     @Override
     public void enchant(Enchantment enchantment, int level) {
-        // TODO: Remove (byte) cast
         ((ItemStack) (Object) this).addEnchantment((net.minecraft.enchantment.Enchantment) enchantment, level);
     }
 
@@ -139,7 +142,7 @@ public class MixinItemStack implements me.deftware.client.framework.item.ItemSta
     @Unique
     @Override
     public boolean isItemEqual(me.deftware.client.framework.item.ItemStack stack) {
-        return ((ItemStack) (Object) this).isItemEqual((ItemStack) stack);
+        return ItemStack.areItemsEqual((ItemStack) (Object) this, (ItemStack) stack);
     }
 
     @Unique
