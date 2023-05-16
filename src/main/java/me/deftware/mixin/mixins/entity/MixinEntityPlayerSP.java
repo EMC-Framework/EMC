@@ -7,6 +7,7 @@ import me.deftware.mixin.imp.IMixinEntityPlayerSP;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.player.HungerManager;
 import org.spongepowered.asm.mixin.Final;
@@ -88,7 +89,7 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
     private void tick(CallbackInfo ci) {
         if (MinecraftClient.getInstance().world != null && MinecraftClient.getInstance().player != null) {
-            eventUpdate.create(((ClientPlayerEntity) (Object) this).getX(), ((ClientPlayerEntity) (Object) this).getY(), ((ClientPlayerEntity) (Object) this).getZ(), getYaw(), getPitch(), onGround);
+            eventUpdate.create(((ClientPlayerEntity) (Object) this).getX(), ((ClientPlayerEntity) (Object) this).getY(), ((ClientPlayerEntity) (Object) this).getZ(), getYaw(), getPitch(), ((Entity) (Object) this).isOnGround());
             eventUpdate.broadcast();
             if (eventUpdate.isCanceled()) {
                 ci.cancel();
@@ -107,7 +108,7 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
     @Inject(method = "sendMovementPackets", at = @At(value = "HEAD"), cancellable = true)
     private void onSendMovementPackets(CallbackInfo ci) {
         ClientPlayerEntity entity = (ClientPlayerEntity) (Object) this;
-        eventPlayerWalking.create(entity.getX(), entity.getY(), entity.getZ(), getYaw(), getPitch(), onGround);
+        eventPlayerWalking.create(entity.getX(), entity.getY(), entity.getZ(), getYaw(), getPitch(), ((Entity) (Object) this).isOnGround());
         eventPlayerWalking.broadcast();
         if (eventPlayerWalking.isCanceled()) {
             ci.cancel();
@@ -120,7 +121,7 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
     @Inject(method = "sendMovementPackets", at = @At(value = "TAIL"), cancellable = true)
     private void onSendMovementPacketsTail(CallbackInfo ci) {
         ClientPlayerEntity entity = (ClientPlayerEntity) (Object) this;
-        postEvent.create(entity.getX(), entity.getY(), entity.getZ(), getYaw(), getPitch(), onGround);
+        postEvent.create(entity.getX(), entity.getY(), entity.getZ(), getYaw(), getPitch(), ((Entity) (Object) this).isOnGround());
         postEvent.broadcast();
         if (postEvent.isCanceled()) {
             ci.cancel();

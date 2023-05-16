@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import me.deftware.client.framework.render.gl.GLX;
 import net.minecraft.client.render.GameRenderer;
 import me.deftware.client.framework.render.texture.GlTexture;
 import net.minecraft.client.render.VertexFormat;
@@ -95,12 +96,12 @@ public class GifRenderStack extends RenderStack<GifRenderStack> {
     }
 
     @Override
-    public GifRenderStack begin() {
+    public GifRenderStack begin(GLX context) {
         if (!isAvailable)
             throw new RuntimeException("Cannot render unavailable gif!");
         RenderSystem.enableTexture();
         texture.bind();
-        return begin(GL11.GL_QUADS);
+        return begin(context, GL11.GL_QUADS);
     }
 
     @Override
