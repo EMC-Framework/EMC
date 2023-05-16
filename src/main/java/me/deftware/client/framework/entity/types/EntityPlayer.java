@@ -101,7 +101,6 @@ public class EntityPlayer extends LivingEntity {
 	}
 
 	public void drawPlayer(GLX context, int posX, int posY, int scale) {
-		// TODO: Is this right?
 		InventoryScreen.drawEntity(context.getContext(), posX, posY, scale, 0, 0, getMinecraftEntity());
 	}
 
