@@ -197,4 +197,6 @@ public interface Minecraft {
 
 	void setRightClickDelayTimer(int delay);
 
+	void setLastConnected(ServerDetails details);
+
 }
