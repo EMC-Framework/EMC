@@ -17,35 +17,33 @@ import java.util.function.Consumer;
  */
 public class GLX {
 
-    public static final GLX INSTANCE = new GLX();
-
     private GLXProvider provider = new GLXMatrixProvider();
-    private MatrixStack stack = new MatrixStack();
+
+    private static final GLX instance = new GLX();
+
+    private MatrixStack matrices;
 
     /*
         Internal functions
      */
 
-    public void refresh(MatrixStack stack) {
-        this.stack = stack;
+    public MatrixStack getMatrices() {
+        return matrices;
     }
 
-    public void refresh() {
-        refresh(new MatrixStack());
-    }
-
-    public MatrixStack getStack() {
-        return stack;
+    public static GLX of(MatrixStack matrices) {
+        instance.matrices = matrices;
+        return instance;
     }
 
     public Matrix4f getModel() {
-        return stack.peek().getPositionMatrix();
+        return matrices.peek().getPositionMatrix();
     }
 
     public void modelViewStack(Consumer<MatrixStack> action) {
         MatrixStack matrixStack = RenderSystem.getModelViewStack();
         matrixStack.push();
-        matrixStack.multiplyPositionMatrix(GLX.INSTANCE.getModel());
+        matrixStack.multiplyPositionMatrix(getModel());
         RenderSystem.applyModelViewMatrix();
         action.accept(matrixStack);
         matrixStack.pop();
@@ -55,10 +53,6 @@ public class GLX {
     /*
         Public
      */
-
-    public void setGLXProvider(GLXProvider provider) {
-        this.provider = provider;
-    }
 
     public void isolate(Runnable action) {
         push();
@@ -116,12 +110,12 @@ public class GLX {
 
         @Override
         public void translate(float x, float y, float z) {
-            stack.translate(x, y, z);
+            matrices.translate(x, y, z);
         }
 
         @Override
         public void scale(float x, float y, float z) {
-            stack.scale(x, y, z);
+            matrices.scale(x, y, z);
         }
 
         @Override
@@ -132,26 +126,26 @@ public class GLX {
         @Override
         public void rotate(float angle, float x, float y, float z) {
             if (x > 0)
-                stack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(angle));
+                matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(angle));
             if (y > 0)
-                stack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(angle));
+                matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(angle));
             if (z > 0)
-                stack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(angle));
+                matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(angle));
         }
 
         @Override
         public void push() {
-            stack.push();
+            matrices.push();
         }
 
         @Override
         public void pop() {
-            stack.pop();
+            matrices.pop();
         }
 
         @Override
         public String id() {
-            return "Modern MatrixStack";
+            return "DrawContext";
         }
 
     }

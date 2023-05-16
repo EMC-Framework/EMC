@@ -1,15 +1,11 @@
 package me.deftware.mixin.mixins.gui;
 
-
 import me.deftware.client.framework.command.CommandRegister;
-import me.deftware.client.framework.event.events.EventGetItemToolTip;
 import me.deftware.client.framework.event.events.EventScreen;
 import me.deftware.client.framework.gui.widgets.properties.Tooltipable;
 import me.deftware.client.framework.gui.screens.MinecraftScreen;
 import me.deftware.client.framework.gui.widgets.NativeComponent;
 import me.deftware.client.framework.gui.widgets.GenericComponent;
-import me.deftware.client.framework.item.Item;
-import me.deftware.client.framework.registry.ItemRegistry;
 import me.deftware.client.framework.render.gl.GLX;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
@@ -21,8 +17,8 @@ import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.ItemStack;
 import net.minecraft.text.ClickEvent;
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Final;
@@ -101,18 +97,11 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
         return event;
     }
 
-    @Inject(method = "getTooltipFromItem", at = @At(value = "TAIL"))
-    private void onGetTooltipFromItem(ItemStack stack, CallbackInfoReturnable<List<Text>> cir) {
-        var list = cir.getReturnValue();
-        new EventGetItemToolTip(list, (Item) stack.getItem(), client.options.advancedItemTooltips).broadcast();
-    }
-
     @Inject(method = "render", at = @At("HEAD"))
     private void onDraw(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        GLX.INSTANCE.refresh();
         event.setMouseX(mouseX);
         event.setMouseY(mouseY);
-        event.setType(EventScreen.Type.Draw).broadcast();
+        event.setType(EventScreen.Type.Draw).setContext(GLX.of(matrices)).broadcast();
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -135,14 +124,14 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
 
     @Unique
     protected void onPostDrawEvent(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        event.setType(EventScreen.Type.PostDraw).broadcast();
+        event.setType(EventScreen.Type.PostDraw).setContext(GLX.of(matrices)).broadcast();
         // Render tooltip
         for (Element element : children) {
             if (element instanceof Tooltipable tooltipable) {
                 if (tooltipable.isMouseOverComponent(mouseX, mouseY)) {
                     List<TooltipComponent> list = tooltipable.getTooltipComponents(mouseX, mouseY);
                     if (list != null && !list.isEmpty()) {
-                        this.renderTooltip(mouseX, mouseY, list);
+                        this.renderTooltip(GLX.of(matrices), mouseX, mouseY, list);
                         break;
                     }
                 }
@@ -151,8 +140,8 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
     }
 
     @Override
-    public void renderTooltip(int x, int y, List<TooltipComponent> tooltipComponents) {
-        this.renderTooltipFromComponents(GLX.INSTANCE.getStack(), tooltipComponents, x, y, HoveredTooltipPositioner.INSTANCE);
+    public void renderTooltip(GLX context, int x, int y, List<TooltipComponent> tooltipComponents) {
+        this.renderTooltipFromComponents(context.getMatrices(), tooltipComponents, x, y, HoveredTooltipPositioner.INSTANCE);
     }
 
     @Inject(method = "handleTextClick", at = @At("HEAD"), cancellable = true)
