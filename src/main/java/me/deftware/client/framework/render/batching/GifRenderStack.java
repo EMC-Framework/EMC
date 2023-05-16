@@ -4,6 +4,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
+import me.deftware.client.framework.render.gl.GLX;
 import me.deftware.client.framework.render.texture.GlTexture;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -85,12 +86,12 @@ public class GifRenderStack extends RenderStack<GifRenderStack> {
     }
 
     @Override
-    public GifRenderStack begin() {
+    public GifRenderStack begin(GLX context) {
         if (!isAvailable)
             throw new RuntimeException("Cannot render unavailable gif!");
         GlStateManager.enableTexture2D();
         texture.bind();
-        return begin(GL11.GL_QUADS);
+        return begin(context, GL11.GL_QUADS);
     }
 
     @Override

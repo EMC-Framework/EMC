@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiSlot;
 import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.gui.widgets.properties.Tooltipable;
+import me.deftware.client.framework.render.gl.GLX;
 
 import java.util.List;
 
@@ -29,7 +30,7 @@ public class SelectableList<T extends SelectableList.ListItem> extends GuiSlot i
 
 	public interface ListItem {
 
-		void render(int index, int x, int y, int entryWidth, int entryHeight, int mouseX, int mouseY, float tickDelta);
+		void render(GLX context, int index, int x, int y, int entryWidth, int entryHeight, int mouseX, int mouseY, float tickDelta);
 
 		default boolean onMouseClicked(double mouseX, double mouseY, int button) {
 			return true;
@@ -113,13 +114,13 @@ public class SelectableList<T extends SelectableList.ListItem> extends GuiSlot i
 
 	protected void onSelectionUpdate(T item) { }
 
-	protected void onDrawItem(T item, int index, int x, int y, int entryWidth, int entryHeight, int mouseX, int mouseY, float tickDelta) { }
+	protected void onDrawItem(GLX context, T item, int index, int x, int y, int entryWidth, int entryHeight, int mouseX, int mouseY, float tickDelta) { }
 
 	@Override
 	protected void drawSlot(int slotIndex, int xPos, int yPos, int heightIn, int mouseXIn, int mouseYIn) {
 		T item = this.delegate.get(slotIndex);
-		item.render(slotIndex, xPos, yPos, getListWidth(), heightIn, mouseXIn, mouseYIn, 0);
-		this.onDrawItem(item, slotIndex, xPos, yPos, getListWidth(), heightIn, mouseXIn, mouseYIn, 0);
+		item.render(GLX.getInstance(), slotIndex, xPos, yPos, getListWidth(), heightIn, mouseXIn, mouseYIn, 0);
+		this.onDrawItem(GLX.getInstance(), item, slotIndex, xPos, yPos, getListWidth(), heightIn, mouseXIn, mouseYIn, 0);
 	}
 
 	@Override

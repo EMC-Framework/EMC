@@ -12,6 +12,7 @@ import me.deftware.client.framework.render.batching.VertexConstructor;
 
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
+import me.deftware.client.framework.render.gl.GLX;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -32,12 +33,12 @@ public class FontRenderStack extends RenderStack<FontRenderStack> {
 	}
 
 	@Override
-	public FontRenderStack begin() {
+	public FontRenderStack begin(GLX context) {
 		// Bind texture
 		GlStateManager.enableTexture2D();
 		font.getTextureAtlas().bind();
 		// Set up buffer
-		return super.begin(GL11.GL_QUADS);
+		return super.begin(context, GL11.GL_QUADS);
 	}
 
 	@Override
