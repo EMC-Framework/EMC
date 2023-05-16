@@ -6,6 +6,7 @@ import me.deftware.client.framework.global.GameKeys;
 import me.deftware.client.framework.global.GameMap;
 import me.deftware.client.framework.helper.GlStateHelper;
 import me.deftware.client.framework.helper.WindowHelper;
+import me.deftware.client.framework.render.gl.GLX;
 import me.deftware.client.framework.render.shader.Shader;
 import me.deftware.client.framework.render.batching.RenderStack;
 import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
@@ -14,6 +15,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.ShaderEffect;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
+import net.minecraft.client.render.BufferBuilderStorage;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.Matrix4f;
@@ -36,6 +38,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 @Mixin(GameRenderer.class)
 public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
@@ -68,23 +71,21 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     @Shadow
     private boolean shadersEnabled;
 
+    @Shadow
+    @Final
+    private BufferBuilderStorage buffers;
+
     @Unique
     private final EventRender3D eventRender3D = new EventRender3D();
 
     @Unique
     private final EventRender3DNoBobbing eventRender3DNoBobbing = new EventRender3DNoBobbing();
 
-    @Unique
-    private final Consumer<Float> renderEvent = partialTicks -> eventRender3D.create(partialTicks).broadcast();
-
-    @Unique
-    private final Consumer<Float> renderEventNoBobbing = partialTicks -> eventRender3DNoBobbing.create(partialTicks).broadcast();
-
     @Inject(method = "renderHand", at = @At("HEAD"))
     private void renderHand(MatrixStack matrixStack, Camera camera, float partialTicks, CallbackInfo ci) {
        if (!WindowHelper.isMinimized()) {
            // Normal 3d event
-           loadPushPop(renderEvent, matrixStack, partialTicks);
+           loadPushPop(() -> eventRender3D, matrixStack, partialTicks);
            // Camera model stack without bobbing applied
            MatrixStack matrix = new MatrixStack();
            matrix.push();
@@ -94,7 +95,7 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
            matrix.pop();
            matrix.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(this.camera.getPitch()));
            matrix.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(this.camera.getYaw() + 180f));
-           loadPushPop(renderEventNoBobbing, matrix, partialTicks);
+           loadPushPop(() -> eventRender3DNoBobbing, matrix, partialTicks);
            // Reset projection
            MinecraftClient.getInstance().gameRenderer.method_22709(matrixStack.peek().getModel());
            GlStateHelper.enableLighting();
@@ -102,11 +103,14 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     }
 
     @Unique
-    private void loadPushPop(Consumer<Float> action, MatrixStack stack, float partialTicks) {
+    private <T extends EventRender3D> void loadPushPop(Supplier<T> supplier, MatrixStack matrices, float partialTicks) {
         RenderSystem.pushMatrix();
         RenderSystem.loadIdentity();
-        RenderSystem.multMatrix(stack.peek().getModel());
-        action.accept(partialTicks);
+        RenderSystem.multMatrix(matrices.peek().getModel());
+        T event = supplier.get();
+        event.create(partialTicks);
+        event.setContext(GLX.of(matrices));
+        event.broadcast();
         RenderSystem.popMatrix();
     }
 
@@ -131,10 +135,15 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     @Redirect(method = "render", at = @At(value = "INVOKE", opcode = 180, target = "Lnet/minecraft/client/gui/hud/InGameHud;render(F)V"))
     private void onRender2D(InGameHud inGameHud, float tickDelta) {
         if (!WindowHelper.isMinimized()) {
+            GLX glx = GLX.of(null);
+            // Minecraft modifies opacity underwater
+            glx.color(1, 1, 1, 1);
+            eventRender2D.setContext(glx);
             eventRender2D.create(tickDelta).broadcast();
             // Render with custom matrix
             RenderStack.reloadCustomMatrix();
             RenderStack.setupGl();
+            eventMatrixRender.setContext(glx);
             eventMatrixRender.create(tickDelta).broadcast();
             RenderStack.restoreGl();
             RenderStack.reloadMinecraftMatrix();

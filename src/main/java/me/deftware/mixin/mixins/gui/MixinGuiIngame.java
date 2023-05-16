@@ -9,6 +9,7 @@ import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
 import me.deftware.client.framework.render.gl.GLX;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -40,6 +41,7 @@ public class MixinGuiIngame {
 
     @Inject(method = "renderHotbar", at = @At("HEAD"))
     private void renderHotbar(float partialTicks, CallbackInfo ci) {
+        eventRenderHotbar.setContext(GLX.of(new MatrixStack()));
         eventRenderHotbar.broadcast();
     }
 

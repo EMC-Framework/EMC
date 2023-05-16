@@ -4,6 +4,7 @@ import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.event.events.EventScreen;
 import me.deftware.client.framework.gui.ScreenRegistry;
 import me.deftware.client.framework.gui.widgets.GenericComponent;
+import me.deftware.client.framework.render.gl.GLX;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
@@ -84,8 +85,8 @@ public interface MinecraftScreen extends GenericScreen {
 	 * Renders a tooltip onscreen
 	 * @param tooltip Tooltip lines
 	 */
-	default void renderTooltip(int x, int y, Message... tooltip) {
-		this.renderTooltip(x, y, getTooltipList(tooltip));
+	default void renderTooltip(GLX context, int x, int y, Message... tooltip) {
+		this.renderTooltip(context, x, y, getTooltipList(tooltip));
 	}
 
 	@ApiStatus.Internal
@@ -96,6 +97,6 @@ public interface MinecraftScreen extends GenericScreen {
 	}
 
 	@ApiStatus.Internal
-	void renderTooltip(int x, int y, List<String> tooltipComponents);
+	void renderTooltip(GLX context, int x, int y, List<String> tooltipComponents);
 
 }

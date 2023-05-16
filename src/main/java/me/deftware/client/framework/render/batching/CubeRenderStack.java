@@ -2,6 +2,7 @@ package me.deftware.client.framework.render.batching;
 
 import me.deftware.client.framework.math.BoundingBox;
 import me.deftware.client.framework.minecraft.Minecraft;
+import me.deftware.client.framework.render.gl.GLX;
 import net.minecraft.client.render.*;
 import net.minecraft.util.math.Box;
 import org.lwjgl.opengl.GL11;
@@ -14,13 +15,13 @@ public class CubeRenderStack extends RenderStack<CubeRenderStack> {
 	private boolean lines = false;
 
 	@Override
-	public CubeRenderStack begin() {
-		return begin(false);
+	public CubeRenderStack begin(GLX context) {
+		return begin(context, false);
 	}
 
-	public CubeRenderStack begin(boolean lines) {
+	public CubeRenderStack begin(GLX context, boolean lines) {
 		return begin(
-				(this.lines = lines) ? GL11.GL_LINE_STRIP : GL11.GL_QUADS
+				context, (this.lines = lines) ? GL11.GL_LINE_STRIP : GL11.GL_QUADS
 		);
 	}
 

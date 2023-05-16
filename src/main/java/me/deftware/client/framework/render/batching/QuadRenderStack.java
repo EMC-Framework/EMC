@@ -1,5 +1,6 @@
 package me.deftware.client.framework.render.batching;
 
+import me.deftware.client.framework.render.gl.GLX;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -8,8 +9,8 @@ import org.lwjgl.opengl.GL11;
 public class QuadRenderStack extends RenderStack<QuadRenderStack> {
 
 	@Override
-	public QuadRenderStack begin() {
-		return begin(GL11.GL_QUADS);
+	public QuadRenderStack begin(GLX context) {
+		return begin(context, GL11.GL_QUADS);
 	}
 
 	public QuadRenderStack drawRect(double x, double y, double xx, double yy) {

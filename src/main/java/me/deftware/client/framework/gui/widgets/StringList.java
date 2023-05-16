@@ -2,6 +2,7 @@ package me.deftware.client.framework.gui.widgets;
 
 import me.deftware.client.framework.fonts.FontRenderer;
 import me.deftware.client.framework.message.Message;
+import me.deftware.client.framework.render.gl.GLX;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.EntryListWidget;
 
@@ -41,7 +42,7 @@ public class StringList extends EntryListWidget<StringList.StringEntry> implemen
 		}
 
 		public void render(int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovering, float delta) {
-			FontRenderer.drawString(string, x, y, 0xFFFFFF);
+			FontRenderer.drawString(GLX.of(null), string, x, y, 0xFFFFFF);
 		}
 
 	}
