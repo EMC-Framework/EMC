@@ -25,7 +25,6 @@
     "game.MixinTimer",
     "game.MixinGameOptions",
     "gui.MixinChatSuggestion",
-    "gui.MixinCreativeInventoryScreen",
     "gui.MixinDebugHud",
     "gui.MixinGuiButton",
     "gui.MixinGuiContainer",

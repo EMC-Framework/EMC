@@ -4,6 +4,7 @@ import me.deftware.client.framework.entity.Entity;
 import me.deftware.client.framework.entity.types.objects.ClonedPlayerMP;
 import me.deftware.client.framework.inventory.EntityInventory;
 import me.deftware.client.framework.minecraft.Minecraft;
+import me.deftware.client.framework.render.gl.GLX;
 import me.deftware.mixin.imp.IMixinEntityLivingBase;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
@@ -99,7 +100,7 @@ public class EntityPlayer extends LivingEntity {
 		return getMinecraftEntity().getItemUseTimeLeft();
 	}
 
-	public void drawPlayer(int posX, int posY, int scale) {
+	public void drawPlayer(GLX context, int posX, int posY, int scale) {
 		InventoryScreen.drawEntity(posX, posY, scale, 0, 0, getMinecraftEntity());
 	}
 
