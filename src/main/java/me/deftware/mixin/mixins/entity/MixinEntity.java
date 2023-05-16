@@ -30,9 +30,6 @@ public abstract class MixinEntity implements IMixinEntity {
     public boolean noClip;
 
     @Shadow
-    protected boolean onGround;
-
-    @Shadow
     protected boolean inNetherPortal;
 
     @Shadow

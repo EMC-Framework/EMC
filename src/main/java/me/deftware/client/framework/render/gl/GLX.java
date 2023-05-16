@@ -16,35 +16,33 @@ import java.util.StringJoiner;
  */
 public class GLX {
 
-    public static final GLX INSTANCE = new GLX();
-
     private GLXProvider provider = new GLXMatrixProvider();
-    private MatrixStack stack = new MatrixStack();
+
+    private static final GLX instance = new GLX();
+
+    private MatrixStack matrices;
 
     /*
         Internal functions
      */
 
-    public void refresh(MatrixStack stack) {
-        this.stack = stack;
+    public MatrixStack getMatrices() {
+        return matrices;
     }
 
-    public void refresh() {
-        refresh(new MatrixStack());
-    }
-
-    public MatrixStack getStack() {
-        return stack;
+    public static GLX of(MatrixStack matrices) {
+        instance.matrices = matrices;
+        return instance;
     }
 
     public Matrix4f getModel() {
-        return stack.peek().getModel();
+        return matrices.peek().getModel();
     }
 
     public void modelViewStack(Runnable action) {
         MatrixStack matrixStack = RenderSystem.getModelViewStack();
         matrixStack.push();
-        matrixStack.method_34425(GLX.INSTANCE.getModel());
+        matrixStack.method_34425(getModel());
         RenderSystem.applyModelViewMatrix();
         action.run();
         matrixStack.pop();
@@ -54,10 +52,6 @@ public class GLX {
     /*
         Public
      */
-
-    public void setGLXProvider(GLXProvider provider) {
-        this.provider = provider;
-    }
 
     public void isolate(Runnable action) {
         push();
@@ -115,12 +109,12 @@ public class GLX {
 
         @Override
         public void translate(float x, float y, float z) {
-            stack.translate(x, y, z);
+            matrices.translate(x, y, z);
         }
 
         @Override
         public void scale(float x, float y, float z) {
-            stack.scale(x, y, z);
+            matrices.scale(x, y, z);
         }
 
         @Override
@@ -131,26 +125,26 @@ public class GLX {
         @Override
         public void rotate(float angle, float x, float y, float z) {
             if (x > 0)
-                stack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(angle));
+                matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(angle));
             if (y > 0)
-                stack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(angle));
+                matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(angle));
             if (z > 0)
-                stack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(angle));
+                matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(angle));
         }
 
         @Override
         public void push() {
-            stack.push();
+            matrices.push();
         }
 
         @Override
         public void pop() {
-            stack.pop();
+            matrices.pop();
         }
 
         @Override
         public String id() {
-            return "Modern MatrixStack";
+            return "DrawContext";
         }
 
     }

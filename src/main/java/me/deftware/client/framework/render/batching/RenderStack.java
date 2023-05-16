@@ -52,18 +52,20 @@ public abstract class RenderStack<T> implements VertexConstructor {
 	protected BufferBuilder builder = Tessellator.getInstance().getBuffer();
 	private int mode = -1;
 
+	private GLX context;
+
 	public T setScaled(boolean scaling) {
 		this.scaled = scaling;
 		return (T) this;
 	}
 
 	public T push() {
-		GLX.INSTANCE.push();
+		context.push();
 		return (T) this;
 	}
 
 	public T pop() {
-		GLX.INSTANCE.pop();
+		context.pop();
 		return (T) this;
 	}
 
@@ -94,9 +96,10 @@ public abstract class RenderStack<T> implements VertexConstructor {
 		return (T) this;
 	}
 
-	public abstract T begin();
+	public abstract T begin(GLX context);
 
-	public T begin(int mode) {
+	public T begin(GLX context, int mode) {
+		this.context = context;
 		this.mode = mode;
 		setShader();
 		RenderSystem.lineWidth(lineWidth);
@@ -163,7 +166,7 @@ public abstract class RenderStack<T> implements VertexConstructor {
 	}
 
 	protected Matrix4f getModel() {
-		return GLX.INSTANCE.getModel();
+		return context.getModel();
 	}
 
 	@Override

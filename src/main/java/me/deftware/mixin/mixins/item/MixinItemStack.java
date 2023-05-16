@@ -1,14 +1,19 @@
 package me.deftware.mixin.mixins.item;
 
 import me.deftware.client.framework.entity.effect.AppliedEffect;
+import me.deftware.client.framework.event.events.EventGetItemToolTip;
 import me.deftware.client.framework.item.Enchantment;
 import me.deftware.client.framework.item.Item;
 import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.nbt.NbtCompound;
 import me.deftware.client.framework.world.block.BlockState;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionUtil;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -16,7 +21,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -64,7 +71,6 @@ public class MixinItemStack implements me.deftware.client.framework.item.ItemSta
     @Unique
     @Override
     public void enchant(Enchantment enchantment, int level) {
-        // TODO: Remove (byte) cast
         ((ItemStack) (Object) this).addEnchantment((net.minecraft.enchantment.Enchantment) enchantment, level);
     }
 
@@ -137,7 +143,7 @@ public class MixinItemStack implements me.deftware.client.framework.item.ItemSta
     @Unique
     @Override
     public boolean isItemEqual(me.deftware.client.framework.item.ItemStack stack) {
-        return ((ItemStack) (Object) this).isItemEqual((ItemStack) stack);
+        return ItemStack.areItemsEqual((ItemStack) (Object) this, (ItemStack) stack);
     }
 
     @Unique
@@ -155,6 +161,12 @@ public class MixinItemStack implements me.deftware.client.framework.item.ItemSta
             target = "Lnet/minecraft/enchantment/EnchantmentHelper;createNbt(Lnet/minecraft/util/Identifier;I)Lnet/minecraft/nbt/NbtCompound;"))
     private net.minecraft.nbt.NbtCompound onEnchant$CreateNbt(Identifier id, int lvl) {
         return EnchantmentHelper.createNbt(id, enchant$level);
+    }
+
+    @Inject(method = "getTooltip", at = @At(value = "TAIL"))
+    private void onGetTooltipFromItem(PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir) {
+        var list = cir.getReturnValue();
+        new EventGetItemToolTip(list, (Item) ((ItemStack) (Object) this).getItem(), context.isAdvanced()).broadcast();
     }
 
 }
