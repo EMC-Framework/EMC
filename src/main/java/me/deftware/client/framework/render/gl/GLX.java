@@ -14,44 +14,27 @@ import java.util.StringJoiner;
  */
 public class GLX {
 
-    public static final GLX INSTANCE = new GLX();
+    private static final GLX instance = new GLX();
 
-    private GLXProvider provider = () -> "Legacy OpenGL";
-    private MatrixStack stack = new MatrixStack();
+    private final GLXProvider provider = () -> "Legacy OpenGL";
+    private MatrixStack matrices;
 
     /*
         Internal functions
      */
 
-    public void refresh(MatrixStack stack) {
-        this.stack = stack;
+    public MatrixStack getMatrices() {
+        return matrices;
     }
 
-    public void refresh() {
-        refresh(new MatrixStack());
-    }
-
-    public MatrixStack getStack() {
-        return stack;
-    }
-
-    public Matrix4f getModel() {
-        return stack.peek().getModel();
+    public static GLX of(MatrixStack matrices) {
+        instance.matrices = matrices;
+        return instance;
     }
 
     /*
         Public
      */
-
-    public void setGLXProvider(GLXProvider provider) {
-        this.provider = provider;
-    }
-
-    public void isolate(Runnable action) {
-        push();
-        action.run();
-        pop();
-    }
 
     public void push() {
         provider.push();

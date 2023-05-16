@@ -6,8 +6,6 @@ import me.deftware.client.framework.gui.widgets.properties.Tooltipable;
 import me.deftware.client.framework.gui.screens.MinecraftScreen;
 import me.deftware.client.framework.gui.widgets.NativeComponent;
 import me.deftware.client.framework.gui.widgets.GenericComponent;
-import me.deftware.client.framework.item.Item;
-import me.deftware.client.framework.registry.ItemRegistry;
 import me.deftware.client.framework.render.gl.GLX;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
@@ -95,18 +93,11 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
         return event;
     }
 
-    @Inject(method = "getTooltipFromItem", at = @At(value = "TAIL"))
-    private void onGetTooltipFromItem(ItemStack stack, CallbackInfoReturnable<List<Text>> cir) {
-        List<Text> list = cir.getReturnValue();
-        new EventGetItemToolTip(list, (Item) stack.getItem(), client.options.advancedItemTooltips).broadcast();
-    }
-
     @Inject(method = "render", at = @At("HEAD"))
     private void onDraw(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        GLX.INSTANCE.refresh();
         event.setMouseX(mouseX);
         event.setMouseY(mouseY);
-        event.setType(EventScreen.Type.Draw).broadcast();
+        event.setType(EventScreen.Type.Draw).setContext(GLX.of(matrices)).broadcast();
         // Draw drawables
         for (Drawable drawable : this.drawables) {
             drawable.render(matrices, mouseX, mouseY, delta);
@@ -123,7 +114,7 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
 
     @Unique
     protected void onPostDrawEvent(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        event.setType(EventScreen.Type.PostDraw).broadcast();
+        event.setType(EventScreen.Type.PostDraw).setContext(GLX.of(matrices)).broadcast();
         // Render tooltip
         for (Element element : children) {
             if (element instanceof Tooltipable) {
@@ -131,7 +122,7 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
                 if (tooltipable.isMouseOverComponent(mouseX, mouseY)) {
                     List<OrderedText> list = tooltipable.getTooltipComponents(mouseX, mouseY);
                     if (list != null && !list.isEmpty()) {
-                        this.renderTooltip(mouseX, mouseY, list);
+                        this.renderTooltip(GLX.of(matrices), mouseX, mouseY, list);
                         break;
                     }
                 }
@@ -155,8 +146,8 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
     }
 
     @Override
-    public void renderTooltip(int x, int y, List<OrderedText> tooltipComponents) {
-        ((Screen) (Object) this).renderOrderedTooltip(GLX.INSTANCE.getStack(), tooltipComponents, x, y);
+    public void renderTooltip(GLX context, int x, int y, List<OrderedText> tooltipComponents) {
+        ((Screen) (Object) this).renderOrderedTooltip(context.getMatrices(), tooltipComponents, x, y);
     }
 
 }

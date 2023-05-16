@@ -69,18 +69,18 @@ public class GlTexture implements GuiScreen.BackgroundType {
         this.upload(getImageBuffer(image), false);
     }
 
-    public GlTexture draw(int x, int y, int width, int height) {
-        return draw(x, y, width, height, 0, 0, width, height);
+    public GlTexture draw(GLX context, int x, int y, int width, int height) {
+        return draw(context, x, y, width, height, 0, 0, width, height);
     }
 
-    public GlTexture draw(int x, int y, int width, int height, int u, int v, int textureWidth, int textureHeight) {
-        drawTexture(x, y, width, height, u, v, textureWidth, textureHeight);
+    public GlTexture draw(GLX context, int x, int y, int width, int height, int u, int v, int textureWidth, int textureHeight) {
+        drawTexture(context, x, y, width, height, u, v, textureWidth, textureHeight);
         return this;
     }
 
-    public static void drawTexture(int x, int y, int width, int height, int u, int v, int textureWidth, int textureHeight) {
+    public static void drawTexture(GLX context, int x, int y, int width, int height, int u, int v, int textureWidth, int textureHeight) {
         // Render call to Minecraft, highly version dependent
-        Screen.drawTexture(GLX.INSTANCE.getStack(), x, y, u, v, width, height, textureWidth, textureHeight);
+        Screen.drawTexture(context.getMatrices(), x, y, u, v, width, height, textureWidth, textureHeight);
     }
 
     public GlTexture bind() {
@@ -130,14 +130,14 @@ public class GlTexture implements GuiScreen.BackgroundType {
     }
 
     @Override
-    public void renderBackground(int mouseX, int mouseY, float delta, GuiScreen parent) {
-        GLX.INSTANCE.color(1, 1, 1, 1);
+    public void renderBackground(GLX context, int mouseX, int mouseY, float delta, GuiScreen parent) {
+        context.color(1, 1, 1, 1);
         int width = parent.getGuiScreenWidth(), height = parent.getGuiScreenHeight();
         if (RenderStack.isInCustomMatrix()) {
             width = GuiScreen.getDisplayWidth();
             height = GuiScreen.getDisplayHeight();
         }
-        bind().draw(0,0, width, height).unbind();
+        bind().draw(context, 0,0, width, height).unbind();
     }
 
     public static ByteBuffer getImageBuffer(BufferedImage image) {
