@@ -2,14 +2,13 @@ package me.deftware.client.framework.event.events;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.deftware.client.framework.event.Event;
 import me.deftware.client.framework.gui.screens.MinecraftScreen;
 import net.minecraft.client.gui.screen.Screen;
 
 /**
  * @author Deftware
  */
-public class EventScreen extends Event {
+public class EventScreen extends EventRenderBase {
 
 	private final Screen screen;
 

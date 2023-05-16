@@ -47,7 +47,7 @@ public class MixinGuiIngame {
 
     @Inject(method = "renderHotbar", at = @At("HEAD"))
     private void renderHotbar(float partialTicks, MatrixStack matrixStack, CallbackInfo ci) {
-        GLX.INSTANCE.refresh(matrixStack);
+        eventRenderHotbar.setContext(GLX.of(matrixStack));
         eventRenderHotbar.broadcast();
     }
 

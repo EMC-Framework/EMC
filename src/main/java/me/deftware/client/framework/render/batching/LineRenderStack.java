@@ -4,6 +4,7 @@ import me.deftware.client.framework.math.BlockPosition;
 import me.deftware.client.framework.entity.Entity;
 import me.deftware.client.framework.entity.block.TileEntity;
 import me.deftware.client.framework.minecraft.Minecraft;
+import me.deftware.client.framework.render.gl.GLX;
 import net.minecraft.util.math.Vec3d;
 import org.lwjgl.opengl.GL11;
 
@@ -15,17 +16,17 @@ public class LineRenderStack extends RenderStack<LineRenderStack> {
 	private Vec3d eyes;
 
 	@Override
-	public LineRenderStack begin() {
-		return begin(GL11.GL_LINES);
+	public LineRenderStack begin(GLX context) {
+		return begin(context, GL11.GL_LINES);
 	}
 
 	@Override
-	public LineRenderStack begin(int mode) {
+	public LineRenderStack begin(GLX context, int mode) {
 		eyes = new Vec3d(0.0D, 0.0D, 1.0D);
 		if (Minecraft.getMinecraftGame().getCamera() != null)
 			eyes = eyes.rotateX(-(float) Math.toRadians(Minecraft.getMinecraftGame().getCamera()._getRotationPitch()))
 				.rotateY(-(float) Math.toRadians(Minecraft.getMinecraftGame().getCamera()._getRotationYaw()));
-		return super.begin(mode);
+		return super.begin(context, mode);
 	}
 
 	public LineRenderStack drawLine(float x1, float y1, float x2, float y2) {
