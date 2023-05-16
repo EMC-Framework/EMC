@@ -4,6 +4,7 @@ import me.deftware.client.framework.fonts.FontRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiListExtended;
 import me.deftware.client.framework.message.Message;
+import me.deftware.client.framework.render.gl.GLX;
 
 /**
  * @author Deftware
@@ -42,7 +43,7 @@ public class StringList extends GuiListExtended<StringList.StringEntry> implemen
 
 		@Override
 		public void drawEntry(int width, int height, int mouseX, int mouseY, boolean p_194999_5_, float partialTicks) {
-			FontRenderer.drawString(string, getX(), getY(), 0xFFFFFF);
+			FontRenderer.drawString(GLX.getInstance(), string, getX(), getY(), 0xFFFFFF);
 		}
 
 	}

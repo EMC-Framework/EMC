@@ -1,5 +1,6 @@
 package me.deftware.client.framework.render.batching;
 
+import me.deftware.client.framework.render.gl.GLX;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -8,8 +9,8 @@ import org.lwjgl.opengl.GL11;
 public class CircleRenderStack extends RenderStack<CircleRenderStack> {
 
 	@Override
-	public CircleRenderStack begin() {
-		return begin(GL11.GL_TRIANGLE_FAN);
+	public CircleRenderStack begin(GLX context) {
+		return begin(context, GL11.GL_TRIANGLE_FAN);
 	}
 
 	public CircleRenderStack drawFilledCircle(float xx, float yy, float radius) {

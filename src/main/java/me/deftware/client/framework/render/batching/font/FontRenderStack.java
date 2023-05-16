@@ -9,9 +9,9 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import me.deftware.client.framework.render.batching.VertexConstructor;
-
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextFormatting;
+import me.deftware.client.framework.render.gl.GLX;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -32,12 +32,12 @@ public class FontRenderStack extends RenderStack<FontRenderStack> {
 	}
 
 	@Override
-	public FontRenderStack begin() {
+	public FontRenderStack begin(GLX context) {
 		// Bind texture
 		GlStateManager.enableTexture2D();
 		font.getTextureAtlas().bind();
 		// Set up buffer
-		return super.begin(GL11.GL_QUADS);
+		return super.begin(context, GL11.GL_QUADS);
 	}
 
 	@Override

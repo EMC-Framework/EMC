@@ -9,8 +9,8 @@ import me.deftware.client.framework.gui.screens.MinecraftScreen;
 import me.deftware.client.framework.gui.widgets.Label;
 import me.deftware.client.framework.gui.widgets.TextField;
 import me.deftware.client.framework.helper.GlStateHelper;
-
 import net.minecraft.client.gui.GuiTextField;
+import me.deftware.client.framework.render.gl.GLX;
 import org.lwjgl.glfw.GLFW;
 
 /**
@@ -49,11 +49,12 @@ public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen imple
 		if (net.minecraft.client.Minecraft.getInstance().world != null)
 			GlStateHelper.enableBlend();
 		Mouse.updateMousePosition();
+		GLX glx = GLX.getInstance();
 		if (backgroundType != null)
-			backgroundType.renderBackground(mouseX, mouseY, partialTicks, this);
+			backgroundType.renderBackground(glx, mouseX, mouseY, partialTicks, this);
 		super.render(mouseX, mouseY, partialTicks);
-		onDraw(mouseX, mouseY, partialTicks);
-		onPostDraw(mouseX, mouseY, partialTicks);
+		onDraw(glx, mouseX, mouseY, partialTicks);
+		onPostDraw(glx, mouseX, mouseY, partialTicks);
 	}
 
 	@Override
@@ -142,10 +143,9 @@ public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen imple
 
 	protected abstract void onInitGui();
 
-	protected void onPostDraw(int mouseX, int mouseY, float partialTicks) {
-	}
+	protected void onPostDraw(GLX context, int mouseX, int mouseY, float partialTicks) { }
 
-	protected abstract void onDraw(int mouseX, int mouseY, float partialTicks);
+	protected abstract void onDraw(GLX context, int mouseX, int mouseY, float partialTicks);
 
 	protected void onUpdate() { }
 
@@ -195,24 +195,24 @@ public abstract class GuiScreen extends net.minecraft.client.gui.GuiScreen imple
 		/**
 		 * No background will be rendered
 		 */
-		BackgroundType None = (mouseX, mouseY, delta, parent) -> { };
+		BackgroundType None = (context, mouseX, mouseY, delta, parent) -> { };
 
 		/**
 		 * A textured background will always be rendered
 		 */
-		BackgroundType Textured = (mouseX, mouseY, delta, parent) -> parent.drawBackground(0);
+		BackgroundType Textured = (context, mouseX, mouseY, delta, parent) -> parent.drawBackground(0);
 
 		/**
 		 * A textured background will be rendered,
 		 * but if a world is loaded, a transparent black
 		 * overlay will be drawn instead
 		 */
-		BackgroundType TexturedOrTransparent = (mouseX, mouseY, delta, parent) -> parent.drawWorldBackground(0);
+		BackgroundType TexturedOrTransparent = (context, mouseX, mouseY, delta, parent) -> parent.drawWorldBackground(0);
 
 		/**
 		 * Renders the background
 		 */
-		void renderBackground(int mouseX, int mouseY, float delta, GuiScreen parent);
+		void renderBackground(GLX context, int mouseX, int mouseY, float delta, GuiScreen parent);
 
 	}
 

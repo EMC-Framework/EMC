@@ -12,33 +12,20 @@ import java.util.StringJoiner;
  */
 public class GLX {
 
-    public static final GLX INSTANCE = new GLX();
-
-    private GLXProvider provider = () -> "Legacy OpenGL";
+    private static final GLX instance = new GLX();
+    private final GLXProvider provider = () -> "Legacy OpenGL";
 
     /*
         Internal functions
      */
 
-    /**
-     * Does nothing, kept to avoid crashes with calls to this method
-     */
-    public void refresh() { }
-
+    public static GLX getInstance() {
+        return instance;
+    }
 
     /*
         Public
      */
-
-    public void setGLXProvider(GLXProvider provider) {
-        this.provider = provider;
-    }
-
-    public void isolate(Runnable action) {
-        push();
-        action.run();
-        pop();
-    }
 
     public void push() {
         provider.push();
