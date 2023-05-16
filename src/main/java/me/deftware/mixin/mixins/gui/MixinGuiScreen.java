@@ -94,13 +94,6 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
         return event;
     }
 
-    @Redirect(method = "getTooltipFromItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;getTooltip(Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/client/item/TooltipContext;)Ljava/util/List;"))
-    private List<Text> onGetTooltipFromItem(ItemStack stack, PlayerEntity player, TooltipContext context) {
-        List<Text> list = stack.getTooltip(player, context);
-        new EventGetItemToolTip(list, (Item) stack.getItem(), context.isAdvanced()).broadcast();
-        return list;
-    }
-
     @Inject(method = "render", at = @At("HEAD"))
     private void onDraw(int mouseX, int mouseY, float delta, CallbackInfo ci) {
         event.setMouseX(mouseX);

@@ -3,6 +3,7 @@ package me.deftware.client.framework.gui.widgets;
 import lombok.Setter;
 import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.gui.widgets.properties.Tooltipable;
+import me.deftware.client.framework.render.gl.GLX;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.EntryListWidget;
 
@@ -28,7 +29,7 @@ public class SelectableList<T extends SelectableList.ListItem> extends EntryList
 
 	public interface ListItem {
 
-		void render(int index, int x, int y, int entryWidth, int entryHeight, int mouseX, int mouseY, float tickDelta);
+		void render(GLX context, int index, int x, int y, int entryWidth, int entryHeight, int mouseX, int mouseY, float tickDelta);
 
 		default boolean onMouseClicked(double mouseX, double mouseY, int button) {
 			return true;
@@ -109,7 +110,7 @@ public class SelectableList<T extends SelectableList.ListItem> extends EntryList
 
 	protected void onSelectionUpdate(T item) { }
 
-	protected void onDrawItem(T item, int index, int x, int y, int entryWidth, int entryHeight, int mouseX, int mouseY, float tickDelta) { }
+	protected void onDrawItem(GLX context, T item, int index, int x, int y, int entryWidth, int entryHeight, int mouseX, int mouseY, float tickDelta) { }
 
 	/*
 		1.14+ logic
@@ -152,8 +153,8 @@ public class SelectableList<T extends SelectableList.ListItem> extends EntryList
 		@Override
 		public void render(int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			x += 8;
-			this.item.render(index, x, y, entryWidth, entryHeight, mouseX, mouseY, tickDelta);
-			SelectableList.this.onDrawItem(item, index, x, y, entryWidth, entryHeight, mouseX, mouseY, tickDelta);
+			this.item.render(GLX.getInstance(), index, x, y, entryWidth, entryHeight, mouseX, mouseY, tickDelta);
+			SelectableList.this.onDrawItem(GLX.getInstance(), item, index, x, y, entryWidth, entryHeight, mouseX, mouseY, tickDelta);
 		}
 
 		@Override
