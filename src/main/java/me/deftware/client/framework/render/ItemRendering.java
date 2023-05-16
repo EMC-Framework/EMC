@@ -7,7 +7,6 @@ import me.deftware.client.framework.world.block.Block;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import org.lwjgl.opengl.GL11;
 
 import java.util.HashMap;
 import java.util.function.Consumer;
@@ -48,13 +47,7 @@ public class ItemRendering {
 	}
 
 	public void drawItemStack(GLX context, ItemStack stack, int x, int y, int z) {
-		try {
-			GL11.glEnable(GL11.GL_DEPTH_TEST);
-			render(context, z, matrices -> getRenderItem().renderInGui(matrices, (net.minecraft.item.ItemStack) stack, x, y));
-			GL11.glDisable(GL11.GL_DEPTH_TEST);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		render(context, z, matrices -> getRenderItem().renderInGui(matrices, (net.minecraft.item.ItemStack) stack, x, y));
 	}
 
 	public void drawStackLabel(GLX context, ItemStack stack, int x, int y, String count) {
