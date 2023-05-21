@@ -2,6 +2,7 @@ package me.deftware.mixin.mixins.network;
 
 import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.event.events.EventServerPinged;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerServerListWidget;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.util.math.MatrixStack;
@@ -23,7 +24,7 @@ public class MixinServerListEntryNormal {
     private ServerInfo server;
 
     @Inject(method = "render", at = @At("HEAD"))
-    public void render(MatrixStack matrixStack, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta, CallbackInfo ci) {
+    public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta, CallbackInfo ci) {
         if (server.ping > 1 && !sentEvent) {
             sentEvent = true;
             EventServerPinged event = new EventServerPinged(
