@@ -9,4 +9,8 @@ public class EventRenderBase extends Event {
         return GLX.getInstance();
     }
 
+    public EventRenderBase setContext(GLX context) {
+        // Dummy method
+    }
+
 }
