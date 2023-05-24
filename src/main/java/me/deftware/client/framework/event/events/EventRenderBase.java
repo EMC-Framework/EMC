@@ -11,6 +11,7 @@ public class EventRenderBase extends Event {
 
     public EventRenderBase setContext(GLX context) {
         // Dummy method
+        return this;
     }
 
 }
