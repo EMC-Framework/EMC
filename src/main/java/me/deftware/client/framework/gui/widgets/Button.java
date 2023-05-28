@@ -39,4 +39,6 @@ public interface Button extends Component, Nameable<Button>, Tooltipable {
 		return (Button) button;
 	}
 
+	void click();
+
 }

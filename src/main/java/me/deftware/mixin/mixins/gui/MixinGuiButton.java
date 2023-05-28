@@ -6,6 +6,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 
 /**
  * @author Deftware
@@ -22,6 +23,12 @@ public class MixinGuiButton extends MixinClickableWidget implements Button {
     public Button setComponentLabel(Message text) {
         ((ClickableWidget) (Object) this).setMessage((Text) text);
         return this;
+    }
+
+    @Unique
+    @Override
+    public void click() {
+        ((ButtonWidget) (Object) this).onPress();
     }
 
 }

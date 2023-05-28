@@ -24,7 +24,9 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.ProfileKeys;
+import net.minecraft.client.util.ScreenshotRecorder;
 import net.minecraft.client.util.Session;
 import net.minecraft.client.util.Window;
 import net.minecraft.resource.ResourcePackManager;
@@ -43,6 +45,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -293,6 +296,15 @@ public abstract class MixinMinecraft implements Minecraft {
     @Override
     public void setLastConnected(ServerDetails details) {
         this.lastConnectedServer = details;
+    }
+
+    @Unique
+    @Override
+    public void screenshot(File file) throws IOException {
+        String name = file.getName();
+        try (NativeImage image = ScreenshotRecorder.takeScreenshot(((MinecraftClient) (Object) this).getFramebuffer())) {
+            image.writeTo(file);
+        }
     }
 
 }
