@@ -23,6 +23,8 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.util.ScreenshotRecorder;
 import net.minecraft.client.util.Session;
 import net.minecraft.client.util.Window;
 import net.minecraft.util.ModStatus;
@@ -37,6 +39,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -267,6 +270,15 @@ public abstract class MixinMinecraft implements Minecraft {
     @Redirect(method = "getFramerateLimit", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/Window;getFramerateLimit()I"))
     private int onGetMaxFps(Window instance) {
         return GameSetting.MAX_FPS.get();
+    }
+
+    @Unique
+    @Override
+    public void screenshot(File file) throws IOException {
+        String name = file.getName();
+        try (NativeImage image = ScreenshotRecorder.takeScreenshot(((MinecraftClient) (Object) this).getFramebuffer())) {
+            image.writeTo(file);
+        }
     }
 
 }
