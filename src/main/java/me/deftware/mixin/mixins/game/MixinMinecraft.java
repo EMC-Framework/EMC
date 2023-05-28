@@ -11,6 +11,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.settings.GameSettings;
+import net.minecraft.client.shader.Framebuffer;
+import net.minecraft.util.ScreenShotHelper;
 import net.minecraft.util.Session;
 import net.minecraft.util.Timer;
 import org.lwjgl.input.Keyboard;
@@ -38,7 +40,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nullable;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.util.ArrayDeque;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
@@ -161,9 +167,12 @@ public abstract class MixinMinecraft implements me.deftware.client.framework.min
         renderQueue.add(runnable);
     }
 
-    @Override
-    public synchronized Runnable pollRenderThread() {
-        return renderQueue.poll();
+    @Inject(method = "runGameLoop", at = @At("HEAD"))
+    private void onRender(CallbackInfo ci) {
+        Runnable operation = renderQueue.poll();
+        if (operation != null) {
+            operation.run();
+        }
     }
 
     @Override
@@ -295,6 +304,15 @@ public abstract class MixinMinecraft implements me.deftware.client.framework.min
     @Redirect(method = "getLimitFramerate", at = @At(value = "FIELD", target = "Lnet/minecraft/client/settings/GameSettings;limitFramerate:I"))
     private int onGetMaxFps(GameSettings instance) {
         return GameSetting.MAX_FPS.get();
+    }
+
+    @Unique
+    @Override
+    public void screenshot(File file) throws IOException {
+        String name = file.getName();
+        Framebuffer buffer = ((Minecraft) (Object) this).getFramebuffer();
+        BufferedImage image = ScreenShotHelper.createScreenshot(buffer.framebufferWidth, buffer.framebufferHeight, buffer);
+        ImageIO.write(image, "png", file);
     }
 
 }

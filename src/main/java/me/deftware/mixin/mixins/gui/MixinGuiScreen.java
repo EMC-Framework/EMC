@@ -28,13 +28,15 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @SuppressWarnings("ConstantConditions")
 @Mixin(GuiScreen.class)
-public class MixinGuiScreen implements MinecraftScreen {
+public abstract class MixinGuiScreen implements MinecraftScreen {
 
     @Unique
     private final EventScreen event = new EventScreen((GuiScreen) (Object) this);
@@ -48,9 +50,12 @@ public class MixinGuiScreen implements MinecraftScreen {
     @Shadow
     protected List<GuiButton> buttonList;
 
+    @Shadow
+    protected abstract void actionPerformed(GuiButton button) throws IOException;
+
     @Override
     public <T extends GenericComponent> List<T> getChildren(Class<T> clazz) {
-        return this.children.stream()
+        return Stream.concat(this.children.stream(), this.buttonList.stream())
                 .filter(clazz::isInstance)
                 .map(clazz::cast)
                 .collect(Collectors.toList());
@@ -180,6 +185,15 @@ public class MixinGuiScreen implements MinecraftScreen {
     @Override
     public void renderTooltip(int x, int y, List<String> tooltipComponents) {
         ((GuiScreen) (Object) this).drawHoveringText(tooltipComponents, x, y);
+    }
+
+    @Override
+    public void clickButton(GuiButton button) {
+       try {
+           this.actionPerformed(button);
+       } catch (Exception ex) {
+           ex.printStackTrace();
+       }
     }
 
 }

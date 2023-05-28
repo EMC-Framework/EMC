@@ -16,6 +16,7 @@ public enum ScreenRegistry {
 	Multiplayer(GuiMultiplayer.class),
 	WorldSelection(GuiWorldSelection.class),
 	Options(GuiOptions.class, args -> new GuiOptions((GuiScreen) args[0], Minecraft.getMinecraft().gameSettings)),
+	CreateWorld(GuiCreateWorld.class),
 	MainMenu(GuiMainMenu.class, parent -> new GuiMainMenu()),
 
 	IngameMenu(GuiIngameMenu.class),
