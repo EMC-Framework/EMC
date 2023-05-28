@@ -54,4 +54,6 @@ public interface Button extends Component, Nameable<Button>, Tooltipable {
 		return ((GuiButton) this).isMouseOver();
 	}
 
+	void click();
+
 }

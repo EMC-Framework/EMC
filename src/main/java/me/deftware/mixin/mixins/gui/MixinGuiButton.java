@@ -96,4 +96,9 @@ public class MixinGuiButton implements Button, Drawable {
         ((GuiButton) (Object) this).render(mouseX, mouseY, delta);
     }
 
+    @Override
+    public void click() {
+        ((GuiButton) (Object) this).onClick(0, 0);
+    }
+
 }

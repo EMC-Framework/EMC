@@ -1,6 +1,5 @@
 package me.deftware.client.framework.gui;
 
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.gui.GuiScreen;
@@ -16,6 +15,7 @@ public enum ScreenRegistry {
 
 	Multiplayer(GuiMultiplayer.class),
 	WorldSelection(GuiWorldSelection.class),
+	CreateWorld(GuiCreateWorld.class),
 	Options(GuiOptions.class, args -> new GuiOptions((GuiScreen) args[0], Minecraft.getInstance().gameSettings)),
 	MainMenu(GuiMainMenu.class, parent -> new GuiMainMenu()),
 

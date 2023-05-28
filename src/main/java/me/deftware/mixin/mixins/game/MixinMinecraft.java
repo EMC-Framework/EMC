@@ -8,6 +8,9 @@ import me.deftware.client.framework.main.bootstrap.Bootstrap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.client.renderer.texture.NativeImage;
+import net.minecraft.client.shader.Framebuffer;
+import net.minecraft.util.ScreenShotHelper;
 import net.minecraft.util.Session;
 import net.minecraft.util.Timer;
 import net.minecraft.util.math.RayTraceResult;
@@ -29,6 +32,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
 import java.util.ArrayDeque;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
@@ -149,9 +154,12 @@ public abstract class MixinMinecraft implements me.deftware.client.framework.min
         renderQueue.add(runnable);
     }
 
-    @Override
-    public synchronized Runnable pollRenderThread() {
-        return renderQueue.poll();
+    @Inject(method = "runGameLoop", at = @At("HEAD"))
+    private void onRender(boolean tick, CallbackInfo ci) {
+        Runnable operation = renderQueue.poll();
+        if (operation != null) {
+            operation.run();
+        }
     }
 
     @Override
@@ -252,6 +260,16 @@ public abstract class MixinMinecraft implements me.deftware.client.framework.min
     @Override
     public WorldEntityRenderer getWorldEntityRenderer() {
         return (WorldEntityRenderer) ((Minecraft) (Object) this).worldRenderer;
+    }
+
+    @Unique
+    @Override
+    public void screenshot(File file) throws IOException {
+        String name = file.getName();
+        Framebuffer buffer = ((Minecraft) (Object) this).getFramebuffer();
+        try (NativeImage image = ScreenShotHelper.createScreenshot(buffer.framebufferWidth, buffer.framebufferHeight, buffer)) {
+            image.write(file);
+        }
     }
 
 }
