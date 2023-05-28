@@ -1,6 +1,7 @@
 package me.deftware.mixin.mixins.gui;
 
 import me.deftware.client.framework.gui.widgets.Button;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.text.OrderedText;
 import me.deftware.client.framework.message.Message;
@@ -88,6 +89,11 @@ public class MixinGuiButton implements Button {
     @Override
     public List<OrderedText> getTooltipComponents(int mouseX, int mouseY) {
         return this.tooltipComponents;
+    }
+
+    @Override
+    public void click() {
+        ((ButtonWidget) (Object) this).onPress();
     }
 
 }
