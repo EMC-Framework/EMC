@@ -18,10 +18,13 @@ import me.deftware.client.framework.world.ClientWorld;
 import me.deftware.client.framework.world.WorldTimer;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.util.ScreenshotUtils;
 import net.minecraft.client.util.Session;
 import net.minecraft.client.util.Window;
 import net.minecraft.util.hit.BlockHitResult;
@@ -35,6 +38,8 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -259,6 +264,16 @@ public abstract class MixinMinecraft implements Minecraft {
     @Redirect(method = "getFramerateLimit", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/Window;getFramerateLimit()I"))
     private int onGetMaxFps(Window instance) {
         return GameSetting.MAX_FPS.get();
+    }
+
+    @Unique
+    @Override
+    public void screenshot(File file) throws IOException {
+        String name = file.getName();
+        Framebuffer buffer = ((MinecraftClient) (Object) this).getFramebuffer();
+        try (NativeImage image = ScreenshotUtils.takeScreenshot(buffer.viewportWidth, buffer.viewportHeight, buffer)) {
+            image.writeFile(file);
+        }
     }
 
 }

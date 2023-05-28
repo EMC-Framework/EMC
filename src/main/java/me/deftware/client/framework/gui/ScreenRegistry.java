@@ -5,6 +5,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.*;
 import net.minecraft.client.gui.screen.ingame.ContainerScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
+import net.minecraft.client.gui.screen.world.CreateWorldScreen;
 import net.minecraft.client.gui.screen.world.SelectWorldScreen;
 
 import java.util.Arrays;
@@ -18,6 +19,7 @@ public enum ScreenRegistry {
 	Multiplayer(MultiplayerScreen.class),
 	WorldSelection(SelectWorldScreen.class),
 	Options(SettingsScreen.class, args -> new SettingsScreen((Screen) args[0], MinecraftClient.getInstance().options)),
+	CreateWorld(CreateWorldScreen.class),
 	MainMenu(TitleScreen.class, parent -> new TitleScreen()),
 
 	IngameMenu(GameMenuScreen.class),

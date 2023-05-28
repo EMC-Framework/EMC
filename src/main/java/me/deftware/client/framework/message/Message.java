@@ -118,6 +118,17 @@ public interface Message extends com.mojang.brigadier.Message {
         Minecraft.getMinecraftGame().getGameChat().append(this);
     }
 
+    default boolean isTranslatable() {
+        return this instanceof TranslatableText;
+    }
+
+    default String getTranslationKey() {
+        if (!isTranslatable()) {
+            throw new IllegalStateException("Message is not translatable");
+        }
+        return ((TranslatableText) this).getKey();
+    }
+
     /**
      * Builder class for messages
      */
