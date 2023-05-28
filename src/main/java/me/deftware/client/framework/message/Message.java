@@ -4,6 +4,7 @@ import me.deftware.client.framework.minecraft.Minecraft;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableTextContent;
 
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -115,6 +116,17 @@ public interface Message extends com.mojang.brigadier.Message {
      */
     default void print() {
         Minecraft.getMinecraftGame().getGameChat().append(this);
+    }
+
+    default boolean isTranslatable() {
+        return ((Text) this).getContent() instanceof TranslatableTextContent;
+    }
+
+    default String getTranslationKey() {
+        if (!isTranslatable()) {
+            throw new IllegalStateException("Message is not translatable");
+        }
+        return ((TranslatableTextContent) ((Text) this).getContent()).getKey();
     }
 
     /**

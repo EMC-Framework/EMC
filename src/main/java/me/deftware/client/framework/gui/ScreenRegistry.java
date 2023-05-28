@@ -8,6 +8,7 @@ import net.minecraft.client.gui.screen.*;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.option.OptionsScreen;
+import net.minecraft.client.gui.screen.world.CreateWorldScreen;
 import net.minecraft.client.gui.screen.world.SelectWorldScreen;
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.text.Text;
@@ -22,6 +23,7 @@ public enum ScreenRegistry {
 
 	Multiplayer(MultiplayerScreen.class),
 	WorldSelection(SelectWorldScreen.class),
+	CreateWorld(CreateWorldScreen.class),
 	Options(OptionsScreen.class, args -> new OptionsScreen((Screen) args[0], MinecraftClient.getInstance().options)),
 	MainMenu(TitleScreen.class, parent -> new TitleScreen()),
 
