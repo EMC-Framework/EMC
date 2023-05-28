@@ -130,11 +130,6 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     @Redirect(method = "render", at = @At(value = "INVOKE", opcode = 180, target = "Lnet/minecraft/client/gui/hud/InGameHud;render(F)V"))
     private void onRender2D(InGameHud inGameHud, float tickDelta) {
         if (!WindowHelper.isMinimized()) {
-            // Chat queue
-            Runnable operation = Minecraft.getMinecraftGame().pollRenderThread();
-            if (operation != null) {
-                operation.run();
-            }
             eventRender2D.create(tickDelta).broadcast();
             // Render with custom matrix
             RenderStack.reloadCustomMatrix();

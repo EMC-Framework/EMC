@@ -17,6 +17,7 @@ import javax.annotation.Nullable;
 import net.minecraft.client.util.Session;
 import org.jetbrains.annotations.ApiStatus;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Queue;
 import java.util.function.Function;
@@ -147,7 +148,12 @@ public interface Minecraft {
 	 */
 	void runOnRenderThread(Runnable runnable);
 
-	Runnable pollRenderThread();
+	/**
+	 * Takes a screenshot
+	 *
+	 * @param file Save location
+	 */
+	void screenshot(File file) throws IOException;
 
 	/**
 	 * @return The current Minecraft version

@@ -17,10 +17,13 @@ import me.deftware.client.framework.world.ClientWorld;
 import me.deftware.client.framework.world.WorldTimer;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.util.ScreenshotUtils;
 import net.minecraft.client.util.Session;
 import net.minecraft.client.util.Window;
 import net.minecraft.util.hit.BlockHitResult;
@@ -35,6 +38,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.ArrayDeque;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
@@ -158,9 +163,12 @@ public abstract class MixinMinecraft implements Minecraft {
         renderQueue.add(runnable);
     }
 
-    @Override
-    public synchronized Runnable pollRenderThread() {
-        return renderQueue.poll();
+    @Inject(method = "render", at = @At("HEAD"))
+    private void onRender(boolean tick, CallbackInfo ci) {
+        Runnable operation = renderQueue.poll();
+        if (operation != null) {
+            operation.run();
+        }
     }
 
     @Override
@@ -264,6 +272,16 @@ public abstract class MixinMinecraft implements Minecraft {
     @Redirect(method = "getFramerateLimit", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/Window;getFramerateLimit()I"))
     private int onGetMaxFps(Window instance) {
         return GameSetting.MAX_FPS.get();
+    }
+
+    @Unique
+    @Override
+    public void screenshot(File file) throws IOException {
+        String name = file.getName();
+        Framebuffer buffer = ((MinecraftClient) (Object) this).getFramebuffer();
+        try (NativeImage image = ScreenshotUtils.method_1663(buffer.viewportWidth, buffer.viewportHeight, buffer)) {
+            image.writeFile(file);
+        }
     }
 
 }
