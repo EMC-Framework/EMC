@@ -2,6 +2,7 @@ package me.deftware.mixin.mixins.gui;
 
 import me.deftware.client.framework.gui.Drawable;
 import me.deftware.client.framework.gui.Element;
+import me.deftware.client.framework.gui.screens.MinecraftScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import me.deftware.client.framework.message.MessageUtils;
@@ -101,6 +102,12 @@ public class MixinGuiButton implements Button, Drawable, Element {
     @Override
     public void onMouseReleased(int x, int y, int button) {
         ((GuiButton) (Object) this).mouseReleased(x, y);
+    }
+
+    @Override
+    public void click() {
+        ((MinecraftScreen) Minecraft.getMinecraft().currentScreen)
+                .clickButton((GuiButton) (Object) this);
     }
 
 }

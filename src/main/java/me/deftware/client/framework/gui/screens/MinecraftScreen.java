@@ -5,6 +5,7 @@ import me.deftware.client.framework.event.events.EventScreen;
 import me.deftware.client.framework.gui.ScreenRegistry;
 import me.deftware.client.framework.gui.widgets.GenericComponent;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.IChatComponent;
 import me.deftware.client.framework.render.gl.GLX;
@@ -98,5 +99,7 @@ public interface MinecraftScreen extends GenericScreen {
 
 	@ApiStatus.Internal
 	void renderTooltip(int x, int y, List<String> tooltipComponents);
+
+	void clickButton(GuiButton button);
 
 }

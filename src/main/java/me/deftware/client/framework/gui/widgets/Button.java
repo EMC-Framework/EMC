@@ -53,4 +53,6 @@ public interface Button extends Component, Nameable<Button>, Tooltipable {
 		return mouseX > this.getPositionX() && mouseX < this.getPositionX() + this.getComponentWidth() && mouseY > this.getPositionY() && mouseY < this.getPositionY() + this.getComponentHeight();
 	}
 
+	void click();
+
 }
