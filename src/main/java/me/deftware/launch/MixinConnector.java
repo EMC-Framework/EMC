@@ -12,7 +12,7 @@ public class MixinConnector implements IMixinConnector {
 
         if (FMLLoader.getLoadingModList().getModFileById("optifine") != null) {
             Mixins.addConfiguration("mixins.optifine.json");
-        } else if (FMLLoader.getLoadingModList().getModFileById("sodium") != null) {
+        } else if (FMLLoader.getLoadingModList().getModFileById("rubidium") != null) {
             Mixins.addConfiguration("mixins.sodium.json");
         }
     }
