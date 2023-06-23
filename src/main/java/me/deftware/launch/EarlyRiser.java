@@ -17,6 +17,7 @@ public class EarlyRiser implements Runnable {
         MIXIN_CONFIGS.put("optifabric", "mixins.optifine.json");
         MIXIN_CONFIGS.put("optifine", "mixins.optifine.json");
         MIXIN_CONFIGS.put("sodium", "mixins.sodium.json");
+        MIXIN_CONFIGS.put("rubidium", "mixins.sodium.json");
     }
 
     @Override
