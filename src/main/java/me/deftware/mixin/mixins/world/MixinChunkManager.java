@@ -6,6 +6,7 @@ import net.minecraft.client.world.ClientChunkManager;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.ChunkData;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.WorldChunk;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -24,8 +25,8 @@ public class MixinChunkManager {
     }
 
     @Inject(method = "unload", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientChunkManager$ClientChunkMap;compareAndSet(ILnet/minecraft/world/chunk/WorldChunk;Lnet/minecraft/world/chunk/WorldChunk;)Lnet/minecraft/world/chunk/WorldChunk;", shift = At.Shift.AFTER))
-    private void onChunkUnloadEvent(int x, int z, CallbackInfo ci) {
-        new EventChunk(null, EventChunk.Action.UNLOAD, x, z).broadcast();
+    private void onChunkUnloadEvent(ChunkPos pos, CallbackInfo ci) {
+        new EventChunk(null, EventChunk.Action.UNLOAD, pos.x, pos.z).broadcast();
     }
 
 }

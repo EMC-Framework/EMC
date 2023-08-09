@@ -101,7 +101,7 @@ public class EntityPlayer extends LivingEntity {
 	}
 
 	public void drawPlayer(GLX context, int posX, int posY, int scale) {
-		InventoryScreen.drawEntity(context.getContext(), posX, posY, scale, 0, 0, getMinecraftEntity());
+		InventoryScreen.drawEntity(context.getContext(), posX, posY, 0, 0, 30, scale, 0, 0, getMinecraftEntity());
 	}
 
 	public Entity clone() {

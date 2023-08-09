@@ -144,9 +144,9 @@ public class Entity {
 	}
 
 	public void reloadSkin() {
-		if (entity instanceof AbstractClientPlayerEntity) {
-			AbstractClientPlayerEntity abstractEntity = (AbstractClientPlayerEntity) entity;
-			if (abstractEntity.canRenderCapeTexture()) {
+		if (entity instanceof AbstractClientPlayerEntity abstractEntity) {
+			var texture = abstractEntity.method_52814();
+			if (texture.elytraTexture() != null) {
 				((IMixinNetworkPlayerInfo) ((IMixinAbstractClientPlayer) abstractEntity).getPlayerNetworkInfo()).reloadTextures();
 			}
 		}

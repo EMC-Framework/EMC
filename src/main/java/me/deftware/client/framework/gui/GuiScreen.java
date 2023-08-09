@@ -71,9 +71,6 @@ public abstract class GuiScreen extends Screen implements GenericScreen {
 	public void tick() {
 		super.tick();
 		onUpdate();
-		// Do textbox cursor tick
-		getMinecraftScreen().getChildren(TextField.class)
-				.forEach(field -> ((TextFieldWidget) field).tick());
 	}
 
 	@Override
@@ -205,7 +202,7 @@ public abstract class GuiScreen extends Screen implements GenericScreen {
 		 * but if a world is loaded, a transparent black
 		 * overlay will be drawn instead
 		 */
-		BackgroundType TexturedOrTransparent = (context, mouseX, mouseY, delta, parent) -> parent.renderBackground(context.getContext());
+		BackgroundType TexturedOrTransparent = (context, mouseX, mouseY, delta, parent) -> parent.renderBackground(context.getContext(), mouseX, mouseY, delta);
 
 		/**
 		 * Renders the background

@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import me.deftware.client.framework.network.packets.*;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.c2s.common.KeepAliveC2SPacket;
 import net.minecraft.network.packet.c2s.play.*;
 import net.minecraft.network.packet.s2c.play.*;
 

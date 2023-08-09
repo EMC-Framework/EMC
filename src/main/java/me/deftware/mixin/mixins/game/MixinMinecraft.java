@@ -22,6 +22,7 @@ import me.deftware.client.framework.world.WorldTimer;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.texture.NativeImage;
@@ -159,7 +160,8 @@ public abstract class MixinMinecraft implements Minecraft {
 
     @Override
     public boolean _isOnRealms() {
-        return ((MinecraftClient) (Object) this).isConnectedToRealms();
+        ServerInfo serverInfo = ((MinecraftClient) (Object) this).getCurrentServerEntry();
+        return serverInfo != null && serverInfo.isRealm();
     }
 
     @Override

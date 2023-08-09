@@ -15,20 +15,9 @@ import java.util.Map;
 @Mixin(PlayerListEntry.class)
 public class MixinNetworkPlayerInfo implements IMixinNetworkPlayerInfo {
 
-    @Shadow
-    @Final
-    private Map<MinecraftProfileTexture.Type, Identifier> textures;
-
-    @Final
-    @Shadow
-    private GameProfile profile;
-
-    @Shadow
-    private String model;
-
     @Override
     public void reloadTextures() {
-        textures.clear();
+        /*textures.clear(); TODO
         MinecraftClient.getInstance().getSkinProvider().loadSkin(this.profile, (type, id, texture) -> {
             switch (type) {
                 case SKIN:
@@ -45,7 +34,7 @@ public class MixinNetworkPlayerInfo implements IMixinNetworkPlayerInfo {
                     this.textures.put(MinecraftProfileTexture.Type.ELYTRA, id);
             }
 
-        }, true);
+        }, true);*/
     }
 
 }

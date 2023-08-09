@@ -12,7 +12,11 @@ public class SessionHelper {
 	}
 
 	public static String getPlayerUUID() {
-		return MinecraftClient.getInstance().getSession().getUuid();
+		var uuid = MinecraftClient.getInstance().getSession().getUuidOrNull();
+		if (uuid != null) {
+			return uuid.toString();
+		}
+		return "0";
 	}
 
 	public static String getPlayerUsername() {

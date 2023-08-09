@@ -55,7 +55,7 @@ public class AuthEnvironment {
 	}
 
 	public Environment build() {
-		return Environment.create(getAuthHost(), getAccountsHost(), getSessionHost(), getServicesHost(), getName());
+		return new Environment(getAccountsHost(), getSessionHost(), getServicesHost(), getName());
 	}
 
 }

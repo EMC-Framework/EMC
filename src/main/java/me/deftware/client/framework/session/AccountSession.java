@@ -1,15 +1,13 @@
 package me.deftware.client.framework.session;
 
-import com.mojang.authlib.Agent;
 import com.mojang.authlib.Environment;
-import com.mojang.authlib.UserAuthentication;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.authlib.yggdrasil.YggdrasilEnvironment;
-import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication;
 import lombok.Getter;
 import me.deftware.client.framework.minecraft.Minecraft;
 import net.minecraft.client.util.Session;
+import org.apache.commons.lang3.NotImplementedException;
 
 import java.net.Proxy;
 import java.util.Map;
@@ -28,11 +26,6 @@ public class AccountSession {
 	private Session.AccountType type = Session.AccountType.MOJANG;
 
 	/**
-	 * Unique client ID which needs to be used for every request
-	 */
-	private final String clientId = UUID.randomUUID().toString();
-
-	/**
 	 * Authentication environment
 	 */
 	private final Environment environment;
@@ -43,14 +36,12 @@ public class AccountSession {
 	@Getter
 	private Session session;
 
-	private final UserAuthentication userAuthentication;
 	private final YggdrasilAuthenticationService authenticationService;
 
 	private AccountSession(Environment environment) {
 		this.environment = environment;
 		// Set up authentication service
-		this.authenticationService = new YggdrasilAuthenticationService(Proxy.NO_PROXY, clientId, environment);
-		this.userAuthentication = new YggdrasilUserAuthentication(authenticationService, clientId, Agent.MINECRAFT, environment);
+		this.authenticationService = new YggdrasilAuthenticationService(Proxy.NO_PROXY, environment);
 	}
 
 	/**
@@ -70,14 +61,7 @@ public class AccountSession {
 	 * @throws Exception Authentication exception
 	 */
 	public AccountSession withCredentials(String username, String password) throws Exception {
-		this.type = username.contains("@") ? Session.AccountType.MOJANG : Session.AccountType.LEGACY;
-		this.userAuthentication.setUsername(username);
-		this.userAuthentication.setPassword(password);
-		this.userAuthentication.logIn();
-		// Set session
-		this.session = new Session(userAuthentication.getSelectedProfile().getName(), userAuthentication.getSelectedProfile().getId().toString(),
-				userAuthentication.getAuthenticatedToken(), Optional.empty(), Optional.of(clientId), this.type);
-		return this;
+		throw new NotImplementedException("Credentials are no longer supported");
 	}
 
 	/**
@@ -87,8 +71,9 @@ public class AccountSession {
 	 */
 	public AccountSession withOfflineUsername(String username) {
 		this.type = Session.AccountType.LEGACY;
-		this.session = new Session(username, "", "0", Optional.empty(),
-				Optional.of(clientId), this.type);
+		var clientId = UUID.randomUUID();
+		var uuid = UUID.randomUUID();
+		this.session = new Session(username, uuid, "0", Optional.empty(), Optional.of(clientId.toString()), this.type);
 		return this;
 	}
 
@@ -100,9 +85,9 @@ public class AccountSession {
 	 */
 	public AccountSession withSession(Map<String, Object> map, AccountType accountType) {
 		this.type = accountType.getType();
-		this.session = new Session(map.get("username").toString(), map.get("uuid").toString(), map.get("accessToken").toString(),
-				Optional.of(map.getOrDefault("xuid", "").toString()), Optional.of(clientId), this.type);
-		this.userAuthentication.loadFromStorage(map);
+		//this.session = new Session(map.get("username").toString(), map.get("uuid").toString(), map.get("accessToken").toString(),
+		//		Optional.of(map.getOrDefault("xuid", "").toString()), Optional.of(clientId), this.type);
+		// this.userAuthentication.loadFromStorage(map);
 		return this;
 	}
 
@@ -117,14 +102,14 @@ public class AccountSession {
 	 * @return The session username
 	 */
 	public String getSessionUsername() {
-		return session.getProfile().getName();
+		return session.getUsername();
 	}
 
 	/**
 	 * @return The session uuid
 	 */
 	public UUID getSessionUUID() {
-		return session.getProfile().getId();
+		return session.getUuidOrNull();
 	}
 
 	public MinecraftSessionService getSessionService() {

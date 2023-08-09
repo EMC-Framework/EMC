@@ -23,7 +23,7 @@ public class EventChunkDataReceive extends Event {
 
     public EventChunkDataReceive(ChunkDataS2CPacket rootPacket) {
         this.rootPacket = rootPacket;
-        this.rawPos = new ChunkPos(rootPacket.getX(), rootPacket.getZ());
+        this.rawPos = new ChunkPos(rootPacket.getChunkX(), rootPacket.getChunkZ());
         isInitialFullChunk = rootPacket.isWritingErrorSkippable(); // TODO: Verify isWritingErrorSkippable
         updateFullChunk(rootPacket);
     }

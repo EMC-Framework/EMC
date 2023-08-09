@@ -7,14 +7,15 @@ import com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.net.Proxy;
 
 public class CustomSessionService extends YggdrasilMinecraftSessionService {
 
 	public CustomSessionService(YggdrasilAuthenticationService service, Environment env) {
-		super(service, env);
+		super(service.getServicesKeySet(), Proxy.NO_PROXY, env);
 	}
 
-	@Override
+	/*@Override
 	protected GameProfile fillGameProfile(final GameProfile profile, final boolean requireSecure) {
 		try {
 			Field baseUrl = this.getClass().getSuperclass().getDeclaredField("baseUrl");
@@ -39,6 +40,6 @@ public class CustomSessionService extends YggdrasilMinecraftSessionService {
 			ex.printStackTrace();
 		}
 		return profile;
-	}
+	}*/
 
 }

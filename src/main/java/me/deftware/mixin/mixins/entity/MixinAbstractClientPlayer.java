@@ -5,12 +5,12 @@ import me.deftware.client.framework.event.events.EventFovModifier;
 import me.deftware.client.framework.event.events.EventSpectator;
 import me.deftware.client.framework.cosmetics.PlayerTexture;
 import me.deftware.client.framework.cosmetics.CosmeticProvider;
-import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
 import me.deftware.mixin.imp.IMixinAbstractClientPlayer;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.client.util.SkinTextures;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.util.Identifier;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -42,7 +42,7 @@ public abstract class MixinAbstractClientPlayer implements IMixinAbstractClientP
 	}
 
 	@Unique
-	private PlayerTexture texture;
+	private SkinTextures customSkinTexture;
 
 	@Inject(method = "<init>", at = @At("RETURN"))
 	private void onInit(ClientWorld world, GameProfile profile, CallbackInfo ci) {
@@ -51,25 +51,25 @@ public abstract class MixinAbstractClientPlayer implements IMixinAbstractClientP
 			provider.load(id, () -> {
 				PlayerTexture texture = provider.getPlayerTexture(id);
 				if (texture != null) {
-					this.texture = texture;
+					var cape = texture.getCapeTexture();
+					customSkinTexture = new SkinTextures(
+							null, cape, cape, SkinTextures.Model.WIDE, true
+					);
 				}
 			});
 		}
 	}
 
-	@Inject(method = "getCapeTexture", at = @At("TAIL"), cancellable = true)
-	public void onGetCapeTexture(CallbackInfoReturnable<Identifier> ci) {
-		if (texture != null) {
-			MinecraftIdentifier identifier = texture.getCapeTexture();
-			if (identifier != null) {
-				ci.setReturnValue(identifier);
-			}
-		}
-	}
-
+	@Unique
 	@Override
 	public PlayerListEntry getPlayerNetworkInfo() {
 		return playerListEntry;
+	}
+
+	@Unique
+	@Override
+	public SkinTextures getCustomSkinTexture() {
+		return customSkinTexture;
 	}
 
 }

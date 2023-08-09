@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public abstract class MixinNetworkManager implements IMixinNetworkManager {
 
     @Shadow
-    protected abstract void sendImmediately(Packet<?> packet, PacketCallbacks arg);
+    protected abstract void sendImmediately(Packet<?> packet, PacketCallbacks callbacks, boolean flush);
 
     @SuppressWarnings("unchecked")
     @Redirect(method = "channelRead0(Lio/netty/channel/ChannelHandlerContext;Lnet/minecraft/network/packet/Packet;)V",
@@ -29,21 +29,22 @@ public abstract class MixinNetworkManager implements IMixinNetworkManager {
         }
     }
 
-    @Redirect(method = "send(Lnet/minecraft/network/packet/Packet;Lnet/minecraft/network/PacketCallbacks;)V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/network/ClientConnection;sendImmediately(Lnet/minecraft/network/packet/Packet;Lnet/minecraft/network/PacketCallbacks;)V"))
-    private void sendPacket$dispatchPacket(ClientConnection instance, Packet<?> packet, PacketCallbacks arg) {
+    @Redirect(method = "send(Lnet/minecraft/network/packet/Packet;Lnet/minecraft/network/PacketCallbacks;Z)V",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/network/ClientConnection;sendImmediately(Lnet/minecraft/network/packet/Packet;Lnet/minecraft/network/PacketCallbacks;Z)V"))
+    private void sendPacket$dispatchPacket(ClientConnection instance, Packet<?> packet, PacketCallbacks callbacks, boolean flush) {
         EventPacketSend event = new EventPacketSend(packet);
         event.broadcast();
         if (event.isCanceled()) {
             return;
         }
-        sendImmediately(event.getPacket(), arg);
+        sendImmediately(event.getPacket(), callbacks, flush);
     }
 
     @Unique
     @Override
     public void sendPacketImmediately(Packet<?> packet) {
-        sendImmediately(packet, null);
+        // TODO: What should flush be
+        sendImmediately(packet, null, false);
     }
 
 }
