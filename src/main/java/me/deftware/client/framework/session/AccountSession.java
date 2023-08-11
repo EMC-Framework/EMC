@@ -31,6 +31,11 @@ public class AccountSession {
 	private final Environment environment;
 
 	/**
+	 * Unique client ID which needs to be used for every request
+	 */
+	private final String clientId = UUID.randomUUID().toString();
+
+	/**
 	 * Minecraft session object
 	 */
 	@Getter
@@ -40,7 +45,6 @@ public class AccountSession {
 
 	private AccountSession(Environment environment) {
 		this.environment = environment;
-		// Set up authentication service
 		this.authenticationService = new YggdrasilAuthenticationService(Proxy.NO_PROXY, environment);
 	}
 
@@ -71,9 +75,9 @@ public class AccountSession {
 	 */
 	public AccountSession withOfflineUsername(String username) {
 		this.type = Session.AccountType.LEGACY;
-		var clientId = UUID.randomUUID();
 		var uuid = UUID.randomUUID();
-		this.session = new Session(username, uuid, "0", Optional.empty(), Optional.of(clientId.toString()), this.type);
+		this.session = new Session(username, uuid, "0", Optional.empty(), Optional.of(clientId), this.type);
+		System.out.println("Assigning UUID " + uuid);
 		return this;
 	}
 
@@ -85,9 +89,8 @@ public class AccountSession {
 	 */
 	public AccountSession withSession(Map<String, Object> map, AccountType accountType) {
 		this.type = accountType.getType();
-		//this.session = new Session(map.get("username").toString(), map.get("uuid").toString(), map.get("accessToken").toString(),
-		//		Optional.of(map.getOrDefault("xuid", "").toString()), Optional.of(clientId), this.type);
-		// this.userAuthentication.loadFromStorage(map);
+		this.session = new Session(map.get("username").toString(), uuidFromString(map.get("uuid").toString()), map.get("accessToken").toString(),
+				Optional.of(map.getOrDefault("xuid", "").toString()), Optional.of(clientId), this.type);
 		return this;
 	}
 
@@ -113,7 +116,7 @@ public class AccountSession {
 	}
 
 	public MinecraftSessionService getSessionService() {
-		return new CustomSessionService(this.authenticationService, this.environment);
+		return authenticationService.createMinecraftSessionService();
 	}
 
 	public YggdrasilAuthenticationService getAuthenticationService() {
@@ -127,6 +130,17 @@ public class AccountSession {
 	public AccountSession setSession() {
 		Minecraft.getMinecraftGame().setSession(this);
 		return this;
+	}
+
+	public static UUID uuidFromString(String uuid) {
+		if (uuid.contains("-"))
+			return UUID.fromString(uuid);
+		return UUID.fromString(
+				uuid.replaceFirst(
+						"(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)",
+						"$1-$2-$3-$4-$5"
+				)
+		);
 	}
 
 }
