@@ -22,6 +22,19 @@ def getVersionFromJava() {
 	return "${ver}.${patch}".toString()
 }
 
+def urlFile = { url, name ->
+	File file = new File("$buildDir/download/${name}.jar")
+	file.parentFile.mkdirs()
+	if (!file.exists()) {
+		new URL(url).withInputStream { downloadStream ->
+			file.withOutputStream { fileOut ->
+				fileOut << downloadStream
+			}
+		}
+	}
+	files(file.absolutePath)
+}
+
 version = getVersionFromJava()
 
 repositories {
@@ -45,6 +58,7 @@ dependencies {
 	implementation 'io.netty:netty-handler-proxy:4.1.76.Final'
 	implementation 'com.google.code.findbugs:jsr305:3.0.2'
 	implementation files("deps/mocked.jar")
+	modCompileOnly urlFile("https://github.com/CaffeineMC/sodium-fabric/releases/download/mc1.20.1-0.5.0/sodium-fabric-mc1.20.1-0.5.0.jar", "sodim-5.0.jar")
 }
 
 loom {
