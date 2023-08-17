@@ -53,7 +53,7 @@ public abstract class MixinAbstractClientPlayer implements IMixinAbstractClientP
 				if (texture != null) {
 					var cape = texture.getCapeTexture();
 					customSkinTexture = new SkinTextures(
-							null, cape, cape, SkinTextures.Model.WIDE, true
+							null, null, cape, cape, SkinTextures.Model.WIDE, true
 					);
 				}
 			});

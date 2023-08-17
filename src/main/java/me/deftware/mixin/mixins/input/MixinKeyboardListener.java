@@ -19,7 +19,7 @@ public class MixinKeyboardListener {
             new EventKeyActionRaw(keyCode, action, modifiers).broadcast();
     }
 
-    @Inject(method = "onKey", at = @At(value = "INVOKE", target = "net/minecraft/client/util/InputUtil.isKeyPressed(JI)Z", ordinal = 5))
+    @Inject(method = "onKey", at = @At(value = "INVOKE", target = "net/minecraft/client/util/InputUtil.isKeyPressed(JI)Z", ordinal = 2))
     private void onKeyEvent(long windowPointer, int keyCode, int scanCode, int action, int modifiers, CallbackInfo ci) {
         if (keyCode >= 32 && keyCode <= 348) {
             new EventKeyAction(keyCode, action, modifiers).broadcast();

@@ -11,8 +11,10 @@ public abstract class GameSetting<T> {
     public static GameSetting<Integer> VIEW_DISTANCE = getSimpleOption(MinecraftClient.getInstance().options.getViewDistance());
     public static GameSetting<Double> GAMMA = getSimpleOption(MinecraftClient.getInstance().options.getGamma());
     public static GameSetting<Integer> MAX_FPS = getSimpleOption(MinecraftClient.getInstance().options.getMaxFps());
-    public static GameSetting<Boolean> DEBUG_INFO = getSimpleOption(() -> MinecraftClient.getInstance().options.debugEnabled,
-            state -> MinecraftClient.getInstance().options.debugEnabled = state);
+
+    // TODO: Add real setter, not just a toggle
+    public static GameSetting<Boolean> DEBUG_INFO = getSimpleOption(() -> MinecraftClient.getInstance().method_53526().method_53536(),
+            state -> MinecraftClient.getInstance().method_53526().method_53539());
 
     private static <E> GameSetting<E> getSimpleOption(SimpleOption<E> option) {
         return new GameSetting<>() {

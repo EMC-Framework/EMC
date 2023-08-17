@@ -21,6 +21,7 @@ import me.deftware.client.framework.world.ClientWorld;
 import me.deftware.client.framework.world.WorldTimer;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.hud.DebugHud;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.option.GameOptions;
@@ -266,12 +267,12 @@ public abstract class MixinMinecraft implements Minecraft {
         cir.setReturnValue(SharedConstants.getGameVersion().getName());
     }
 
-    @Redirect(method = "tick", at = @At(value = "FIELD", target = "Lnet/minecraft/client/option/GameOptions;debugEnabled:Z"))
-    private boolean onScreenTick(GameOptions options) {
+    @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/DebugHud;method_53536()Z"))
+    private boolean onScreenTick(DebugHud instance) {
         if (((MinecraftClient) (Object) this).currentScreen instanceof MinecraftScreen screen) {
             screen.getEventScreen().setType(EventScreen.Type.Tick).broadcast();
         }
-        return options.debugEnabled;
+        return instance.method_53536();
     }
 
     @Override
