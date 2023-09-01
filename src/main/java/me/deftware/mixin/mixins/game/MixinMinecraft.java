@@ -267,12 +267,12 @@ public abstract class MixinMinecraft implements Minecraft {
         cir.setReturnValue(SharedConstants.getGameVersion().getName());
     }
 
-    @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/DebugHud;method_53536()Z"))
+    @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/DebugHud;shouldShowDebugHud()Z"))
     private boolean onScreenTick(DebugHud instance) {
         if (((MinecraftClient) (Object) this).currentScreen instanceof MinecraftScreen screen) {
             screen.getEventScreen().setType(EventScreen.Type.Tick).broadcast();
         }
-        return instance.method_53536();
+        return instance.shouldShowDebugHud();
     }
 
     @Override
