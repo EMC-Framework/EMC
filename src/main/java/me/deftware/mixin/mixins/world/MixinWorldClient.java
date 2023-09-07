@@ -58,10 +58,10 @@ public abstract class MixinWorldClient extends MixinWorld implements me.deftware
         return pos;
     }
 
-    @Inject(method = "addEntityPrivate", at = @At("TAIL"))
-    private void addEntityPrivate(int id, net.minecraft.entity.Entity entity, CallbackInfo ci) {
+    @Inject(method = "method_53875", at = @At("TAIL"))
+    private void addEntityPrivate(net.minecraft.entity.Entity entity, CallbackInfo ci) {
         Entity e = Entity.newInstance(entity);
-        entities.put(id, e);
+        entities.put(e.getEntityId(), e);
         new EventEntityUpdated(EventEntityUpdated.Change.Added, e).broadcast();
     }
 
@@ -83,7 +83,7 @@ public abstract class MixinWorldClient extends MixinWorld implements me.deftware
 
     @Override
     public void _addEntity(int id, Entity entity) {
-        ((ClientWorld) (Object) this).addEntity(id, entity.getMinecraftEntity());
+        ((ClientWorld) (Object) this).method_53875(entity.getMinecraftEntity());
     }
 
     @Override
