@@ -2,7 +2,7 @@ package me.deftware.client.framework.session;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import net.minecraft.client.util.Session;
+import net.minecraft.client.session.Session;
 
 /**
  * @author Deftware

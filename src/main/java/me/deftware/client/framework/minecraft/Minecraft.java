@@ -14,7 +14,7 @@ import me.deftware.client.framework.world.WorldTimer;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 
-import net.minecraft.client.util.Session;
+import net.minecraft.client.session.Session;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 

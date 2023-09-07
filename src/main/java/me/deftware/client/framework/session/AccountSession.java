@@ -6,7 +6,7 @@ import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.authlib.yggdrasil.YggdrasilEnvironment;
 import lombok.Getter;
 import me.deftware.client.framework.minecraft.Minecraft;
-import net.minecraft.client.util.Session;
+import net.minecraft.client.session.Session;
 import org.apache.commons.lang3.NotImplementedException;
 
 import java.net.Proxy;
