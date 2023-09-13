@@ -50,15 +50,22 @@ public abstract class GuiScreen extends Screen implements GenericScreen {
 		return super.mouseClicked(mouseX, mouseY, mouseButton);
 	}
 
+	private GLX glx;
+
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float partialTicks) {
 		Mouse.updateMousePosition();
-		GLX glx = GLX.of(context);
-		if (backgroundType != null)
-			backgroundType.renderBackground(glx, mouseX, mouseY, partialTicks, this);
+		glx = GLX.of(context);
 		super.render(context, mouseX, mouseY, partialTicks);
 		onDraw(glx, mouseX, mouseY, partialTicks);
 		onPostDraw(glx, mouseX, mouseY, partialTicks);
+	}
+
+	@Override
+	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+		if (backgroundType != null) {
+			backgroundType.renderBackground(glx, mouseX, mouseY, delta, this);
+		}
 	}
 
 	@Override
