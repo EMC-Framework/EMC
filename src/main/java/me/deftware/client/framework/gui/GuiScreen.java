@@ -63,6 +63,10 @@ public abstract class GuiScreen extends Screen implements GenericScreen {
 
 	@Override
 	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+		if (backgroundType == BackgroundType.TexturedOrTransparent) {
+			super.renderBackground(context, mouseX, mouseY, delta);
+			return;
+		}
 		if (backgroundType != null) {
 			backgroundType.renderBackground(glx, mouseX, mouseY, delta, this);
 		}
