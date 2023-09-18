@@ -145,7 +145,7 @@ public class Entity {
 
 	public void reloadSkin() {
 		if (entity instanceof AbstractClientPlayerEntity abstractEntity) {
-			var texture = abstractEntity.method_52814();
+			var texture = abstractEntity.getSkinTextures();
 			if (texture.elytraTexture() != null) {
 				((IMixinNetworkPlayerInfo) ((IMixinAbstractClientPlayer) abstractEntity).getPlayerNetworkInfo()).reloadTextures();
 			}

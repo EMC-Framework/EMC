@@ -13,14 +13,14 @@ public class MixinElytraFeatureRenderer {
 
     @Redirect(
             method = "render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;ILnet/minecraft/entity/LivingEntity;FFFFFF)V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/AbstractClientPlayerEntity;method_52814()Lnet/minecraft/client/util/SkinTextures;")
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/AbstractClientPlayerEntity;getSkinTextures()Lnet/minecraft/client/util/SkinTextures;")
     )
     private SkinTextures onRender(AbstractClientPlayerEntity instance) {
         var texture = ((IMixinAbstractClientPlayer) instance).getCustomSkinTexture();
         if (texture != null) {
             return texture;
         }
-        return instance.method_52814();
+        return instance.getSkinTextures();
     }
 
 }
