@@ -1,7 +1,7 @@
 package me.deftware.mixin.mixins.integration;
 
 import me.deftware.mixin.shared.BlockManagement;
-import me.jellysquid.mods.sodium.client.render.occlusion.BlockOcclusionCache;
+import me.jellysquid.mods.sodium.client.render.chunk.compile.pipeline.BlockOcclusionCache;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -14,7 +14,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 /**
  * Makes EMCs block rendering override compatible with the Sodium performance mod
  */
-@SuppressWarnings("InvalidInjectorMethodSignature")
 @Mixin(value = BlockOcclusionCache.class, remap = false)
 public class MixinSodiumBlockOcclusionCache {
 
