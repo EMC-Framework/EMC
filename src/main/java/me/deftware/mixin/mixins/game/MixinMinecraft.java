@@ -117,8 +117,8 @@ public abstract class MixinMinecraft implements Minecraft {
     private String worldName;
 
     @Inject(method = "startIntegratedServer", at = @At("HEAD"))
-    private void onIntegratedServer(String levelName, LevelStorage.Session session, ResourcePackManager dataPackManager, SaveLoader saveLoader, boolean bl, CallbackInfo ci) {
-        this.worldName = levelName;
+    private void onIntegratedServer(LevelStorage.Session session, ResourcePackManager resourcePackManager, SaveLoader saveLoader, boolean bl, CallbackInfo ci) {
+        this.worldName = saveLoader.saveProperties().getLevelName();
     }
 
     @Override
