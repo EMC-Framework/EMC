@@ -1,10 +1,7 @@
 package me.deftware.client.framework.message;
 
 import me.deftware.client.framework.minecraft.Minecraft;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableTextContent;
+import net.minecraft.text.*;
 
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -24,7 +21,7 @@ public interface Message extends com.mojang.brigadier.Message {
      * Visits each component of this message, and their respective style.
      */
     default Optional<Message> visit(BiFunction<Appearance, String, Optional<Message>> visitor) {
-        return ((Text) this).visit((style, text) -> visitor.apply((Appearance) style, text), Style.EMPTY);
+        return visit(((Text) this), Style.EMPTY, visitor);
     }
 
     /**
@@ -143,7 +140,7 @@ public interface Message extends com.mojang.brigadier.Message {
         public Builder() {
             // Style is inherited from the first message, so we need to add a dummy message
             // to inherit the style from later on.
-            this(Message.of("").style(Appearance.of(DefaultColors.WHITE)));
+            this(Message.of(PlainTextContent.EMPTY.string()).style(Appearance.of(DefaultColors.WHITE)));
         }
 
         public Builder append(Message message) {
@@ -177,6 +174,28 @@ public interface Message extends com.mojang.brigadier.Message {
             return message;
         }
 
+    }
+
+    private static Optional<Message> visit(Text ref, Style superStyle, BiFunction<Appearance, String, Optional<Message>> visitor) {
+        var style = ref.getStyle().withParent(superStyle);
+        Optional<Message> optional;
+        if (ref.getContent() instanceof PlainTextContent content) {
+            // Ensure we visit empty strings to stay consistent with older versions
+            optional = visitor.apply((Appearance) style, content.string());
+        } else {
+            optional = ref.getContent().visit((s, text) -> visitor.apply((Appearance) s, text), style);
+        }
+        if (optional.isPresent()) {
+            return optional;
+        }
+        // Siblings
+        for (var sibling : ref.getSiblings()) {
+            var result = visit(sibling, style, visitor);
+            if (result.isPresent()) {
+                return result;
+            }
+        }
+        return Optional.empty();
     }
 
 }
