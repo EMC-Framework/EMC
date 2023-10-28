@@ -17,6 +17,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL30;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -70,6 +71,7 @@ public class GlTexture implements GuiScreen.BackgroundType {
         GL13.glActiveTexture(GL13.GL_TEXTURE0);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.glId);
         this.upload(getImageBuffer(image), false);
+        GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
     }
 
     public GlTexture draw(GLX context, int x, int y, int width, int height) {
