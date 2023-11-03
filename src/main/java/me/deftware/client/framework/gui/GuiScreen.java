@@ -17,6 +17,9 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.function.Function;
+import java.util.function.Supplier;
+
 /**
  * @author Deftware
  */
@@ -26,6 +29,9 @@ public abstract class GuiScreen extends Screen implements GenericScreen {
 
 	@Setter
 	private BackgroundType backgroundType = BackgroundType.Textured;
+
+	@Setter
+	private MousePosition mousePosition = MousePosition.IDENTITY;
 
 	public GuiScreen(GenericScreen parent) {
 		super(Text.literal(""));
@@ -38,16 +44,20 @@ public abstract class GuiScreen extends Screen implements GenericScreen {
 
 	@Override
 	public boolean mouseReleased(double x, double y, int button) {
+		x = mousePosition.getX(x);
+		y = mousePosition.getY(y);
 		if (onMouseReleased((int) Math.round(x), (int) Math.round(y), button))
 			return true;
 		return super.mouseReleased(x, y, button);
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-		if (onMouseClicked((int) Math.round(mouseX), (int) Math.round(mouseY), mouseButton))
+	public boolean mouseClicked(double x, double y, int mouseButton) {
+		x = mousePosition.getX(x);
+		y = mousePosition.getY(y);
+		if (onMouseClicked((int) Math.round(x), (int) Math.round(y), mouseButton))
 			return true;
-		return super.mouseClicked(mouseX, mouseY, mouseButton);
+		return super.mouseClicked(x, y, mouseButton);
 	}
 
 	private GLX glx;
@@ -55,6 +65,8 @@ public abstract class GuiScreen extends Screen implements GenericScreen {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float partialTicks) {
 		Mouse.updateMousePosition();
+		mouseX = (int) mousePosition.getX(mouseX);
+		mouseY = (int) mousePosition.getY(mouseY);
 		glx = GLX.of(context);
 		super.render(context, mouseX, mouseY, partialTicks);
 		onDraw(glx, mouseX, mouseY, partialTicks);
@@ -63,6 +75,8 @@ public abstract class GuiScreen extends Screen implements GenericScreen {
 
 	@Override
 	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+		mouseX = (int) mousePosition.getX(mouseX);
+		mouseY = (int) mousePosition.getY(mouseY);
 		if (backgroundType == BackgroundType.TexturedOrTransparent) {
 			super.renderBackground(context, mouseX, mouseY, delta);
 			return;
@@ -220,6 +234,36 @@ public abstract class GuiScreen extends Screen implements GenericScreen {
 		 */
 		void renderBackground(GLX context, int mouseX, int mouseY, float delta, GuiScreen parent);
 
+	}
+
+	public interface MousePosition {
+		MousePosition IDENTITY = new MousePosition() {
+			@Override
+			public double getX(double x) {
+				return x;
+			}
+
+			@Override
+			public double getY(double y) {
+				return y;
+			}
+		};
+
+		MousePosition REAL = new MousePosition() {
+			@Override
+			public double getX(double x) {
+				return Mouse.getMouseX();
+			}
+
+			@Override
+			public double getY(double y) {
+				return Mouse.getMouseY();
+			}
+		};
+
+		double getX(double x);
+
+		double getY(double y);
 	}
 
 }

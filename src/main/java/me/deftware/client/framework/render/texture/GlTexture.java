@@ -60,17 +60,20 @@ public class GlTexture implements GuiScreen.BackgroundType {
     }
 
     public GlTexture(BufferedImage image, int scaling) {
-        this.init(image, scaling);
+        this.init(getImageBuffer(image), scaling, image.getWidth(), image.getHeight());
     }
 
-    protected void init(BufferedImage image, int scaling) {
+    public GlTexture(ByteBuffer buffer, int scaling, int width, int height) {
+        this.init(buffer, scaling, width, height);
+    }
+
+    public void init(ByteBuffer buffer, int scaling, int width, int height) {
         this.scaling = scaling;
-        this.textureWidth = image.getWidth();
-        this.textureHeight = image.getHeight();
+        setDimensions(width, height);
         this.glId = GL11.glGenTextures();
         GL13.glActiveTexture(GL13.GL_TEXTURE0);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.glId);
-        this.upload(getImageBuffer(image), false);
+        this.upload(buffer, false);
         GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
     }
 
@@ -125,6 +128,13 @@ public class GlTexture implements GuiScreen.BackgroundType {
             GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, textureWidth, textureHeight, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
         else
             GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, textureWidth, textureHeight, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
+    }
+
+    public boolean setDimensions(int width, int height) {
+        boolean match = width == textureWidth && height == textureHeight;
+        textureWidth = width;
+        textureHeight = height;
+        return match;
     }
 
     public void destroy() {

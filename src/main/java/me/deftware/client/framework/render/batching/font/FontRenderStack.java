@@ -32,8 +32,8 @@ public class FontRenderStack extends RenderStack<FontRenderStack> {
 
 	public FontRenderStack(IFontProvider font) {
 		this.font = font.getFont();
-		this.scaled = this.font.scaled;
-		this.ligatures = this.font.isLigatures();
+		this.scaled = false;
+		this.ligatures = false; //this.font.isLigatures();
 	}
 
 	@Override

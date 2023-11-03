@@ -4,17 +4,17 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import me.deftware.client.framework.main.bootstrap.Bootstrap;
-import me.deftware.client.framework.render.batching.RenderStack;
 import me.deftware.client.framework.render.texture.GlTexture;
 import me.deftware.client.framework.util.path.OSUtils;
+import org.lwjgl.opengl.GL11;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.font.TextAttribute;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBuffer;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
@@ -28,8 +28,19 @@ public class AtlasTextureFont {
     @Getter
     public final Map<String, CharData> characterMap = new HashMap<>();
 
-    protected int fontSize;
-    public boolean scaled;
+    private static final Canvas CANVAS = new Canvas();
+    private static final List<String> characters = new ArrayList<>();
+
+    static {
+        // https://en.wikipedia.org/wiki/List_of_Unicode_characters
+        for (char numeric = 33; numeric <= 255; numeric++) {
+            if (numeric == 160) // Non-breaking space
+                continue;
+            characters.add(Character.toString(numeric));
+        }
+    }
+
+    protected float fontSize;
 
     @Setter
     @Getter
@@ -41,26 +52,15 @@ public class AtlasTextureFont {
     @Getter
     public int textureWidth, textureHeight;
 
-    @Setter
-    protected Font baseFont, stdFont;
+    protected Font stdFont;
 
-    @Getter
-    protected boolean ligatures = false;
+    protected FontMetrics metrics;
 
-    private FontMetrics metrics;
-
-    public AtlasTextureFont(Font font, int fontSize, boolean scaled) {
-        this.baseFont = font;
-        this.fontSize = fontSize;
-        this.scaled = scaled;
-        RenderStack.scaleChangeCallback.add(() -> {
-            setFont(baseFont);
-            initialize();
-        });
-        setFont(baseFont);
+    public AtlasTextureFont(Font font, float fontSize, boolean scaled) {
+        setFont(font, fontSize);
     }
 
-    public AtlasTextureFont(Font font, int fontSize) {
+    public AtlasTextureFont(Font font, float fontSize) {
         this(font, fontSize, true);
     }
 
@@ -79,50 +79,41 @@ public class AtlasTextureFont {
         return fallback;
     }
 
-    private Font derive(Font font) {
-        return font.deriveFont(Font.PLAIN, fontSize * (scaled ? RenderStack.getScale() : 1f));
+    private Font derive(Font font, float size) {
+        return font.deriveFont(Font.PLAIN, size);
     }
 
-    public void setFont(Font font) {
-        this.stdFont = derive(font);
-        this.ligatures = this.stdFont.getAttributes().containsKey(TextAttribute.LIGATURES);
-        setMetrics(font);
-    }
-
-    public void setMetrics(Font font) {
-        this.metrics = new Canvas().getFontMetrics(derive(font));
+    public void setFont(Font font, float size) {
+        fontSize = size;
+        stdFont = derive(font, fontSize);
+        metrics = CANVAS.getFontMetrics(stdFont);
     }
 
     public void initialize() {
         destroy();
-        List<String> characters = new ArrayList<>();
-        // https://en.wikipedia.org/wiki/List_of_Unicode_characters
-        for (char numeric = 33; numeric <= 255; numeric++) {
-            if (numeric == 160) // Non breaking space
-                continue;
-            characters.add(Character.toString(numeric));
-        }
-        // Ligatures
-        if (this.ligatures) {
-            characters.addAll(Arrays.asList(
-                    "--", "---", "==", "===", "!=", "!==", "=!=", "=:=", "=/=", "<=", ">=", "&&", "&&&", "&=", "++", "+++", "***",
-                    ";;", "!!", "??", "?:", "?.", "?=", "<:", ":<", ":>", ">:", "<>", "<<<", ">>>", "<<", ">>", "||", "-|", "_|_",
-                    "|-", "||-", "|=", "||=", "##", "###", "####", "#{", "#[", "]#", "#(", "#?", "#_", "#_(", "#:", "#!", "#=", "^=",
-                    "<$>", "<$", "$>", "<+>", "<+", "+>", "<*>", "<*", "*>", "</", "</>", "/>", "<!--", "<#--", "-->", "->", "->>", "<<-",
-                    "<-", "<=<", "=<<", "<<=", "<==", "<=>", "<==>", "==>", "=>", "=>>", ">=>", ">>=", ">>-", ">-", ">--", "-<", "-<<", ">->",
-                    "<-<", "<-|", "<=|", "|=>", "|->", "<->", "<~~", "<~", "<~>", "~~", "~~>", "~>", "~-", "-~", "~@", "[||]", "|]", "[|", "|}",
-                    "{|", "[<", ">]", "|>", "<|", "||>", "<||", "|||>", "<|||", "<|>", "...", "..", ".=", ".-", "..<", ".?", "::", ":::", ":=",
-                    "::=", ":?", ":?>", "//", "///", "/*", "*/", "/=", "//=", "/==", "@_", "__"
-            ));
-        }
-        textureAtlas = characterGenerate(characters);
+        BufferedImage texture = genAtlas();
+        ByteBuffer buffer = GlTexture.getImageBuffer(texture);
+        setTexture(buffer, texture.getWidth(), texture.getHeight());
     }
 
-    protected GlTexture characterGenerate(List<String> characters) {
-        int characterWidth = 60, maxPerRow = 30;
+    public void setTexture(ByteBuffer buffer, int width, int height) {
+        textureWidth = width;
+        textureHeight = height;
+        if (textureAtlas == null) {
+            textureAtlas = new GlTexture(buffer, GL11.GL_NEAREST, width, height);
+            return;
+        }
+        boolean replace = textureAtlas.setDimensions(width, height);
+        textureAtlas.bind();
+        textureAtlas.upload(buffer, replace);
+        textureAtlas.unbind();
+    }
+
+    public BufferedImage genAtlas() {
+        int characterWidth = 200, maxPerRow = 30;
         // Calculate size of texture
         // fixedWidth must be more than the width of the widest character
-        int xLocation = 0, height = getStringHeight();
+        int xLocation = 0, height = metrics.getHeight();
         List<Consumer<Graphics2D>> generation = new ArrayList<>();
         for (int i = 0; i < characters.size(); i++) {
             if (i > 0 && i % maxPerRow == 0) {
@@ -130,8 +121,8 @@ public class AtlasTextureFont {
                 xLocation = 0;
             }
             String character = characters.get(i);
-            int textWidth = getStringWidth(character), textHeight = getStringHeight();
-            int xOffset = xLocation, yOffset = height - getStringHeight();
+            int textWidth = metrics.charsWidth(character.toCharArray(), 0, character.length()), textHeight = getStringHeight();
+            int xOffset = xLocation, yOffset = height - metrics.getHeight();
             generation.add(graphics -> {
                 // Draw character
                 graphics.drawString(character, xOffset, yOffset + (textHeight - textHeight / 4));
@@ -156,18 +147,13 @@ public class AtlasTextureFont {
         // Dispose graphics
         graphics.dispose();
 
-        this.textureWidth = characterTexture.getWidth();
-        this.textureHeight = characterTexture.getHeight();
+        try {
+            ImageIO.write(characterTexture, "png", new File("./atlas.png"));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
 
-        DataBuffer dataBuffer = characterTexture.getData().getDataBuffer();
-
-        // Each bank element in the data buffer is a 32-bit integer
-        long sizeBytes = ((long) dataBuffer.getSize()) * 4L;
-        long sizeMB = sizeBytes / (1024L * 1024L);
-
-        Bootstrap.logger.debug("Font atlas {}x{}, {} megabytes", textureWidth, textureHeight, sizeMB);
-
-        return new GlTexture(characterTexture);
+        return characterTexture;
     }
 
     public int getStringWidth(char... chars) {
@@ -182,12 +168,21 @@ public class AtlasTextureFont {
         return metrics.getHeight();
     }
 
+    public void setCharacterMap(Map<String, CharData> map) {
+        characterMap.clear();
+        characterMap.putAll(map);
+    }
+
     public void destroy() {
         if (textureAtlas != null) {
             textureAtlas.destroy();
             characterMap.clear();
             textureAtlas = null;
         }
+    }
+
+    public float getFontSize() {
+        return fontSize;
     }
 
     @Data
