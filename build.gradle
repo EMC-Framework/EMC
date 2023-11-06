@@ -9,7 +9,7 @@ buildscript {
 
     dependencies {
         // classpath "io.freefair.gradle:lombok-plugin:2.5.0"
-        classpath 'com.github.Moudoux:ForgeGradle:FG_2.1-SNAPSHOT'
+        classpath 'com.github.jmdane:ForgeGradle:change-asset-url-SNAPSHOT'
         classpath "org.spongepowered:mixingradle:${project.mixinGradleVersion}"
         classpath "com.github.jengelman.gradle.plugins:shadow:2.0.0"
     }
