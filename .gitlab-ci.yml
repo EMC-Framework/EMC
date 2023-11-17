@@ -1,46 +1,53 @@
-build:
-  image: eclipse-temurin:17
+stages:
+  - build
+  - deploy
+
+variables:
+  SRC_DIR: "./sources"
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+
+default:
+  timeout: 20 minutes
+
+.build:
   stage: build
-  variables:
-    GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-  script:
-    # Fabric build
-    - ./gradlew publish --stacktrace
-    # Forge build
-    # - sed -i -e 's/fabric/forge/g' gradle.properties
-    # - ./gradlew clean publish --stacktrace
+  image: eclipse-temurin:17
+  before_script:
+    - cd "$SRC_DIR/$CI_JOB_NAME"
+    - chmod +x gradlew
+  after_script:
+    - mv "$SRC_DIR/$CI_JOB_NAME/maven" maven
   artifacts:
     paths:
       - maven
-    name: "emc-$CI_COMMIT_SHORT_SHA-snapshot"
+    name: "EMC-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
+    expire_in: 1 day
 
 deploy:
-  image: node:latest
   stage: deploy
-  resource_group: production
-  dependencies:
-    - build
+  image: ubuntu:latest
   variables:
     GIT_EMAIL: "ci@gitlab.com"
     GIT_NAME: "GitLab CI"
+    REPO: "git@gitlab.com:EMC-Framework/maven.git"
+    EMC_REPO: "https://gitlab.com/EMC-Framework/EMC"
   before_script:
-    - apt update
-    - apt install -y git openssh-client rsync
-    - eval $(ssh-agent -s)
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - apt-get update -y && apt-get install git openssh-client rsync -y
     - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$SSH_PRIVATE_KEY" | tr -d '\r')
     - ssh-keyscan gitlab.com >> ~/.ssh/known_hosts
-    - chmod 644 ~/.ssh/known_hosts
     - git config --global user.email "$GIT_EMAIL"
     - git config --global user.name "$GIT_NAME"
   script:
-    - git clone git@gitlab.com:EMC-Framework/maven.git maven-remote
+    - git clone $REPO maven-remote
     - rsync -r -I maven/* maven-remote
     - cd maven-remote
-    # - node update-latest.js
     - git add .
-    - git commit -m "EMC snapshot $CI_COMMIT_SHORT_SHA"
+    - git commit -m "$CI_COMMIT_BRANCH/$CI_COMMIT_SHORT_SHA" -m "$EMC_REPO/-/commit/$CI_COMMIT_SHA by $CI_COMMIT_AUTHOR"
     - git push
-  only:
-    - "1.20.2"
+  rules:
+    - if: $CI_COMMIT_MESSAGE =~ /^(all|[\d.]+)/ && $CI_COMMIT_BRANCH == "master"
+
+include:
+  - local: '/sources/builds.yml'

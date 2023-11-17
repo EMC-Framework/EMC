@@ -1,0 +1,101 @@
+plugins {
+	id 'fabric-loom' version '1.4-SNAPSHOT'
+	id "io.freefair.lombok" version "6.3.0"
+	id 'maven-publish'
+}
+
+sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.encoding = "UTF-8"
+	if (JavaVersion.current().isJava9Compatible()) {
+		it.options.release = 8
+	}
+}
+
+def getVersionFromJava() {
+	def ver = 0.0, patch = 0
+	def versionClass = file("src/main/java/me/deftware/client/framework/FrameworkConstants.java").text
+	(versionClass =~ ~/double\s+([_a-zA-Z\u0024][_a-zA-Z0-9\u0024]*)\s+=\s+(([0-9]+)\.([0-9]+))/).each {
+		ver = it[2]
+	}
+	(versionClass =~ ~/int\s+([_a-zA-Z$][_a-zA-Z0-9$]*)\s+=\s+([0-9]+)/).each {
+		if (it[1].toString() == "PATCH") {
+			patch = it[2]
+		}
+	}
+	return "${ver}.${patch}".toString()
+}
+
+version = getVersionFromJava()
+
+repositories {
+	maven { url 'https://jitpack.io' }
+	maven { url = 'https://gitlab.com/EMC-Framework/maven/raw/master/' }
+}
+
+dependencies {
+	minecraft "com.mojang:minecraft:${project.minecraftVersion}"
+	mappings "net.fabricmc:yarn:${project.minecraftVersion}${project.mappingsVer}:v2"
+
+	modImplementation "net.fabricmc:fabric-loader:0.14.24"
+	modImplementation 'com.github.Chocohead:Fabric-ASM:v2.3'
+
+	// No longer included in Minecraft
+	implementation 'io.netty:netty-handler-proxy:4.1.76.Final'
+	implementation 'com.google.code.findbugs:jsr305:3.0.2'
+	implementation files("deps/mocked.jar")
+
+	include 'com.github.Chocohead:Fabric-ASM:v2.3'
+}
+
+sourceSets {
+	main {
+		java {
+			srcDir '../../common/src/main/java'
+		}
+	}
+}
+
+loom {
+	mixin {
+		useLegacyMixinAp = true
+		defaultRefmapName = 'mixins.emc.refmap.json'
+	}
+	accessWidenerPath = file("src/main/resources/emc.accesswidener")
+}
+
+def artifactVersion = project.hasProperty("av") ? project.property("av").toString() : project.minecraftVersion
+
+publishing {
+	publications {
+		emc(MavenPublication) {
+			groupId 'me.deftware'
+			artifactId "EMC-F-v2"
+			version "${version}-${artifactVersion}"
+
+			from components['java']
+		}
+	}
+
+	repositories {
+		maven {
+			url "$rootDir/maven/"
+		}
+	}
+}
+
+processResources {
+	inputs.property "version", project.version
+
+	filesMatching("fabric.mod.json") {
+		expand "version": project.version
+	}
+}
+
+task generateApiDocumentation(type: Javadoc) {
+	source = ['src/main/java/me/deftware/client']
+	title = "EMC Framework Documentation"
+	destinationDir = file("docs")
+	failOnError false
+}

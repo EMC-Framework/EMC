@@ -1,0 +1,148 @@
+import org.gradle.internal.os.OperatingSystem
+
+buildscript {
+    repositories {
+        maven { url = 'https://repo.spongepowered.org/maven' }
+        maven { url = 'https://plugins.gradle.org/m2/' }
+        maven { url 'https://gitlab.com/EMC-Framework/maven/raw/master/' }
+        maven { url 'https://jitpack.io' }
+    }
+
+    dependencies {
+        classpath "com.github.Aristois:ForgeGradle:jitpack-SNAPSHOT"
+        classpath "org.spongepowered:mixingradle:${project.mixinGradleVersion}"
+        classpath "com.github.jengelman.gradle.plugins:shadow:2.0.0"
+    }
+}
+
+def getVersionFromJava() {
+    def ver = 0.0, patch = 0
+    def versionClass = file("src/main/java/me/deftware/client/framework/FrameworkConstants.java").text
+    (versionClass =~ ~/double\s+([_a-zA-Z\u0024][_a-zA-Z0-9\u0024]*)\s+=\s+(([0-9]+)\.([0-9]+))/).each {
+        ver = it[2]
+    }
+    (versionClass =~ ~/int\s+([_a-zA-Z$][_a-zA-Z0-9$]*)\s+=\s+([0-9]+)/).each {
+        if (it[1].toString() == "PATCH") {
+            patch = it[2]
+        }
+    }
+    return "${ver}.${patch}".toString()
+}
+
+def minecraftRoot = System.getenv('APPDATA') + "/.minecraft"
+if (OperatingSystem.current().isMacOsX()) {
+    minecraftRoot = System.getenv('HOME') + "/Library/Application Support/minecraft"
+}
+
+group = 'me.deftware'
+version = getVersionFromJava()
+
+apply plugin: 'maven'
+apply plugin: 'java'
+apply plugin: 'net.minecraftforge.gradle.tweaker-client'
+apply plugin: 'org.spongepowered.mixin'
+apply plugin: "com.github.johnrengelman.shadow"
+
+sourceCompatibility = targetCompatibility = 1.8
+
+minecraft {
+    version = project.minecraftVersion
+    runDir = 'run'
+    mappings = project.mappingsVer
+    makeObfSourceJar = true
+    tweakClass = 'me.deftware.launch.Launcher'
+    at(file('src/main/resources/META-INF/accesstransformer.cfg'))
+}
+
+sourceSets {
+	main {
+		java {
+			srcDir '../../common/src/main/java'
+		}
+	}
+}
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://repo.spongepowered.org/maven/' }
+    maven { url 'https://libraries.minecraft.net/' }
+    maven { url 'https://gitlab.com/EMC-Framework/maven/raw/master/' }
+    maven { url "$rootDir/MCPConfig/build/distributions/maven/" }
+}
+
+dependencies {
+    implementation('org.dimdev:mixin:0.7.11-SNAPSHOT') { transitive = false }
+    implementation('net.minecraft:launchwrapper:1.12') { transitive = false }
+    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'org.ow2.asm:asm:6.2'
+    implementation 'org.ow2.asm:asm-commons:6.2'
+
+    implementation 'org.jetbrains:annotations:21.0.1'
+}
+
+mixin {
+    defaultObfuscationEnv notch
+    add sourceSets.main, "mixins.emc.refmap.json"
+}
+
+shadowJar {
+    dependencies {
+        include('org.dimdev:mixin')
+    }
+    classifier = 'full'
+}
+
+//noinspection GroovyAssignabilityCheck
+task createPom {
+    doLast {
+        pom {
+            //noinspection GroovyAssignabilityCheck
+            project {
+                groupId "me.deftware"
+                artifactId "EMC"
+                version "${version}-${project.minecraftVersion}"
+            }
+        }.writeTo("maven/me/deftware/EMC/${version}-${project.minecraftVersion}/EMC-${version}-${project.minecraftVersion}.pom")
+    }
+}
+
+//noinspection GroovyAssignabilityCheck
+task copyBuilds(type: Copy) {
+    from "$rootDir/build/libs"
+    into "$rootDir/maven/me/deftware/EMC/${version}-${project.minecraftVersion}/"
+    rename { String fileName ->
+        fileName.replace(version, "${version}-${project.minecraftVersion}")
+    }
+    doLast {
+        project.ant.checksum(file: "$rootDir/maven/me/deftware/EMC/${version}-${project.minecraftVersion}/EMC-${version}-${project.minecraftVersion}.jar", algorithm: "sha1", todir: "$rootDir/maven/me/deftware/EMC/${version}-${project.minecraftVersion}/")
+    }
+}
+
+//noinspection GroovyAssignabilityCheck
+task generateApiDocumentation(type: Javadoc) {
+    source = ['src/main/java/me/deftware/client']
+    title = "EMC Framework Documentation"
+    destinationDir = file("docs")
+    failOnError false
+}
+
+//noinspection GroovyAssignabilityCheck
+task copyToMinecraft(type: Copy) {
+    from "$rootDir/build/libs/EMC-${version}.jar"
+    into "${minecraftRoot}/libraries/me/deftware/EMC/${version}-${project.minecraftVersion}/"
+    rename { String fileName ->
+        fileName.replace("${version}", "${version}-${project.minecraftVersion}")
+    }
+}
+
+reobf {
+    shadowJar {
+        mappingType = 'NOTCH'
+        classpath = sourceSets.main.compileClasspath
+    }
+}
+
+build.dependsOn(shadowJar)
+build.dependsOn(createPom)
+build.finalizedBy(copyBuilds)
+copyToMinecraft.dependsOn(build)

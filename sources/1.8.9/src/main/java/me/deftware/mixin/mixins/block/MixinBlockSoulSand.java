@@ -1,0 +1,26 @@
+package me.deftware.mixin.mixins.block;
+
+import me.deftware.client.framework.event.events.EventSlowdown;
+import net.minecraft.block.BlockSoulSand;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.BlockPos;
+import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+@Mixin(BlockSoulSand.class)
+public class MixinBlockSoulSand {
+
+    @Inject(method = "onEntityCollidedWithBlock", at = @At("HEAD"), cancellable = true)
+    public void onEntityCollision(World world_1, BlockPos blockPos_1, IBlockState blockState_1, Entity entity_1, CallbackInfo ci) {
+        EventSlowdown event = new EventSlowdown().create(EventSlowdown.SlowdownType.Soulsand, 1);
+        event.broadcast();
+        if (event.isCanceled()) {
+            ci.cancel();
+        }
+    }
+
+}

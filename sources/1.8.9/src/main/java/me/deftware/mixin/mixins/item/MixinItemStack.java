@@ -1,0 +1,169 @@
+package me.deftware.mixin.mixins.item;
+
+import me.deftware.client.framework.entity.effect.AppliedEffect;
+import me.deftware.client.framework.event.events.EventGetItemToolTip;
+import me.deftware.client.framework.item.Enchantment;
+import me.deftware.client.framework.item.Item;
+import me.deftware.client.framework.message.Message;
+import me.deftware.client.framework.nbt.NbtCompound;
+import me.deftware.client.framework.world.block.BlockState;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.BlockStateBase;
+import net.minecraft.client.Minecraft;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.IChatComponent;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
+@Mixin(ItemStack.class)
+public class MixinItemStack implements me.deftware.client.framework.item.ItemStack {
+
+    @Unique
+    @Override
+    public int getCount() {
+        return ((ItemStack) (Object) this).stackSize;
+    }
+
+    @Unique
+    @Override
+    public int getMaxCount() {
+        return ((ItemStack) (Object) this).getMaxStackSize();
+    }
+
+    @Unique
+    @Override
+    public void setCount(int count) {
+        ((ItemStack) (Object) this).stackSize = count;
+    }
+
+    @Unique
+    @Override
+    public Item getItem() {
+        return (Item) ((ItemStack) (Object) this).getItem();
+    }
+
+    @Unique
+    @Override
+    public void effects(Consumer<AppliedEffect> consumer) {
+        Items.potionitem.getEffects((ItemStack) (Object) this)
+                .forEach(effect -> consumer.accept((AppliedEffect) effect));
+    }
+
+    @Unique
+    @Override
+    public void enchantments(BiConsumer<Integer, Enchantment> consumer) {
+        EnchantmentHelper.getEnchantments((ItemStack) (Object) this)
+                .forEach((key, value) -> {
+                    consumer.accept(value, (Enchantment) net.minecraft.enchantment.Enchantment.getEnchantmentById(key));
+                });
+    }
+
+    @Unique
+    @Override
+    public void enchant(Enchantment enchantment, int level) {
+        ((ItemStack) (Object) this).addEnchantment((net.minecraft.enchantment.Enchantment) enchantment, level);
+    }
+
+    @Unique
+    @Override
+    public Message getName() {
+        return Message.of(((ItemStack) (Object) this).getDisplayName());
+    }
+
+    @Unique
+    @Override
+    public void setName(Message name) {
+        ((ItemStack) (Object) this).setStackDisplayName(((IChatComponent) name).getFormattedText());
+    }
+
+    @Unique
+    @Override
+    public Rarity getRarity() {
+        return Rarity.values()[((ItemStack) (Object) this).getRarity().ordinal()];
+    }
+
+    @Unique
+    @Override
+    public int getDamage() {
+        return ((ItemStack) (Object) this).getItemDamage();
+    }
+
+    @Unique
+    @Override
+    public int getMaxDamage() {
+        return ((ItemStack) (Object) this).getMaxDamage();
+    }
+
+    @Unique
+    @Override
+    public boolean isDamaged() {
+        return ((ItemStack) (Object) this).isItemDamaged();
+    }
+
+    @Unique
+    @Override
+    public boolean isDamageable() {
+        return ((ItemStack) (Object) this).isItemStackDamageable();
+    }
+
+    @Unique
+    @Override
+    public NbtCompound getNbt() {
+        return (NbtCompound) ((ItemStack) (Object) this).getTagCompound();
+    }
+
+    @Unique
+    @Override
+    public void setNbt(NbtCompound nbt) {
+        ((ItemStack) (Object) this).setTagCompound((NBTTagCompound) nbt);
+    }
+
+    @Unique
+    @Override
+    public float getMiningSpeed(BlockState state) {
+        return ((ItemStack) (Object) this).getStrVsBlock((Block) state.getBlock());
+    }
+
+    @Unique
+    @Override
+    public boolean isEmpty() {
+        net.minecraft.item.Item item = ((ItemStack) (Object) this).getItem();
+        return item == null || net.minecraft.item.Item.itemRegistry.getIDForObject(item) == 0;
+    }
+
+    @Unique
+    @Override
+    public boolean isItemEqual(me.deftware.client.framework.item.ItemStack stack) {
+        return ItemStack.areItemsEqual((ItemStack) (Object) this, (ItemStack) stack);
+    }
+
+    @Unique
+    private int enchant$level;
+
+    @Inject(method = "addEnchantment", at = @At("HEAD"))
+    private void onEnchant(net.minecraft.enchantment.Enchantment enchantment, int level, CallbackInfo ci) {
+        enchant$level = level;
+    }
+
+    /**
+     * Removes (byte) cast from the level, allowing higher enchantment levels
+     */
+    @Redirect(method = "addEnchantment", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/nbt/NBTTagCompound;setShort(Ljava/lang/String;S)V", ordinal = 1))
+    private void onEnchant$CreateNbt(NBTTagCompound instance, String key, short value) {
+        instance.setShort(key, (short) enchant$level);
+    }
+
+}

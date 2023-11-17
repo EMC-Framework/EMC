@@ -1,0 +1,141 @@
+plugins {
+	id 'dev.architectury.loom' version '1.4-SNAPSHOT'
+	id "io.freefair.lombok" version "6.3.0"
+	id 'maven-publish'
+}
+
+sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
+
+def forgeBuild = project.properties["loom.platform"] == "forge"
+
+def getVersionFromJava() {
+	def ver = 0.0, patch = 0
+	def versionClass = file("src/main/java/me/deftware/client/framework/FrameworkConstants.java").text
+	(versionClass =~ ~/double\s+([_a-zA-Z\u0024][_a-zA-Z0-9\u0024]*)\s+=\s+(([0-9]+)\.([0-9]+))/).each {
+		ver = it[2]
+	}
+	(versionClass =~ ~/int\s+([_a-zA-Z$][_a-zA-Z0-9$]*)\s+=\s+([0-9]+)/).each {
+		if (it[1].toString() == "PATCH") {
+			patch = it[2]
+		}
+	}
+	return "${ver}.${patch}".toString()
+}
+
+def urlFile = { url, name ->
+	File file = new File("$buildDir/download/${name}.jar")
+	file.parentFile.mkdirs()
+	if (!file.exists()) {
+		new URL(url).withInputStream { downloadStream ->
+			file.withOutputStream { fileOut ->
+				fileOut << downloadStream
+			}
+		}
+	}
+	files(file.absolutePath)
+}
+
+version = getVersionFromJava()
+
+repositories {
+	maven { url 'https://jitpack.io' }
+	maven { url = 'https://gitlab.com/EMC-Framework/maven/raw/master/' }
+}
+
+dependencies {
+	if (forgeBuild) {
+		forge "net.minecraftforge:forge:${project.forge_version}"
+	} else {
+		modImplementation 'com.github.Chocohead:Fabric-ASM:v2.3'
+		include 'com.github.Chocohead:Fabric-ASM:v2.3'
+	}
+	minecraft "com.mojang:minecraft:${project.minecraftVersion}"
+	mappings "net.fabricmc:yarn:${project.minecraftVersion}${project.mappingsVer}:v2"
+
+	modImplementation "net.fabricmc:fabric-loader:0.14.24"
+
+	// No longer included in Minecraft
+	implementation 'io.netty:netty-handler-proxy:4.1.76.Final'
+	implementation 'com.google.code.findbugs:jsr305:3.0.2'
+	implementation files("deps/mocked.jar")
+	modCompileOnly urlFile("https://github.com/CaffeineMC/sodium-fabric/releases/download/mc1.20.1-0.5.0/sodium-fabric-mc1.20.1-0.5.0.jar", "sodim-5.0.jar")
+}
+
+loom {
+	if (forgeBuild) {
+		forge {
+			mixinConfig "mixins.emc.json"
+			convertAccessWideners = true
+		}
+	}
+	mixin {
+		useLegacyMixinAp = true
+		defaultRefmapName = 'mixins.emc.refmap.json'
+	}
+	accessWidenerPath = file("src/main/resources/emc.accesswidener")
+}
+
+sourceSets {
+	main {
+		java {
+			srcDir '../../common/src/main/java'
+		}
+	}
+}
+
+if (forgeBuild) {
+	jar {
+		manifest {
+			attributes([
+					'MixinConnector': 'me.deftware.launch.MixinConnector'
+			])
+		}
+	}
+} else {
+	sourceSets {
+		main {
+			java {
+				exclude '**/deftware/client/framework/main/ForgeMod**'
+				exclude '**/deftware/launch/MixinConnector**'
+			}
+		}
+	}
+}
+
+publishing {
+	publications {
+		emc(MavenPublication) {
+			groupId 'me.deftware'
+			if (forgeBuild) {
+				artifactId "EMC-Forge"
+			} else {
+				artifactId "EMC-F-v2"
+			}
+			version "${version}-${project.minecraftVersion}"
+
+			from components['java']
+		}
+	}
+
+	repositories {
+		maven {
+			url "$rootDir/maven/"
+		}
+	}
+}
+
+processResources {
+	inputs.property "version", project.version
+
+	filesMatching("fabric.mod.json") {
+		expand "version": project.version
+	}
+}
+
+task generateApiDocumentation(type: Javadoc) {
+	source = ['src/main/java/me/deftware/client']
+	title = "EMC Framework Documentation"
+	destinationDir = file("docs")
+	failOnError false
+}
+

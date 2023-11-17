@@ -1,0 +1,30 @@
+package me.deftware.client.framework.render.batching;
+
+import me.deftware.client.framework.render.gl.GLX;
+import org.lwjgl.opengl.GL11;
+
+/**
+ * @author Deftware
+ */
+public class CircleRenderStack extends RenderStack<CircleRenderStack> {
+
+	@Override
+	public CircleRenderStack begin(GLX context) {
+		return begin(context, GL11.GL_TRIANGLE_FAN);
+	}
+
+	public CircleRenderStack drawFilledCircle(float xx, float yy, float radius) {
+		if (scaled) {
+			xx *= getScale();
+			yy *= getScale();
+			radius *= getScale();
+		}
+		for (int i = 0; i < 50; i++) {
+			float x = (float) (radius * Math.sin(i * 0.12566370614359174D));
+			float y = (float) (radius * Math.cos(i * 0.12566370614359174D));
+			vertex(xx + x, yy + y, 0).next();
+		}
+		return this;
+	}
+
+}

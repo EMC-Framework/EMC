@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "emc",
+  "name": "EMC Framework",
+  "description": "Provides an API for EMC with Fabric",
+  "version": "${version}",
+  "environment": "client",
+  "authors": [
+    "deftware"
+  ],
+  "contact": {
+    "homepage": "https://emc-framework.gitlab.io/",
+    "sources": "https://gitlab.com/EMC-Framework/EMC"
+  },
+  "depends": {
+    "java": ">=16"
+  },
+  "license": "MIT",
+  "entrypoints": {
+    "mm:early_risers": [
+      "me.deftware.launch.EarlyRiser"
+    ]
+  },
+  "custom": {
+    "fabric-renderer-indigo:force_compatibility" : true
+  },
+  "accessWidener" : "emc.accesswidener"
+}
