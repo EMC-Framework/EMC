@@ -286,7 +286,7 @@ public class Entity {
 	}
 
 	public String getEntityName() {
-		return entity.getEntityName();
+		return entity.getUuidAsString();
 	}
 
 	public double getLastTickPosX() {
