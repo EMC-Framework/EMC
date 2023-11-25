@@ -130,11 +130,11 @@ public class SelectableList<T extends SelectableList.ListItem> extends EntryList
 	private final Map<T, ItemEntry> map = new HashMap<>();
 
 	@Override
-	public void renderButton(DrawContext matrixStack, int mouseX, int mouseY, float tickDelta) {
+	public void renderList(DrawContext matrixStack, int mouseX, int mouseY, float tickDelta) {
 		if (this.delegate.size() != this.map.size()) {
 			this.rebuild();
 		}
-		super.renderButton(matrixStack, mouseX, mouseY, tickDelta);
+		super.renderList(matrixStack, mouseX, mouseY, tickDelta);
 	}
 
 	private void rebuild() {

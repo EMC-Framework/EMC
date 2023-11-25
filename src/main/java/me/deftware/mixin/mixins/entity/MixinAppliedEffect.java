@@ -3,6 +3,7 @@ package me.deftware.mixin.mixins.entity;
 import me.deftware.client.framework.entity.effect.AppliedEffect;
 import me.deftware.client.framework.entity.effect.Effect;
 import me.deftware.client.framework.message.Message;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
 import org.spongepowered.asm.mixin.Mixin;
@@ -59,7 +60,12 @@ public class MixinAppliedEffect implements AppliedEffect {
         if (isPermanent()) {
             return Message.of("Infinite");
         }
-        return (Message) StatusEffectUtil.getDurationText((StatusEffectInstance) (Object) this, 1.0F);
+        MinecraftClient mc = MinecraftClient.getInstance();
+        float tickRate = 20f;
+        if (mc.world != null) {
+            tickRate = mc.world.getTickManager().getTickRate();;
+        }
+        return (Message) StatusEffectUtil.getDurationText((StatusEffectInstance) (Object) this, 1.0F, tickRate);
     }
 
 }
