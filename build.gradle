@@ -22,6 +22,19 @@ def getVersionFromJava() {
 	return "${ver}.${patch}".toString()
 }
 
+def urlFile = { url, name ->
+	File file = new File("$buildDir/download/${name}.jar")
+	file.parentFile.mkdirs()
+	if (!file.exists()) {
+		new URL(url).withInputStream { downloadStream ->
+			file.withOutputStream { fileOut ->
+				fileOut << downloadStream
+			}
+		}
+	}
+	files(file.absolutePath)
+}
+
 version = getVersionFromJava()
 
 repositories {
@@ -39,12 +52,13 @@ dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraftVersion}"
 	mappings "net.fabricmc:yarn:${project.minecraftVersion}${project.mappingsVer}:v2"
 
-	modImplementation "net.fabricmc:fabric-loader:0.14.19"
+	modImplementation "net.fabricmc:fabric-loader:0.15.1"
 
 	// No longer included in Minecraft
 	implementation 'io.netty:netty-handler-proxy:4.1.76.Final'
 	implementation 'com.google.code.findbugs:jsr305:3.0.2'
 	implementation files("deps/mocked.jar")
+	modCompileOnly urlFile("https://github.com/CaffeineMC/sodium-fabric/releases/download/mc1.20.3-0.5.5/sodium-fabric-mc1.20.3-0.5.5.jar", "sodim-5.5.jar")
 }
 
 loom {

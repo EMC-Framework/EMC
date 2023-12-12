@@ -38,7 +38,7 @@ public class MixinGuiTextField extends MixinClickableWidget implements TextField
     @Final
     private TextRenderer textRenderer;
 
-    @Inject(method = "renderButton", at = @At("RETURN"))
+    @Inject(method = "renderWidget", at = @At("RETURN"))
     public void drawTextFieldReturn(DrawContext matrixStack, int mouseX, int mouseY, float tickDelta, CallbackInfo ci) {
         TextFieldWidget self = (TextFieldWidget) (Object) this;
         if (!overlay.isEmpty()) {
@@ -52,7 +52,7 @@ public class MixinGuiTextField extends MixinClickableWidget implements TextField
         }
     }
 
-    @Redirect(method = "renderButton", at = @At(value = "INVOKE", target = "Ljava/util/function/BiFunction;apply(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"))
+    @Redirect(method = "renderWidget", at = @At(value = "INVOKE", target = "Ljava/util/function/BiFunction;apply(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"))
     public Object render(BiFunction<String, Integer, OrderedText> biFunction, Object text, Object index) {
         String data = (String) text;
         if (passwordField)
