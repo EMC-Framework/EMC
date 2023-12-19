@@ -1,5 +1,5 @@
 plugins {
-	id 'dev.architectury.loom' version '1.2-SNAPSHOT'
+	id 'dev.architectury.loom' version '1.4-SNAPSHOT'
 	id "io.freefair.lombok" version "6.3.0"
 	id 'maven-publish'
 }
@@ -22,43 +22,25 @@ def getVersionFromJava() {
 	return "${ver}.${patch}".toString()
 }
 
-def urlFile = { url, name ->
-	File file = new File("$buildDir/download/${name}.jar")
-	file.parentFile.mkdirs()
-	if (!file.exists()) {
-		new URL(url).withInputStream { downloadStream ->
-			file.withOutputStream { fileOut ->
-				fileOut << downloadStream
-			}
-		}
-	}
-	files(file.absolutePath)
-}
-
 version = getVersionFromJava()
 
 repositories {
-	maven { url 'https://jitpack.io' }
-	maven { url = 'https://gitlab.com/EMC-Framework/maven/raw/master/' }
+	maven { url 'https://gitlab.com/EMC-Framework/maven/raw/master/' }
 }
 
 dependencies {
 	if (forgeBuild) {
 		forge "net.minecraftforge:forge:${project.forge_version}"
 	} else {
-		modImplementation 'com.github.Chocohead:Fabric-ASM:v2.3'
-		include 'com.github.Chocohead:Fabric-ASM:v2.3'
+		include "me.deftware:integrations:${project.minecraftVersion}"
 	}
 	minecraft "com.mojang:minecraft:${project.minecraftVersion}"
 	mappings "net.fabricmc:yarn:${project.minecraftVersion}${project.mappingsVer}:v2"
-
-	modImplementation "net.fabricmc:fabric-loader:0.15.1"
+	modImplementation "net.fabricmc:fabric-loader:0.15.3"
 
 	// No longer included in Minecraft
 	implementation 'io.netty:netty-handler-proxy:4.1.76.Final'
 	implementation 'com.google.code.findbugs:jsr305:3.0.2'
-	implementation files("deps/mocked.jar")
-	modCompileOnly urlFile("https://github.com/CaffeineMC/sodium-fabric/releases/download/mc1.20.3-0.5.5/sodium-fabric-mc1.20.3-0.5.5.jar", "sodim-5.5.jar")
 }
 
 loom {
@@ -67,10 +49,6 @@ loom {
 			mixinConfig "mixins.emc.json"
 			convertAccessWideners = true
 		}
-	}
-	mixin {
-		useLegacyMixinAp = true
-		defaultRefmapName = 'mixins.emc.refmap.json'
 	}
 	accessWidenerPath = file("src/main/resources/emc.accesswidener")
 }
@@ -131,4 +109,3 @@ task generateApiDocumentation(type: Javadoc) {
 	destinationDir = file("docs")
 	failOnError false
 }
-

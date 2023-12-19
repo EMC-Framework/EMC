@@ -2,7 +2,6 @@
   "required": true,
   "package": "me.deftware.mixin.mixins",
   "compatibilityLevel": "JAVA_16",
-  "refmap": "mixins.emc.refmap.json",
   "mixins": [
     "block.MixinBlock",
     "block.MixinBlockCactus",

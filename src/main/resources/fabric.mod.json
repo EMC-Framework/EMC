@@ -16,13 +16,8 @@
     "java": ">=17"
   },
   "license": "MIT",
-  "entrypoints": {
-    "mm:early_risers": [
-      "me.deftware.launch.EarlyRiser"
-    ]
-  },
-  "custom": {
-    "fabric-renderer-indigo:force_compatibility" : true
-  },
-  "accessWidener" : "emc.accesswidener"
+  "mixins": [
+    "mixins.emc.json"
+  ],
+  "accessWidener": "emc.accesswidener"
 }
