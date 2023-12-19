@@ -37,7 +37,7 @@ public class MixinGuiIngame {
     }
 
     @Inject(method = "renderStatusEffectOverlay", at = @At("HEAD"), cancellable = true)
-    private void renderStatusEffectOverlay(DrawContext context, CallbackInfo ci) {
+    private void renderStatusEffectOverlay(DrawContext context, float f, CallbackInfo ci) {
         if (!GameMap.INSTANCE.get(GameKeys.EFFECT_OVERLAY, true))
             ci.cancel();
     }
@@ -46,7 +46,7 @@ public class MixinGuiIngame {
     private final EventRenderHotbar eventRenderHotbar = new EventRenderHotbar();
 
     @Inject(method = "renderHotbar", at = @At("HEAD"))
-    private void renderHotbar(float tickDelta, DrawContext context, CallbackInfo ci) {
+    private void renderHotbar(DrawContext context, float tickDelta, CallbackInfo ci) {
         eventRenderHotbar.setContext(GLX.of(context));
         eventRenderHotbar.broadcast();
     }

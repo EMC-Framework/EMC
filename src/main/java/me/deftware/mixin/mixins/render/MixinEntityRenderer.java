@@ -181,6 +181,7 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
         return ProjectileUtil.raycast(entity, vec3d, vec3d2, box, predicate, GameMap.INSTANCE.get(GameKeys.BYPASS_REACH_LIMIT, false) ? 0d : distance);
     }
 
+    /* TODO
     @Redirect(method = "updateTargetedEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/Vec3d;squaredDistanceTo(Lnet/minecraft/util/math/Vec3d;)D", ordinal = 1))
     private double onDistance(Vec3d self, Vec3d vec3d) {
         return GameMap.INSTANCE.get(GameKeys.BYPASS_REACH_LIMIT, false) ? 2D : self.squaredDistanceTo(vec3d);
@@ -189,7 +190,7 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     @Redirect(method = "updateTargetedEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerInteractionManager;hasExtendedReach()Z"))
     private boolean onTest(ClientPlayerInteractionManager clientPlayerInteractionManager) {
         return !GameMap.INSTANCE.get(GameKeys.BYPASS_REACH_LIMIT, false) && clientPlayerInteractionManager.hasExtendedReach();
-    }
+    }*/
 
     @Override
     public float getFovMultiplier() {

@@ -47,6 +47,7 @@ public class MixinPlayerControllerMP implements IMixinPlayerControllerMP {
 
     @Shadow private int blockBreakingCooldown;
 
+    /* TODO
     @Inject(method = "getReachDistance", at = @At(value = "RETURN"), cancellable = true)
     private void onGetReachDistance(CallbackInfoReturnable<Float> cir) {
         cir.setReturnValue(GameMap.INSTANCE.get(GameKeys.BLOCK_REACH_DISTANCE, cir.getReturnValue()));
@@ -55,7 +56,7 @@ public class MixinPlayerControllerMP implements IMixinPlayerControllerMP {
     @Inject(method = "hasExtendedReach", at = @At(value = "TAIL"), cancellable = true)
     private void onHasExtendedReach(CallbackInfoReturnable<Boolean> cir) {
         cir.setReturnValue(GameMap.INSTANCE.get(GameKeys.EXTENDED_REACH, cir.getReturnValue()));
-    }
+    }*/
 
     @Redirect(method = "attackEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayNetworkHandler;sendPacket(Lnet/minecraft/network/packet/Packet;)V"))
     private void onSendAttackEntityPacket(ClientPlayNetworkHandler clientPlayNetworkHandler, Packet<?> packet) {

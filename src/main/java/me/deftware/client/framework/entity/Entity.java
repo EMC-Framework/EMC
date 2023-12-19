@@ -24,6 +24,7 @@ import me.deftware.client.framework.world.ClientWorld;
 import me.deftware.client.framework.world.EnumFacing;
 import me.deftware.mixin.imp.IMixinAbstractClientPlayer;
 import me.deftware.mixin.imp.IMixinEntity;
+import me.deftware.mixin.imp.IMixinEntityLivingBase;
 import me.deftware.mixin.imp.IMixinNetworkPlayerInfo;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -227,7 +228,9 @@ public class Entity {
 	}
 
 	public void setStepHeight(float height) {
-		entity.setStepHeight(height);
+		if (entity instanceof IMixinEntityLivingBase base) {
+			base._setStepHeight(height);
+		}
 	}
 
 	public boolean isWithinChunk(ChunkPosition chunkPos) {

@@ -10,6 +10,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.player.HungerManager;
+import net.minecraft.registry.entry.RegistryEntry;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -73,8 +74,8 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
         return self.getFoodLevel();
     }
 
-    @Redirect(method = "canStartSprinting", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;hasStatusEffect(Lnet/minecraft/entity/effect/StatusEffect;)Z"))
-    private boolean onBlindnessSlowdown(ClientPlayerEntity self, StatusEffect effect) {
+    @Redirect(method = "canStartSprinting", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;hasStatusEffect(Lnet/minecraft/registry/entry/RegistryEntry;)Z"))
+    private boolean onBlindnessSlowdown(ClientPlayerEntity self, RegistryEntry<StatusEffect> effect) {
         eventSlowdown.create(EventSlowdown.SlowdownType.Blindness, 1);
         eventSlowdown.broadcast();
         if (eventSlowdown.isCanceled()) {

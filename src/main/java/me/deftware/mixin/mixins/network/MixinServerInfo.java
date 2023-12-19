@@ -30,7 +30,7 @@ public class MixinServerInfo implements ServerDetails {
 
 	@Override
 	public boolean _isOnline() {
-		return ((ServerInfo) (Object) this).online;
+		return ((ServerInfo) (Object) this).getStatus() == ServerInfo.Status.SUCCESSFUL;
 	}
 
 	@Override

@@ -4,4 +4,6 @@ public interface IMixinEntityLivingBase {
 
 	int getActiveItemStackUseCount();
 
+	void _setStepHeight(float height);
+
 }

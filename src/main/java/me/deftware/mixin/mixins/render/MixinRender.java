@@ -19,7 +19,7 @@ public class MixinRender<T extends Entity> {
     private final EventNametagRender eventNametagRender = new EventNametagRender();
 
     @Inject(method = "renderLabelIfPresent", at = @At("HEAD"), cancellable = true)
-    private void renderEntityLabel(T entity, Text text, MatrixStack matrixStack, VertexConsumerProvider consumerProvider, int light, CallbackInfo ci) {
+    private void renderEntityLabel(T entity, Text text, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, float tickDelta, CallbackInfo ci) {
         eventNametagRender.create(entity);
         eventNametagRender.broadcast();
         if (eventNametagRender.isCanceled()) {

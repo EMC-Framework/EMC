@@ -82,15 +82,15 @@ public class LivingEntity extends Entity {
 	}
 
 	public AppliedEffect getStatusEffect(Effect effect) {
-		return (AppliedEffect) getMinecraftEntity().getStatusEffect((StatusEffect) effect);
+		return (AppliedEffect) getMinecraftEntity().getStatusEffect(effect.getStatusEffect());
 	}
 
 	public void removeStatusEffect(Effect effect) {
-		getMinecraftEntity().removeStatusEffect((StatusEffect) effect);
+		getMinecraftEntity().removeStatusEffect(effect.getStatusEffect());
 	}
 
 	public boolean hasStatusEffect(Effect effect) {
-		return getMinecraftEntity().hasStatusEffect((StatusEffect) effect);
+		return getMinecraftEntity().hasStatusEffect(effect.getStatusEffect());
 	}
 
 	public void addStatusEffect(AppliedEffect effect) {

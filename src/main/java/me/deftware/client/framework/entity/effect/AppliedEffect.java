@@ -1,7 +1,6 @@
 package me.deftware.client.framework.entity.effect;
 
 import me.deftware.client.framework.message.Message;
-import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 
 public interface AppliedEffect {
@@ -25,8 +24,9 @@ public interface AppliedEffect {
     }
 
     static AppliedEffect of(Effect effect, int duration, int amplifier, boolean ambient, boolean visible, boolean icon) {
+
         return (AppliedEffect) new StatusEffectInstance(
-                (StatusEffect) effect, duration, amplifier, ambient, visible, icon
+                effect.getStatusEffect(), duration, amplifier, ambient, visible, icon
         );
     }
 
