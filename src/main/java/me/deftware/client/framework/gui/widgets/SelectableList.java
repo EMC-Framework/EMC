@@ -28,7 +28,7 @@ public class SelectableList<T extends SelectableList.ListItem> extends EntryList
 	private boolean extended = false;
 
 	public SelectableList(List<T> delegate, int width, int height, int top, int bottom, int itemHeight) {
-		super(MinecraftClient.getInstance(), width, height, top, itemHeight);
+		super(MinecraftClient.getInstance(), width, bottom - top, top, itemHeight);
 		this.delegate = delegate;
 	}
 
