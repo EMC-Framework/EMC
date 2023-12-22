@@ -103,7 +103,7 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
     }
 
     @SuppressWarnings("ConstantConditions")
-    @Inject(method = "render", at = @At("RETURN"))
+    @Inject(method = "renderWithTooltip", at = @At("RETURN"))
     private void onPostDraw(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         if (!((Object) this instanceof HandledScreen)) {
             this.onPostDrawEvent(context, mouseX, mouseY, delta);
