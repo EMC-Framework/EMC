@@ -22,6 +22,16 @@ public interface ClientWorld extends World {
 	}
 
 	/**
+	 * Default value is 20f, but may be modified
+	 * Returns zero if the world is frozen
+	 *
+	 * @return The server tick rate
+	 */
+	default float getTickRate() {
+		return 20f;
+	}
+
+	/**
 	 * @return A stream of all entities
 	 */
 	Stream<Entity> getLoadedEntities();
