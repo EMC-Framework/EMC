@@ -139,7 +139,7 @@ public abstract class MixinMinecraft implements Minecraft {
 
     @Override
     public WorldTimer getWorldTimer() {
-        return (WorldTimer) renderTickCounter;
+        return (WorldTimer) this;
     }
 
     @Nullable
