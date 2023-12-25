@@ -100,4 +100,13 @@ public abstract class MixinWorldClient extends MixinWorld implements me.deftware
         return null;
     }
 
+    @Override
+    public float getTickRate() {
+        var manager = ((ClientWorld) (Object) this).getTickManager();
+        if (manager.isFrozen()) {
+            return 0;
+        }
+        return manager.getTickRate();
+    }
+
 }
