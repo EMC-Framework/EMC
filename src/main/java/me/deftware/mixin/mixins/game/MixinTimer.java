@@ -1,25 +1,28 @@
 package me.deftware.mixin.mixins.game;
 
 import me.deftware.client.framework.world.WorldTimer;
-import net.minecraft.client.render.RenderTickCounter;
-import org.spongepowered.asm.mixin.Final;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.world.tick.TickManager;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-@Mixin(RenderTickCounter.class)
+@Mixin(MinecraftClient.class)
 public class MixinTimer implements WorldTimer {
 
-    @Final
-    @Shadow
-    private float tickTime;
-
+    @Unique
     private float speed = 1;
 
-    @Redirect(method = "beginRenderTick", at = @At(value = "FIELD", target = "Lnet/minecraft/client/render/RenderTickCounter;tickTime:F", opcode = 180))
-    private float getTickLength(RenderTickCounter self) {
-        return tickTime / speed;
+    @ModifyVariable(method = "getTargetMillisPerTick", at = @At("HEAD"), argsOnly = true)
+    private float onGetTargetMillis(float millis) {
+        return millis / speed;
+    }
+
+    @Redirect(method = "getTargetMillisPerTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/tick/TickManager;getMillisPerTick()F"))
+    private float onMax(TickManager instance) {
+        return instance.getMillisPerTick() / speed;
     }
 
     @Override
