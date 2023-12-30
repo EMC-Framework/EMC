@@ -35,6 +35,7 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -91,9 +92,10 @@ public abstract class MixinMinecraft implements Minecraft {
     @Unique
     private String worldName;
 
-    @Inject(method = "startIntegratedServer", at = @At(value = "INVOKE"))
-    private void onIntegratedServer(String directoryName, CallbackInfo ci) {
-        this.worldName = directoryName;
+    @ModifyVariable(method = "startIntegratedServer*", at = @At(value = "HEAD"), argsOnly = true)
+    private String onIntegratedServer(String worldName) {
+        this.worldName = worldName;
+        return worldName;
     }
 
     @Override
