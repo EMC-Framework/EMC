@@ -19,7 +19,7 @@ public class MixinChatScreen {
 
     @Redirect(method = "sendMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayNetworkHandler;sendChatCommand(Ljava/lang/String;)V"))
     private void onMessage$Command(ClientPlayNetworkHandler networkHandler, String content) {
-        Chat.send(networkHandler::sendChatCommand, content, ClientPlayerEntity.class, EventChatSend.Type.Message);
+        Chat.send(networkHandler::sendChatCommand, content, ClientPlayerEntity.class, EventChatSend.Type.Command);
     }
 
 }
