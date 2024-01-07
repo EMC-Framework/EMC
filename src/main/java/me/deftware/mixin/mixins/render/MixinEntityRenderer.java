@@ -137,8 +137,10 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
 
     @Redirect(method = "render", at = @At(value = "INVOKE", opcode = 180, target = "Lnet/minecraft/client/gui/hud/InGameHud;render(Lnet/minecraft/client/gui/DrawContext;F)V"))
     private void onRender2D(InGameHud inGameHud, DrawContext context, float tickDelta) {
+        inGameHud.render(context, tickDelta);
         if (!WindowHelper.isMinimized()) {
             GLX glx = GLX.of(context);
+            glx.push();
             // Minecraft modifies opacity underwater
             glx.color(1, 1, 1, 1);
             eventRender2D.setContext(glx);
@@ -150,8 +152,8 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
             eventMatrixRender.create(tickDelta).broadcast();
             RenderStack.restoreGl();
             RenderStack.reloadMinecraftMatrix();
+            glx.pop();
         }
-        inGameHud.render(context, tickDelta);
     }
 
     @Override
