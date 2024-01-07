@@ -97,7 +97,15 @@ public class FontRenderStack extends RenderStack<FontRenderStack> {
 		offset = 0;
 	}
 
-	public void renderCharBuffer(String[] buffer, int x, int y, int color) {
+	public AtlasTextureFont getFont() {
+		return font;
+	}
+
+	public int getOffset() {
+		return offset;
+	}
+
+	public int renderCharBuffer(String[] buffer, int x, int y, int color) {
 		// Scale position
 		if (scaled) {
 			x *= RenderStack.getScale();
@@ -156,6 +164,7 @@ public class FontRenderStack extends RenderStack<FontRenderStack> {
 			drawCharacter(x + offset, y, data);
 			offset += data.getWidth();
 		}
+		return offset;
 	}
 
 	public int getFontHeight() {
