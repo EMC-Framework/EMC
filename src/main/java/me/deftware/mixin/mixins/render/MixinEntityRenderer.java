@@ -1,5 +1,6 @@
 package me.deftware.mixin.mixins.render;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.deftware.client.framework.event.events.*;
 import me.deftware.client.framework.global.GameKeys;
 import me.deftware.client.framework.global.GameMap;
@@ -14,7 +15,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.PostEffectProcessor;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.render.BufferBuilderStorage;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
@@ -37,7 +37,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -137,10 +136,8 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
 
     @Redirect(method = "render", at = @At(value = "INVOKE", opcode = 180, target = "Lnet/minecraft/client/gui/hud/InGameHud;render(Lnet/minecraft/client/gui/DrawContext;F)V"))
     private void onRender2D(InGameHud inGameHud, DrawContext context, float tickDelta) {
-        inGameHud.render(context, tickDelta);
         if (!WindowHelper.isMinimized()) {
             GLX glx = GLX.of(context);
-            glx.push();
             // Minecraft modifies opacity underwater
             glx.color(1, 1, 1, 1);
             eventRender2D.setContext(glx);
@@ -152,8 +149,8 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
             eventMatrixRender.create(tickDelta).broadcast();
             RenderStack.restoreGl();
             RenderStack.reloadMinecraftMatrix();
-            glx.pop();
         }
+        inGameHud.render(context, tickDelta);
     }
 
     @Override
