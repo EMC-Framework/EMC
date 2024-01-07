@@ -15,7 +15,7 @@ public class MixinAppliedEffect implements AppliedEffect {
     @Unique
     @Override
     public Effect getEffect() {
-        return (Effect) ((StatusEffectInstance) (Object) this).getEffectType();
+        return (Effect) ((StatusEffectInstance) (Object) this).getEffectType().value();
     }
 
     @Unique
