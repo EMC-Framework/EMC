@@ -3,7 +3,7 @@ package me.deftware.mixin.mixins.item;
 import me.deftware.client.framework.message.Message;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.EntityGroup;
+import net.minecraft.entity.EntityType;
 import net.minecraft.registry.Registries;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -34,7 +34,7 @@ public class MixinEnchantment implements me.deftware.client.framework.item.Encha
     @Unique
     @Override
     public float getDamage(int level) {
-        return ((Enchantment) (Object) this).getAttackDamage(level, EntityGroup.DEFAULT);
+        return ((Enchantment) (Object) this).getAttackDamage(level, EntityType.PLAYER); // TODO: Is this right
     }
 
     @Unique

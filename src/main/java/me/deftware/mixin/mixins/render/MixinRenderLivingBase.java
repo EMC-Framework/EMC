@@ -31,7 +31,7 @@ public abstract class MixinRenderLivingBase<T extends LivingEntity> {
     }
 
     @Inject(method = "setupTransforms", at = @At("RETURN"))
-    protected void setupTransforms(T entity, MatrixStack matrices, float x, float y, float z, CallbackInfo ci) {
+    protected void setupTransforms(T entity, MatrixStack matrices, float animationProgress, float bodyYaw, float tickDelta, float scale, CallbackInfo ci) {
         if (!(entity instanceof PlayerEntity)) {
             return;
         }
