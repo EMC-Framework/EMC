@@ -236,8 +236,8 @@ public abstract class RenderStack<T> implements VertexConstructor {
 		RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
 		Matrix4f matrix4f = new Matrix4f().setOrtho(0f, width, height, 0f, 1000f, 21000f);
 		RenderSystem.setProjectionMatrix(matrix4f, VertexSorter.BY_Z);
-		MatrixStack matrixStack = RenderSystem.getModelViewStack();
-		matrixStack.loadIdentity();
+		var matrixStack = RenderSystem.getModelViewStack();
+		matrixStack.identity();
 		matrixStack.translate(0f, 0f, -11000f);
 		RenderSystem.applyModelViewMatrix();
 	}

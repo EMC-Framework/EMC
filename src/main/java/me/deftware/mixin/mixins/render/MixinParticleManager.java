@@ -21,12 +21,12 @@ public class MixinParticleManager {
 
     @Inject(method = "addParticle(Lnet/minecraft/particle/ParticleEffect;DDDDDD)Lnet/minecraft/client/particle/Particle;", at = @At("HEAD"), cancellable = true)
     private void onAddParticle(ParticleEffect parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ, CallbackInfoReturnable<Particle> ci) {
-        if (!IGNORED_PARTICLES.contains(parameters)) {
+        /*TODO if (!IGNORED_PARTICLES.contains(parameters)) {
             EventParticle event = new EventParticle(parameters.asString(), x, y, z, velocityX, velocityY, velocityZ).broadcast();
             if (event.isCanceled()) {
                 ci.cancel();
             }
-        }
+        }*/
     }
 
 }

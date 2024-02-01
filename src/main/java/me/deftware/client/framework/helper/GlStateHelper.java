@@ -66,7 +66,7 @@ public class GlStateHelper {
 	}
 
 	public static void enableGUIStandardItemLighting() {
-		DiffuseLighting.enableForLevel(new Matrix4f());
+		DiffuseLighting.enableForLevel();
 	}
 
 	public static void disablePolygonOffset() {

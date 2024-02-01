@@ -5,6 +5,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.RotationAxis;
 import org.joml.Matrix4f;
+import org.joml.Matrix4fStack;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -41,13 +42,13 @@ public class GLX {
         return context.getMatrices().peek().getPositionMatrix();
     }
 
-    public void modelViewStack(Consumer<MatrixStack> action) {
-        MatrixStack matrixStack = RenderSystem.getModelViewStack();
-        matrixStack.push();
-        matrixStack.multiplyPositionMatrix(getModel());
+    public void modelViewStack(Consumer<Matrix4fStack> action) {
+        var matrixStack = RenderSystem.getModelViewStack();
+        matrixStack.pushMatrix();
+        matrixStack.mul(getModel());
         RenderSystem.applyModelViewMatrix();
         action.accept(matrixStack);
-        matrixStack.pop();
+        matrixStack.popMatrix();
         RenderSystem.applyModelViewMatrix();
     }
 

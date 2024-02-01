@@ -30,6 +30,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -137,7 +138,9 @@ public class Entity {
 	}
 
 	public void armorInventory(Consumer<ItemStack> consumer) {
-		entity.getArmorItems().forEach(itemStack -> consumer.accept((ItemStack) itemStack));
+		if (entity instanceof LivingEntity e) {
+			e.getArmorItems().forEach(itemStack -> consumer.accept((ItemStack) itemStack));
+		}
 	}
 
 	public void setInPortal(boolean inPortal) {

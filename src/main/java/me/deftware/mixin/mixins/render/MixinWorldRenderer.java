@@ -60,7 +60,8 @@ public abstract class MixinWorldRenderer implements WorldEntityRenderer {
     }
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/VertexConsumerProvider$Immediate;drawCurrentLayer()V"))
-    private void onRenderStatues(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, CallbackInfo ci) {
+    private void onRenderStatues(float tickDelta, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, Matrix4f matrix4f2, CallbackInfo ci) {
+        MatrixStack matrices = new MatrixStack();
         for (Statue statue : this.statues) {
             this.entityRenderDispatcher.render(statue.getEntity().getMinecraftEntity(),
                     statue.getPosition().getX() - camera.getPos().getX(),

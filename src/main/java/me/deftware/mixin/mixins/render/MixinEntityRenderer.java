@@ -1,6 +1,5 @@
 package me.deftware.mixin.mixins.render;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.deftware.client.framework.event.events.*;
 import me.deftware.client.framework.global.GameKeys;
 import me.deftware.client.framework.global.GameMap;
@@ -15,6 +14,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.PostEffectProcessor;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.BufferBuilderStorage;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
@@ -84,9 +84,12 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     private final EventRender3DNoBobbing eventRender3DNoBobbing = new EventRender3DNoBobbing();
 
     @Inject(method = "renderHand", at = @At("HEAD"))
-    private void renderHand(MatrixStack matrixStack, Camera camera, float partialTicks, CallbackInfo ci) {
+    private void renderHand(Camera camera, float partialTicks, CallbackInfo ci) {
        if (!WindowHelper.isMinimized()) {
            // Normal 3d event
+           MatrixStack matrixStack = new MatrixStack();
+           matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(camera.getPitch()));
+           matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(camera.getYaw() + 180.0F));
            DrawContext drawContext = MixinDrawContextInvoker.create(this.client, matrixStack, this.buffers.getEntityVertexConsumers());
            loadPushPop(() -> eventRender3D, drawContext, partialTicks);
            // Camera model stack without bobbing applied
@@ -175,21 +178,24 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
         this.postProcessorEnabled = true;
     }
 
-    @Redirect(method = "updateTargetedEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/projectile/ProjectileUtil;raycast(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Box;Ljava/util/function/Predicate;D)Lnet/minecraft/util/hit/EntityHitResult;"))
+    @Redirect(method = "findCrosshairTarget", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/projectile/ProjectileUtil;raycast(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Box;Ljava/util/function/Predicate;D)Lnet/minecraft/util/hit/EntityHitResult;"))
     private EntityHitResult onRayTraceDistance(Entity entity, Vec3d vec3d, Vec3d vec3d2, Box box, Predicate<Entity> predicate, double distance) {
         return ProjectileUtil.raycast(entity, vec3d, vec3d2, box, predicate, GameMap.INSTANCE.get(GameKeys.BYPASS_REACH_LIMIT, false) ? 0d : distance);
     }
 
-    /* TODO
-    @Redirect(method = "updateTargetedEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/Vec3d;squaredDistanceTo(Lnet/minecraft/util/math/Vec3d;)D", ordinal = 1))
+    @Redirect(method = "findCrosshairTarget", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/Vec3d;squaredDistanceTo(Lnet/minecraft/util/math/Vec3d;)D", ordinal = 1))
     private double onDistance(Vec3d self, Vec3d vec3d) {
         return GameMap.INSTANCE.get(GameKeys.BYPASS_REACH_LIMIT, false) ? 2D : self.squaredDistanceTo(vec3d);
     }
 
-    @Redirect(method = "updateTargetedEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerInteractionManager;hasExtendedReach()Z"))
-    private boolean onTest(ClientPlayerInteractionManager clientPlayerInteractionManager) {
-        return !GameMap.INSTANCE.get(GameKeys.BYPASS_REACH_LIMIT, false) && clientPlayerInteractionManager.hasExtendedReach();
-    }*/
+    @Redirect(method = "updateCrosshairTarget", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;getEntityInteractionRange()D"))
+    private double onTest(ClientPlayerEntity instance) {
+        // TODO: Is this the right place?
+        if (GameMap.INSTANCE.get(GameKeys.BYPASS_REACH_LIMIT, false)) {
+            return 6d;
+        }
+        return instance.getEntityInteractionRange();
+    }
 
     @Override
     public float getFovMultiplier() {
