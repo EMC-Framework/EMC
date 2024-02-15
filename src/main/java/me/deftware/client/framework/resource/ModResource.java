@@ -25,8 +25,8 @@ public class ModResource extends Resource {
     }
 
     @Override
-    public String getResourcePackName() {
-        return "Minecraft";
+    public String getPackId() {
+        return id.toString();
     }
 
 }
