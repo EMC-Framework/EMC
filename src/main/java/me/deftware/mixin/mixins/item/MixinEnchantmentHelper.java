@@ -10,9 +10,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(EnchantmentHelper.class)
 public class MixinEnchantmentHelper {
 
-    @Inject(method = "getLevelFromNbt", at = @At("HEAD"), cancellable = true)
+    /* @Inject(method = "getLevelFromNbt", at = @At("HEAD"), cancellable = true)
     private static void onGetLevel(NbtCompound nbt, CallbackInfoReturnable<Integer> cir) {
         cir.setReturnValue(Math.max(nbt.getInt("lvl"), 0));
-    }
+    } */
 
 }

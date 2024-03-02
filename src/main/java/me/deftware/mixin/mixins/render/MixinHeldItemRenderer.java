@@ -3,20 +3,26 @@ package me.deftware.mixin.mixins.render;
 import me.deftware.client.framework.math.Vector3;
 import me.deftware.client.framework.event.events.EventStructureLocation;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.MapDecorationsComponent;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Map;
+
 @Mixin(HeldItemRenderer.class)
 public class MixinHeldItemRenderer {
 
+    @Shadow @Final private EntityRenderDispatcher entityRenderDispatcher;
     @Unique
     private static ItemStack copiedStack = null;
 
@@ -37,24 +43,19 @@ public class MixinHeldItemRenderer {
     @Inject(method = "renderFirstPersonMap", at = @At("HEAD"))
     private void renderFirstPersonMap(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int swingProgress,
         ItemStack stack, CallbackInfo info) {
-        if (copiedStack != null && ItemStack.areEqual(copiedStack, stack)) return;
+        if (copiedStack != null && ItemStack.areEqual(copiedStack, stack)) {
+            return;
+        }
         copiedStack = stack.copy();
-        NbtCompound compoundTag = stack.getNbt();
-        if (compoundTag != null && compoundTag.contains("Decorations", 9)) {
-            // Try and Get Decoration X and Z
-            String mapName = compoundTag.getCompound("display").getString("Name");
-            final EventStructureLocation.StructureType structure = getStructure(mapName);
-            NbtList icons = compoundTag.getList("Decorations", 10);
-           
-            icons.forEach((icon) -> {
-                if (icon instanceof NbtCompound) {
-                    EventStructureLocation event = new EventStructureLocation(
-                        Vector3.ofDouble(((NbtCompound) icon).getDouble("x"), 0d,
-                            ((NbtCompound) icon).getDouble("z")),
-                        structure);
-                    event.broadcast();
-                }
-            });
+        var data = stack.get(DataComponentTypes.MAP_DECORATIONS);
+        if (data != null) {
+            for (Map.Entry<String, MapDecorationsComponent.Decoration> entry : data.decorations().entrySet()) {
+                var structure = getStructure(entry.getKey());
+                var decoration = entry.getValue();
+                new EventStructureLocation(
+                        Vector3.ofDouble(decoration.x(), 0d, decoration.z()), structure
+                ).broadcast();
+            }
         }
     }
 }

@@ -78,8 +78,7 @@ public class MixinBlockState implements me.deftware.client.framework.world.block
 	@Unique
 	@Override
 	public boolean isPathFindable() {
-		return ((AbstractBlock.AbstractBlockState) (Object) this).canPathfindThrough
-				(MinecraftClient.getInstance().world, BlockPos.ORIGIN, NavigationType.LAND);
+		return ((AbstractBlock.AbstractBlockState) (Object) this).canPathfindThrough(NavigationType.LAND);
 	}
 
 }

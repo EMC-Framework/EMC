@@ -142,7 +142,7 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
         var event = style.getClickEvent();
         if (event != null) {
             if (event.getAction() == ClickEvent.Action.RUN_COMMAND) {
-                String text = SharedConstants.stripInvalidChars(event.getValue());
+                String text = event.getValue(); // SharedConstants.stripInvalidChars(event.getValue());
                 String trigger = CommandRegister.getCommandTrigger();
                 if (text.startsWith(trigger)) {
                     try {

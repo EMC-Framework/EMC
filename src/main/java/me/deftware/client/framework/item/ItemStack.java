@@ -5,6 +5,7 @@ import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.nbt.NbtCompound;
 import me.deftware.client.framework.world.block.Block;
 import me.deftware.client.framework.world.block.BlockState;
+import net.minecraft.client.MinecraftClient;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -44,10 +45,6 @@ public interface ItemStack {
 
     boolean isDamageable();
 
-    NbtCompound getNbt();
-
-    void setNbt(NbtCompound nbt);
-
     float getMiningSpeed(BlockState state);
 
     boolean isEmpty();
@@ -63,7 +60,9 @@ public interface ItemStack {
     }
 
     static ItemStack of(NbtCompound compound) {
-        return (ItemStack) net.minecraft.item.ItemStack.fromNbt((net.minecraft.nbt.NbtCompound) compound);
+        var registry = MinecraftClient.getInstance().player.getRegistryManager();
+        return (ItemStack) net.minecraft.item.ItemStack.fromNbtOrEmpty
+                (registry, (net.minecraft.nbt.NbtCompound) compound);
     }
 
     enum Rarity {

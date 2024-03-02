@@ -206,7 +206,13 @@ public abstract class GuiScreen extends Screen implements GenericScreen {
 		/**
 		 * A textured background will always be rendered
 		 */
-		BackgroundType Textured = (context, mouseX, mouseY, delta, parent) -> parent.renderBackgroundTexture(context.getContext());
+		BackgroundType Textured = (context, mouseX, mouseY, delta, parent) -> {
+			if (MinecraftClient.getInstance().world == null) {
+				parent.renderPanoramaBackground(context.getContext(), delta);
+			}
+			parent.applyBlur(delta);
+			parent.renderDarkening(context.getContext());
+		};
 
 		/**
 		 * A textured background will be rendered,

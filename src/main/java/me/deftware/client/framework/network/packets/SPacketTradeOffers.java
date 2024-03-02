@@ -28,10 +28,9 @@ public class SPacketTradeOffers extends PacketWrapper {
         for (TradeOffer offer : packet.getOffers()) {
             JsonObject trade = new JsonObject();
             // Items
-            trade.add("first", getItem(offer.getAdjustedFirstBuyItem()));
-            if (!offer.getSecondBuyItem().isEmpty()) {
-                trade.add("second", getItem(offer.getSecondBuyItem()));
-            }
+            trade.add("first", getItem(offer.getDisplayedFirstBuyItem()));
+            offer.getSecondBuyItem().ifPresent(tradedItem
+                    -> trade.add("second", getItem(tradedItem.itemStack())));
             trade.add("sell", getItem(offer.getSellItem()));
             // Meta
             trade.addProperty("xp", offer.getMerchantExperience());
@@ -48,12 +47,11 @@ public class SPacketTradeOffers extends PacketWrapper {
         json.addProperty("count", stack.getCount());
         json.addProperty("id", stack.getItem().getTranslationKey());
 
-        Map<Enchantment, Integer> enchantments = EnchantmentHelper.get(stack);
-        if (!enchantments.isEmpty()) {
-            JsonArray meta = new JsonArray();
-            for (Map.Entry<Enchantment, Integer> enchantment : enchantments.entrySet()) {
-                meta.add(enchantment.getKey().getName(enchantment.getValue()).getString());
-            }
+        JsonArray meta = new JsonArray();
+        ((me.deftware.client.framework.item.ItemStack) stack).enchantments((level, enchantment) -> {
+            meta.add(enchantment.getName(level).getString());
+        });
+        if (!meta.isEmpty()) {
             json.add("meta", meta);
         }
         return json;

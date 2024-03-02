@@ -3,8 +3,12 @@ package me.deftware.mixin.mixins.item;
 import me.deftware.client.framework.message.Message;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
+
+import java.util.UUID;
 
 @Mixin(Item.class)
 public class MixinItem implements me.deftware.client.framework.item.Item {
