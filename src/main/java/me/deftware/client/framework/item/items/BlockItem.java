@@ -14,12 +14,12 @@ public interface BlockItem extends Item {
     Block getBlock();
 
     static void getItems(ItemStack stack, Consumer<ItemStack> consumer) {
-        NBTTagCompound entityTag = ((net.minecraft.item.ItemStack) stack).getChildTag("BlockEntityTag");
-        if (entityTag != null && entityTag.contains("Items", 9)) {
-            NBTTagList items = entityTag.getList("Items", 10);
-            for (int i = 0; i < items.size(); i++) {
-                NBTTagCompound data = items.getCompound(i);
-                ItemStack itemStack = (ItemStack) net.minecraft.item.ItemStack.read(data);
+        NBTTagCompound entityTag = ((net.minecraft.item.ItemStack) stack).getSubCompound("BlockEntityTag");
+        if (entityTag != null && entityTag.hasKey("Items", 9)) {
+            NBTTagList items = entityTag.getTagList("Items", 10);
+            for (int i = 0; i < items.tagCount(); i++) {
+                NBTTagCompound data = items.getCompoundTagAt(i);
+                ItemStack itemStack = (ItemStack) new net.minecraft.item.ItemStack(data);
                 consumer.accept(itemStack);
             }
         }

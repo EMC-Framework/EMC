@@ -34,12 +34,16 @@ public class CPacketEditBook extends PacketWrapper {
         if (!ItemTypes.WritableBook.is(stack.getItem())) {
             throw new IllegalArgumentException("The stack must be a writable book!");
         }
-        NBTTagCompound nbt = ((net.minecraft.item.ItemStack) stack).getOrCreateTag();
+        NBTTagCompound nbt = ((net.minecraft.item.ItemStack) stack).getTagCompound();
+        if (nbt == null) {
+            nbt = new NBTTagCompound();
+            ((net.minecraft.item.ItemStack) stack).setTagCompound(nbt);
+        }
         NBTTagList list = new NBTTagList();
         for (String page : pages) {
-            list.add(new NBTTagString(page));
+            list.appendTag(new NBTTagString(page));
         }
-        nbt.put("pages", list);
+        nbt.setTag("pages", list);
     }
 
 }
