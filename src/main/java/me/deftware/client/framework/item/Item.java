@@ -8,7 +8,6 @@ import me.deftware.client.framework.render.ItemRendering;
 import me.deftware.client.framework.render.gl.GLX;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifiersComponent;
-import net.minecraft.item.SwordItem;
 
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -42,10 +41,10 @@ public interface Item extends Itemizable, SelectableList.ListItem {
             var modifiers = component.modifiers();
             for (AttributeModifiersComponent.Entry entry : modifiers) {
                 var modifier = entry.modifier();
-                if (!predicate.test(modifier.getId())) {
+                if (!predicate.test(modifier.uuid())) {
                     continue;
                 }
-                consumer.accept(modifier.getValue());
+                consumer.accept(modifier.value());
             }
         }
     }
