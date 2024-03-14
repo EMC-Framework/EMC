@@ -84,7 +84,7 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     private final EventRender3DNoBobbing eventRender3DNoBobbing = new EventRender3DNoBobbing();
 
     @Inject(method = "renderHand", at = @At("HEAD"))
-    private void renderHand(Camera camera, float partialTicks, CallbackInfo ci) {
+    private void renderHand(Camera camera, float partialTicks, Matrix4f matrix4f, CallbackInfo ci) {
        if (!WindowHelper.isMinimized()) {
            // Normal 3d event
            MatrixStack matrixStack = new MatrixStack();
