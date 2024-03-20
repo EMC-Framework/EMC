@@ -1,14 +1,12 @@
 package me.deftware.mixin.mixins.item;
 
 import me.deftware.client.framework.message.Message;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-
-import java.util.UUID;
 
 @Mixin(Item.class)
 public class MixinItem implements me.deftware.client.framework.item.Item {
@@ -26,21 +24,26 @@ public class MixinItem implements me.deftware.client.framework.item.Item {
     }
 
     @Unique
+    private FoodComponent foodComponent() {
+        return ((Item) (Object) this).getComponents().get(DataComponentTypes.FOOD);
+    }
+
+    @Unique
     @Override
     public boolean isFood() {
-        return ((Item) (Object) this).isFood();
+        return foodComponent() != null;
     }
 
     @Unique
     @Override
     public int getHunger() {
-        return ((Item) (Object) this).getFoodComponent().getHunger();
+        return foodComponent().hunger();
     }
 
     @Unique
     @Override
     public float getSaturation() {
-        return ((Item) (Object) this).getFoodComponent().getSaturationModifier();
+        return foodComponent().saturationModifier();
     }
 
     @Unique
