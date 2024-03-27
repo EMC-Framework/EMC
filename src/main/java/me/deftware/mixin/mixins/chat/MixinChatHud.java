@@ -2,7 +2,6 @@ package me.deftware.mixin.mixins.chat;
 
 import me.deftware.client.framework.message.GameChat;
 import me.deftware.client.framework.message.Message;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.hud.ChatHudLine;
 import net.minecraft.client.gui.hud.MessageIndicator;
@@ -24,11 +23,7 @@ public abstract class MixinChatHud implements GameChat {
     private List<ChatHudLine.Visible> visibleMessages;
 
     @Shadow
-    protected abstract void addMessage(Text message, MessageSignatureData signature, int ticks, MessageIndicator indicator, boolean refresh);
-
-    @Shadow
-    @Final
-    private MinecraftClient client;
+    public abstract void addMessage(Text message, MessageSignatureData messageSignatureData, MessageIndicator messageIndicator);
 
     @Unique
     @Override
@@ -46,7 +41,7 @@ public abstract class MixinChatHud implements GameChat {
     @Unique
     @Override
     public void append(Message message) {
-        addMessage((Text) message, null, this.client.inGameHud.getTicks(), null, false);
+        addMessage((Text) message, null, null);
     }
 
     @Unique

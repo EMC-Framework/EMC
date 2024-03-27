@@ -2,7 +2,7 @@ package me.deftware.mixin.mixins.item;
 
 import me.deftware.client.framework.message.Message;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.item.FoodComponent;
+import net.minecraft.component.type.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import org.spongepowered.asm.mixin.Mixin;
@@ -37,7 +37,7 @@ public class MixinItem implements me.deftware.client.framework.item.Item {
     @Unique
     @Override
     public int getHunger() {
-        return foodComponent().hunger();
+        return foodComponent().nutrition();
     }
 
     @Unique
