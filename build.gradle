@@ -1,12 +1,12 @@
 plugins {
-	id 'dev.architectury.loom' version '1.4-SNAPSHOT'
+	id 'fabric-loom' version '1.6.5'
 	id "io.freefair.lombok" version "8.6"
 	id 'maven-publish'
 }
 
-sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
-
-def forgeBuild = project.properties["loom.platform"] == "forge"
+tasks.withType(JavaCompile).configureEach {
+	it.sourceCompatibility = it.targetCompatibility = JavaVersion.VERSION_21
+}
 
 def getVersionFromJava() {
 	def ver = 0.0, patch = 0
@@ -29,14 +29,11 @@ repositories {
 }
 
 dependencies {
-	if (forgeBuild) {
-		forge "net.minecraftforge:forge:${project.forge_version}"
-	} else {
-		// include "me.deftware:integrations:${project.minecraftVersion}"
-	}
+	// include "me.deftware:integrations:${project.minecraftVersion}"
+
 	minecraft "com.mojang:minecraft:${project.minecraftVersion}"
 	mappings "net.fabricmc:yarn:${project.minecraftVersion}${project.mappingsVer}:v2"
-	modImplementation "net.fabricmc:fabric-loader:0.15.6"
+	modImplementation "net.fabricmc:fabric-loader:0.15.9"
 
 	// No longer included in Minecraft
 	implementation 'io.netty:netty-handler-proxy:4.1.76.Final'
@@ -44,31 +41,15 @@ dependencies {
 }
 
 loom {
-	if (forgeBuild) {
-		forge {
-			mixinConfig "mixins.emc.json"
-			convertAccessWideners = true
-		}
-	}
 	accessWidenerPath = file("src/main/resources/emc.accesswidener")
 }
 
-if (forgeBuild) {
-	jar {
-		manifest {
-			attributes([
-					'MixinConnector': 'me.deftware.launch.MixinConnector'
-			])
-		}
-	}
-} else {
-	sourceSets {
-		main {
-			java {
-				srcDir 'src'
-				exclude '**/deftware/client/framework/main/ForgeMod**'
-				exclude '**/deftware/launch/MixinConnector**'
-			}
+sourceSets {
+	main {
+		java {
+			srcDir 'src'
+			exclude '**/deftware/client/framework/main/ForgeMod**'
+			exclude '**/deftware/launch/MixinConnector**'
 		}
 	}
 }
@@ -77,11 +58,7 @@ publishing {
 	publications {
 		emc(MavenPublication) {
 			groupId 'me.deftware'
-			if (forgeBuild) {
-				artifactId "EMC-Forge"
-			} else {
-				artifactId "EMC-F-v2"
-			}
+			artifactId "EMC-F-v2"
 			version "${version}-${project.minecraftVersion}"
 
 			from components['java']

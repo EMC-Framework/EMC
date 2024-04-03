@@ -1,5 +1,5 @@
 build:
-  image: eclipse-temurin:17
+  image: eclipse-temurin:21
   stage: build
   variables:
     GRADLE_OPTS: "-Dorg.gradle.daemon=false"

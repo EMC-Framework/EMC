@@ -166,9 +166,11 @@ public class MixinItemStack implements me.deftware.client.framework.item.ItemSta
     }
 
     @Inject(method = "getTooltip", at = @At(value = "TAIL"))
-    private void onGetTooltipFromItem(PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir) {
+    private void onGetTooltipFromItem(net.minecraft.item.Item.class_9635 arg, PlayerEntity playerEntity,
+                                      TooltipContext tooltipContext, CallbackInfoReturnable<List<Text>> cir) {
         var list = cir.getReturnValue();
-        new EventGetItemToolTip(list, (Item) ((ItemStack) (Object) this).getItem(), context.isAdvanced()).broadcast();
+        new EventGetItemToolTip(list, (Item) ((ItemStack) (Object) this).getItem(),
+                tooltipContext.isAdvanced()).broadcast();
     }
 
 }

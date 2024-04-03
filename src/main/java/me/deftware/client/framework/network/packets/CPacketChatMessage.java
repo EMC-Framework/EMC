@@ -2,7 +2,6 @@ package me.deftware.client.framework.network.packets;
 
 import me.deftware.client.framework.network.NetworkHandler;
 import me.deftware.client.framework.network.PacketWrapper;
-import net.minecraft.class_9449;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.command.argument.SignedArgumentList;
 import net.minecraft.network.listener.ServerPlayPacketListener;
@@ -11,14 +10,11 @@ import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.message.*;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import net.minecraft.network.packet.c2s.play.ChatCommandSignedC2SPacket;
 
 import java.time.Instant;
 
 public class CPacketChatMessage extends PacketWrapper {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(CPacketChatMessage.class);
 
     public CPacketChatMessage(Packet<?> packet) {
         super(packet);
@@ -65,7 +61,7 @@ public class CPacketChatMessage extends PacketWrapper {
             return networkHandler.pack(messageBody);
         });
 
-        return new class_9449(text, instant, salt, argumentSignatureDataMap, lastSeenMessages.update());
+        return new ChatCommandSignedC2SPacket(text, instant, salt, argumentSignatureDataMap, lastSeenMessages.update());
     }
 
 }
