@@ -8,7 +8,7 @@ import me.deftware.client.framework.item.Item;
 import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.world.block.BlockState;
 import net.minecraft.client.gui.screen.ingame.AnvilScreen;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.component.type.PotionContentsComponent;
@@ -166,11 +166,11 @@ public class MixinItemStack implements me.deftware.client.framework.item.ItemSta
     }
 
     @Inject(method = "getTooltip", at = @At(value = "TAIL"))
-    private void onGetTooltipFromItem(net.minecraft.item.Item.class_9635 arg, PlayerEntity playerEntity,
-                                      TooltipContext tooltipContext, CallbackInfoReturnable<List<Text>> cir) {
+    private void onGetTooltipFromItem(net.minecraft.item.Item.TooltipContext context, PlayerEntity player,
+                                      TooltipType type, CallbackInfoReturnable<List<Text>> cir) {
         var list = cir.getReturnValue();
         new EventGetItemToolTip(list, (Item) ((ItemStack) (Object) this).getItem(),
-                tooltipContext.isAdvanced()).broadcast();
+                type.isAdvanced()).broadcast();
     }
 
 }

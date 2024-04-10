@@ -43,7 +43,7 @@ public class MixinItem implements me.deftware.client.framework.item.Item {
     @Unique
     @Override
     public float getSaturation() {
-        return foodComponent().saturationModifier();
+        return foodComponent().saturation();
     }
 
     @Unique
