@@ -6,6 +6,7 @@ import me.deftware.client.framework.event.events.EventGetItemToolTip;
 import me.deftware.client.framework.item.Enchantment;
 import me.deftware.client.framework.item.Item;
 import me.deftware.client.framework.message.Message;
+import me.deftware.client.framework.registry.EnchantmentRegistry;
 import me.deftware.client.framework.world.block.BlockState;
 import net.minecraft.client.gui.screen.ingame.AnvilScreen;
 import net.minecraft.client.item.TooltipType;
@@ -74,14 +75,14 @@ public class MixinItemStack implements me.deftware.client.framework.item.ItemSta
         var enchantments = EnchantmentHelper.getEnchantments((ItemStack) (Object) this);
         for (Object2IntMap.Entry<RegistryEntry<net.minecraft.enchantment.Enchantment>>
                 entry : enchantments.getEnchantmentsMap()) {
-            consumer.accept(entry.getIntValue(), (Enchantment) entry.getKey().value());
+            consumer.accept(entry.getIntValue(), EnchantmentRegistry.INSTANCE.lookup(entry.getKey().getKey().get()));
         }
     }
 
     @Unique
     @Override
     public void enchant(Enchantment enchantment, int level) {
-        ((ItemStack) (Object) this).addEnchantment((net.minecraft.enchantment.Enchantment) enchantment, level);
+        ((ItemStack) (Object) this).addEnchantment(enchantment.getEntry(), level);
     }
 
     @Unique
@@ -148,12 +149,12 @@ public class MixinItemStack implements me.deftware.client.framework.item.ItemSta
     private int enchant$level;
 
     @Unique
-    private net.minecraft.enchantment.Enchantment enchant$type;
+    private RegistryEntry<net.minecraft.enchantment.Enchantment> enchant$type;
 
     @Inject(method = "addEnchantment", at = @At("HEAD"))
-    private void onEnchant(net.minecraft.enchantment.Enchantment enchantment, int level, CallbackInfo ci) {
+    private void onEnchant(RegistryEntry<net.minecraft.enchantment.Enchantment> registryEntry, int level, CallbackInfo ci) {
         enchant$level = level;
-        enchant$type = enchantment;
+        enchant$type = registryEntry;
     }
 
     /**

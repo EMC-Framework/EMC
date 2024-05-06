@@ -115,7 +115,6 @@
     "math.MixinChunkPos",
     "entity.MixinEffect",
     "entity.MixinAppliedEffect",
-    "item.MixinEnchantment",
     "misc.MixinNbt",
     "misc.MixinNbtList"
   ]

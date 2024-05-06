@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.6.5'
+	id 'fabric-loom' version '1.6.9'
 	id "io.freefair.lombok" version "8.6"
 	id 'maven-publish'
 }
@@ -33,7 +33,7 @@ dependencies {
 
 	minecraft "com.mojang:minecraft:${project.minecraftVersion}"
 	mappings "net.fabricmc:yarn:${project.minecraftVersion}${project.mappingsVer}:v2"
-	modImplementation "net.fabricmc:fabric-loader:0.15.9"
+	modImplementation "net.fabricmc:fabric-loader:0.15.11"
 
 	// No longer included in Minecraft
 	implementation 'io.netty:netty-handler-proxy:4.1.76.Final'
