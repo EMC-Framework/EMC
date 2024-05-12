@@ -1,5 +1,6 @@
 package me.deftware.client.framework.item;
 
+import net.minecraft.component.type.SuspiciousStewEffectsComponent;
 import net.minecraft.item.*;
 
 import java.util.function.Predicate;
@@ -8,7 +9,7 @@ public enum ItemTypes {
 
     Tool(item -> item instanceof ToolItem),
     SplashPotion(item -> item instanceof SplashPotionItem),
-    Soup(item -> item instanceof StewItem),
+    Soup(item -> item == Items.BEETROOT_SOUP || item == Items.MUSHROOM_STEW || item == Items.SUSPICIOUS_STEW),
     WritableBook(item -> item instanceof WritableBookItem),
     Bow(item -> item instanceof BowItem),
     Crossbow(item -> item instanceof CrossbowItem),
