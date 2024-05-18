@@ -67,9 +67,9 @@ public abstract class MixinWorldRenderer {
     private boolean anyShaderEnabled = false;
 
     @Inject(method = "render", at = @At("HEAD"))
-    private void onRender(float tickDelta, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, Matrix4f matrix4f2, CallbackInfo ci) {
+    private void onRender(RenderTickCounter tickCounter, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, Matrix4f matrix4f2, CallbackInfo ci) {
         this.anyShaderEnabled = EntityShader.SHADERS.stream().anyMatch(EntityShader::isEnabled);
-        this.tickDelta = tickDelta;
+        this.tickDelta = tickCounter.getTickDelta(true);
         this.targetBuffer = null;
     }
 

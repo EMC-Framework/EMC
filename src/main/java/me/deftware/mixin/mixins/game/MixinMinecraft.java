@@ -66,10 +66,6 @@ public abstract class MixinMinecraft implements Minecraft {
     @Unique
     private final List<Function<List<String>, List<String>>> debugModifiers = new ArrayList<>();
 
-    @Shadow
-    @Final
-    private RenderTickCounter renderTickCounter;
-
     @Mutable
     @Shadow
     @Final

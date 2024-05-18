@@ -9,6 +9,7 @@ import me.deftware.client.framework.render.gl.GLX;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
@@ -37,7 +38,7 @@ public class MixinGuiIngame {
     }
 
     @Inject(method = "renderStatusEffectOverlay", at = @At("HEAD"), cancellable = true)
-    private void renderStatusEffectOverlay(DrawContext context, float f, CallbackInfo ci) {
+    private void renderStatusEffectOverlay(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
         if (!GameMap.INSTANCE.get(GameKeys.EFFECT_OVERLAY, true))
             ci.cancel();
     }
@@ -46,7 +47,7 @@ public class MixinGuiIngame {
     private final EventRenderHotbar eventRenderHotbar = new EventRenderHotbar();
 
     @Inject(method = "renderHotbar", at = @At("HEAD"))
-    private void renderHotbar(DrawContext context, float tickDelta, CallbackInfo ci) {
+    private void renderHotbar(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
         eventRenderHotbar.setContext(GLX.of(context));
         eventRenderHotbar.broadcast();
     }

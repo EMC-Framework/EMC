@@ -18,6 +18,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.BufferBuilderStorage;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.ProjectileUtil;
@@ -137,10 +138,11 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     @Unique
     private final EventMatrixRender eventMatrixRender = new EventMatrixRender();
 
-    @Redirect(method = "render", at = @At(value = "INVOKE", opcode = 180, target = "Lnet/minecraft/client/gui/hud/InGameHud;render(Lnet/minecraft/client/gui/DrawContext;F)V"))
-    private void onRender2D(InGameHud inGameHud, DrawContext context, float tickDelta) {
+    @Redirect(method = "render", at = @At(value = "INVOKE", opcode = 180, target = "Lnet/minecraft/client/gui/hud/InGameHud;renderAutosaveIndicator(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/client/render/RenderTickCounter;)V"))
+    private void onRender2D(InGameHud inGameHud, DrawContext context, RenderTickCounter tickCounter) {
         if (!WindowHelper.isMinimized()) {
             GLX glx = GLX.of(context);
+            float tickDelta = tickCounter.getTickDelta(true);
             // Minecraft modifies opacity underwater
             glx.color(1, 1, 1, 1);
             eventRender2D.setContext(glx);
@@ -153,7 +155,7 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
             RenderStack.restoreGl();
             RenderStack.reloadMinecraftMatrix();
         }
-        inGameHud.render(context, tickDelta);
+        inGameHud.render(context, tickCounter);
     }
 
     @Override
