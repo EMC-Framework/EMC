@@ -28,7 +28,7 @@ public interface Block extends Itemizable, SelectableList.ListItem {
 
     default InputStream getAsset() throws IOException {
         Identifier blockResource = Registries.BLOCK.getId((net.minecraft.block.Block) this);
-        Identifier blockTexture = new Identifier(blockResource.getNamespace(), "textures/block/" + blockResource.getPath() + ".png");
+        Identifier blockTexture = Identifier.of(blockResource.getNamespace(), "textures/block/" + blockResource.getPath() + ".png");
         Optional<Resource> resource = MinecraftClient.getInstance().getResourceManager().getResource(blockTexture);
         return resource.orElseThrow(() -> new IOException("Unable to find resource")).getInputStream();
     }

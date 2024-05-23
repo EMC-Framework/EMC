@@ -12,7 +12,7 @@ public class MinecraftIdentifier extends Identifier {
 	}
 
 	public MinecraftIdentifier(String id) {
-		super(id);
+		super("minecraft", id);
 	}
 
 	public MinecraftIdentifier(String namespace, String path) {

@@ -112,22 +112,27 @@ public class GifRenderStack extends RenderStack<GifRenderStack> {
 
     @Override
     protected VertexFormat getFormat() {
-        return VertexFormats.POSITION_COLOR_TEXTURE;
+        return VertexFormats.POSITION_TEXTURE_COLOR;
     }
 
     @Override
     protected void setShader() {
-        // POSITION_COLOR_TEXTURE
-        RenderSystem.setShader(GameRenderer::getPositionColorTexProgram);
+        RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
+    }
+
+    @Override
+    public VertexConstructor vertex(double x, double y, double z) {
+        builder.vertex(getModel(), (float) x, (float) y, (float) z);
+        return this;
     }
 
     public GifRenderStack draw(int x0, int y0, int x1, int y1) {
         // Draw frame
         int u0 = 0, u1 = 1, v0 = 0, v1 = 1;
-        vertex(x0, y1, 0).texture(u0, v1).next();
-        vertex(x1, y1, 0).texture(u1, v1).next();
-        vertex(x1, y0, 0).texture(u1, v0).next();
-        vertex(x0, y0, 0).texture(u0, v0).next();
+        vertex(x0, y1, 0).texture(u0, v1).color(red, green, blue, alpha).next();
+        vertex(x1, y1, 0).texture(u1, v1).color(red, green, blue, alpha).next();
+        vertex(x1, y0, 0).texture(u1, v0).color(red, green, blue, alpha).next();
+        vertex(x0, y0, 0).texture(u0, v0).color(red, green, blue, alpha).next();
         // Update texture
         nextFrame();
         return this;

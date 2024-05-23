@@ -123,11 +123,11 @@ public final class EventBus {
     }
 
     private final Runnable abortRendering = () -> {
-        BufferBuilder builder = Tessellator.getInstance().getBuffer();
+        /* TODO BufferBuilder builder = Tessellator.getInstance().getBuffer();
         if (builder.isBuilding()) {
             logger.warn("Closing open buffer builder");
             builder.end();
-        }
+        } */
     };
 
     private final Map<Class<? extends Event>, Runnable> cleanupHandlers = Map.of(

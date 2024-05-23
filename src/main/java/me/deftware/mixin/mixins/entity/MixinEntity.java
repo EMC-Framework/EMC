@@ -32,9 +32,6 @@ public abstract class MixinEntity implements IMixinEntity {
     public boolean noClip;
 
     @Shadow
-    protected boolean inNetherPortal;
-
-    @Shadow
     public abstract boolean isSneaking();
 
     @Shadow
@@ -152,7 +149,7 @@ public abstract class MixinEntity implements IMixinEntity {
 
     @Override
     public void setInPortal(boolean inPortal) {
-        this.inNetherPortal = inPortal;
+        // TODO
     }
 
     @Override

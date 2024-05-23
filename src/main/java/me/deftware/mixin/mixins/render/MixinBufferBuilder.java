@@ -9,12 +9,12 @@ import org.spongepowered.asm.mixin.injection.*;
 @Mixin(BufferBuilder.class)
 public class MixinBufferBuilder {
 
-    @ModifyVariable(method = "vertex(FFFFFFFFFIIFFF)V", at = @At("HEAD"), index = 7)
+    /* TODO @ModifyVariable(method = "vertex(FFFFFFFFFIIFFF)V", at = @At("HEAD"), index = 7)
     private float alpha(float alpha) {
         if (Bootstrap.blockProperties.isActive() && Bootstrap.blockProperties.isOpacityMode())
             return getCustomAlpha();
         return alpha;
-    }
+    }*/
 
     @Unique
     private float getCustomAlpha() {

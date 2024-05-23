@@ -51,7 +51,7 @@ public abstract class RenderStack<T> implements VertexConstructor {
 	protected float red = 1f, green = 1f, blue = 1f, alpha = 1f, lineWidth = 2f;
 	protected Color lastColor = Color.white;
 
-	protected BufferBuilder builder = Tessellator.getInstance().getBuffer();
+	protected BufferBuilder builder = null;
 	private int mode = -1;
 
 	private GLX context;
@@ -105,8 +105,13 @@ public abstract class RenderStack<T> implements VertexConstructor {
 		this.mode = mode;
 		setShader();
 		RenderSystem.lineWidth(lineWidth);
-		builder.begin(translate(mode), getFormat());
+		setBuilder(translate(mode), getFormat());
 		return (T) this;
+	}
+
+
+	protected void setBuilder(VertexFormat.DrawMode drawMode, VertexFormat vertexFormat) {
+		builder = Tessellator.getInstance().method_60827(drawMode, vertexFormat);
 	}
 
 	public void end() {
@@ -114,13 +119,16 @@ public abstract class RenderStack<T> implements VertexConstructor {
 	}
 
 	public boolean isBuilding() {
-		return builder.isBuilding();
+		return builder != null;
 	}
 
 	protected void drawBuffer() {
-		if (RenderSystem.getShader() != null && RenderSystem.getShader().lineWidth != null)
-			RenderSystem.getShader().lineWidth.set(RenderSystem.getShaderLineWidth());
-		BufferRenderer.drawWithGlobalProgram(builder.end());
+		var shader = RenderSystem.getShader();
+		if (shader != null && shader.lineWidth != null) {
+			shader.lineWidth.set(RenderSystem.getShaderLineWidth());
+		}
+		BufferRenderer.drawWithGlobalProgram(builder.method_60800());
+		builder = null;
 	}
 
 	public static void noBlend() {
@@ -167,7 +175,7 @@ public abstract class RenderStack<T> implements VertexConstructor {
 
 	@Override
 	public void next() {
-		builder.next();
+		// builder.next();
 	}
 
 	@Override

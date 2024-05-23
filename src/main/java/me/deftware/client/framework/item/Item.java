@@ -8,6 +8,7 @@ import me.deftware.client.framework.render.ItemRendering;
 import me.deftware.client.framework.render.gl.GLX;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifiersComponent;
+import net.minecraft.util.Identifier;
 
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -34,14 +35,14 @@ public interface Item extends Itemizable, SelectableList.ListItem {
         FontRenderer.drawString(context, getName(), x + 28, y + ((entryHeight / 2) - (FontRenderer.getFontHeight() / 2)) - 3, 0xFFFFFF);
     }
 
-    static void modifiers(Item item, Predicate<UUID> predicate, Consumer<Double> consumer) {
+    static void modifiers(Item item, Predicate<Identifier> predicate, Consumer<Double> consumer) {
         var component = ((net.minecraft.item.Item) item).getComponents()
                 .get(DataComponentTypes.ATTRIBUTE_MODIFIERS);
         if (component != null) {
             var modifiers = component.modifiers();
             for (AttributeModifiersComponent.Entry entry : modifiers) {
                 var modifier = entry.modifier();
-                if (!predicate.test(modifier.uuid())) {
+                if (!predicate.test(modifier.id())) {
                     continue;
                 }
                 consumer.accept(modifier.value());
@@ -51,7 +52,7 @@ public interface Item extends Itemizable, SelectableList.ListItem {
 
     static float damage(Item item) {
         AtomicDouble sum = new AtomicDouble();
-        modifiers(item, uuid -> uuid.equals(net.minecraft.item.Item.ATTACK_DAMAGE_MODIFIER_ID), sum::addAndGet);
+        modifiers(item, id -> id.equals(net.minecraft.item.Item.BASE_ATTACK_DAMAGE_MODIFIER_ID), sum::addAndGet);
         return (float) sum.get();
     }
 

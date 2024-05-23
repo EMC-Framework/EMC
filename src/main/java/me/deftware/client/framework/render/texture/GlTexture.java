@@ -179,13 +179,13 @@ public class GlTexture implements GuiScreen.BackgroundType {
     private static void drawTexturedQuad(GLX context, int x0, int x1, int y0, int y1, int z, float u0, float u1, float v0, float v1) {
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         Matrix4f matrix4f = context.getContext().getMatrices().peek().getPositionMatrix();
-        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-        bufferBuilder.vertex(matrix4f, x0, y1, z).texture(u0, v1).next();
-        bufferBuilder.vertex(matrix4f, x1, y1, z).texture(u1, v1).next();
-        bufferBuilder.vertex(matrix4f, x1, y0, z).texture(u1, v0).next();
-        bufferBuilder.vertex(matrix4f, x0, y0, z).texture(u0, v0).next();
-        BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+        BufferBuilder bufferBuilder = Tessellator.getInstance()
+                .method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        bufferBuilder.vertex(matrix4f, x0, y1, z).texture(u0, v1); // .next();
+        bufferBuilder.vertex(matrix4f, x1, y1, z).texture(u1, v1); // .next();
+        bufferBuilder.vertex(matrix4f, x1, y0, z).texture(u1, v0); // .next();
+        bufferBuilder.vertex(matrix4f, x0, y0, z).texture(u0, v0); // .next();
+        BufferRenderer.drawWithGlobalProgram(bufferBuilder.method_60800());
     }
 
 }

@@ -19,7 +19,7 @@ public class MixinTextureManager {
         if (GameMap.INSTANCE.get(GameKeys.RAINBOW_ITEM_GLINT, false)) {
             if (resource.equals(ItemRenderer.ITEM_ENCHANTMENT_GLINT)) {
                 if (syncedCount > 50) { // One tick as Normal Enchant Glint
-                    resource = new Identifier(
+                    resource = Identifier.of(
                             "emc/enchanted_item_glint_rainbow.png");
                 } else {
                     syncedCount++;
