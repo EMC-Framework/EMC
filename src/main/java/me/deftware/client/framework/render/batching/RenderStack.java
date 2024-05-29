@@ -111,7 +111,7 @@ public abstract class RenderStack<T> implements VertexConstructor {
 
 
 	protected void setBuilder(VertexFormat.DrawMode drawMode, VertexFormat vertexFormat) {
-		builder = Tessellator.getInstance().method_60827(drawMode, vertexFormat);
+		builder = Tessellator.getInstance().begin(drawMode, vertexFormat);
 	}
 
 	public void end() {
@@ -127,7 +127,7 @@ public abstract class RenderStack<T> implements VertexConstructor {
 		if (shader != null && shader.lineWidth != null) {
 			shader.lineWidth.set(RenderSystem.getShaderLineWidth());
 		}
-		BufferRenderer.drawWithGlobalProgram(builder.method_60800());
+		BufferRenderer.drawWithGlobalProgram(builder.end());
 		builder = null;
 	}
 

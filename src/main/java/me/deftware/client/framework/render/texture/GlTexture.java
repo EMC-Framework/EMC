@@ -180,12 +180,12 @@ public class GlTexture implements GuiScreen.BackgroundType {
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         Matrix4f matrix4f = context.getContext().getMatrices().peek().getPositionMatrix();
         BufferBuilder bufferBuilder = Tessellator.getInstance()
-                .method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+                .begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         bufferBuilder.vertex(matrix4f, x0, y1, z).texture(u0, v1); // .next();
         bufferBuilder.vertex(matrix4f, x1, y1, z).texture(u1, v1); // .next();
         bufferBuilder.vertex(matrix4f, x1, y0, z).texture(u1, v0); // .next();
         bufferBuilder.vertex(matrix4f, x0, y0, z).texture(u0, v0); // .next();
-        BufferRenderer.drawWithGlobalProgram(bufferBuilder.method_60800());
+        BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
     }
 
 }
