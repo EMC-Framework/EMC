@@ -100,8 +100,18 @@ public class EntityPlayer extends LivingEntity {
 		return getMinecraftEntity().getItemUseTimeLeft();
 	}
 
-	public void drawPlayer(GLX context, int posX, int posY, int scale) {
-		InventoryScreen.drawEntity(context.getContext(), posX, posY, 0, 0, 30, scale, 0, 0, getMinecraftEntity());
+	public static final double PLAYER_WIDTH = 49, PLAYER_HEIGHT = 70, DEFAULT_SIZE = 30;
+	public static double PLAYER_WIDTH_MP = PLAYER_WIDTH / DEFAULT_SIZE;
+	public static double PLAYER_HEIGHT_MP = PLAYER_HEIGHT / DEFAULT_SIZE;
+
+	public void drawPlayer(GLX context, int posX, int posY, int size) {
+		int width = (int) (size * PLAYER_WIDTH_MP);
+		int height = (int) (size * PLAYER_HEIGHT_MP);
+
+		InventoryScreen.drawEntity(context.getContext(), posX, posY,
+				posX + width, posY + height,
+				size, 0.0625F, posX + width / 2f,
+				posY + height / 2f, getMinecraftEntity());
 	}
 
 	public Entity clone() {
