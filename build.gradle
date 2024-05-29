@@ -1,5 +1,5 @@
 plugins {
-	id 'dev.architectury.loom' version '1.4-SNAPSHOT'
+	id 'dev.architectury.loom' version '1.6-SNAPSHOT'
 	id "io.freefair.lombok" version "8.6"
 	id 'maven-publish'
 }
