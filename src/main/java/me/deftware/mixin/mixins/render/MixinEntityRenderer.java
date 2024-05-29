@@ -138,7 +138,7 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     @Unique
     private final EventMatrixRender eventMatrixRender = new EventMatrixRender();
 
-    @Redirect(method = "render", at = @At(value = "INVOKE", opcode = 180, target = "Lnet/minecraft/client/gui/hud/InGameHud;renderAutosaveIndicator(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/client/render/RenderTickCounter;)V"))
+    @Redirect(method = "render", at = @At(value = "INVOKE", opcode = 180, target = "Lnet/minecraft/client/gui/hud/InGameHud;render(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/client/render/RenderTickCounter;)V"))
     private void onRender2D(InGameHud inGameHud, DrawContext context, RenderTickCounter tickCounter) {
         if (!WindowHelper.isMinimized()) {
             GLX glx = GLX.of(context);
@@ -156,6 +156,7 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
             RenderStack.reloadMinecraftMatrix();
         }
         inGameHud.render(context, tickCounter);
+
     }
 
     @Override

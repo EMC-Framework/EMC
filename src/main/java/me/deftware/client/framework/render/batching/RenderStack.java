@@ -127,7 +127,10 @@ public abstract class RenderStack<T> implements VertexConstructor {
 		if (shader != null && shader.lineWidth != null) {
 			shader.lineWidth.set(RenderSystem.getShaderLineWidth());
 		}
-		BufferRenderer.drawWithGlobalProgram(builder.end());
+		var result = builder.endNullable();
+		if (result != null) {
+			BufferRenderer.drawWithGlobalProgram(result);
+		}
 		builder = null;
 	}
 
