@@ -13,6 +13,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.border.WorldBorder;
+import net.minecraft.world.dimension.PortalManager;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -53,6 +55,8 @@ public abstract class MixinEntity implements IMixinEntity {
     @Shadow private boolean glowing;
 
     @Shadow public abstract UUID getUuid();
+
+    @Shadow @Nullable public PortalManager portalManager;
 
     @SuppressWarnings("ConstantConditions")
     @Inject(method = "changeLookDirection", at = @At("HEAD"), cancellable = true)
@@ -127,7 +131,7 @@ public abstract class MixinEntity implements IMixinEntity {
     }
 
     @Redirect(
-            method = "adjustMovementForCollisions(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Box;Lnet/minecraft/world/World;Ljava/util/List;)Lnet/minecraft/util/math/Vec3d;",
+            method = "findCollisionsForMovement",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/border/WorldBorder;canCollide(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Box;)Z")
     )
     private static boolean onCollision$WorldBorder(WorldBorder instance, Entity entity, Box box) {
@@ -149,7 +153,7 @@ public abstract class MixinEntity implements IMixinEntity {
 
     @Override
     public void setInPortal(boolean inPortal) {
-        // TODO
+        portalManager.setInPortal(inPortal);
     }
 
     @Override
