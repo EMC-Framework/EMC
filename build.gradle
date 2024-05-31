@@ -29,7 +29,7 @@ repositories {
 }
 
 dependencies {
-	// include "me.deftware:integrations:${project.minecraftVersion}"
+	include "me.deftware:integrations:${project.minecraftVersion}"
 
 	minecraft "com.mojang:minecraft:${project.minecraftVersion}"
 	mappings "net.fabricmc:yarn:${project.minecraftVersion}${project.mappingsVer}:v2"
