@@ -13,9 +13,8 @@ import net.minecraft.entity.effect.StatusEffects;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Map;
@@ -62,6 +61,26 @@ public class MixinEntityLivingBase implements IMixinEntityLivingBase {
         if (self.hasStatusEffect(StatusEffects.LEVITATION) && !GameMap.INSTANCE.get(GameKeys.LEVITATION, true) && ((LivingEntity) (Object) this).isPlayer())
             return false;
         return self.hasNoGravity();
+    }
+
+    @Unique
+    private float airStrafingSpeed = 0.02f;
+
+    @ModifyConstant(method = "getOffGroundSpeed", constant = @Constant(floatValue = 0.02f))
+    private float getAirStrafeSpeed(float constant) {
+        return airStrafingSpeed;
+    }
+
+    @Unique
+    @Override
+    public float getAirStrafingSpeed() {
+        return airStrafingSpeed;
+    }
+
+    @Unique
+    @Override
+    public void setAirStrafingSpeed(float value) {
+        airStrafingSpeed = value;
     }
 
 }
