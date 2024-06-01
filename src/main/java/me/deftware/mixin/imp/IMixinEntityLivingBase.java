@@ -6,4 +6,8 @@ public interface IMixinEntityLivingBase {
 
 	void _setStepHeight(float height);
 
+	float getAirStrafingSpeed();
+
+	void setAirStrafingSpeed(float value);
+
 }

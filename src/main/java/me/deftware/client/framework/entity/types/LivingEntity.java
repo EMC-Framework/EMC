@@ -6,6 +6,7 @@ import me.deftware.client.framework.entity.effect.AppliedEffect;
 import me.deftware.client.framework.entity.effect.Effect;
 import me.deftware.client.framework.item.ItemStack;
 import me.deftware.mixin.imp.IMixinEntity;
+import me.deftware.mixin.imp.IMixinEntityLivingBase;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.util.Hand;
@@ -40,11 +41,11 @@ public class LivingEntity extends Entity {
 	}
 
 	public void setMovementMultiplier(double multiplier) {
-		// getMinecraftEntity().airStrafingSpeed = multiplier; TODO: FIXME
+		((IMixinEntityLivingBase) entity).setAirStrafingSpeed((float) multiplier);
 	}
 
 	public float getMovementMultiplier() {
-		return 0.1f; //getMinecraftEntity().airStrafingSpeed;
+		return ((IMixinEntityLivingBase) entity).getAirStrafingSpeed();
 	}
 
 	public int getHurtTime() {
