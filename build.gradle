@@ -29,6 +29,13 @@ repositories {
 	maven { url 'https://gitlab.com/EMC-Framework/maven/raw/master/' }
 }
 
+configurations.all {
+    resolutionStrategy.dependencySubstitution {
+        // For some reason 1.18.30 does not work
+        substitute module('org.projectlombok:lombok:1.18.30') using module('org.projectlombok:lombok:1.18.32')
+    }
+}
+
 dependencies {
 	if (forgeBuild) {
 		forge "net.minecraftforge:forge:${project.forge_version}"
