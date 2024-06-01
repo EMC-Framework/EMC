@@ -9,8 +9,6 @@ import me.deftware.client.framework.event.events.EventItemUse;
 import me.deftware.client.framework.global.GameKeys;
 import me.deftware.client.framework.global.GameMap;
 import me.deftware.client.framework.network.packets.CPacketUseEntity;
-import me.deftware.client.framework.registry.BlockRegistry;
-import me.deftware.client.framework.registry.ItemRegistry;
 import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
 import me.deftware.mixin.imp.IMixinPlayerControllerMP;
 import me.deftware.mixin.imp.IMixinPlayerInteractEntityC2SPacket;
@@ -114,14 +112,15 @@ public class MixinPlayerControllerMP implements IMixinPlayerControllerMP {
         return result;
     }
 
-    @Redirect(method = "breakBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;onBreak(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;Lnet/minecraft/entity/player/PlayerEntity;)V"))
-    private void onBlockBreak(Block block, World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        block.onBreak(world, pos, state, player);
+    @Redirect(method = "breakBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;onBreak(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;Lnet/minecraft/entity/player/PlayerEntity;)Lnet/minecraft/block/BlockState;"))
+    private BlockState onBlockBreak(Block block, World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        var result = block.onBreak(world, pos, state, player);
         new EventBlockUpdate(EventBlockUpdate.State.Break,
                 (BlockPosition) pos,
                 (me.deftware.client.framework.world.block.Block) block,
                 EntityHand.MainHand
         ).broadcast();
+        return result;
     }
 
     @Redirect(method = "interactBlockInternal", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;useOnBlock(Lnet/minecraft/item/ItemUsageContext;)Lnet/minecraft/util/ActionResult;"))
