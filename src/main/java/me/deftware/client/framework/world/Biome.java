@@ -4,19 +4,18 @@ import me.deftware.client.framework.world.gen.BiomeDecorator;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 
 public class Biome {
 
-	private RegistryEntry<net.minecraft.world.biome.Biome> biome;
+	private net.minecraft.world.biome.Biome biome;
 
-	public Biome setReference(RegistryEntry<net.minecraft.world.biome.Biome> biome) {
+	public Biome setReference(net.minecraft.world.biome.Biome biome) {
 		this.biome = biome;
 		return this;
 	}
 
 	private Identifier getId() {
-		return MinecraftClient.getInstance().world.getRegistryManager().get(Registry.BIOME_KEY).getId(biome.value());
+		return MinecraftClient.getInstance().world.getRegistryManager().get(Registry.BIOME_KEY).getId(biome);
 	}
 
 	public String getKey() {
@@ -27,7 +26,7 @@ public class Biome {
 	}
 
 	public String getCatergory() {
-		return net.minecraft.world.biome.Biome.getCategory(this.biome).getName();
+		return this.biome.getCategory().getName();
 	}
 
 	public BiomeDecorator getDecorator() {

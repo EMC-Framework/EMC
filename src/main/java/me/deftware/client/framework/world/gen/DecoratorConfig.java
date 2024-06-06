@@ -6,8 +6,8 @@ import me.deftware.client.framework.world.block.Block;
 import me.deftware.client.framework.world.chunk.Randomizer;
 import me.deftware.mixin.mixins.biome.CountInvoker;
 import net.minecraft.world.gen.GenerationStep;
+import net.minecraft.world.gen.decorator.CountPlacementModifier;
 import net.minecraft.world.gen.heightprovider.HeightProvider;
-import net.minecraft.world.gen.placementmodifier.CountPlacementModifier;
 
 import java.util.*;
 

@@ -47,7 +47,7 @@ public class MixinVector3i implements Vector3<Integer> {
     @Unique
     @Override
     public double distanceTo(Integer x, Integer y, Integer z) {
-        return Math.sqrt(((Vec3i) (Object) this).getSquaredDistance(x, y, z));
+        return Math.sqrt(((Vec3i) (Object) this).getSquaredDistance((double) x, (double) y, (double) z, true));
     }
 
 }

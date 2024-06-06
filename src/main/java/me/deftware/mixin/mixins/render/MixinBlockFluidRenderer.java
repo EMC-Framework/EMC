@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class MixinBlockFluidRenderer {
 
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
-    public void render(BlockRenderView world, BlockPos pos, VertexConsumer vertexConsumer, BlockState blockState, FluidState fluidState, CallbackInfoReturnable<Boolean> cir) {
+    public void render(BlockRenderView world, BlockPos pos, VertexConsumer vertexConsumer, FluidState state, CallbackInfoReturnable<Boolean> cir) {
         if (!GameMap.INSTANCE.get(GameKeys.RENDER_FLUIDS, true))
             cir.cancel();
     }
