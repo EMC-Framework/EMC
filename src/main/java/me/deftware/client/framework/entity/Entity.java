@@ -26,6 +26,7 @@ import me.deftware.mixin.imp.IMixinNetworkPlayerInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityBoat;
@@ -173,7 +174,10 @@ public class Entity {
 	public int getResponseTime() {
 		if (net.minecraft.client.Minecraft.getMinecraft().getNetHandler() != null) {
 			NetHandlerPlayClient nethandlerplayclient = net.minecraft.client.Minecraft.getMinecraft().thePlayer.sendQueue;
-			return Objects.requireNonNull(nethandlerplayclient.getPlayerInfo(entity.getUniqueID())).getResponseTime();
+			NetworkPlayerInfo info = nethandlerplayclient.getPlayerInfo(entity.getUniqueID());
+			if (info != null) {
+				return info.getResponseTime();
+			}
 		}
 		return -1;
 	}
