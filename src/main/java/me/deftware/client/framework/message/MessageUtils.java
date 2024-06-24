@@ -6,23 +6,28 @@ import java.util.stream.Collectors;
 public class MessageUtils {
 
     public static final String FORMATTING = "lmnork";
+    public static final String SECTION_SIGN = String.valueOf((char) 167);
 
     public static final String COLORS = Arrays.stream(DefaultColors.values())
             .map(e -> e.getCode().get().toString())
             .collect(Collectors.joining());
 
+    public static Message parse(String text) {
+        return parse(text, SECTION_SIGN);
+    }
+
     /**
      * Parses a string with Minecraft formatting codes into a Message object.
      */
-    public static Message parse(String text) {
-        if (!text.contains("§")) {
+    public static Message parse(String text, String formattingChar) {
+        if (!text.contains(formattingChar)) {
             return Message.of(text);
         }
         int formatting = 0;
         Message.Builder builder = new Message.Builder();
         Appearance.FormattingColor color = null;
 
-        String pattern = "(§[" + FORMATTING + COLORS + "])";
+        String pattern = "(" + formattingChar + "[" + FORMATTING + COLORS + "])";
         String[] sections = text.split("(?<=" + pattern + ")|(?=" + pattern + ")");
         for (String section : sections) {
             if (section.matches(pattern)) {

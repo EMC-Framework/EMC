@@ -45,6 +45,13 @@ apply plugin: "com.github.johnrengelman.shadow"
 
 sourceCompatibility = targetCompatibility = 1.8
 
+gradle.projectsEvaluated {
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+        options.compilerArgs << "-Xmaxerrs" << "3000"
+    }
+}
+
 minecraft {
     version = project.minecraftVersion
     runDir = 'run'
