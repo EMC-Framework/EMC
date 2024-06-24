@@ -50,6 +50,13 @@ compileJava {
     sourceCompatibility = targetCompatibility = 1.8
 }
 
+gradle.projectsEvaluated {
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+        options.compilerArgs << "-Xmaxerrs" << "3000"
+    }
+}
+
 minecraft {
     version = forgeBuild ? project.minecraftVersion + project.forgeVersion : project.minecraftVersion
     runDir = 'run'
