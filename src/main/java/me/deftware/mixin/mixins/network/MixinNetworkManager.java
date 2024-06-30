@@ -44,7 +44,7 @@ public abstract class MixinNetworkManager implements IMixinNetworkManager {
     @Override
     public void sendPacketImmediately(Packet<?> packet) {
         // TODO: What should flush be
-        sendImmediately(packet, null, false);
+        sendImmediately(packet, null, true);
     }
 
 }

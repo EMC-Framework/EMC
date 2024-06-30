@@ -72,12 +72,11 @@ public class MixinEntityLivingBase implements IMixinEntityLivingBase {
         this.height = height;
     }
 
-    @Redirect(method = "getStepHeight", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;getAttributeValue(Lnet/minecraft/registry/entry/RegistryEntry;)D"))
-    private double onGetHeight(LivingEntity instance, RegistryEntry<EntityAttribute> attribute) {
+    @Inject(method = "getStepHeight", at = @At("HEAD"), cancellable = true)
+    private void onStepHeightRedirect(CallbackInfoReturnable<Float> cir) {
         if (height > 0) {
-            return height;
+            cir.setReturnValue(height);
         }
-        return instance.getAttributeValue(attribute);
     }
 
     private float airStrafingSpeed = 0.02f;
