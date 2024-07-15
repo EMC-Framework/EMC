@@ -73,8 +73,21 @@ public abstract class MixinWorldRenderer {
         this.targetBuffer = null;
     }
 
-    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/WorldRenderer;canDrawEntityOutlines()Z", opcode = 180, ordinal = 0))
-    private boolean onClear(WorldRenderer worldRenderer) {
+    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;hasOutline(Lnet/minecraft/entity/Entity;)Z", opcode = 180))
+    private boolean hasOutline(MinecraftClient client, Entity entity) {
+        if (anyShaderEnabled)
+            return false;
+        return client.hasOutline(entity);
+    }
+
+    @Inject(method = "getEntityOutlinesFramebuffer", at = @At("HEAD"), cancellable = true)
+    private void onGetFramebuffer(CallbackInfoReturnable<Framebuffer> cir) {
+        if (targetBuffer != null && anyShaderEnabled)
+            cir.setReturnValue(targetBuffer);
+    }
+
+    @Inject(method = "render", at = @At(value = "INVOKE", shift = At.Shift.BEFORE, target = "Lnet/minecraft/client/render/WorldRenderer;canDrawEntityOutlines()Z", ordinal = 0))
+    private void onClear(RenderTickCounter tickCounter, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, Matrix4f matrix4f2, CallbackInfo ci) {
         int buffer = GlStateManager.getBoundFramebuffer();
         for (EntityShader shader : EntityShader.SHADERS) {
             if (shader.getFramebuffer() == null) {
@@ -84,7 +97,6 @@ public abstract class MixinWorldRenderer {
             shader.getFramebuffer().clear();
         }
         GlStateManager._glBindFramebuffer(GL30.GL_FRAMEBUFFER, buffer);
-        return false;
     }
 
     @Redirect(method = "drawEntityOutlinesFramebuffer", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/WorldRenderer;canDrawEntityOutlines()Z", opcode = 180))
@@ -130,13 +142,6 @@ public abstract class MixinWorldRenderer {
         GlStateManager._glBindFramebuffer(GL30.GL_FRAMEBUFFER, buffer);
     }
 
-    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;hasOutline(Lnet/minecraft/entity/Entity;)Z", opcode = 180))
-    private boolean hasOutline(MinecraftClient client, Entity entity) {
-        if (anyShaderEnabled)
-            return false;
-        return client.hasOutline(entity);
-    }
-
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/WorldRenderer;renderEntity(Lnet/minecraft/entity/Entity;DDDFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;)V", opcode = 180))
     private void doRenderEntity(WorldRenderer worldRenderer, Entity entity, double cameraX, double cameraY, double cameraZ, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers) {
         int buffer = GlStateManager.getBoundFramebuffer();
@@ -173,12 +178,6 @@ public abstract class MixinWorldRenderer {
         } else {
             outlineVertexConsumerProvider.draw();
         }
-    }
-
-    @Inject(method = "getEntityOutlinesFramebuffer", at = @At("HEAD"), cancellable = true)
-    private void onGetFramebuffer(CallbackInfoReturnable<Framebuffer> cir) {
-        if (targetBuffer != null && anyShaderEnabled)
-            cir.setReturnValue(targetBuffer);
     }
 
 }
