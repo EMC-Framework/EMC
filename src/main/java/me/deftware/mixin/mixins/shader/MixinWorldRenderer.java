@@ -6,6 +6,7 @@ import me.deftware.client.framework.entity.block.TileEntity;
 import me.deftware.client.framework.render.shader.EntityShader;
 import me.deftware.client.framework.world.ClientWorld;
 import me.deftware.client.framework.world.block.Block;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
@@ -13,6 +14,8 @@ import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.Lazy;
+import net.minecraft.util.Util;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.*;
 import org.spongepowered.asm.mixin.Final;
@@ -25,8 +28,20 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.function.Supplier;
+
 @Mixin(WorldRenderer.class)
 public abstract class MixinWorldRenderer {
+
+    @Unique
+    private final Lazy<Boolean> isIrisLoaded = new Lazy<>(() -> {
+        return FabricLoader.getInstance().isModLoaded("iris");
+    });
+
+    @Unique
+    private boolean isShaderSupported() {
+        return !isIrisLoaded.get();
+    }
 
     @Shadow
     @Final
@@ -41,8 +56,10 @@ public abstract class MixinWorldRenderer {
 
     @Unique
     private void initShaders() {
-        for (EntityShader shader : EntityShader.SHADERS)
+        if (!isShaderSupported()) return;
+        for (EntityShader shader : EntityShader.SHADERS) {
             shader.init(bufferBuilders.getEntityVertexConsumers());
+        }
     }
 
     @Unique
@@ -58,6 +75,7 @@ public abstract class MixinWorldRenderer {
 
     @Inject(method = "onResized", at = @At("HEAD"))
     private void onResized(int width, int height, CallbackInfo ci) {
+        if (!isShaderSupported()) return;
         for (EntityShader shader : EntityShader.SHADERS)
             if (shader.getShaderEffect() != null)
                 shader.getShaderEffect().setupDimensions(width, height);
@@ -68,6 +86,7 @@ public abstract class MixinWorldRenderer {
 
     @Inject(method = "render", at = @At("HEAD"))
     private void onRender(RenderTickCounter tickCounter, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, Matrix4f matrix4f2, CallbackInfo ci) {
+        if (!isShaderSupported()) return;
         this.anyShaderEnabled = EntityShader.SHADERS.stream().anyMatch(EntityShader::isEnabled);
         this.tickDelta = tickCounter.getTickDelta(true);
         this.targetBuffer = null;
@@ -88,6 +107,7 @@ public abstract class MixinWorldRenderer {
 
     @Inject(method = "render", at = @At(value = "INVOKE", shift = At.Shift.BEFORE, target = "Lnet/minecraft/client/render/WorldRenderer;canDrawEntityOutlines()Z", ordinal = 0))
     private void onClear(RenderTickCounter tickCounter, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, Matrix4f matrix4f2, CallbackInfo ci) {
+        if (!isShaderSupported()) return;
         int buffer = GlStateManager.getBoundFramebuffer();
         for (EntityShader shader : EntityShader.SHADERS) {
             if (shader.getFramebuffer() == null) {
@@ -101,6 +121,7 @@ public abstract class MixinWorldRenderer {
 
     @Redirect(method = "drawEntityOutlinesFramebuffer", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/WorldRenderer;canDrawEntityOutlines()Z", opcode = 180))
     private boolean onDrawEntityFramebuffer(WorldRenderer worldRenderer) {
+        if (!isShaderSupported()) return false;
         boolean anyMatch = EntityShader.SHADERS.stream().anyMatch(EntityShader::isRender);
         if (anyMatch) {
             RenderSystem.enableBlend();
@@ -120,7 +141,7 @@ public abstract class MixinWorldRenderer {
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/block/entity/BlockEntityRenderDispatcher;render(Lnet/minecraft/block/entity/BlockEntity;FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;)V", opcode = 180, ordinal = 0))
     private void renderBlocKEntity(BlockEntityRenderDispatcher blockEntityRenderDispatcher, BlockEntity blockEntity, float tickDelta, MatrixStack matrix, VertexConsumerProvider vertexConsumerProvider) {
         int buffer = GlStateManager.getBoundFramebuffer();
-        if (anyShaderEnabled) {
+        if (anyShaderEnabled && isShaderSupported()) {
             Block block = null;
             for (EntityShader shader : EntityShader.SHADERS) {
                 if (shader.isEnabled()) {
@@ -145,7 +166,7 @@ public abstract class MixinWorldRenderer {
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/WorldRenderer;renderEntity(Lnet/minecraft/entity/Entity;DDDFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;)V", opcode = 180))
     private void doRenderEntity(WorldRenderer worldRenderer, Entity entity, double cameraX, double cameraY, double cameraZ, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers) {
         int buffer = GlStateManager.getBoundFramebuffer();
-        if (anyShaderEnabled) {
+        if (anyShaderEnabled && isShaderSupported()) {
             me.deftware.client.framework.entity.Entity emcEntity = null;
             for (EntityShader shader : EntityShader.SHADERS) {
                 if (shader.isEnabled()) {
@@ -165,7 +186,7 @@ public abstract class MixinWorldRenderer {
 
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/OutlineVertexConsumerProvider;draw()V", opcode = 180))
     private void onVertexDraw(OutlineVertexConsumerProvider outlineVertexConsumerProvider) {
-        if (anyShaderEnabled) {
+        if (anyShaderEnabled && isShaderSupported()) {
             int buffer = GlStateManager.getBoundFramebuffer();
             for (EntityShader shader : EntityShader.SHADERS) {
                 if (shader.isRender()) {
