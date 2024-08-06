@@ -75,7 +75,10 @@ public class MixinItemStack implements me.deftware.client.framework.item.ItemSta
         var enchantments = EnchantmentHelper.getEnchantments((ItemStack) (Object) this);
         for (Object2IntMap.Entry<RegistryEntry<net.minecraft.enchantment.Enchantment>>
                 entry : enchantments.getEnchantmentEntries()) {
-            consumer.accept(entry.getIntValue(), EnchantmentRegistry.INSTANCE.lookup(entry.getKey().getKey().get()));
+            var key = entry.getKey().getKey();
+            if (key.isPresent()) {
+                consumer.accept(entry.getIntValue(), EnchantmentRegistry.INSTANCE.lookup(key.get()));
+            }
         }
     }
 
