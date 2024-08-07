@@ -16,7 +16,7 @@ public class SPacketAnimation extends PacketWrapper {
 	}
 
 	public int getEntityID() {
-		return ((EntityAnimationS2CPacket) packet).getId();
+		return ((EntityAnimationS2CPacket) packet).getEntityId();
 	}
 
 	public int getAnimationID() {
