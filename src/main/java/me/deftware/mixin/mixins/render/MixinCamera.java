@@ -42,11 +42,11 @@ public class MixinCamera implements GameCamera {
     private final EventCameraClip eventCameraClip = new EventCameraClip();
 
     @Inject(at = @At("HEAD"), cancellable = true, method = "clipToSpace")
-    public void clipToSpace(float camDistance, CallbackInfoReturnable<Double> info) {
+    public void clipToSpace(float camDistance, CallbackInfoReturnable<Float> info) {
         eventCameraClip.create(camDistance);
         eventCameraClip.broadcast();
         if (eventCameraClip.isCanceled()) {
-            info.setReturnValue(eventCameraClip.getDistance());
+            info.setReturnValue((float) eventCameraClip.getDistance());
             info.cancel();
         }
     }
