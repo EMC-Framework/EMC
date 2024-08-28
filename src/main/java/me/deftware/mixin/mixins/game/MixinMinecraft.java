@@ -281,11 +281,6 @@ public abstract class MixinMinecraft implements Minecraft {
         new EventWorldLoad((ClientWorld) world).broadcast();
     }
 
-    @Redirect(method = "getFramerateLimit", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/Window;getFramerateLimit()I"))
-    private int onGetMaxFps(Window instance) {
-        return GameSetting.MAX_FPS.get();
-    }
-
     @Override
     public Chat getChatSender() {
         return (Chat) ((MinecraftClient) (Object) this).player;

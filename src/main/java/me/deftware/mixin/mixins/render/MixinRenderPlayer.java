@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(PlayerEntityRenderer.class)
 public class MixinRenderPlayer {
 
-    @Redirect(method = "setModelPose", at = @At(value = "INVOKE", target = "net/minecraft/client/network/AbstractClientPlayerEntity.isSpectator()Z", opcode = 180))
+    @Redirect(method = "updateRenderState*", at = @At(value = "INVOKE", target = "net/minecraft/client/network/AbstractClientPlayerEntity.isSpectator()Z", opcode = 180))
     private boolean setModelVisibilities_isSpectator(AbstractClientPlayerEntity self) {
         EventSetModelVisibilities event = new EventSetModelVisibilities(self.isSpectator());
         event.broadcast();

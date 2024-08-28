@@ -9,6 +9,7 @@ import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.util.Identifier;
 import net.minecraft.registry.Registries;
 
@@ -30,7 +31,7 @@ public class EntityCapsule implements SelectableList.ListItem, Identifiable {
 
     public me.deftware.client.framework.entity.Entity create() {
         return me.deftware.client.framework.entity.Entity.newInstance(entityType.create(
-                Objects.requireNonNull(MinecraftClient.getInstance().world)
+                Objects.requireNonNull(MinecraftClient.getInstance().world), SpawnReason.NATURAL
         ));
     }
 

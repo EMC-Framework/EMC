@@ -7,6 +7,7 @@ import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -35,7 +36,7 @@ public abstract class MixinWorldRenderer implements WorldEntityRenderer {
     @Getter
     private final List<Statue> statues = new ArrayList<>();
 
-    @Inject(method = "tickRainSplashing", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "method_62209", at = @At("HEAD"), cancellable = true)
     private void renderRain(Camera camera, CallbackInfo ci) {
         EventWeather event = new EventWeather(EventWeather.WeatherType.Rain);
         event.broadcast();
@@ -45,7 +46,7 @@ public abstract class MixinWorldRenderer implements WorldEntityRenderer {
     }
 
     @Inject(method = "renderWeather", at = @At("HEAD"), cancellable = true)
-    private void renderWeather(LightmapTextureManager manager, float tickDelta, double posX, double posY, double posZ, CallbackInfo ci) {
+    private void renderWeather(FrameGraphBuilder frameGraphBuilder, LightmapTextureManager lightmapTextureManager, Vec3d vec3d, float f, Fog fog, CallbackInfo ci) {
         EventWeather event = new EventWeather(EventWeather.WeatherType.Rain);
         event.broadcast();
 
@@ -59,6 +60,7 @@ public abstract class MixinWorldRenderer implements WorldEntityRenderer {
         return spectator || CameraEntityMan.isActive();
     }
 
+    /* TODO
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/VertexConsumerProvider$Immediate;drawCurrentLayer()V"))
     private void onRenderStatues(RenderTickCounter tickCounter, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, Matrix4f matrix4f2, CallbackInfo ci) {
         MatrixStack matrices = new MatrixStack();
@@ -72,6 +74,6 @@ public abstract class MixinWorldRenderer implements WorldEntityRenderer {
                     this.entityRenderDispatcher.getLight(statue.getEntity().getMinecraftEntity(), tickDelta)
             );
         }
-    }
+    }*/
 
 }

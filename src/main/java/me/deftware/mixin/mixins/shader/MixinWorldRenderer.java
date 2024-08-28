@@ -33,6 +33,7 @@ import java.util.function.Supplier;
 @Mixin(WorldRenderer.class)
 public abstract class MixinWorldRenderer {
 
+    /*
     @Unique
     private final Lazy<Boolean> isIrisLoaded = new Lazy<>(() -> {
         return FabricLoader.getInstance().isModLoaded("iris");
@@ -199,6 +200,6 @@ public abstract class MixinWorldRenderer {
         } else {
             outlineVertexConsumerProvider.draw();
         }
-    }
+    }*/
 
 }

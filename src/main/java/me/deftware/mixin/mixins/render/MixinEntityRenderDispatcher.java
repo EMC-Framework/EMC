@@ -21,7 +21,7 @@ public class MixinEntityRenderDispatcher {
     @Unique
     private final EventEntityRender eventEntityRender = new EventEntityRender();
 
-    @Inject(method = "render", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "render*", at = @At("HEAD"), cancellable = true)
     private void render(Entity entity, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
         if (!(entity instanceof ClientPlayerEntity) && entity instanceof LivingEntity) {
             eventEntityRender.create(ClientWorld.getClientWorld().getEntityByReference(entity), x, y, z);

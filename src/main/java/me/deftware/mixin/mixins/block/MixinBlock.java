@@ -65,8 +65,8 @@ public abstract class MixinBlock extends AbstractBlock implements me.deftware.cl
     }
 
     @Inject(method = "shouldDrawSide", at = @At("HEAD"), cancellable = true)
-    private static void shouldDrawSide(BlockState state, BlockView world, BlockPos pos, Direction direction, BlockPos blockPos, CallbackInfoReturnable<Boolean> callback) {
-        BlockManagement.shouldDrawSide(state, world, pos, direction, callback);
+    private static void shouldDrawSide(BlockState state, BlockState otherState, Direction side, CallbackInfoReturnable<Boolean> cir) {
+        // TODO BlockManagement.shouldDrawSide(state, world, pos, direction, callback);
     }
 
     @Unique

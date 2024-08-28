@@ -39,7 +39,6 @@
     "input.MixinKeyboardListener",
     "input.MixinMouseListener",
     "input.MixinMovementInputFromOptions",
-    "item.MixinItemTool",
     "item.MixinEnchantmentHelper",
     "item.MixinItemStack",
     "item.MixinItem",
@@ -116,6 +115,7 @@
     "entity.MixinEffect",
     "entity.MixinAppliedEffect",
     "misc.MixinNbt",
-    "misc.MixinNbtList"
+    "misc.MixinNbtList",
+    "misc.MixinInactivityFpsLimiter"
   ]
 }

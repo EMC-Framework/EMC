@@ -15,7 +15,7 @@ public class CPacketPlayer extends PacketWrapper {
     }
 
     public CPacketPlayer() {
-        super(new PlayerMoveC2SPacket.OnGroundOnly(false));
+        super(new PlayerMoveC2SPacket.OnGroundOnly(false, false));
     }
 
     public void setOnGround(boolean state) {

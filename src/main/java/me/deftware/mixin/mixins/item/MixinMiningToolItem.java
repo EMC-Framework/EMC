@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(MiningToolItem.class)
-public class MixinMiningToolItem extends MixinItemTool implements AttackItem {
+public class MixinMiningToolItem extends MixinItem implements AttackItem {
 
     @Unique
     @Override

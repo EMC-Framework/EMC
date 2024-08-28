@@ -28,7 +28,7 @@ public class Shader {
 
     public void init() {
         MinecraftClient client = MinecraftClient.getInstance();
-        if (shaderEffect == null) {
+        /*if (shaderEffect == null) {
             try {
                 shaderEffect = new PostEffectProcessor(MinecraftClient.getInstance().getTextureManager(), resourceManager, MinecraftClient.getInstance().getFramebuffer(), identifier);
             } catch (Exception ex) {
@@ -36,19 +36,19 @@ public class Shader {
             }
             shaderEffect.setupDimensions(client.getWindow().getFramebufferWidth(), client.getWindow().getFramebufferHeight());
             framebuffer = new Framebuffer(shaderEffect.getSecondaryTarget("final"));
-        }
+        }*/
     }
 
     public void close() {
-        shaderEffect.close();
+        //shaderEffect.close();
     }
 
     public void resize(int width, int height) {
-        shaderEffect.setupDimensions(width, height);
+        //shaderEffect.setupDimensions(width, height);
     }
 
     public void setUniform(String name, float... values) {
-        List<PostEffectPass> passes = getUniformable().getPostShaders();
+        /*List<PostEffectPass> passes = getUniformable().getPostShaders();
         for (PostEffectPass pass : passes) {
             GlUniform uniform = pass.getProgram().getUniformByName(name);
             if (uniform != null) {
@@ -62,7 +62,7 @@ public class Shader {
                     uniform.set(values[0]);
                 }
             }
-        }
+        }*/
     }
 
     public boolean isLoaded() {
@@ -70,7 +70,7 @@ public class Shader {
     }
 
     public void render(float partialTicks) {
-        shaderEffect.render(partialTicks);
+        // shaderEffect.render(partialTicks);
     }
 
     public PostEffectProcessor getShaderEffect() {

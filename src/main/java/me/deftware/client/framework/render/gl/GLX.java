@@ -46,10 +46,8 @@ public class GLX {
         var matrixStack = RenderSystem.getModelViewStack();
         matrixStack.pushMatrix();
         matrixStack.mul(getModel());
-        RenderSystem.applyModelViewMatrix();
         action.accept(matrixStack);
         matrixStack.popMatrix();
-        RenderSystem.applyModelViewMatrix();
     }
 
     /*

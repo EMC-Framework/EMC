@@ -56,15 +56,20 @@ public abstract class MixinNetHandlerPlayClient implements NetworkHandler {
         }
     }
 
-    @Inject(method = "onExplosion", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;setVelocity(Lnet/minecraft/util/math/Vec3d;)V"), cancellable = true)
+    @Inject(method = "onExplosion", at = @At(value = "INVOKE", target = "Ljava/util/Optional;ifPresent(Ljava/util/function/Consumer;)V"), cancellable = true)
     private void onExplosion(ExplosionS2CPacket packet, CallbackInfo ci) {
-        EventKnockback event = new EventKnockback(packet.getPlayerVelocityX(), packet.getPlayerVelocityY(), packet.getPlayerVelocityZ()).broadcast();
-        if (!event.isCanceled()) {
-            MinecraftClient.getInstance().player.setVelocity(
-                    MinecraftClient.getInstance().player.getVelocity().add(event.getX(), event.getY(), event.getZ())
-            );
+        var knockback = packet.playerKnockback();
+        if (knockback.isPresent()) {
+            var velocity = knockback.get();
+            EventKnockback event = new EventKnockback(velocity.x, velocity.y, velocity.z).broadcast();
+            if (!event.isCanceled()) {
+                var player = MinecraftClient.getInstance().player;
+                player.setVelocity(
+                        player.getVelocity().add(event.getX(), event.getY(), event.getZ())
+                );
+            }
+            ci.cancel();
         }
-        ci.cancel();
     }
 
     @Inject(method = "onChunkData", at = @At("HEAD"), cancellable = true)
@@ -103,10 +108,11 @@ public abstract class MixinNetHandlerPlayClient implements NetworkHandler {
         ).broadcast();
     }
 
+    /* TODO
     @Redirect(method = "onGameJoin", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/ClientBrandRetriever;getClientModName()Ljava/lang/String;", remap = false))
     private String onGameJoin$GetClientBrand() {
         return "vanilla";
-    }
+    }*/
 
     @Unique
     @Override

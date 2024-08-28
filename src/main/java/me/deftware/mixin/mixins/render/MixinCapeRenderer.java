@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(CapeFeatureRenderer.class)
 public class MixinCapeRenderer {
 
+    /* TODO
     @Redirect(
             method = "render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;ILnet/minecraft/client/network/AbstractClientPlayerEntity;FFFFFF)V",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/AbstractClientPlayerEntity;getSkinTextures()Lnet/minecraft/client/util/SkinTextures;")
@@ -21,6 +22,6 @@ public class MixinCapeRenderer {
             return texture;
         }
         return instance.getSkinTextures();
-    }
+    }*/
 
 }

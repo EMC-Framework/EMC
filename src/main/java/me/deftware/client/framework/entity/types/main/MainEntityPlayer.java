@@ -125,7 +125,8 @@ public class MainEntityPlayer extends EntityPlayer {
 
 	public void toggleSkinLayers() {
 		for (PlayerModelPart part : PlayerModelPart.values()) {
-			MinecraftClient.getInstance().options.togglePlayerModelPart(part, !MinecraftClient.getInstance().options.isPlayerModelPartEnabled(part));
+			// TODO
+			// MinecraftClient.getInstance().options.togglePlayerModelPart(part, !MinecraftClient.getInstance().options.isPlayerModelPartEnabled(part));
 		}
 	}
 

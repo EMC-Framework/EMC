@@ -1,5 +1,7 @@
 package me.deftware.mixin.mixins.render;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.systems.VertexSorter;
 import me.deftware.client.framework.event.events.*;
 import me.deftware.client.framework.global.GameKeys;
 import me.deftware.client.framework.global.GameMap;
@@ -51,25 +53,12 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     private float lastFovMultiplier;
 
     @Shadow
-    abstract void loadPostProcessor(Identifier identifier);
-
-    @Shadow
     @Final
     private Camera camera;
 
     @Shadow
-    protected abstract double getFov(Camera camera, float tickDelta, boolean changingFov);
-
-    @Shadow
-    public abstract Matrix4f getBasicProjectionMatrix(double d);
-
-    @Shadow
-    @Nullable
-    PostEffectProcessor postProcessor;
-
-    @Shadow
     @Final
-    MinecraftClient client;
+    private MinecraftClient client;
 
     @Shadow
     private boolean postProcessorEnabled;
@@ -77,6 +66,10 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     @Shadow
     @Final
     private BufferBuilderStorage buffers;
+
+    @Shadow public abstract Matrix4f getBasicProjectionMatrix(float f);
+
+    @Shadow protected abstract float getFov(Camera camera, float tickDelta, boolean changingFov);
 
     @Unique
     private final EventRender3D eventRender3D = new EventRender3D();
@@ -97,9 +90,10 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
            drawContext = new DrawContext(this.client, this.buffers.getEntityVertexConsumers());
            MatrixStack matrix = drawContext.getMatrices();
            matrix.push();
-           double d = this.getFov(camera, partialTicks, true);
-           matrix.peek().getPositionMatrix().mul(this.getBasicProjectionMatrix(d));
-           MinecraftClient.getInstance().gameRenderer.loadProjectionMatrix(matrix.peek().getPositionMatrix());
+           var fov = getFov(camera, partialTicks, true);
+           Matrix4f matrix4f2 = getBasicProjectionMatrix(fov);
+           matrix.peek().getPositionMatrix().mul(matrix4f2);
+           RenderSystem.setProjectionMatrix(matrix.peek().getPositionMatrix(), VertexSorter.BY_DISTANCE);
            // Camera transformation stack
            matrix.pop();
            matrix.multiply(RotationAxis.POSITIVE_X.rotationDegrees(this.camera.getPitch()));
@@ -107,7 +101,7 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
            loadPushPop(() -> eventRender3DNoBobbing, drawContext, partialTicks);
            drawContext.draw();
            // Reset projection
-           MinecraftClient.getInstance().gameRenderer.loadProjectionMatrix(matrixStack.peek().getPositionMatrix());
+           RenderSystem.setProjectionMatrix(matrixStack.peek().getPositionMatrix(), VertexSorter.BY_DISTANCE);
            GlStateHelper.enableLighting();
        }
     }
@@ -161,12 +155,12 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
 
     @Override
     public void loadCustomShader(MinecraftIdentifier location) {
-        loadPostProcessor(location);
+        // loadPostProcessor(location);
     }
 
     @Override
     public void loadShader(Shader shader) {
-        if (shader == null) {
+        /*if (shader == null) {
             this.postProcessor = null;
             this.postProcessorEnabled = false;
             return;
@@ -178,7 +172,7 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
         else
             shader.getShaderEffect().setupDimensions(client.getWindow().getFramebufferWidth(), client.getWindow().getFramebufferHeight());
         this.postProcessor = shader.getShaderEffect();
-        this.postProcessorEnabled = true;
+        this.postProcessorEnabled = true;*/
     }
 
     @Redirect(method = "findCrosshairTarget", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/projectile/ProjectileUtil;raycast(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Box;Ljava/util/function/Predicate;D)Lnet/minecraft/util/hit/EntityHitResult;"))

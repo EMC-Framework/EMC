@@ -19,7 +19,7 @@ public class Framebuffer {
     }
 
     public void clear() {
-        buffer.clear(MinecraftClient.IS_SYSTEM_MAC);
+        buffer.clear();
     }
 
     public void bind(boolean setViewport) {
@@ -27,11 +27,11 @@ public class Framebuffer {
     }
 
     public void draw(int width, int height, boolean disableBlend) {
-        buffer.draw(width, height, disableBlend);
+        buffer.draw(width, height);
     }
 
     public void resize(int width, int height) {
-        buffer.resize(width, height, MinecraftClient.IS_SYSTEM_MAC);
+        buffer.resize(width, height);
     }
 
     public void close() {

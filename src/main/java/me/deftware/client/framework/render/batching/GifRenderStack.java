@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import me.deftware.client.framework.render.gl.GLX;
+import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.render.GameRenderer;
 import me.deftware.client.framework.render.texture.GlTexture;
 import net.minecraft.client.render.VertexFormat;
@@ -117,7 +118,7 @@ public class GifRenderStack extends RenderStack<GifRenderStack> {
 
     @Override
     protected void setShader() {
-        RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
+        RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
     }
 
     @Override

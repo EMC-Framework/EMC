@@ -8,6 +8,7 @@ import me.deftware.client.framework.registry.font.IFontProvider;
 import me.deftware.client.framework.render.batching.RenderStack;
 import me.deftware.client.framework.render.batching.VertexConstructor;
 import me.deftware.client.framework.render.gl.GLX;
+import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.render.*;
 import net.minecraft.text.Style;
 import org.lwjgl.opengl.GL11;
@@ -58,8 +59,7 @@ public class FontRenderStack extends RenderStack<FontRenderStack> {
 
 	@Override
 	protected void setShader() {
-		// POSITION_TEXTURE_COLOR
-		RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
+		RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
 	}
 
 	@Override

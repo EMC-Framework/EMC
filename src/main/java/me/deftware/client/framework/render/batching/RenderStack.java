@@ -7,6 +7,8 @@ import lombok.Getter;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
 import me.deftware.client.framework.render.gl.GLX;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.ShaderProgramKey;
+import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
@@ -210,8 +212,7 @@ public abstract class RenderStack<T> implements VertexConstructor {
 	}
 
 	protected void setShader() {
-		// POSITION_COLOR
-		RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+		RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
 	}
 
 	@Getter
@@ -244,13 +245,12 @@ public abstract class RenderStack<T> implements VertexConstructor {
 	}
 
 	protected static void setMatrix(float width, float height) {
-		RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
+		RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT);
 		Matrix4f matrix4f = new Matrix4f().setOrtho(0f, width, height, 0f, 1000f, 21000f);
 		RenderSystem.setProjectionMatrix(matrix4f, VertexSorter.BY_Z);
 		var matrixStack = RenderSystem.getModelViewStack();
 		matrixStack.identity();
 		matrixStack.translate(0f, 0f, -11000f);
-		RenderSystem.applyModelViewMatrix();
 	}
 
 }

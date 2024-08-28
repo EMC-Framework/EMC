@@ -25,7 +25,6 @@ import net.minecraft.item.ItemUsageContext;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -102,10 +101,10 @@ public class MixinPlayerControllerMP implements IMixinPlayerControllerMP {
 
     // Lambda function in interactItem
     @Redirect(method = "method_41929", at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/item/ItemStack;use(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/Hand;)Lnet/minecraft/util/TypedActionResult;"))
-    private TypedActionResult<ItemStack> onItemUse(ItemStack instance, World world, PlayerEntity user, Hand hand) {
+            target = "Lnet/minecraft/item/ItemStack;use(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/Hand;)Lnet/minecraft/util/ActionResult;"))
+    private ActionResult onItemUse(ItemStack instance, World world, PlayerEntity user, Hand hand) {
         Item item = instance.getItem();
-        TypedActionResult<ItemStack> result = instance.use(world, user, hand);
+        ActionResult result = instance.use(world, user, hand);
         new EventItemUse(
                 (me.deftware.client.framework.item.Item) item,
                 EntityHand.of(hand)

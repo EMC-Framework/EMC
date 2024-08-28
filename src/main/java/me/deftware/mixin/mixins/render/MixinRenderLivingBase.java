@@ -21,8 +21,9 @@ public abstract class MixinRenderLivingBase<T extends LivingEntity> {
     @Unique
     private final EventRenderPlayerModel eventRenderPlayerModel = new EventRenderPlayerModel();
 
+    /* TODO
     @Inject(method = "isVisible", at = @At("HEAD"), cancellable = true)
-    private void isVisible(T entity, CallbackInfoReturnable<Boolean> ci) {
+    private void isVisible(S state, CallbackInfoReturnable<Boolean> cir) {
         eventRenderPlayerModel.create(entity);
         eventRenderPlayerModel.broadcast();
         if (eventRenderPlayerModel.isShouldRender()) {
@@ -31,7 +32,7 @@ public abstract class MixinRenderLivingBase<T extends LivingEntity> {
     }
 
     @Inject(method = "setupTransforms", at = @At("RETURN"))
-    protected void setupTransforms(T entity, MatrixStack matrices, float animationProgress, float bodyYaw, float tickDelta, float scale, CallbackInfo ci) {
+    protected void setupTransforms(S state, MatrixStack matrices, float animationProgress, float bodyYaw, CallbackInfo ci) {
         if (!(entity instanceof PlayerEntity)) {
             return;
         }
@@ -54,6 +55,6 @@ public abstract class MixinRenderLivingBase<T extends LivingEntity> {
                 matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180.0F));
             }
         }
-    }
+    }*/
 
 }

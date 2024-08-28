@@ -210,7 +210,7 @@ public abstract class GuiScreen extends Screen implements GenericScreen {
 			if (MinecraftClient.getInstance().world == null) {
 				parent.renderPanoramaBackground(context.getContext(), delta);
 			}
-			parent.applyBlur(delta);
+			parent.applyBlur();
 			parent.renderDarkening(context.getContext());
 		};
 
