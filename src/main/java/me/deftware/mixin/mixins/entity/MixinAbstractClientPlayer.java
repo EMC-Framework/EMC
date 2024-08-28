@@ -50,10 +50,12 @@ public abstract class MixinAbstractClientPlayer implements IMixinAbstractClientP
 		for (CosmeticProvider provider : CosmeticProvider.PROVIDERS) {
 			provider.load(id, () -> {
 				PlayerTexture texture = provider.getPlayerTexture(id);
-				if (texture != null) {
+				if (texture != null && playerListEntry != null) {
+					var playerTexture = playerListEntry.getSkinTextures();
 					var cape = texture.getCapeTexture();
 					customSkinTexture = new SkinTextures(
-							null, null, cape, cape, SkinTextures.Model.WIDE, true
+							playerTexture.texture(), playerTexture.textureUrl(),
+								cape, cape, playerTexture.model(), playerTexture.secure()
 					);
 				}
 			});
