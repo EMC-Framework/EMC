@@ -6,8 +6,10 @@ import me.deftware.client.framework.render.WorldEntityRenderer;
 import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.util.Handle;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.profiler.Profiler;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -60,20 +62,20 @@ public abstract class MixinWorldRenderer implements WorldEntityRenderer {
         return spectator || CameraEntityMan.isActive();
     }
 
-    /* TODO
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/VertexConsumerProvider$Immediate;drawCurrentLayer()V"))
-    private void onRenderStatues(RenderTickCounter tickCounter, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, Matrix4f matrix4f2, CallbackInfo ci) {
+    // Lambda method in renderMain
+    @Inject(method = "method_62214", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/VertexConsumerProvider$Immediate;drawCurrentLayer()V", ordinal = 0))
+    private void onRenderStatues(Fog fog, RenderTickCounter renderTickCounter, Camera camera, Profiler profiler, Matrix4f matrix4f, Matrix4f matrix4f2, Handle handle, Handle handle2, Handle handle3, Handle handle4, boolean bl, Frustum frustum, Handle handle5, CallbackInfo ci) {
         MatrixStack matrices = new MatrixStack();
         for (Statue statue : this.statues) {
-            float tickDelta = tickCounter.getTickDelta(true);
+            float tickDelta = renderTickCounter.getTickDelta(true);
             this.entityRenderDispatcher.render(statue.getEntity().getMinecraftEntity(),
                     statue.getPosition().getX() - camera.getPos().getX(),
                     statue.getPosition().getY() - camera.getPos().getY(),
                     statue.getPosition().getZ() - camera.getPos().getZ(),
-                    statue.getEntity().getRotationYaw(), tickDelta, matrices, this.bufferBuilders.getEntityVertexConsumers(),
+                    tickDelta, matrices, this.bufferBuilders.getEntityVertexConsumers(),
                     this.entityRenderDispatcher.getLight(statue.getEntity().getMinecraftEntity(), tickDelta)
             );
         }
-    }*/
+    }
 
 }
