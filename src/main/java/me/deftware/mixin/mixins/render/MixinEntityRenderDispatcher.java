@@ -21,8 +21,8 @@ public class MixinEntityRenderDispatcher {
     @Unique
     private final EventEntityRender eventEntityRender = new EventEntityRender();
 
-    @Inject(method = "render*", at = @At("HEAD"), cancellable = true)
-    private void render(Entity entity, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
+    @Inject(method = "render(Lnet/minecraft/entity/Entity;DDDFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V", at = @At("HEAD"), cancellable = true)
+    private <E extends Entity> void render(E entity, double x, double y, double z, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
         if (!(entity instanceof ClientPlayerEntity) && entity instanceof LivingEntity) {
             eventEntityRender.create(ClientWorld.getClientWorld().getEntityByReference(entity), x, y, z);
             eventEntityRender.broadcast();
