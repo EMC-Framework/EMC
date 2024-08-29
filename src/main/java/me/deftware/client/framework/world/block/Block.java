@@ -46,4 +46,9 @@ public interface Block extends Itemizable, SelectableList.ListItem {
         return (Block) net.minecraft.block.Block.getBlockFromItem((net.minecraft.item.Item) item);
     }
 
+    @Override
+    default String getTranslationKey() {
+        return ((net.minecraft.block.Block) this).asItem().getTranslationKey();
+    }
+
 }

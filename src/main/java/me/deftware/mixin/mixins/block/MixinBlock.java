@@ -3,12 +3,8 @@ package me.deftware.mixin.mixins.block;
 import me.deftware.client.framework.event.events.EventSlowdown;
 import me.deftware.client.framework.item.Item;
 import me.deftware.client.framework.message.Message;
-import me.deftware.mixin.shared.BlockManagement;
 import net.minecraft.block.*;
 import net.minecraft.registry.Registries;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.BlockView;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -62,12 +58,6 @@ public abstract class MixinBlock extends AbstractBlock implements me.deftware.cl
                 }
             }
         }
-    }
-
-    @Unique
-    @Override
-    public String getTranslationKey() {
-        return this.asItem().getTranslationKey();
     }
 
     @Unique

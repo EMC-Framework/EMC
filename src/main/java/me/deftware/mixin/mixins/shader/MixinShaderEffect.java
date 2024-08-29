@@ -31,7 +31,7 @@ public class MixinShaderEffect implements Uniformable {
     public void registerUniformf(String name, float[] values) {
         Runnable shaderConsumer = () -> {
             for (PostEffectPass shader : passes) {
-                GlUniform uniform = shader.method_62922().getUniform(name);
+                GlUniform uniform = shader.getProgram().getUniform(name);
                 if (uniform != null) {
                     if (values.length == 4) {
                         uniform.set(values[0], values[1], values[2], values[3]);

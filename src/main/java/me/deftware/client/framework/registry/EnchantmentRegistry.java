@@ -27,7 +27,7 @@ public enum EnchantmentRegistry implements IRegistry.IdentifiableRegistry<Enchan
 
 	private final RegistryWrapper.Impl<net.minecraft.enchantment.Enchantment> lookup =
 			BuiltinRegistries.createWrapperLookup()
-					.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+					.getOrThrow(RegistryKeys.ENCHANTMENT);
 
 	@Override
 	public Stream<Enchantment> stream() {
