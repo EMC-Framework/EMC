@@ -77,7 +77,9 @@ public abstract class MixinWorldRenderer {
     private void onResized(int width, int height, CallbackInfo ci) {
         if (!isShaderSupported()) return;
         for (EntityShader shader : EntityShader.SHADERS) {
-            shader.resize(width, height);
+            if (shader.isLoaded()) {
+                shader.resize(width, height);
+            }
         }
     }
 
