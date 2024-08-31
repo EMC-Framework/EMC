@@ -21,6 +21,7 @@ import net.minecraft.client.render.BufferBuilderStorage;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.util.Pool;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.ProjectileUtil;
@@ -70,6 +71,10 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     @Shadow public abstract Matrix4f getBasicProjectionMatrix(float f);
 
     @Shadow protected abstract float getFov(Camera camera, float tickDelta, boolean changingFov);
+
+    @Shadow
+    @Final
+    private Pool pool;
 
     @Unique
     private final EventRender3D eventRender3D = new EventRender3D();
@@ -153,26 +158,36 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
 
     }
 
-    @Override
-    public void loadCustomShader(MinecraftIdentifier location) {
-        // loadPostProcessor(location);
-    }
+    @Unique
+    private Shader shader;
 
     @Override
     public void loadShader(Shader shader) {
-        /*if (shader == null) {
-            this.postProcessor = null;
-            this.postProcessorEnabled = false;
-            return;
-        }
-        if (this.postProcessor != null)
-            this.postProcessor.close();
-        if (shader.getShaderEffect() == null)
+        if (shader != null && !shader.isLoaded()) {
             shader.init();
-        else
-            shader.getShaderEffect().setupDimensions(client.getWindow().getFramebufferWidth(), client.getWindow().getFramebufferHeight());
-        this.postProcessor = shader.getShaderEffect();
-        this.postProcessorEnabled = true;*/
+        }
+        this.shader = shader;
+    }
+
+    @Inject(method = "onResized", at = @At("HEAD"))
+    private void onResized(int width, int height, CallbackInfo ci) {
+        if (shader != null) {
+            shader.getFramebuffer().resize(width, height);
+        }
+    }
+
+    @Inject(method = "render", at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/render/WorldRenderer;drawEntityOutlinesFramebuffer()V",
+            shift = At.Shift.AFTER))
+    private void onRender(RenderTickCounter tickCounter, boolean tick, CallbackInfo ci) {
+        if (shader != null) {
+            RenderSystem.disableBlend();
+            RenderSystem.disableDepthTest();
+            RenderSystem.resetTextureMatrix();
+            shader.applyUniforms();
+            shader.getShaderEffect().render(client.getFramebuffer(), pool);
+        }
     }
 
     @Redirect(method = "findCrosshairTarget", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/projectile/ProjectileUtil;raycast(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Box;Ljava/util/function/Predicate;D)Lnet/minecraft/util/hit/EntityHitResult;"))

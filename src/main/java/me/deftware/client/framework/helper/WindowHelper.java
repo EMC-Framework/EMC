@@ -28,17 +28,12 @@ public class WindowHelper {
 		return Minecraft.getMinecraftGame().getFPS();
 	}
 
-	@Deprecated
-	public static void loadShader(MinecraftIdentifier location) {
-		((IMixinEntityRenderer) MinecraftClient.getInstance().gameRenderer).loadCustomShader(location);
-	}
-
 	public static void loadShader(Shader shader) {
 		((IMixinEntityRenderer) MinecraftClient.getInstance().gameRenderer).loadShader(shader);
 	}
 
 	public static void disableShader() {
-		MinecraftClient.getInstance().execute(() -> MinecraftClient.getInstance().gameRenderer.method_62905());
+		((IMixinEntityRenderer) MinecraftClient.getInstance().gameRenderer).loadShader(null);
 	}
 
 }

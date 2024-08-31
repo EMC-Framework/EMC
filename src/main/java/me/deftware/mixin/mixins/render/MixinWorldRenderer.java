@@ -38,7 +38,7 @@ public abstract class MixinWorldRenderer implements WorldEntityRenderer {
     @Getter
     private final List<Statue> statues = new ArrayList<>();
 
-    @Inject(method = "method_62209", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "addWeatherParticlesAndSound", at = @At("HEAD"), cancellable = true)
     private void renderRain(Camera camera, CallbackInfo ci) {
         EventWeather event = new EventWeather(EventWeather.WeatherType.Rain);
         event.broadcast();

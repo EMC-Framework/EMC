@@ -1,16 +1,20 @@
 package me.deftware.client.framework.resource;
 
-import com.google.common.collect.Sets;
+import com.mojang.blaze3d.systems.RenderSystem;
+import lombok.Getter;
 import me.deftware.client.framework.main.EMCMod;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.resource.Resource;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourcePack;
+import net.minecraft.client.gl.ShaderLoader;
+import net.minecraft.client.texture.TextureManager;
+import net.minecraft.resource.*;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
+import net.minecraft.util.profiler.DummyProfiler;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -22,16 +26,39 @@ import java.util.zip.ZipFile;
  */
 public class ModResourceManager implements ResourceManager {
 
-    private final Set<String> namespaces = Sets.newLinkedHashSet();
     private final ZipFile zipFile;
     private final String type;
 
     private BiFunction<String, InputStream, InputStream> transformer = (path, stream) -> stream;
 
+    @Getter
+    private final TextureManager textureManager;
+
+    @Getter
+    private final ShaderLoader shaderLoader;
+
+    private final String namespace;
+
     public ModResourceManager(EMCMod mod, String type) throws IOException {
         this.zipFile = getZipFile(mod);
-        this.namespaces.add(mod.getMeta().getName().toLowerCase());
+        namespace = mod.getMeta().getName().toLowerCase();
         this.type = type;
+        textureManager = new TextureManager(this);
+        shaderLoader = new ShaderLoader(textureManager, ex -> {
+            ex.printStackTrace();
+        });
+        RenderSystem.recordRenderCall(this::reload);
+    }
+
+    private void reload() {
+        shaderLoader.reload(
+                CompletableFuture::completedFuture,
+                this,
+                DummyProfiler.INSTANCE,
+                DummyProfiler.INSTANCE,
+                Util.getMainWorkerExecutor(),
+                MinecraftClient.getInstance()
+        );
     }
 
     public void setTransformer(BiFunction<String, InputStream, InputStream> transformer) {
@@ -46,9 +73,15 @@ public class ModResourceManager implements ResourceManager {
         return zipFile.getEntry(type + "/" + name);
     }
 
+    private InputStream getResourceStream(ZipEntry entry) throws Exception {
+        return zipFile.getInputStream(entry);
+    }
+
+    /* Superclass methods */
+
     @Override
     public Set<String> getAllNamespaces() {
-        return namespaces;
+        return Set.of(namespace);
     }
 
     @Override
@@ -69,13 +102,34 @@ public class ModResourceManager implements ResourceManager {
         }
     }
 
-    private InputStream getResourceStream(ZipEntry entry) throws Exception {
-        return zipFile.getInputStream(entry);
-    }
-
     @Override
     public Map<Identifier, Resource> findResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
-        return null;
+        var map = new HashMap<Identifier, Resource>();
+        var root = type + "/" + startingPath;
+        var entries = zipFile.entries();
+        while (entries.hasMoreElements()) {
+            var entry = entries.nextElement();
+            var name = entry.getName();
+            if (!name.startsWith(root)) {
+                continue;
+            }
+            var identifier = Identifier.of(namespace, name.substring(type.length() + 1));
+            if (!allowedPathPredicate.test(identifier)) {
+                continue;
+            }
+            try {
+                var stream = getResourceStream(entry);
+                var resource = new ModResource(stream, identifier);
+                map.put(identifier, resource);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+        // Also make Minecraft resources available
+        var manager = MinecraftClient.getInstance().getResourceManager();
+        var result = manager.findResources(startingPath, allowedPathPredicate);
+        map.putAll(result);
+        return map;
     }
 
     @Override

@@ -107,7 +107,7 @@
     "render.MixinVisGraph",
     "render.MixinWindow",
     "render.MixinWorldRenderer",
-    "shader.MixinShaderEffect",
+    "shader.PostEffectProcessorAccessor",
     "shader.MixinWorldRenderer",
     "world.MixinChunk",
     "world.MixinChunkManager",

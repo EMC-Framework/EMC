@@ -1,5 +1,6 @@
 package me.deftware.client.framework.render.shader;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.deftware.client.framework.resource.ModResourceManager;
 import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
 import net.minecraft.client.render.OutlineVertexConsumerProvider;
@@ -48,14 +49,6 @@ public class EntityShader extends Shader {
 
     public OutlineVertexConsumerProvider getOutlineVertexConsumerProvider() {
         return outlineVertexConsumerProvider;
-    }
-
-    public boolean isRender() {
-        return render;
-    }
-
-    public void setRender(boolean render) {
-        this.render = render;
     }
 
 }
