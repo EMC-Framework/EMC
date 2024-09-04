@@ -46,7 +46,9 @@ public class CameraEntity extends OtherClientPlayerEntity {
 
 		input.tick(false, 0); // TODO: What is f?
 
-		float upDown = (this.input.sneaking ? -CameraEntityMan.speed : 0) + (this.input.jumping ? CameraEntityMan.speed : 0);
+		var sneaking = this.input.field_54155.shift();
+		var jumping = this.input.field_54155.jump();
+		float upDown = (sneaking ? -CameraEntityMan.speed : 0) + (jumping ? CameraEntityMan.speed : 0);
 
 		Vec3d forward = new Vec3d(0, 0, CameraEntityMan.speed * 2.5).rotateY(-(float) Math.toRadians(this.headYaw));
 		Vec3d strafe = forward.rotateY((float) Math.toRadians(90));

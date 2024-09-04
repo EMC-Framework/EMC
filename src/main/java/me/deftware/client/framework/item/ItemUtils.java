@@ -1,6 +1,7 @@
 package me.deftware.client.framework.item;
 
 import me.deftware.client.framework.entity.effect.Effect;
+import me.deftware.client.framework.item.items.ArmorItem;
 import me.deftware.client.framework.item.items.AttackItem;
 import net.minecraft.item.*;
 import org.apache.commons.lang3.mutable.MutableBoolean;
@@ -28,7 +29,7 @@ public class ItemUtils {
                 amount.add(enchantment.getProtection(level));
             });
             if (stack.getItem() instanceof ArmorItem armor) {
-                amount.add(armor.getProtection());
+                amount.add(armor.getDamageReduceAmount());
             }
         });
         return amount.intValue();
