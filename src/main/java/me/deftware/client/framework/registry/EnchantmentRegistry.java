@@ -3,14 +3,12 @@ package me.deftware.client.framework.registry;
 import me.deftware.client.framework.item.Enchantment;
 
 import me.deftware.client.framework.message.Message;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.EnchantmentEffectComponentTypes;
 import net.minecraft.enchantment.effect.EnchantmentEffectEntry;
 import net.minecraft.enchantment.effect.EnchantmentValueEffect;
-import net.minecraft.registry.BuiltinRegistries;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.*;
 import net.minecraft.registry.entry.RegistryEntry;
 
 import java.util.HashMap;
@@ -25,28 +23,43 @@ public enum EnchantmentRegistry implements IRegistry.IdentifiableRegistry<Enchan
 
 	INSTANCE;
 
-	private final RegistryWrapper.Impl<net.minecraft.enchantment.Enchantment> lookup =
-			BuiltinRegistries.createWrapperLookup()
-					.getOrThrow(RegistryKeys.ENCHANTMENT);
+	private RegistryWrapper.Impl<net.minecraft.enchantment.Enchantment> registry;
+	private final Map<RegistryKey<net.minecraft.enchantment.Enchantment>, Enchantment> enchantmentMap = new HashMap<>();
+
+	private void sync() {
+		var world = MinecraftClient.getInstance().world;
+		if (world == null) {
+			throw new IllegalStateException("Enchantments cannot be used when not in a world");
+		}
+		var registry = world.getRegistryManager();
+		var enchantments = registry.getOrThrow(RegistryKeys.ENCHANTMENT);
+		if (this.registry != enchantments) {
+			this.registry = enchantments;
+			enchantmentMap.clear();
+		}
+	}
 
 	@Override
 	public Stream<Enchantment> stream() {
-		return lookup.streamKeys().map(this::lookup);
+		sync();
+		return registry.streamKeys().map(key -> lookup(key, false));
 	}
 
-	private final Map<RegistryKey<net.minecraft.enchantment.Enchantment>, Enchantment> enchantmentMap = new HashMap<>();
-
-	public synchronized Enchantment lookup(RegistryKey<net.minecraft.enchantment.Enchantment> entry) {
-		return enchantmentMap.computeIfAbsent(entry, EnchantmentImpl::new);
+	public synchronized Enchantment lookup(RegistryKey<net.minecraft.enchantment.Enchantment> entry, boolean sync) {
+		if (sync) {
+			sync();
+		}
+		return enchantmentMap.computeIfAbsent(entry, key -> new EnchantmentImpl(key, registry));
 	}
 
-	public class EnchantmentImpl implements Enchantment {
+	private static class EnchantmentImpl implements Enchantment {
 
 		private final RegistryEntry<net.minecraft.enchantment.Enchantment> entry;
 		private final RegistryKey<net.minecraft.enchantment.Enchantment> key;
 		private final net.minecraft.enchantment.Enchantment enchantment;
 
-		public EnchantmentImpl(RegistryKey<net.minecraft.enchantment.Enchantment> key) {
+		public EnchantmentImpl(RegistryKey<net.minecraft.enchantment.Enchantment> key,
+							   RegistryEntryLookup<net.minecraft.enchantment.Enchantment> lookup) {
 			this.key = key;
 			this.entry = lookup.getOrThrow(key);
 			this.enchantment = entry.value();
