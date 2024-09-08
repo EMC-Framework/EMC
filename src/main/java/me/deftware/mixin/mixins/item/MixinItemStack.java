@@ -78,7 +78,7 @@ public class MixinItemStack implements me.deftware.client.framework.item.ItemSta
             try {
                 var key = entry.getKey().getKey();
                 if (key.isPresent()) {
-                    consumer.accept(entry.getIntValue(), EnchantmentRegistry.INSTANCE.lookup(key.get()));
+                    consumer.accept(entry.getIntValue(), EnchantmentRegistry.INSTANCE.lookup(key.get(), true));
                 }
             } catch (IllegalStateException ex) {
                 System.err.println(ex.getMessage());
