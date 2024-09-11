@@ -20,7 +20,7 @@ public class MixinItem implements me.deftware.client.framework.item.Item {
     @Unique
     @Override
     public Message getName() {
-        return (Message) ((Item) (Object) this).method_63680();
+        return (Message) ((Item) (Object) this).getName();
     }
 
     @Unique

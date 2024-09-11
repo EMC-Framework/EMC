@@ -23,8 +23,9 @@ public interface MixinInventory extends me.deftware.client.framework.inventory.I
     @Unique
     @Override
     default ItemStack getStackInSlot(int slotId) {
-        if (slotId >= getSize())
+        if (slotId >= getSize()) {
             return ItemStack.EMPTY;
+        }
         return (ItemStack) ((Inventory) this).getStack(slotId);
     }
 

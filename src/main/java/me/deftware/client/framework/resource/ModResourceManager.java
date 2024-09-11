@@ -9,7 +9,6 @@ import net.minecraft.client.texture.TextureManager;
 import net.minecraft.resource.*;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.util.profiler.DummyProfiler;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,8 +53,6 @@ public class ModResourceManager implements ResourceManager {
         shaderLoader.reload(
                 CompletableFuture::completedFuture,
                 this,
-                DummyProfiler.INSTANCE,
-                DummyProfiler.INSTANCE,
                 Util.getMainWorkerExecutor(),
                 MinecraftClient.getInstance()
         );
