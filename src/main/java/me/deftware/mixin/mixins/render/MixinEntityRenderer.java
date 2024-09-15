@@ -200,15 +200,6 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
         return GameMap.INSTANCE.get(GameKeys.BYPASS_REACH_LIMIT, false) ? 2D : self.squaredDistanceTo(vec3d);
     }
 
-    @Redirect(method = "updateCrosshairTarget", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;getEntityInteractionRange()D"))
-    private double onTest(ClientPlayerEntity instance) {
-        // TODO: Is this the right place?
-        if (GameMap.INSTANCE.get(GameKeys.BYPASS_REACH_LIMIT, false)) {
-            return 6d;
-        }
-        return instance.getEntityInteractionRange();
-    }
-
     @Override
     public float getFovMultiplier() {
         return fovMultiplier;

@@ -2,6 +2,8 @@ package me.deftware.mixin.mixins.entity;
 
 import me.deftware.client.framework.event.events.EventBlockBreakingSpeed;
 import me.deftware.client.framework.event.events.EventSneakingCheck;
+import me.deftware.client.framework.global.GameKeys;
+import me.deftware.client.framework.global.GameMap;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerAbilities;
@@ -33,6 +35,15 @@ public class MixinPlayerEntity {
     public void onGetBlockBreakingSpeed(BlockState block, CallbackInfoReturnable<Float> cir) {
         EventBlockBreakingSpeed event = new EventBlockBreakingSpeed().broadcast();
         cir.setReturnValue(cir.getReturnValue() * event.getMultiplier());
+    }
+
+    @Inject(method = "getEntityInteractionRange", at = @At("HEAD"), cancellable = true)
+    private void onGetEntityReachDistance(CallbackInfoReturnable<Double> cir) {
+        var map = GameMap.INSTANCE;
+        if (map.contains(GameKeys.BLOCK_REACH_DISTANCE)) {
+            float value = map.get(GameKeys.BLOCK_REACH_DISTANCE, null);
+            cir.setReturnValue((double) value);
+        }
     }
 
 }
