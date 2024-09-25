@@ -87,7 +87,11 @@ public class CommandRegister {
      * @return a map of all root commands with their correct usage
      */
     public static Map<CommandNode<CommandSource>, String> getSmartUsage() {
-        return dispatcher.getSmartUsage(dispatcher.getRoot(), MinecraftClient.getInstance().player.getCommandSource());
+        var networkHandler = MinecraftClient.getInstance().getNetworkHandler();
+        if (networkHandler != null) {
+            return dispatcher.getSmartUsage(dispatcher.getRoot(), networkHandler.getCommandSource());
+        }
+        return Map.of();
     }
 
     /**

@@ -33,7 +33,10 @@ public interface Chat {
             if (text.startsWith(trigger)) {
                 text = text.substring(trigger.length());
                 try {
-                    CommandRegister.getDispatcher().execute(text, MinecraftClient.getInstance().player.getCommandSource());
+                    var networkHandler = MinecraftClient.getInstance().getNetworkHandler();
+                    if (networkHandler != null) {
+                        CommandRegister.getDispatcher().execute(text, networkHandler.getCommandSource());
+                    }
                 } catch (Exception ex) {
                     Message.of(ex.getMessage()).style(Appearance.of(DefaultColors.RED)).print();
                 }

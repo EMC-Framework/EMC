@@ -146,8 +146,11 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
                 String trigger = CommandRegister.getCommandTrigger();
                 if (text.startsWith(trigger)) {
                     try {
-                        var source = MinecraftClient.getInstance().player.getCommandSource();
-                        CommandRegister.getDispatcher().execute(text.substring(trigger.length()), source);
+                        var networkHandler = MinecraftClient.getInstance().getNetworkHandler();
+                        if (networkHandler != null) {
+                            var source = networkHandler.getCommandSource();
+                            CommandRegister.getDispatcher().execute(text.substring(trigger.length()), source);
+                        }
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
