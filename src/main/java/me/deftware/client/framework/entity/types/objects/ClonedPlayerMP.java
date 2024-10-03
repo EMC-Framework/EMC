@@ -3,7 +3,6 @@ package me.deftware.client.framework.entity.types.objects;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.OtherClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.world.GameRules;
 
 import java.util.Objects;
 
@@ -36,7 +35,7 @@ public class ClonedPlayerMP extends OtherClientPlayerEntity {
 			totalExperience = oldPlayer.totalExperience;
 			setScore(oldPlayer.getScore());
 		}
-		enchantmentTableSeed = oldPlayer.getEnchantmentTableSeed();
+		enchantingTableSeed = oldPlayer.getEnchantingTableSeed();
 		if (getDataTracker() != null) {
 			getDataTracker().set(PlayerEntity.PLAYER_MODEL_PARTS, oldPlayer.getDataTracker().get(PlayerEntity.PLAYER_MODEL_PARTS));
 		}

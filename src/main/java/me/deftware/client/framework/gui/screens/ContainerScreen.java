@@ -5,7 +5,7 @@ import me.deftware.client.framework.inventory.Inventory;
 import me.deftware.client.framework.item.ItemStack;
 import me.deftware.mixin.imp.IMixinShulkerBoxScreenHandler;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
+import net.minecraft.client.gui.screen.ingame.StatusEffectsDisplay;
 import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
@@ -49,7 +49,7 @@ public interface ContainerScreen extends MinecraftScreen {
 	 */
 
 	default boolean isPlayerInventory() {
-		return this instanceof AbstractInventoryScreen;
+		return this instanceof StatusEffectsDisplay;
 	}
 
 	default int getContainerID() {
