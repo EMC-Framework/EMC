@@ -13,9 +13,7 @@ import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -25,14 +23,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(InGameHud.class)
 public class MixinGuiIngame {
 
-    @Shadow
-    @Final
-    private static Identifier PUMPKIN_BLUR;
+    @Unique
+    private static final Identifier PUMPKIN_BLUR = Identifier.ofVanilla("misc/pumpkinblur")
+            .withPath(string -> "textures/" + string + ".png");
 
-    @Inject(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;blendFuncSeparate(Lcom/mojang/blaze3d/platform/GlStateManager$SrcFactor;Lcom/mojang/blaze3d/platform/GlStateManager$DstFactor;Lcom/mojang/blaze3d/platform/GlStateManager$SrcFactor;Lcom/mojang/blaze3d/platform/GlStateManager$DstFactor;)V"), cancellable = true)
+    @Inject(method = "renderCrosshair", at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Ljava/util/function/Function;Lnet/minecraft/util/Identifier;IIII)V",
+            ordinal = 0
+    ), cancellable = true)
     private void crosshairEvent(CallbackInfo ci) {
         if (!GameMap.INSTANCE.get(GameKeys.CROSSHAIR, true)) {
-            // RenderSystem.enableAlphaTest();
             ci.cancel();
         }
     }
@@ -57,7 +58,7 @@ public class MixinGuiIngame {
 
     @Inject(method = "renderOverlay", at = @At("HEAD"), cancellable = true)
     private void renderOverlay(DrawContext context, Identifier texture, float opacity, CallbackInfo ci) {
-        if (texture == PUMPKIN_BLUR) { // TODO: Verify this
+        if (texture.equals(PUMPKIN_BLUR)) { // TODO: Verify this
             eventAnimation.create(EventAnimation.AnimationType.Pumpkin);
             eventAnimation.broadcast();
             if (eventAnimation.isCanceled()) {

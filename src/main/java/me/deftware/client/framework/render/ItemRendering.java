@@ -58,7 +58,7 @@ public class ItemRendering {
 
 	public void drawStackLabel(GLX context, ItemStack stack, int x, int y, int z, String count) {
 		render(context, z, ctx ->
-				ctx.drawItemInSlot(MinecraftClient.getInstance().textRenderer,
+				ctx.drawStackOverlay(MinecraftClient.getInstance().textRenderer,
 						(net.minecraft.item.ItemStack) stack, x, y, count));
 	}
 

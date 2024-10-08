@@ -24,7 +24,7 @@ public class MixinBackgroundRenderer {
         eventFogRender.create(camera, fogType, viewDistance, thickenFog);
         eventFogRender.broadcast();
         if (eventFogRender.isCanceled()) {
-            cir.cancel();
+            cir.setReturnValue(Fog.DUMMY);
         }
     }
 
