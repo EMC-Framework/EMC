@@ -1,8 +1,9 @@
 package me.deftware.mixin.mixins.entity;
 
 import me.deftware.client.framework.registry.EntityRegistry;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -10,12 +11,13 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(EntityType.class)
 public class MixinEntityType {
 
-    @Redirect(method = "register", at = @At(value = "INVOKE", target = "Lnet/minecraft/registry/Registry;register(Lnet/minecraft/registry/Registry;Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/Object;", opcode = 182))
-    private static <T> T registerRedirect(Registry<? super T> registry, String id, T entry) {
-        T item = Registry.register(registry, id, entry);
-        EntityType<?> type = (EntityType<?>) item;
+    @Redirect(method = "register(Lnet/minecraft/registry/RegistryKey;Lnet/minecraft/entity/EntityType$Builder;)Lnet/minecraft/entity/EntityType;",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/EntityType$Builder;build(Lnet/minecraft/registry/RegistryKey;)Lnet/minecraft/entity/EntityType;", opcode = 182))
+    private static <T extends Entity> EntityType<T> registerRedirect(EntityType.Builder<T> instance, RegistryKey<EntityType<?>> registryKey) {
+        var type = instance.build(registryKey);
+        var id = registryKey.getValue().getPath();
         EntityRegistry.INSTANCE.register(id, type);
-        return item;
+        return type;
     }
 
 }
