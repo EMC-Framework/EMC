@@ -6,6 +6,7 @@ import com.mojang.blaze3d.systems.VertexSorter;
 import lombok.Getter;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
 import me.deftware.client.framework.render.gl.GLX;
+import net.minecraft.class_10366;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.ShaderProgramKey;
 import net.minecraft.client.gl.ShaderProgramKeys;
@@ -247,7 +248,7 @@ public abstract class RenderStack<T> implements VertexConstructor {
 	protected static void setMatrix(float width, float height) {
 		RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT);
 		Matrix4f matrix4f = new Matrix4f().setOrtho(0f, width, height, 0f, 1000f, 21000f);
-		RenderSystem.setProjectionMatrix(matrix4f, VertexSorter.BY_Z);
+		RenderSystem.setProjectionMatrix(matrix4f, class_10366.ORTHOGRAPHIC);
 		var matrixStack = RenderSystem.getModelViewStack();
 		matrixStack.identity();
 		matrixStack.translate(0f, 0f, -11000f);
