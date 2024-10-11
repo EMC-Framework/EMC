@@ -1,5 +1,6 @@
 package me.deftware.mixin.mixins.render;
 
+import com.mojang.blaze3d.systems.ProjectionType;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.systems.VertexSorter;
 import me.deftware.client.framework.event.events.*;
@@ -12,7 +13,6 @@ import me.deftware.client.framework.render.batching.RenderStack;
 import me.deftware.client.framework.render.gl.GLX;
 import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
 import me.deftware.mixin.imp.IMixinEntityRenderer;
-import net.minecraft.class_10366;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.PostEffectProcessor;
 import net.minecraft.client.gui.DrawContext;
@@ -99,7 +99,7 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
            var fov = getFov(camera, partialTicks, true);
            Matrix4f matrix4f2 = getBasicProjectionMatrix(fov);
            matrix.peek().getPositionMatrix().mul(matrix4f2);
-           RenderSystem.setProjectionMatrix(matrix.peek().getPositionMatrix(), class_10366.ORTHOGRAPHIC);
+           RenderSystem.setProjectionMatrix(matrix.peek().getPositionMatrix(), ProjectionType.ORTHOGRAPHIC);
            // Camera transformation stack
            matrix.pop();
            matrix.multiply(RotationAxis.POSITIVE_X.rotationDegrees(this.camera.getPitch()));
@@ -107,7 +107,7 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
            loadPushPop(() -> eventRender3DNoBobbing, drawContext, partialTicks);
            drawContext.draw();
            // Reset projection
-           RenderSystem.setProjectionMatrix(matrixStack.peek().getPositionMatrix(), class_10366.ORTHOGRAPHIC);
+           RenderSystem.setProjectionMatrix(matrixStack.peek().getPositionMatrix(), ProjectionType.ORTHOGRAPHIC);
            GlStateHelper.enableLighting();
        }
     }
