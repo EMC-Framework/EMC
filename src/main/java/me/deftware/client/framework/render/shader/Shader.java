@@ -57,6 +57,8 @@ public class Shader {
 
     public void close() {
         framebuffer.close();
+        framebuffer = null;
+        shaderEffect = null;
     }
 
     public void resize(int width, int height) {

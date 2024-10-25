@@ -26,9 +26,12 @@ public class EntityShader extends Shader {
     }
 
     public void init(VertexConsumerProvider.Immediate entityVertexConsumers) {
-        super.init();
-        if (entityVertexConsumers != null)
+        if (!isLoaded()) {
+            super.init();
+        }
+        if (entityVertexConsumers != null) {
             outlineVertexConsumerProvider = new OutlineVertexConsumerProvider(entityVertexConsumers);
+        }
     }
 
     public boolean isEnabled() {
