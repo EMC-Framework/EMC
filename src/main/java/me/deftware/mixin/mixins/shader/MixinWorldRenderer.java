@@ -2,6 +2,7 @@ package me.deftware.mixin.mixins.shader;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.moulberry.mixinconstraints.annotations.IfModAbsent;
 import me.deftware.client.framework.entity.block.TileEntity;
 import me.deftware.client.framework.render.shader.EntityShader;
 import me.deftware.client.framework.render.shader.Shader;
@@ -145,6 +146,7 @@ public abstract class MixinWorldRenderer {
         return false;
     }
 
+    @IfModAbsent("sodium")
     @Redirect(method = "renderBlockEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/block/entity/BlockEntityRenderDispatcher;render(Lnet/minecraft/block/entity/BlockEntity;FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;)V", opcode = 180, ordinal = 0))
     private void renderBlocKEntity(BlockEntityRenderDispatcher blockEntityRenderDispatcher, BlockEntity blockEntity, float tickDelta, MatrixStack matrix, VertexConsumerProvider vertexConsumerProvider) {
         int buffer = GlStateManager.getBoundFramebuffer();

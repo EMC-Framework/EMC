@@ -2,6 +2,7 @@
   "required": true,
   "package": "me.deftware.mixin.mixins",
   "compatibilityLevel": "JAVA_16",
+  "plugin": "com.moulberry.mixinconstraints.ConstraintsMixinPlugin",
   "mixins": [
     "biome.CountInvoker",
     "biome.HeightPlacementAccessor",
