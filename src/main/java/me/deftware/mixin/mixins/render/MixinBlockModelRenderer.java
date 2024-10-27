@@ -43,7 +43,7 @@ public abstract class MixinBlockModelRenderer {
         }
     }
 
-    @Redirect(method = "/render(Smooth|Flat)/",
+    @Redirect(method = { "renderSmooth", "renderFlat" },
             at = @At(value = "INVOKE",
                     target = "Lnet/minecraft/block/Block;shouldDrawSide(Lnet/minecraft/block/BlockState;Lnet/minecraft/block/BlockState;Lnet/minecraft/util/math/Direction;)Z"))
     private boolean onShouldDrawSide(BlockState state, BlockState otherState, Direction side) {
