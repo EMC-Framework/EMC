@@ -44,7 +44,7 @@ public class CameraEntity extends OtherClientPlayerEntity {
 	public void tickMovement() {
 		this.setVelocity(0, 0, 0);
 
-		input.tick(false, 0); // TODO: What is f?
+		input.tick();
 
 		var sneaking = this.input.playerInput.sneak();
 		var jumping = this.input.playerInput.jump();

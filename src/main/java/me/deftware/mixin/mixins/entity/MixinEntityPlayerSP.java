@@ -8,6 +8,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.player.HungerManager;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -139,6 +140,17 @@ public abstract class MixinEntityPlayerSP extends MixinEntity implements IMixinE
     @Override
     public void command(String text, Class<?> sender) {
         Chat.send(networkHandler::sendChatCommand, text, sender, EventChatSend.Type.Command);
+    }
+
+    @Redirect(method = "tickMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;getAttributeValue(Lnet/minecraft/registry/entry/RegistryEntry;)D"))
+    private double onTickMovement$SlowdownMP(ClientPlayerEntity instance, RegistryEntry<EntityAttribute> registryEntry)  {
+        double value = instance.getAttributeValue(registryEntry);
+        eventSlowdown.create(EventSlowdown.SlowdownType.Sneak, (float) value);
+        eventSlowdown.broadcast();
+        if (eventSlowdown.isCanceled()) {
+            return 1d;
+        }
+        return value;
     }
 
 }

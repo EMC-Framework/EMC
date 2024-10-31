@@ -51,7 +51,6 @@
     "input.MixinKeyBinding",
     "input.MixinKeyboardListener",
     "input.MixinMouseListener",
-    "input.MixinMovementInputFromOptions",
     "item.MixinArmorItem",
     "item.MixinEnchantmentHelper",
     "item.MixinEntityInventory",

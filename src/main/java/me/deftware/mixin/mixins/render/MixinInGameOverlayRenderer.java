@@ -3,6 +3,7 @@ package me.deftware.mixin.mixins.render;
 import me.deftware.client.framework.event.events.EventAnimation;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.InGameOverlayRenderer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,7 +19,7 @@ public class MixinInGameOverlayRenderer {
     private final static EventAnimation eventAnimation = new EventAnimation();
 
     @Inject(method = "renderInWallOverlay", at = @At("HEAD"), cancellable = true)
-    private static void renderInWallOverlay(Sprite sprite, MatrixStack matrixStack, CallbackInfo ci) {
+    private static void renderInWallOverlay(Sprite sprite, MatrixStack matrices, VertexConsumerProvider vertexConsumerProvider, CallbackInfo ci) {
         eventAnimation.create(EventAnimation.AnimationType.Wall);
         eventAnimation.broadcast();
         if (eventAnimation.isCanceled()) {
@@ -27,7 +28,7 @@ public class MixinInGameOverlayRenderer {
     }
 
     @Inject(method = "renderFireOverlay", at = @At("HEAD"), cancellable = true)
-    private static void renderFireOverlay(MinecraftClient minecraftClient, MatrixStack matrixStack, CallbackInfo ci) {
+    private static void renderFireOverlay(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, CallbackInfo ci) {
         eventAnimation.create(EventAnimation.AnimationType.Fire);
         eventAnimation.broadcast();
         if (eventAnimation.isCanceled()) {
@@ -36,7 +37,7 @@ public class MixinInGameOverlayRenderer {
     }
 
     @Inject(method = "renderUnderwaterOverlay", at = @At("HEAD"), cancellable = true)
-    private static void renderUnderwaterOverlay(MinecraftClient minecraftClient, MatrixStack matrixStack, CallbackInfo ci) {
+    private static void renderUnderwaterOverlay(MinecraftClient client, MatrixStack matrices, VertexConsumerProvider vertexConsumerProvider, CallbackInfo ci) {
         eventAnimation.create(EventAnimation.AnimationType.Underwater);
         eventAnimation.broadcast();
         if (eventAnimation.isCanceled()) {
