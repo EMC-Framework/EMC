@@ -25,7 +25,7 @@ public abstract class MixinNetworkManager implements IMixinNetworkManager {
     private void channelRead0(Packet<?> packet, PacketListener listener) {
         EventPacketReceive event = new EventPacketReceive(packet).broadcast();
         if (!event.isCanceled()) {
-            ((Packet<PacketListener>) event.getIPacket().getPacket()).method_65081(listener);
+            ((Packet<PacketListener>) event.getIPacket().getPacket()).apply(listener);
         }
     }
 

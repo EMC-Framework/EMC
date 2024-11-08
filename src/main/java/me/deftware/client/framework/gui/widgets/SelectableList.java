@@ -80,7 +80,7 @@ public class SelectableList<T extends SelectableList.ListItem> extends EntryList
 	}
 
 	public void setScrollbarPosition(int y) {
-		this.setScrollAmount(y);
+		this.setScrollY(y);
 	}
 
 	@Override
@@ -112,11 +112,11 @@ public class SelectableList<T extends SelectableList.ListItem> extends EntryList
 	}
 
 	@Override
-	protected int getScrollbarX() {
+	public int method_65507() {
 		if (extended) {
 			return width - 6;
 		}
-		return super.getScrollbarX();
+		return super.method_65507();
 	}
 
 	protected void onSelectionUpdate(T item) { }
