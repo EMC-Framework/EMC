@@ -5,6 +5,7 @@ import me.deftware.client.framework.main.bootstrap.Bootstrap;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.SplashOverlay;
+import net.minecraft.client.texture.TextureManager;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -21,7 +22,7 @@ public class MixinSplashScreen {
     private boolean reloading;
 
     @Inject(method = "init", at = @At("HEAD"))
-    private static void init(MinecraftClient client, CallbackInfo ci) {
+    private static void init(TextureManager textureManager, CallbackInfo ci) {
         Bootstrap.init();
     }
 
