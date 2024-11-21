@@ -112,11 +112,11 @@ public class SelectableList<T extends SelectableList.ListItem> extends EntryList
 	}
 
 	@Override
-	public int method_65507() {
+	public int getScrollbarX() {
 		if (extended) {
 			return width - 6;
 		}
-		return super.method_65507();
+		return super.getScrollbarX();
 	}
 
 	protected void onSelectionUpdate(T item) { }
