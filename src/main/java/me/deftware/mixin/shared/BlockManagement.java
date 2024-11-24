@@ -9,7 +9,6 @@ import net.minecraft.registry.Registries;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Optional;
 
@@ -37,12 +36,18 @@ public class BlockManagement {
 
     public static boolean isAnySideTouchingBlock(BlockPos pos, BlockView world, Block... blocks) {
         for (Direction direction : Direction.values()) {
-            BlockState blockState = world.getBlockState(
-                    pos.offset(direction, 1)
-            );
-            for (Block block : blocks)
-                if (blockState.getBlock() == block)
-                    return true;
+            try {
+                BlockState blockState = world.getBlockState(pos.offset(direction, 1));
+                for (Block block : blocks) {
+                    if (blockState.getBlock() == block) {
+                        return true;
+                    }
+                }
+            } catch (ArrayIndexOutOfBoundsException ignored) {
+                // Happens if an offset block position is outside a valid chunk
+                // TODO: Possibly verify that an index is valid using
+                //  ChunkRendererRegion.getIndex < ChunkRendererRegion.chunks.length
+            }
         }
         return false;
     }
