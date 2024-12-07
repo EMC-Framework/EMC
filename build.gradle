@@ -40,7 +40,7 @@ dependencies {
 
 	// Extra dependencies
 	include(implementation("com.moulberry:mixinconstraints:1.0.1"))
-	// include "me.deftware:integrations:1.21.3"
+	include "me.deftware:integrations:1.21.4+build.1"
 }
 
 loom {
