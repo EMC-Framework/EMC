@@ -6,8 +6,6 @@ import me.deftware.client.framework.event.events.EventAttackEntity;
 import me.deftware.client.framework.event.events.EventBlockBreakingCooldown;
 import me.deftware.client.framework.event.events.EventBlockUpdate;
 import me.deftware.client.framework.event.events.EventItemUse;
-import me.deftware.client.framework.global.GameKeys;
-import me.deftware.client.framework.global.GameMap;
 import me.deftware.client.framework.network.packets.CPacketUseEntity;
 import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
 import me.deftware.mixin.imp.IMixinPlayerControllerMP;
@@ -23,11 +21,13 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -100,16 +100,15 @@ public class MixinPlayerControllerMP implements IMixinPlayerControllerMP {
     }
 
     // Lambda function in interactItem
-    @Redirect(method = "method_41929", at = @At(value = "INVOKE",
+    @Inject(method = "method_41929", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/item/ItemStack;use(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/Hand;)Lnet/minecraft/util/ActionResult;"))
-    private ActionResult onItemUse(ItemStack instance, World world, PlayerEntity user, Hand hand) {
-        Item item = instance.getItem();
-        ActionResult result = instance.use(world, user, hand);
+    private void onItemUse(Hand hand, PlayerEntity player, MutableObject<ActionResult> mutableObject, int sequence, CallbackInfoReturnable<PlayerInteractItemC2SPacket> cir) {
+        var stack = player.getStackInHand(hand);
+        var item = stack.getItem();
         new EventItemUse(
                 (me.deftware.client.framework.item.Item) item,
                 EntityHand.of(hand)
         ).broadcast();
-        return result;
     }
 
     @Redirect(method = "breakBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;onBreak(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;Lnet/minecraft/entity/player/PlayerEntity;)Lnet/minecraft/block/BlockState;"))
