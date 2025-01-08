@@ -54,9 +54,11 @@ public class CameraEntity extends OtherClientPlayerEntity {
 		Vec3d strafe = forward.rotateY((float) Math.toRadians(90));
 		Vec3d motion = this.getVelocity();
 
+		var movement = input.getMovementInput();
 		motion = motion.add(0, 2 * upDown, 0);
-		motion = motion.add(strafe.x * input.movementSideways, 0, strafe.z * input.movementSideways);
-		motion = motion.add(forward.x * input.movementForward, 0, forward.z * input.movementForward);
+		// TODO: Verify
+		motion = motion.add(strafe.x * movement.y, 0, strafe.z * movement.y);
+		motion = motion.add(forward.x * movement.x, 0, forward.z * movement.x);
 
 		this.setPos(this.getX() + motion.x, this.getY() + motion.y, this.getZ() + motion.z);
 	}

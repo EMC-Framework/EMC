@@ -6,6 +6,8 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -56,12 +58,17 @@ public interface Appearance {
     }
 
     default Appearance withClickEvent(ClickAction action, String value) {
-        var event = new ClickEvent(action.getAction(), value);
-        return (Appearance) ((Style) this).withClickEvent(event);
+        try {
+            var event = action.instantiate(value);
+            return (Appearance) ((Style) this).withClickEvent(event);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return this;
     }
 
     default Appearance withTextHoverEvent(Message text) {
-        var event = new HoverEvent(HoverEvent.Action.SHOW_TEXT, (Text) text);
+        var event = new HoverEvent.class_10613((Text) text);
         return (Appearance) ((Style) this).withHoverEvent(event);
     }
 
@@ -115,21 +122,22 @@ public interface Appearance {
 
     enum ClickAction {
 
-        OPEN_URL(ClickEvent.Action.OPEN_URL),
-        OPEN_FILE(ClickEvent.Action.OPEN_FILE),
-        RUN_COMMAND(ClickEvent.Action.RUN_COMMAND),
-        SUGGEST_COMMAND(ClickEvent.Action.SUGGEST_COMMAND),
-        CHANGE_PAGE(ClickEvent.Action.CHANGE_PAGE),
-        COPY_TO_CLIPBOARD(ClickEvent.Action.COPY_TO_CLIPBOARD);
+        OPEN_URL,
+        OPEN_FILE,
+        RUN_COMMAND,
+        SUGGEST_COMMAND,
+        CHANGE_PAGE,
+        COPY_TO_CLIPBOARD;
 
-        private final ClickEvent.Action action;
-
-        ClickAction(ClickEvent.Action action) {
-            this.action = action;
-        }
-
-        public ClickEvent.Action getAction() {
-            return action;
+        ClickEvent instantiate(String arg) throws URISyntaxException {
+            return switch (this) {
+                case OPEN_URL -> new ClickEvent.class_10608(new URI(arg));
+                case OPEN_FILE -> new ClickEvent.class_10607(arg);
+                case RUN_COMMAND -> new ClickEvent.class_10609(arg);
+                case SUGGEST_COMMAND -> new ClickEvent.class_10610(arg);
+                case CHANGE_PAGE -> new ClickEvent.class_10605(Integer.parseInt(arg));
+                case COPY_TO_CLIPBOARD -> new ClickEvent.class_10606(arg);
+            };
         }
 
     }

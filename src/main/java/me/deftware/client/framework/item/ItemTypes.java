@@ -7,7 +7,7 @@ import java.util.function.Predicate;
 
 public enum ItemTypes {
 
-    Tool(item -> item instanceof MiningToolItem),
+    Tool(item -> false), // TODO
     SplashPotion(item -> item instanceof SplashPotionItem),
     Soup(item -> item == Items.BEETROOT_SOUP || item == Items.MUSHROOM_STEW || item == Items.SUSPICIOUS_STEW),
     WritableBook(item -> item instanceof WritableBookItem),

@@ -1,6 +1,7 @@
 package me.deftware.client.framework.render.camera.entity;
 
 import net.minecraft.client.input.Input;
+import net.minecraft.util.math.Vec2f;
 
 /**
  * @author wagyourtail, Deftware
@@ -8,8 +9,7 @@ import net.minecraft.client.input.Input;
 public class DummyInput extends Input {
 
 	public DummyInput() {
-		this.movementSideways = 0.0F;
-		this.movementForward = 0.0F;
+		this.field_55868 = Vec2f.ZERO;
 	}
 
 }

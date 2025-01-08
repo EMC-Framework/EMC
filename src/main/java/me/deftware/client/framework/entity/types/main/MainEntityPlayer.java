@@ -115,12 +115,14 @@ public class MainEntityPlayer extends EntityPlayer {
 		return getMinecraftEntity().input;
 	}
 
+	// TODO: Is this correct?
+
 	public double getForward() {
-		return getInput().movementForward;
+		return getInput().getMovementInput().x;
 	}
 
 	public double getStrafe() {
-		return getInput().movementSideways;
+		return getInput().getMovementInput().y;
 	}
 
 	public void toggleSkinLayers() {

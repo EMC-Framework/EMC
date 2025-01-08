@@ -117,7 +117,7 @@ public abstract class MixinWorldRenderer {
     }
 
     @Inject(method = MAIN_RENDERER, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/WorldRenderer;canDrawEntityOutlines()Z", ordinal = 0))
-    private void onClear(Fog fog, RenderTickCounter renderTickCounter, Camera camera, Profiler profiler, Matrix4f matrix4f, Matrix4f matrix4f2, Handle handle, Handle handle2, Handle handle3, Handle handle4, boolean bl, Frustum frustum, Handle handle5, CallbackInfo ci) {
+    private void onClear(Fog fog, RenderTickCounter renderTickCounter, Camera camera, Profiler profiler, Matrix4f matrix4f, Matrix4f matrix4f2, Handle handle, Handle handle2, Handle handle3, boolean bl, Frustum frustum, Handle handle4, CallbackInfo ci) {
         if (!isShaderSupported()) return;
         int buffer = GlStateManager.getBoundFramebuffer();
         for (EntityShader shader : EntityShader.SHADERS) {
