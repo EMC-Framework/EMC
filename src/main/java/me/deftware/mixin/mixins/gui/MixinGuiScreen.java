@@ -141,7 +141,7 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
     private void onTextClick(Style style, CallbackInfoReturnable<Boolean> cir) {
         var event = style.getClickEvent();
         if (event != null) {
-            if (event instanceof ClickEvent.class_10609(String command)) {
+            if (event instanceof ClickEvent.RunCommand(String command)) {
                 // SharedConstants.stripInvalidChars(event.getValue());
                 String trigger = CommandRegister.getCommandTrigger();
                 if (command.startsWith(trigger)) {

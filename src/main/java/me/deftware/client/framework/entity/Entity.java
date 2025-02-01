@@ -118,7 +118,7 @@ public class Entity {
 	}
 
 	public float getFallDistance() {
-		return entity.fallDistance;
+		return (float) entity.fallDistance;
 	}
 
 	public Entity getVehicle() {
@@ -139,7 +139,8 @@ public class Entity {
 
 	public void armorInventory(Consumer<ItemStack> consumer) {
 		if (entity instanceof LivingEntity e) {
-			e.getArmorItems().forEach(itemStack -> consumer.accept((ItemStack) itemStack));
+			// TODO
+			// e.getArmorItems().forEach(itemStack -> consumer.accept((ItemStack) itemStack));
 		}
 	}
 
@@ -340,15 +341,15 @@ public class Entity {
 	}
 
 	public double getPrevPosX() {
-		return entity.prevX;
+		return entity.lastX;
 	}
 
 	public double getPrevPosY() {
-		return entity.prevY;
+		return entity.lastY;
 	}
 
 	public double getPrevPosZ() {
-		return entity.prevZ;
+		return entity.lastZ;
 	}
 
 	public float getRotationYaw() {

@@ -68,7 +68,7 @@ public interface Appearance {
     }
 
     default Appearance withTextHoverEvent(Message text) {
-        var event = new HoverEvent.class_10613((Text) text);
+        var event = new HoverEvent.ShowText((Text) text);
         return (Appearance) ((Style) this).withHoverEvent(event);
     }
 
@@ -131,12 +131,12 @@ public interface Appearance {
 
         ClickEvent instantiate(String arg) throws URISyntaxException {
             return switch (this) {
-                case OPEN_URL -> new ClickEvent.class_10608(new URI(arg));
-                case OPEN_FILE -> new ClickEvent.class_10607(arg);
-                case RUN_COMMAND -> new ClickEvent.class_10609(arg);
-                case SUGGEST_COMMAND -> new ClickEvent.class_10610(arg);
-                case CHANGE_PAGE -> new ClickEvent.class_10605(Integer.parseInt(arg));
-                case COPY_TO_CLIPBOARD -> new ClickEvent.class_10606(arg);
+                case OPEN_URL -> new ClickEvent.OpenUrl(new URI(arg));
+                case OPEN_FILE -> new ClickEvent.OpenFile(arg);
+                case RUN_COMMAND -> new ClickEvent.RunCommand(arg);
+                case SUGGEST_COMMAND -> new ClickEvent.SuggestCommand(arg);
+                case CHANGE_PAGE -> new ClickEvent.ChangePage(Integer.parseInt(arg));
+                case COPY_TO_CLIPBOARD -> new ClickEvent.CopyToClipboard(arg);
             };
         }
 

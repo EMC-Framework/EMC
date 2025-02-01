@@ -142,7 +142,7 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
     private void onRender2D(InGameHud inGameHud, DrawContext context, RenderTickCounter tickCounter) {
         if (!WindowHelper.isMinimized()) {
             GLX glx = GLX.of(context);
-            float tickDelta = tickCounter.getTickDelta(true);
+            float tickDelta = tickCounter.getTickProgress(true);
             // Minecraft modifies opacity underwater
             glx.color(1, 1, 1, 1);
             eventRender2D.setContext(glx);

@@ -38,7 +38,7 @@ import java.util.stream.Stream;
 public abstract class MixinWorldClient extends MixinWorld implements me.deftware.client.framework.world.ClientWorld {
 
     @Shadow
-    public abstract void addParticle(ParticleEffect parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ);
+    public abstract void addParticleClient(ParticleEffect parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ);
 
     @Unique
     private final Int2ObjectMap<Entity> entities = new Int2ObjectOpenHashMap<>();
@@ -53,7 +53,7 @@ public abstract class MixinWorldClient extends MixinWorld implements me.deftware
             Block block = blockState.getBlock();
             ParticleEffect effect = new BlockStateParticleEffect(ParticleTypes.BLOCK_MARKER, blockState);
             if (barrier && block == Blocks.BARRIER || light && block == Blocks.LIGHT)
-                this.addParticle(effect, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, 0.0D, 0.0D, 0.0D);
+                this.addParticleClient(effect, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, 0.0D, 0.0D, 0.0D);
         }
         return pos;
     }

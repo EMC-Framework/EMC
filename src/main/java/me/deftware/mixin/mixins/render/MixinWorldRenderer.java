@@ -67,7 +67,7 @@ public abstract class MixinWorldRenderer implements WorldEntityRenderer {
     private void onRenderStatues(Fog fog, RenderTickCounter renderTickCounter, Camera camera, Profiler profiler, Matrix4f matrix4f, Matrix4f matrix4f2, Handle handle, Handle handle2, Handle handle3, boolean bl, Frustum frustum, Handle handle4, CallbackInfo ci) {
         MatrixStack matrices = new MatrixStack();
         for (Statue statue : this.statues) {
-            float tickDelta = renderTickCounter.getTickDelta(true);
+            float tickDelta = renderTickCounter.getTickProgress(true);
             this.entityRenderDispatcher.render(statue.getEntity().getMinecraftEntity(),
                     statue.getPosition().getX() - camera.getPos().getX(),
                     statue.getPosition().getY() - camera.getPos().getY(),

@@ -9,7 +9,7 @@ import net.minecraft.util.math.Vec2f;
 public class DummyInput extends Input {
 
 	public DummyInput() {
-		this.field_55868 = Vec2f.ZERO;
+		this.movementVector = Vec2f.ZERO;
 	}
 
 }
