@@ -61,8 +61,7 @@ public interface ItemStack {
 
     static ItemStack of(NbtCompound compound) {
         var registry = MinecraftClient.getInstance().player.getRegistryManager();
-        return (ItemStack) net.minecraft.item.ItemStack.fromNbtOrEmpty
-                (registry, (net.minecraft.nbt.NbtCompound) compound);
+        return (ItemStack) net.minecraft.item.ItemStack.fromNbt(registry, (net.minecraft.nbt.NbtCompound) compound).orElseThrow();
     }
 
     enum Rarity {

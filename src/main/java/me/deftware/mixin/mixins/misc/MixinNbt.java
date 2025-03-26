@@ -17,7 +17,7 @@ public class MixinNbt implements me.deftware.client.framework.nbt.NbtCompound {
     @Unique
     @Override
     public boolean contains(String key, int type) {
-        return ((NbtCompound) (Object) this).contains(key, type);
+        return ((NbtCompound) (Object) this).contains(key);
     }
 
     @Unique
@@ -29,13 +29,13 @@ public class MixinNbt implements me.deftware.client.framework.nbt.NbtCompound {
     @Unique
     @Override
     public NbtList getList(String items, int type) {
-        return (NbtList) ((NbtCompound) (Object) this).getList(items, type);
+        return (NbtList) ((NbtCompound) (Object) this).getList(items).orElse(null);
     }
 
     @Unique
     @Override
     public int getByte(String key) {
-        return ((NbtCompound) (Object) this).getByte(key);
+        return ((NbtCompound) (Object) this).getByte(key).orElse(null);
     }
 
     @Unique

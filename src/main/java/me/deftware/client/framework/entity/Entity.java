@@ -1,6 +1,5 @@
 package me.deftware.client.framework.entity;
 
-import me.deftware.client.framework.item.Item;
 import me.deftware.client.framework.math.BlockPosition;
 import me.deftware.client.framework.math.BoundingBox;
 import me.deftware.client.framework.math.ChunkPosition;
@@ -19,7 +18,6 @@ import me.deftware.client.framework.entity.types.objects.ItemEntity;
 import me.deftware.client.framework.entity.types.objects.ProjectileEntity;
 import me.deftware.client.framework.item.ItemStack;
 import me.deftware.client.framework.nbt.NbtCompound;
-import me.deftware.client.framework.util.Util;
 import me.deftware.client.framework.world.ClientWorld;
 import me.deftware.client.framework.world.EnumFacing;
 import me.deftware.mixin.imp.IMixinAbstractClientPlayer;
@@ -34,7 +32,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.Collections;
@@ -75,7 +72,7 @@ public class Entity {
 		} else if (entity instanceof net.minecraft.entity.ItemEntity) {
 			return new ItemEntity(entity);
 		} else if (entity instanceof net.minecraft.entity.LivingEntity) {
-			if (entity.writeNbt(new net.minecraft.nbt.NbtCompound()).containsUuid("Owner")) {
+			if (entity.writeNbt(new net.minecraft.nbt.NbtCompound()).contains("Owner")) {
 				return new OwnedEntity(entity);
 			}
 			return new me.deftware.client.framework.entity.types.LivingEntity(entity);

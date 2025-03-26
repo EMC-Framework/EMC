@@ -1,6 +1,7 @@
 package me.deftware.client.framework.render.batching.font;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import lombok.Setter;
 import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.fonts.AtlasTextureFont;
@@ -8,7 +9,6 @@ import me.deftware.client.framework.registry.font.IFontProvider;
 import me.deftware.client.framework.render.batching.RenderStack;
 import me.deftware.client.framework.render.batching.VertexConstructor;
 import me.deftware.client.framework.render.gl.GLX;
-import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.render.*;
 import net.minecraft.text.Style;
 import org.lwjgl.opengl.GL11;
@@ -59,7 +59,7 @@ public class FontRenderStack extends RenderStack<FontRenderStack> {
 
 	@Override
 	protected void setShader() {
-		RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
+		// RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
 	}
 
 	@Override

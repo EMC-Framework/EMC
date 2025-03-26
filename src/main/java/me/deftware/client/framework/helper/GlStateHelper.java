@@ -18,15 +18,15 @@ public class GlStateHelper {
 	}
 
 	public static void enablePolygonOffset() {
-		RenderSystem.enablePolygonOffset();
+		//RenderSystem.enablePolygonOffset();
 	}
 
 	public static void enableDepth() {
-		RenderSystem.enableDepthTest();
+		//RenderSystem.enableDepthTest();
 	}
 
 	public static void disableDepth() {
-		RenderSystem.disableDepthTest();
+		//RenderSystem.disableDepthTest();
 	}
 
 	public static void disableLighting() {
@@ -38,11 +38,11 @@ public class GlStateHelper {
 	}
 
 	public static void enableBlend() {
-		RenderSystem.enableBlend();
+		//RenderSystem.enableBlend();
 	}
 
 	public static void disableBlend() {
-		RenderSystem.disableBlend();
+		//RenderSystem.disableBlend();
 	}
 
 	public static void disableTexture2D() {
@@ -50,7 +50,7 @@ public class GlStateHelper {
 	}
 
 	public static void tryBlendFuncSeparate(int srcFactor, int dstFactor, int srcFactorAlpha, int dstFactorAlpha) {
-		RenderSystem.blendFuncSeparate(srcFactor, dstFactor, srcFactorAlpha, dstFactorAlpha);
+		//RenderSystem.blendFuncSeparate(srcFactor, dstFactor, srcFactorAlpha, dstFactorAlpha);
 	}
 
 	public static void enableTexture2D() {
@@ -70,11 +70,11 @@ public class GlStateHelper {
 	}
 
 	public static void disablePolygonOffset() {
-		RenderSystem.disablePolygonOffset();
+		//RenderSystem.disablePolygonOffset();
 	}
 
 	public static void doPolygonOffset(float f, float g) {
-		RenderSystem.polygonOffset(f, g);
+		//RenderSystem.polygonOffset(f, g);
 	}
 
 }

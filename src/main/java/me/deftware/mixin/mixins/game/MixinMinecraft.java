@@ -28,6 +28,7 @@ import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.session.ProfileKeys;
 import net.minecraft.client.session.Session;
+import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.ScreenshotRecorder;
 import net.minecraft.client.util.Window;
@@ -173,7 +174,7 @@ public abstract class MixinMinecraft implements Minecraft {
 
     @Override
     public void runOnRenderThread(Runnable runnable) {
-        RenderSystem.recordRenderCall(runnable::run);
+        // RenderSystem.recordRenderCall(runnable::run);
     }
 
     @Override
@@ -295,10 +296,13 @@ public abstract class MixinMinecraft implements Minecraft {
     @Unique
     @Override
     public void screenshot(File file) throws IOException {
-        String name = file.getName();
-        try (NativeImage image = ScreenshotRecorder.takeScreenshot(((MinecraftClient) (Object) this).getFramebuffer())) {
-            image.writeTo(file);
-        }
+        ScreenshotRecorder.takeScreenshot(((MinecraftClient) (Object) this).getFramebuffer(), image -> {
+            try {
+                image.writeTo(file);
+            } catch (Exception ex) {
+                LOGGER.error("Failed to write screenshot to {}", file.getName(), ex);
+            }
+        });
     }
 
 }

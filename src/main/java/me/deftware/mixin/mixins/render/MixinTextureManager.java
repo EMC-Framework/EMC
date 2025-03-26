@@ -14,7 +14,7 @@ public class MixinTextureManager {
 
     private static int syncedCount = 0;
 
-    @ModifyVariable(method = "setShaderTexture(ILnet/minecraft/util/Identifier;)V", remap = false, at = @At("HEAD"))
+    /*@ModifyVariable(method = "setShaderTexture(ILnet/minecraft/util/Identifier;)V", remap = false, at = @At("HEAD"))
     private static Identifier setShaderTexture(Identifier resource) {
         if (GameMap.INSTANCE.get(GameKeys.RAINBOW_ITEM_GLINT, false)) {
             if (resource.equals(ItemRenderer.ITEM_ENCHANTMENT_GLINT)) {
@@ -27,6 +27,6 @@ public class MixinTextureManager {
             }
         }
         return resource;
-    }
+    }*/
 
 }

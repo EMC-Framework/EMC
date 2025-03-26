@@ -18,7 +18,7 @@ public class MixinNbtList implements me.deftware.client.framework.nbt.NbtList {
     @Unique
     @Override
     public NbtCompound getCompound(int index) {
-        return (NbtCompound) ((NbtList) (Object) this).getCompound(index);
+        return (NbtCompound) ((NbtList) (Object) this).getCompound(index).orElse(null);
     }
 
     @Unique

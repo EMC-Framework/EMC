@@ -1,6 +1,5 @@
 package me.deftware.mixin.mixins.render;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.gl.Framebuffer;
 import org.lwjgl.opengl.ARBFramebufferObject;
 import org.lwjgl.opengl.GL11;
@@ -18,6 +17,7 @@ import java.nio.IntBuffer;
 @Mixin(Framebuffer.class)
 public abstract class MixinFrameBuffer {
 
+		/*
 	public @Shadow int textureWidth;
 	public @Shadow int textureHeight;
 	private @Shadow int depthAttachment;
@@ -41,6 +41,6 @@ public abstract class MixinFrameBuffer {
 				this.depthAttachment,
 				0
 		);
-	}
+	}*/
 
 }

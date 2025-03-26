@@ -183,11 +183,11 @@ public abstract class MixinEntityRenderer implements IMixinEntityRenderer {
             shift = At.Shift.AFTER))
     private void onRender(RenderTickCounter tickCounter, boolean tick, CallbackInfo ci) {
         if (shader != null) {
-            RenderSystem.disableBlend();
+            /*RenderSystem.disableBlend();
             RenderSystem.disableDepthTest();
             RenderSystem.resetTextureMatrix();
             shader.applyUniforms();
-            shader.getShaderEffect().render(client.getFramebuffer(), pool);
+            shader.getShaderEffect().render(client.getFramebuffer(), pool);*/
         }
     }
 

@@ -46,7 +46,7 @@ public class ModResourceManager implements ResourceManager {
         shaderLoader = new ShaderLoader(textureManager, ex -> {
             ex.printStackTrace();
         });
-        RenderSystem.recordRenderCall(this::reload);
+        //RenderSystem.recordRenderCall(this::reload);
     }
 
     private void reload() {

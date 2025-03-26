@@ -1,6 +1,7 @@
 package me.deftware.client.framework.entity.types;
 
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.Uuids;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -13,7 +14,7 @@ public class OwnedEntity extends LivingEntity {
 
 	@Nullable
 	public UUID getOwnerUUID() {
-		return entity.writeNbt(new NbtCompound()).getUuid("Owner");
+		return entity.writeNbt(new NbtCompound()).get("Owner", Uuids.INT_STREAM_CODEC).orElse(null);
 	}
 
 }

@@ -19,15 +19,15 @@ public class Framebuffer {
     }
 
     public void clear() {
-        buffer.clear();
+        //buffer.clear();
     }
 
     public void bind(boolean setViewport) {
-        buffer.beginWrite(setViewport);
+        //buffer.beginWrite(setViewport);
     }
 
     public void draw(int width, int height, boolean disableBlend) {
-        buffer.draw(width, height);
+       // buffer.draw(width, height);
     }
 
     public void resize(int width, int height) {

@@ -43,7 +43,7 @@ public class Shader {
             throw new RuntimeException("Shader already initialized");
         }
         MinecraftClient client = MinecraftClient.getInstance();
-        var internalBuffer = new SimpleFramebuffer(
+        /*var internalBuffer = new SimpleFramebuffer(
                 client.getWindow().getFramebufferWidth(),
                 client.getWindow().getFramebufferHeight(),
                 true
@@ -52,7 +52,7 @@ public class Shader {
         internalBuffer.clear();
         framebuffer = new Framebuffer(internalBuffer);
         var frameSet = Set.of(DefaultFramebufferSet.MAIN, ShaderFramebufferSet.FINAL);
-        shaderEffect = resourceManager.getShaderLoader().loadPostEffect(identifier, frameSet);
+        shaderEffect = resourceManager.getShaderLoader().loadPostEffect(identifier, frameSet);*/
     }
 
     public void close() {
@@ -75,7 +75,7 @@ public class Shader {
             var name = entry.getKey();
             var values = entry.getValue();
             for (PostEffectPass pass : passes) {
-                GlUniform uniform = pass.getProgram().getUniform(name);
+                /*GlUniform uniform = pass.getProgram().getUniform(name);
                 if (uniform != null) {
                     if (values.length == 4) {
                         uniform.set(values[0], values[1], values[2], values[3]);
@@ -86,7 +86,7 @@ public class Shader {
                     } else if (values.length == 1) {
                         uniform.set(values[0]);
                     }
-                }
+                }*/
             }
         }
     }

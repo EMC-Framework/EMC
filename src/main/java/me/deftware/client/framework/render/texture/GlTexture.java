@@ -1,6 +1,9 @@
 package me.deftware.client.framework.render.texture;
 
+import com.mojang.blaze3d.systems.RenderPass;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.textures.GpuTexture;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import lombok.Getter;
 import me.deftware.client.framework.gui.GuiScreen;
 import me.deftware.client.framework.main.EMCMod;
@@ -9,10 +12,13 @@ import me.deftware.client.framework.render.gl.GLX;
 import me.deftware.client.framework.util.ResourceUtils;
 import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.ShaderProgramKeys;
+import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.client.gl.RenderPipelines;
+import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.*;
 import net.minecraft.client.texture.AbstractTexture;
+import net.minecraft.client.util.ScreenshotRecorder;
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -26,6 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.util.OptionalInt;
 
 /**
  * @author Deftware
@@ -33,7 +40,7 @@ import java.nio.ByteBuffer;
 public class GlTexture implements GuiScreen.BackgroundType {
 
     @Getter
-    protected int glId;
+    protected GpuTexture glId;
 
     @Getter
     protected int textureWidth, textureHeight, scaling;
@@ -68,11 +75,11 @@ public class GlTexture implements GuiScreen.BackgroundType {
         this.scaling = scaling;
         this.textureWidth = image.getWidth();
         this.textureHeight = image.getHeight();
-        this.glId = GL11.glGenTextures();
+        /*this.glId = GL11.glGenTextures();
         GL13.glActiveTexture(GL13.GL_TEXTURE0);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.glId);
         this.upload(getImageBuffer(image), false);
-        GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
+        GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);*/
     }
 
     public GlTexture draw(GLX context, int x, int y, int width, int height) {
@@ -94,11 +101,11 @@ public class GlTexture implements GuiScreen.BackgroundType {
     }
 
     public boolean isReady() {
-        return glId != 0;
+        return glId != null;
     }
 
     public void unbind() {
-        bindTexture(0);
+        boundTexture = null;
     }
 
     public void upload(BufferedImage image) {
@@ -130,8 +137,8 @@ public class GlTexture implements GuiScreen.BackgroundType {
 
     public void destroy() {
         bind();
-        GL11.glDeleteTextures(glId);
-        glId = -1;
+        glId.close();
+        glId = null;
     }
 
     @Override
@@ -163,14 +170,16 @@ public class GlTexture implements GuiScreen.BackgroundType {
         return buffer;
     }
 
-    public static void bindTexture(int id) {
-        RenderSystem.bindTexture(id);
-        RenderSystem.setShaderTexture(0, id);
+    private static GpuTexture boundTexture;
+
+    public static void bindTexture(GpuTexture texture) {
+        // RenderSystem.bindTexture(id); TODO
+        RenderSystem.setShaderTexture(0, texture);
     }
 
     public static void bindTexture(MinecraftIdentifier id) {
         AbstractTexture texture = MinecraftClient.getInstance().getTextureManager().getTexture(id);
-        bindTexture(texture.getGlId());
+        bindTexture(texture.getGlTexture());
     }
 
     private static void drawTexture(GLX context, int x0, int x1, int y0, int y1, int z, int regionWidth, int regionHeight, float u, float v, int textureWidth, int textureHeight) {
@@ -178,7 +187,9 @@ public class GlTexture implements GuiScreen.BackgroundType {
     }
 
     private static void drawTexturedQuad(GLX context, int x0, int x1, int y0, int y1, int z, float u0, float u1, float v0, float v1) {
-        RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
+        assert boundTexture != null;
+
+        /*RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
         Matrix4f matrix4f = context.getContext().getMatrices().peek().getPositionMatrix();
         BufferBuilder bufferBuilder = Tessellator.getInstance()
                 .begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
@@ -186,7 +197,7 @@ public class GlTexture implements GuiScreen.BackgroundType {
         bufferBuilder.vertex(matrix4f, x1, y1, z).texture(u1, v1); // .next();
         bufferBuilder.vertex(matrix4f, x1, y0, z).texture(u1, v0); // .next();
         bufferBuilder.vertex(matrix4f, x0, y0, z).texture(u0, v0); // .next();
-        BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+        BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());*/
     }
 
 }

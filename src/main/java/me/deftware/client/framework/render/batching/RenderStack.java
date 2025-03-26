@@ -1,15 +1,13 @@
 package me.deftware.client.framework.render.batching;
 
-import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.systems.ProjectionType;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.systems.VertexSorter;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import lombok.Getter;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
 import me.deftware.client.framework.render.gl.GLX;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.ShaderProgramKey;
-import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
@@ -126,7 +124,7 @@ public abstract class RenderStack<T> implements VertexConstructor {
 	}
 
 	protected void drawBuffer() {
-		var shader = RenderSystem.getShader();
+		/*var shader = RenderSystem.getShader();
 		if (shader != null && shader.lineWidth != null) {
 			shader.lineWidth.set(RenderSystem.getShaderLineWidth());
 		}
@@ -134,30 +132,30 @@ public abstract class RenderStack<T> implements VertexConstructor {
 		if (result != null) {
 			BufferRenderer.drawWithGlobalProgram(result);
 		}
-		builder = null;
+		builder = null;*/
 	}
 
 	public static void noBlend() {
-		RenderSystem.disableBlend();
+		//RenderSystem.disableBlend();
 	}
 
 	public static void blend() {
-		RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		RenderSystem.enableBlend();
+		/*RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		RenderSystem.enableBlend();*/
 	}
 
 	public static void setupGl() {
 		blend();
 		// RenderSystem.disableTexture();
-		RenderSystem.disableDepthTest();
-		RenderSystem.depthMask(false);
+		//RenderSystem.disableDepthTest();
+		//RenderSystem.depthMask(false);
 	}
 
 	public static void restoreGl() {
 		noBlend();
-		RenderSystem.depthMask(true);
+		//RenderSystem.depthMask(true);
 		// RenderSystem.enableTexture();
-		RenderSystem.enableDepthTest();
+		//RenderSystem.enableDepthTest();
 	}
 
 	public static VertexFormat.DrawMode translate(int mode) {
@@ -213,7 +211,7 @@ public abstract class RenderStack<T> implements VertexConstructor {
 	}
 
 	protected void setShader() {
-		RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
+		//RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
 	}
 
 	@Getter
@@ -246,7 +244,7 @@ public abstract class RenderStack<T> implements VertexConstructor {
 	}
 
 	protected static void setMatrix(float width, float height) {
-		RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT);
+		//RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT);
 		Matrix4f matrix4f = new Matrix4f().setOrtho(0f, width, height, 0f, 1000f, 21000f);
 		RenderSystem.setProjectionMatrix(matrix4f, ProjectionType.ORTHOGRAPHIC);
 		var matrixStack = RenderSystem.getModelViewStack();

@@ -1,6 +1,5 @@
 package me.deftware.mixin.mixins.shader;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.moulberry.mixinconstraints.annotations.IfModAbsent;
 import me.deftware.client.framework.entity.block.TileEntity;
@@ -66,6 +65,7 @@ public abstract class MixinWorldRenderer {
     @Final
     private DefaultFramebufferSet framebufferSet;
 
+    /*
     @Unique
     private void initShaders() {
         if (!isShaderSupported()) return;
@@ -244,5 +244,6 @@ public abstract class MixinWorldRenderer {
             }
         }
     }
+     */
 
 }
