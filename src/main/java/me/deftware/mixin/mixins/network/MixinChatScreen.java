@@ -2,9 +2,9 @@ package me.deftware.mixin.mixins.network;
 
 import me.deftware.client.framework.event.events.EventChatSend;
 import me.deftware.client.framework.minecraft.Chat;
-import net.minecraft.client.gui.screen.ChatScreen;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.gui.screens.ChatScreen;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.client.player.LocalPlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -12,14 +12,14 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(ChatScreen.class)
 public class MixinChatScreen {
 
-    @Redirect(method = "sendMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayNetworkHandler;sendChatMessage(Ljava/lang/String;)V"))
-    private void onMessage$Chat(ClientPlayNetworkHandler networkHandler, String content) {
-        Chat.send(networkHandler::sendChatMessage, content, ClientPlayerEntity.class, EventChatSend.Type.Message);
+    @Redirect(method = "handleChatInput", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientPacketListener;sendChat(Ljava/lang/String;)V"))
+    private void onMessage$Chat(ClientPacketListener networkHandler, String content) {
+        Chat.send(networkHandler::sendChat, content, LocalPlayer.class, EventChatSend.Type.Message);
     }
 
-    @Redirect(method = "sendMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayNetworkHandler;sendChatCommand(Ljava/lang/String;)V"))
-    private void onMessage$Command(ClientPlayNetworkHandler networkHandler, String content) {
-        Chat.send(networkHandler::sendChatCommand, content, ClientPlayerEntity.class, EventChatSend.Type.Command);
+    @Redirect(method = "handleChatInput", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientPacketListener;sendCommand(Ljava/lang/String;)V"))
+    private void onMessage$Command(ClientPacketListener networkHandler, String content) {
+        Chat.send(networkHandler::sendCommand, content, LocalPlayer.class, EventChatSend.Type.Command);
     }
 
 }

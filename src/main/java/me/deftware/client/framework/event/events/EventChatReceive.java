@@ -1,11 +1,10 @@
 package me.deftware.client.framework.event.events;
 
 import me.deftware.client.framework.message.Message;
+import net.minecraft.network.chat.ChatType;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.PlayerChatMessage;
 import me.deftware.client.framework.event.Event;
-import net.minecraft.network.message.MessageType;
-import net.minecraft.network.message.SignedMessage;
-import net.minecraft.text.Text;
-
 import java.util.UUID;
 
 /**
@@ -16,15 +15,15 @@ public class EventChatReceive extends Event {
     private Message message;
 
     private final boolean signed, expired;
-    private MessageType.Parameters arg;
+    private ChatType.Bound arg;
 
     private final UUID sender;
 
-    public EventChatReceive(MessageType.Parameters arg, SignedMessage message, boolean expired, boolean signed) {
-        this.message = (Message) message.getContent();
+    public EventChatReceive(ChatType.Bound arg, PlayerChatMessage message, boolean expired, boolean signed) {
+        this.message = (Message) message.decoratedContent();
         this.expired = expired;
         this.signed = signed;
-        this.sender = message.getSender();
+        this.sender = message.sender();
         this.arg = arg;
     }
 
@@ -48,7 +47,7 @@ public class EventChatReceive extends Event {
         return (Message) arg.name();
     }
 
-    public MessageType.Parameters getArg() {
+    public ChatType.Bound getArg() {
         return arg;
     }
 
@@ -57,7 +56,7 @@ public class EventChatReceive extends Event {
     }
 
     public void setSender(Message name) {
-        this.arg = new MessageType.Parameters(arg.type(), (Text) name, arg.targetName());
+        this.arg = new ChatType.Bound(arg.chatType(), (Component) name, arg.targetName());
     }
 
 }

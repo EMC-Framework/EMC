@@ -1,7 +1,7 @@
 package me.deftware.client.framework.entity.types.animals;
 
 import me.deftware.client.framework.entity.types.LivingEntity;
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 
 /**
  * @author Deftware

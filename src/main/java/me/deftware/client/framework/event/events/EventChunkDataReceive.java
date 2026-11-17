@@ -1,9 +1,9 @@
 package me.deftware.client.framework.event.events;
 
 import me.deftware.client.framework.math.ChunkPosition;
+import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
+import net.minecraft.world.level.ChunkPos;
 import me.deftware.client.framework.event.Event;
-import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
-import net.minecraft.util.math.ChunkPos;
 
 public class EventChunkDataReceive extends Event {
 
@@ -11,25 +11,25 @@ public class EventChunkDataReceive extends Event {
 
     public boolean isInitialFullChunk, updatedIsFullChunk;
 
-    private final ChunkDataS2CPacket rootPacket;
+    private final ClientboundLevelChunkWithLightPacket rootPacket;
 
-    public ChunkDataS2CPacket getRootPacket() {
+    public ClientboundLevelChunkWithLightPacket getRootPacket() {
         return rootPacket;
     }
 
     public ChunkPosition getPos() {
-        return (ChunkPosition) rawPos;
+        return (ChunkPosition) (Object) rawPos;
     }
 
-    public EventChunkDataReceive(ChunkDataS2CPacket rootPacket) {
+    public EventChunkDataReceive(ClientboundLevelChunkWithLightPacket rootPacket) {
         this.rootPacket = rootPacket;
-        this.rawPos = new ChunkPos(rootPacket.getChunkX(), rootPacket.getChunkZ());
-        isInitialFullChunk = rootPacket.isWritingErrorSkippable(); // TODO: Verify isWritingErrorSkippable
+        this.rawPos = new ChunkPos(rootPacket.x(), rootPacket.z());
+        isInitialFullChunk = rootPacket.isSkippable(); // TODO: Verify isWritingErrorSkippable
         updateFullChunk(rootPacket);
     }
 
-    private void updateFullChunk(ChunkDataS2CPacket rootPacket) {
-        updatedIsFullChunk = rootPacket.isWritingErrorSkippable();
+    private void updateFullChunk(ClientboundLevelChunkWithLightPacket rootPacket) {
+        updatedIsFullChunk = rootPacket.isSkippable();
     }
 
 }

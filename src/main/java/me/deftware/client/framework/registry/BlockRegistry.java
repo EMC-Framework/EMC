@@ -1,8 +1,7 @@
 package me.deftware.client.framework.registry;
 
 import me.deftware.client.framework.world.block.Block;
-import net.minecraft.registry.Registries;
-
+import net.minecraft.core.registries.BuiltInRegistries;
 import java.util.stream.Stream;
 
 /**
@@ -14,7 +13,7 @@ public enum BlockRegistry implements IRegistry.IdentifiableRegistry<Block, Void>
 
 	@Override
 	public Stream<Block> stream() {
-		return Registries.BLOCK
+		return BuiltInRegistries.BLOCK
 				.stream()
 				.map(Block.class::cast);
 	}

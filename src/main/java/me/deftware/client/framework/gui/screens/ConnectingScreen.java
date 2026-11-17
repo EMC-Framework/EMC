@@ -1,11 +1,11 @@
 package me.deftware.client.framework.gui.screens;
 
 import me.deftware.client.framework.minecraft.ServerDetails;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.multiplayer.ConnectScreen;
-import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
-import net.minecraft.client.network.ServerAddress;
-import net.minecraft.client.network.ServerInfo;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.ConnectScreen;
+import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
+import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.client.multiplayer.resolver.ServerAddress;
 
 /**
  * @since 17.0.0
@@ -20,10 +20,10 @@ public interface ConnectingScreen {
 	 */
 	static void _connect(ServerDetails server) {
 		if (server != null) {
-			ConnectScreen.connect(
-					new MultiplayerScreen(
-							MinecraftClient.getInstance().currentScreen
-					), MinecraftClient.getInstance(), ServerAddress.parse(server._getAddress()), (ServerInfo) server, false, null
+			ConnectScreen.startConnecting(
+					new JoinMultiplayerScreen(
+							Minecraft.getInstance().gui.screen()
+					), Minecraft.getInstance(), ServerAddress.parseString(server._getAddress()), (ServerData) server, false, null
 			);
 		}
 	}

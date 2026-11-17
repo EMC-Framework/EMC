@@ -3,8 +3,6 @@ package me.deftware.mixin.mixins.render;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.deftware.client.framework.global.GameKeys;
 import me.deftware.client.framework.global.GameMap;
-import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;

@@ -5,6 +5,11 @@
   "description": "Provides an API for EMC with Fabric",
   "version": "${version}",
   "environment": "client",
+  "entrypoints": {
+    "preLaunch": [
+      "me.deftware.weaver.Main"
+    ]
+  },
   "authors": [
     "deftware"
   ],
@@ -13,7 +18,9 @@
     "sources": "https://gitlab.com/EMC-Framework/EMC"
   },
   "depends": {
-    "java": ">=21"
+    "java": ">=25",
+    "fabricloader": ">=0.20.1",
+    "minecraft": "~26.3"
   },
   "license": "MIT",
   "mixins": [

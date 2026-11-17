@@ -1,9 +1,8 @@
 package me.deftware.client.framework.gui.widgets.properties;
 
 import me.deftware.client.framework.message.Message;
+import net.minecraft.util.FormattedCharSequence;
 import me.deftware.client.framework.gui.screens.MinecraftScreen;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.text.OrderedText;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
@@ -20,7 +19,7 @@ public interface Tooltipable {
 	 *
 	 * @param tooltip List of lines
 	 */
-	default void _setTooltip(List<OrderedText> list, Message... tooltip) {
+	default void _setTooltip(List<FormattedCharSequence> list, Message... tooltip) {
 		list.clear();
 		list.addAll(MinecraftScreen.getTooltipList(tooltip));
 	}
@@ -30,7 +29,7 @@ public interface Tooltipable {
 	}
 
 	@ApiStatus.Internal
-	List<OrderedText> getTooltipComponents(int mouseX, int mouseY);
+	List<FormattedCharSequence> getTooltipComponents(int mouseX, int mouseY);
 
 	boolean isMouseOverComponent(int mouseX, int mouseY);
 

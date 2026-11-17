@@ -6,13 +6,12 @@ import me.deftware.client.framework.gui.widgets.SelectableList;
 import me.deftware.client.framework.registry.Identifiable;
 import me.deftware.client.framework.render.gl.GLX;
 import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.util.Identifier;
-import net.minecraft.registry.Registries;
-
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityType;
 import java.util.Objects;
 
 /**
@@ -31,7 +30,7 @@ public class EntityCapsule implements SelectableList.ListItem, Identifiable {
 
     public me.deftware.client.framework.entity.Entity create() {
         return me.deftware.client.framework.entity.Entity.newInstance(entityType.create(
-                Objects.requireNonNull(MinecraftClient.getInstance().world), SpawnReason.NATURAL
+                Objects.requireNonNull(Minecraft.getInstance().level), EntitySpawnReason.NATURAL
         ));
     }
 
@@ -44,7 +43,7 @@ public class EntityCapsule implements SelectableList.ListItem, Identifiable {
     }
 
     public Message getName() {
-        return (Message) entityType.getName();
+        return (Message) entityType.getDescription();
     }
 
     public void setTexture(Identifier identifier) {
@@ -57,16 +56,16 @@ public class EntityCapsule implements SelectableList.ListItem, Identifiable {
     }
 
     public MinecraftIdentifier getIdentifier() {
-        return new MinecraftIdentifier(Registries.ENTITY_TYPE.getId(entityType));
+        return new MinecraftIdentifier(BuiltInRegistries.ENTITY_TYPE.getKey(entityType));
     }
 
     public String getIdentifierKey() {
-        return Registries.ENTITY_TYPE.getId(entityType).getPath();
+        return BuiltInRegistries.ENTITY_TYPE.getKey(entityType).getPath();
     }
 
     @Override
     public String getTranslationKey() {
-        return entityType.getTranslationKey();
+        return entityType.getDescriptionId();
     }
 
     @Override

@@ -7,7 +7,7 @@ package me.deftware.client.framework.nbt;
 public interface NbtList {
 
     static NbtList empty() {
-        return (NbtList) new net.minecraft.nbt.NbtList();
+        return (NbtList) new net.minecraft.nbt.ListTag();
     }
 
     int size();

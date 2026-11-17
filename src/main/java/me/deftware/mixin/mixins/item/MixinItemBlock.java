@@ -1,7 +1,7 @@
 package me.deftware.mixin.mixins.item;
 
 import me.deftware.client.framework.world.block.Block;
-import net.minecraft.item.BlockItem;
+import net.minecraft.world.item.BlockItem;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 

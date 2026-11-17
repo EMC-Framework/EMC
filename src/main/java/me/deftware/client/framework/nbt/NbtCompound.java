@@ -6,7 +6,7 @@ package me.deftware.client.framework.nbt;
 public interface NbtCompound {
 
 	static NbtCompound create() {
-		return (NbtCompound) new net.minecraft.nbt.NbtCompound();
+		return (NbtCompound) new net.minecraft.nbt.CompoundTag();
 	}
 
 	boolean contains(String key);

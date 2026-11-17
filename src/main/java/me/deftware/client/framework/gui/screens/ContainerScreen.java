@@ -4,13 +4,12 @@ import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.inventory.Inventory;
 import me.deftware.client.framework.item.ItemStack;
 import me.deftware.mixin.imp.IMixinShulkerBoxScreenHandler;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
-import net.minecraft.client.gui.screen.ingame.StatusEffectsDisplay;
-import net.minecraft.screen.GenericContainerScreenHandler;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.Slot;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ChestMenu;
+import net.minecraft.world.inventory.Slot;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -20,7 +19,7 @@ public interface ContainerScreen extends MinecraftScreen {
 
 	Slot getMinecraftSlot();
 
-	ScreenHandler getScreenHandler();
+	AbstractContainerMenu getScreenHandler();
 
 	Inventory getContainerInventory();
 
@@ -31,7 +30,7 @@ public interface ContainerScreen extends MinecraftScreen {
 	 */
 
 	default int getSlotId() {
-		return getMinecraftSlot().id;
+		return getMinecraftSlot().index;
 	}
 
 	default boolean isHovered() {
@@ -39,11 +38,11 @@ public interface ContainerScreen extends MinecraftScreen {
 	}
 
 	default int getHoveredIndex() {
-		return getMinecraftSlot().getIndex();
+		return getMinecraftSlot().getContainerSlot();
 	}
 
 	default ItemStack getHoveredItemStack() {
-		return (ItemStack) getMinecraftSlot().getStack();
+		return (ItemStack) getMinecraftSlot().getItem();
 	}
 
 	/*
@@ -51,11 +50,11 @@ public interface ContainerScreen extends MinecraftScreen {
 	 */
 
 	default boolean isPlayerInventory() {
-		return this instanceof InventoryScreen || this instanceof CreativeInventoryScreen;
+		return this instanceof InventoryScreen || this instanceof CreativeModeInventoryScreen;
 	}
 
 	default int getContainerID() {
-		return getScreenHandler().syncId;
+		return getScreenHandler().containerId;
 	}
 
 	default int getMaxSlots() {
@@ -63,11 +62,11 @@ public interface ContainerScreen extends MinecraftScreen {
 	}
 
 	@ApiStatus.Internal
-	default net.minecraft.inventory.Inventory getHandlerInventory() {
+	default net.minecraft.world.Container getHandlerInventory() {
 		if (getScreenHandler() instanceof IMixinShulkerBoxScreenHandler screenHandler) {
 			return screenHandler.getInventory();
-		} else if (getScreenHandler() instanceof GenericContainerScreenHandler screenHandler) {
-			return screenHandler.getInventory();
+		} else if (getScreenHandler() instanceof ChestMenu screenHandler) {
+			return screenHandler.getContainer();
 		}
 		return null;
 	}
@@ -75,7 +74,7 @@ public interface ContainerScreen extends MinecraftScreen {
 	@Override
 	default void close() {
 		if (getScreenHandler() != null) {
-			MinecraftClient.getInstance().player.closeHandledScreen();
+			Minecraft.getInstance().player.closeContainer();
 			return;
 		}
 		MinecraftScreen.super.close();

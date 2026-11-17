@@ -5,9 +5,8 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.command.CommandSource;
-
+import net.minecraft.client.Minecraft;
+import net.minecraft.commands.SharedSuggestionProvider;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -18,12 +17,12 @@ import java.util.Map;
  */
 public class CommandRegister {
 
-    private static CommandDispatcher<CommandSource> dispatcher = new CommandDispatcher<>();
+    private static CommandDispatcher<SharedSuggestionProvider> dispatcher = new CommandDispatcher<>();
 
     /**
      * @return Brigadier dispatcher object
      */
-    public static CommandDispatcher<CommandSource> getDispatcher() {
+    public static CommandDispatcher<SharedSuggestionProvider> getDispatcher() {
         return dispatcher;
     }
 
@@ -41,9 +40,9 @@ public class CommandRegister {
      * @param command The command to register
      */
     public static synchronized void registerCommand(CommandBuilder<?> command) {
-        CommandNode<CommandSource> node = dispatcher.register(command.build());
+        CommandNode<SharedSuggestionProvider> node = dispatcher.register(command.build());
         for (Object alias : command.getAliases()) {
-            LiteralArgumentBuilder<CommandSource> argumentBuilder = LiteralArgumentBuilder.literal((String) alias);
+            LiteralArgumentBuilder<SharedSuggestionProvider> argumentBuilder = LiteralArgumentBuilder.literal((String) alias);
             dispatcher.register(argumentBuilder.redirect(node));
         }
     }
@@ -77,7 +76,7 @@ public class CommandRegister {
      * @return an array of all registered commands, with argument usage
      */
     public static ArrayList<String> getCommandsAndUsage() {
-        Map<CommandNode<CommandSource>, String> map = getSmartUsage();
+        Map<CommandNode<SharedSuggestionProvider>, String> map = getSmartUsage();
         return new ArrayList<>(map.values());
     }
 
@@ -86,10 +85,10 @@ public class CommandRegister {
      *
      * @return a map of all root commands with their correct usage
      */
-    public static Map<CommandNode<CommandSource>, String> getSmartUsage() {
-        var networkHandler = MinecraftClient.getInstance().getNetworkHandler();
+    public static Map<CommandNode<SharedSuggestionProvider>, String> getSmartUsage() {
+        var networkHandler = Minecraft.getInstance().getConnection();
         if (networkHandler != null) {
-            return dispatcher.getSmartUsage(dispatcher.getRoot(), networkHandler.getCommandSource());
+            return dispatcher.getSmartUsage(dispatcher.getRoot(), networkHandler.getSuggestionsProvider());
         }
         return Map.of();
     }

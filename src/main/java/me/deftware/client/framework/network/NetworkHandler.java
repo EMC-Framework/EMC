@@ -1,11 +1,11 @@
 package me.deftware.client.framework.network;
 
 import me.deftware.client.framework.world.player.PlayerEntry;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.network.message.LastSeenMessagesCollector;
-import net.minecraft.network.message.MessageBody;
-import net.minecraft.network.message.MessageSignatureData;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.network.chat.LastSeenMessagesTracker;
+import net.minecraft.network.chat.MessageSignature;
+import net.minecraft.network.chat.SignedMessageBody;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
@@ -19,7 +19,7 @@ public interface NetworkHandler {
 	 * @return The active network handler
 	 */
 	static NetworkHandler getNetworkHandler() {
-		ClientPlayNetworkHandler handler = MinecraftClient.getInstance().getNetworkHandler();
+		ClientPacketListener handler = Minecraft.getInstance().getConnection();
 		if (handler == null)
 			return null;
 		return (NetworkHandler) handler;
@@ -31,9 +31,9 @@ public interface NetworkHandler {
 	List<PlayerEntry> _getPlayerList();
 
 	@ApiStatus.Internal
-	LastSeenMessagesCollector.LastSeenMessages collect();
+	LastSeenMessagesTracker.Update collect();
 
 	@ApiStatus.Internal
-	MessageSignatureData pack(MessageBody body);
+	MessageSignature pack(SignedMessageBody body);
 
 }

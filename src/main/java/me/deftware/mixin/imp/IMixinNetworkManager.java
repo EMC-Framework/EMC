@@ -1,6 +1,6 @@
 package me.deftware.mixin.imp;
 
-import net.minecraft.network.packet.Packet;
+import net.minecraft.network.protocol.Packet;
 
 public interface IMixinNetworkManager {
 

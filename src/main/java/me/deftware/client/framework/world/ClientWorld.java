@@ -63,6 +63,6 @@ public interface ClientWorld extends World {
 	 */
 	@Nullable
 	@ApiStatus.Internal
-	<T extends Entity> T getEntityByReference(net.minecraft.entity.Entity reference);
+	<T extends Entity> T getEntityByReference(net.minecraft.world.entity.Entity reference);
 
 }

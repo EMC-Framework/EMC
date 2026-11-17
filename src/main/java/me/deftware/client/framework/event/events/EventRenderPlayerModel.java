@@ -5,7 +5,7 @@ import lombok.Setter;
 
 import me.deftware.client.framework.event.Event;
 import me.deftware.client.framework.world.ClientWorld;
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 
 /**
  * Triggered when player model is being rendered.

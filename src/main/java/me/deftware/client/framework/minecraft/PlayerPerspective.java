@@ -1,23 +1,23 @@
 package me.deftware.client.framework.minecraft;
 
-import net.minecraft.client.option.Perspective;
+import net.minecraft.client.CameraType;
 
 /**
  * @author Deftware
  */
 public enum PlayerPerspective {
 
-	FIRST_PERSON(Perspective.FIRST_PERSON),
-	THIRD_PERSON_BACK(Perspective.THIRD_PERSON_BACK),
-	THIRD_PERSON_FRONT(Perspective.THIRD_PERSON_FRONT);
+	FIRST_PERSON(CameraType.FIRST_PERSON),
+	THIRD_PERSON_BACK(CameraType.THIRD_PERSON_BACK),
+	THIRD_PERSON_FRONT(CameraType.THIRD_PERSON_FRONT);
 
-	private final Perspective perspective;
+	private final CameraType perspective;
 
-	PlayerPerspective(Perspective perspective) {
+	PlayerPerspective(CameraType perspective) {
 		this.perspective = perspective;
 	}
 
-	public Perspective getMinecraftPerspective() {
+	public CameraType getMinecraftPerspective() {
 		return perspective;
 	}
 

@@ -4,15 +4,11 @@ import lombok.Getter;
 import me.deftware.client.framework.resource.ModResourceManager;
 import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
 import me.deftware.mixin.mixins.shader.PostEffectProcessorAccessor;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.GlUniform;
-import net.minecraft.client.gl.PostEffectPass;
-import net.minecraft.client.gl.PostEffectProcessor;
-import net.minecraft.client.gl.SimpleFramebuffer;
-import net.minecraft.client.render.DefaultFramebufferSet;
-import net.minecraft.client.util.Handle;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.PostChain;
+import net.minecraft.client.renderer.PostPass;
+import net.minecraft.resources.Identifier;
+import com.mojang.blaze3d.resource.ResourceHandle;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -22,7 +18,7 @@ import java.util.Set;
  */
 public class Shader {
 
-    private PostEffectProcessor shaderEffect;
+    private PostChain shaderEffect;
     private Framebuffer framebuffer;
 
     private final MinecraftIdentifier identifier;
@@ -42,7 +38,7 @@ public class Shader {
         if (isLoaded()) {
             throw new RuntimeException("Shader already initialized");
         }
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         /*var internalBuffer = new SimpleFramebuffer(
                 client.getWindow().getFramebufferWidth(),
                 client.getWindow().getFramebufferHeight(),
@@ -74,7 +70,7 @@ public class Shader {
         for (var entry : uniformsF.entrySet()) {
             var name = entry.getKey();
             var values = entry.getValue();
-            for (PostEffectPass pass : passes) {
+            for (PostPass pass : passes) {
                 /*GlUniform uniform = pass.getProgram().getUniform(name);
                 if (uniform != null) {
                     if (values.length == 4) {
@@ -95,7 +91,11 @@ public class Shader {
         return shaderEffect != null && framebuffer != null;
     }
 
-    public PostEffectProcessor getShaderEffect() {
+    protected Map<String, float[]> getUniformsF() {
+        return uniformsF;
+    }
+
+    public PostChain getShaderEffect() {
         return shaderEffect;
     }
 
@@ -103,22 +103,22 @@ public class Shader {
         return framebuffer;
     }
 
-    public static class ShaderFramebufferSet implements PostEffectProcessor.FramebufferSet {
+    public static class ShaderFramebufferSet implements PostChain.TargetBundle {
 
         /**
          * Dedicated framebuffer for a shader
          */
-        public static final Identifier FINAL = Identifier.of("emc:final");
+        public static final Identifier FINAL = Identifier.parse("emc:final");
 
-        private final Map<Identifier, Handle<net.minecraft.client.gl.Framebuffer>> handles = new HashMap<>();
+        private final Map<Identifier, ResourceHandle<com.mojang.blaze3d.pipeline.RenderTarget>> handles = new HashMap<>();
 
         @Override
-        public void set(Identifier id, Handle<net.minecraft.client.gl.Framebuffer> framebuffer) {
+        public void replace(Identifier id, ResourceHandle<com.mojang.blaze3d.pipeline.RenderTarget> framebuffer) {
             handles.put(id, framebuffer);
         }
 
         @Override
-        public Handle<net.minecraft.client.gl.Framebuffer> get(Identifier id) {
+        public ResourceHandle<com.mojang.blaze3d.pipeline.RenderTarget> get(Identifier id) {
             if (!handles.containsKey(id)) {
                 throw new RuntimeException("Requested framebuffer " + id + " does not exist in set");
             }

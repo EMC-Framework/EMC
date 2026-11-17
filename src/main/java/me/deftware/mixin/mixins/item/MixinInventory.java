@@ -1,23 +1,23 @@
 package me.deftware.mixin.mixins.item;
 
 import me.deftware.client.framework.item.ItemStack;
-import net.minecraft.inventory.Inventory;
+import net.minecraft.world.Container;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
-@Mixin(Inventory.class)
+@Mixin(Container.class)
 public interface MixinInventory extends me.deftware.client.framework.inventory.Inventory {
 
     @Unique
     @Override
     default int getSize() {
-        return ((Inventory) this).size();
+        return ((Container) this).getContainerSize();
     }
 
     @Unique
     @Override
     default boolean isEmpty() {
-        return ((Inventory) this).isEmpty();
+        return ((Container) this).isEmpty();
     }
 
     @Unique
@@ -26,7 +26,7 @@ public interface MixinInventory extends me.deftware.client.framework.inventory.I
         if (slotId >= getSize()) {
             return ItemStack.EMPTY;
         }
-        return (ItemStack) ((Inventory) this).getStack(slotId);
+        return (ItemStack) ((Container) this).getItem(slotId);
     }
 
 }

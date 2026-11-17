@@ -3,9 +3,6 @@ package me.deftware.client.framework.gui.widgets;
 import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.gui.widgets.properties.Nameable;
 import me.deftware.client.framework.gui.widgets.properties.Tooltipable;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.text.Text;
-
 import java.util.function.Function;
 
 /**
@@ -33,8 +30,8 @@ public interface Button extends Component, Nameable<Button>, Tooltipable {
 	 */
 	static Button create(int x, int y, int widthIn, int heightIn, Message buttonText, boolean shouldPlaySound, Function<Integer, Boolean> onClick) {
 		var button =
-				ButtonWidget.builder((Text) buttonText, btn -> onClick.apply(0))
-						.dimensions(x, y, widthIn, heightIn)
+				net.minecraft.client.gui.components.Button.builder((net.minecraft.network.chat.Component) buttonText, btn -> onClick.apply(0))
+						.bounds(x, y, widthIn, heightIn)
 						.build();
 		return (Button) button;
 	}

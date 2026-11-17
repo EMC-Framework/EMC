@@ -1,7 +1,7 @@
 package me.deftware.client.framework.world.gen;
 
 import lombok.Getter;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;

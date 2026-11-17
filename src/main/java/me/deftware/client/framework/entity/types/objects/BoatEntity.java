@@ -7,7 +7,7 @@ import me.deftware.client.framework.entity.Entity;
  */
 public class BoatEntity extends Entity {
 
-	public BoatEntity(net.minecraft.entity.Entity entity) {
+	public BoatEntity(net.minecraft.world.entity.Entity entity) {
 		super(entity);
 	}
 

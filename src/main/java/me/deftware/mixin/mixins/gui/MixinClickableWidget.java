@@ -2,9 +2,8 @@ package me.deftware.mixin.mixins.gui;
 
 import me.deftware.client.framework.gui.widgets.Component;
 import me.deftware.client.framework.gui.widgets.properties.Tooltipable;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.text.OrderedText;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.util.FormattedCharSequence;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -12,7 +11,7 @@ import org.spongepowered.asm.mixin.Unique;
 import java.util.ArrayList;
 import java.util.List;
 
-@Mixin(ClickableWidget.class)
+@Mixin(AbstractWidget.class)
 public class MixinClickableWidget implements Component, Tooltipable {
 
     @Shadow
@@ -36,17 +35,18 @@ public class MixinClickableWidget implements Component, Tooltipable {
 
     @Override
     public int getComponentWidth() {
-        return ((ClickableWidget) (Object) this).getWidth();
+        return ((AbstractWidget) (Object) this).getWidth();
     }
 
     @Override
     public int getComponentHeight() {
-        return ((ClickableWidget) (Object) this).getHeight();
+        return ((AbstractWidget) (Object) this).getHeight();
     }
 
+    @Unique
     @Override
     public boolean isActive() {
-        return ((ClickableWidget) (Object) this).active;
+        return ((AbstractWidget) (Object) this).active;
     }
 
     @Override
@@ -61,7 +61,7 @@ public class MixinClickableWidget implements Component, Tooltipable {
 
     @Override
     public void setComponentWidth(int width) {
-        ((ClickableWidget) (Object) this).setWidth(width);
+        ((AbstractWidget) (Object) this).setWidth(width);
     }
 
     @Override
@@ -71,22 +71,23 @@ public class MixinClickableWidget implements Component, Tooltipable {
 
     @Override
     public void setActive(boolean state) {
-        ((ClickableWidget) (Object) this).active = state;
+        ((AbstractWidget) (Object) this).active = state;
     }
 
     @Unique
-    private final List<OrderedText> tooltipComponents = new ArrayList<>();
+    private final List<FormattedCharSequence> tooltipComponents = new ArrayList<>();
 
     @Override
-    public List<OrderedText> getTooltipComponents(int mouseX, int mouseY) {
+    public List<FormattedCharSequence> getTooltipComponents(int mouseX, int mouseY) {
         return this.tooltipComponents;
     }
 
     @Override
     public boolean isMouseOverComponent(int mouseX, int mouseY) {
-        return ((ClickableWidget) (Object) this).isHovered();
+        return ((AbstractWidget) (Object) this).isHovered();
     }
 
+    @Unique
     @Override
     public void setPosition(int x, int y) {
         setPositionX(x);

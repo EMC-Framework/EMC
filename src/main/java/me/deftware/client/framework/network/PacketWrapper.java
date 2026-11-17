@@ -1,8 +1,8 @@
 package me.deftware.client.framework.network;
 
 import me.deftware.mixin.imp.IMixinNetworkManager;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.network.packet.Packet;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.protocol.Packet;
 
 /**
  * Describes the packet structure with all of it's data
@@ -22,14 +22,14 @@ public class PacketWrapper {
     }
 
     public void sendPacket() {
-        MinecraftClient.getInstance().player.networkHandler.sendPacket(packet);
+        Minecraft.getInstance().player.connection.send(packet);
     }
 
     /**
      * Bypasses this event, and can be used to prevent an infinite loop
      */
     public void sendImmediately() {
-        ((IMixinNetworkManager) MinecraftClient.getInstance().player.networkHandler.getConnection()).sendPacketImmediately(packet);
+        ((IMixinNetworkManager) Minecraft.getInstance().player.connection.getConnection()).sendPacketImmediately(packet);
     }
 
 }

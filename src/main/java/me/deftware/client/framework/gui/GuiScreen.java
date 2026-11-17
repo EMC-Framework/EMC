@@ -9,12 +9,12 @@ import me.deftware.client.framework.gui.widgets.Label;
 import me.deftware.client.framework.gui.widgets.TextField;
 import me.deftware.client.framework.input.Mouse;
 import me.deftware.client.framework.render.gl.GLX;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
 /**
@@ -28,7 +28,7 @@ public abstract class GuiScreen extends Screen implements GenericScreen {
 	private BackgroundType backgroundType = BackgroundType.Textured;
 
 	public GuiScreen(GenericScreen parent) {
-		super(Text.literal(""));
+		super(Component.literal(""));
 		this.parent = parent;
 	}
 
@@ -37,44 +37,48 @@ public abstract class GuiScreen extends Screen implements GenericScreen {
 	}
 
 	@Override
-	public boolean mouseReleased(double x, double y, int button) {
-		if (onMouseReleased((int) Math.round(x), (int) Math.round(y), button))
+	public boolean mouseReleased(MouseButtonEvent event) {
+		int button = GLFW.sdlButtonToGlfwButton(event.button());
+		if (onMouseReleased((int) Math.round(event.x()), (int) Math.round(event.y()), button))
 			return true;
-		return super.mouseReleased(x, y, button);
+		return super.mouseReleased(event);
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-		if (onMouseClicked((int) Math.round(mouseX), (int) Math.round(mouseY), mouseButton))
+	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+		int button = GLFW.sdlButtonToGlfwButton(event.button());
+		if (onMouseClicked((int) Math.round(event.x()), (int) Math.round(event.y()), button))
 			return true;
-		return super.mouseClicked(mouseX, mouseY, mouseButton);
+		return super.mouseClicked(event, doubleClick);
 	}
 
 	private GLX glx;
 
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float partialTicks) {
+	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float partialTicks) {
 		Mouse.updateMousePosition();
+		org.lwjgl.opengl.GL11.glDisable(org.lwjgl.opengl.GL11.GL_SCISSOR_TEST);
+		org.lwjgl.opengl.GL11.glDisable(org.lwjgl.opengl.GL11.GL_STENCIL_TEST);
 		glx = GLX.of(context);
-		super.render(context, mouseX, mouseY, partialTicks);
+		super.extractRenderState(context, mouseX, mouseY, partialTicks);
 		onDraw(glx, mouseX, mouseY, partialTicks);
 		onPostDraw(glx, mouseX, mouseY, partialTicks);
 	}
 
 	@Override
-	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+	public void extractBackground(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		if (backgroundType == BackgroundType.TexturedOrTransparent) {
-			super.renderBackground(context, mouseX, mouseY, delta);
+			super.extractBackground(context, mouseX, mouseY, delta);
 			return;
 		}
 		if (backgroundType != null) {
-			backgroundType.renderBackground(glx, mouseX, mouseY, delta, this);
+			backgroundType.renderBackground(glx != null ? glx : GLX.of(context), mouseX, mouseY, delta, this);
 		}
 	}
 
 	@Override
-	public void resize(MinecraftClient mcIn, int w, int h) {
-		super.resize(mcIn, w, h);
+	public void resize(int w, int h) {
+		super.resize(w, h);
 		onGuiResize(w, h);
 	}
 
@@ -86,30 +90,38 @@ public abstract class GuiScreen extends Screen implements GenericScreen {
 
 	@Override
 	public void init() {
+		Minecraft.getInstance().textInputManager().startTextInput(this);
 		super.init();
 		onInitGui();
 	}
 
 	@Override
 	public void removed() {
+		Minecraft.getInstance().textInputManager().stopTextInput(this);
 		onGuiClose();
 		super.removed();
 	}
 
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (keyCode == GLFW.GLFW_KEY_ESCAPE && goBack())
+	public boolean keyPressed(KeyEvent event) {
+		int glfwKey = GLFW.sdlScancodeToGlfwKey(event.key(), event.keycode());
+		int scanCode = event.key();
+		int modifiers = GLFW.sdlModsToGlfwMods(event.modifiers());
+		if (glfwKey == GLFW.GLFW_KEY_ESCAPE && goBack())
 			return true;
-		if (onKeyPressed(keyCode, scanCode, modifiers))
+		if (onKeyPressed(glfwKey, scanCode, modifiers))
 			return true;
-		return super.keyPressed(keyCode, scanCode, modifiers);
+		return super.keyPressed(event);
 	}
 
 	@Override
-	public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-		if (onKeyReleased(keyCode, scanCode, modifiers))
+	public boolean keyReleased(KeyEvent event) {
+		int glfwKey = GLFW.sdlScancodeToGlfwKey(event.key(), event.keycode());
+		int scanCode = event.key();
+		int modifiers = GLFW.sdlModsToGlfwMods(event.modifiers());
+		if (onKeyReleased(glfwKey, scanCode, modifiers))
 			return true;
-		return super.keyReleased(keyCode, scanCode, modifiers);
+		return super.keyReleased(event);
 	}
 
 	protected MinecraftScreen getMinecraftScreen() {
@@ -129,13 +141,13 @@ public abstract class GuiScreen extends Screen implements GenericScreen {
 
 	protected GuiScreen addCenteredText(int x, int y, Message text) {
 		addComponent(
-				new Label(x - MinecraftClient.getInstance().textRenderer.getWidth((Text) text) / 2, y, text)
+				new Label(x - Minecraft.getInstance().font.width((Component) text) / 2, y, text)
 		);
 		return this;
 	}
 
 	protected boolean goBack() {
-		MinecraftClient.getInstance().setScreen((Screen) parent);
+		Minecraft.getInstance().gui.setScreen((Screen) parent);
 		return true;
 	}
 
@@ -181,19 +193,19 @@ public abstract class GuiScreen extends Screen implements GenericScreen {
 	protected void onGuiResize(int w, int h) { }
 
 	public static int getScaledHeight() {
-		return MinecraftClient.getInstance().getWindow().getScaledHeight();
+		return Minecraft.getInstance().getWindow().getGuiScaledHeight();
 	}
 
 	public static int getScaledWidth() {
-		return MinecraftClient.getInstance().getWindow().getScaledWidth();
+		return Minecraft.getInstance().getWindow().getGuiScaledWidth();
 	}
 
 	public static int getDisplayHeight() {
-		return MinecraftClient.getInstance().getWindow().getHeight();
+		return Minecraft.getInstance().getWindow().getScreenHeight();
 	}
 
 	public static int getDisplayWidth() {
-		return MinecraftClient.getInstance().getWindow().getWidth();
+		return Minecraft.getInstance().getWindow().getScreenWidth();
 	}
 
 	public interface BackgroundType {
@@ -207,11 +219,11 @@ public abstract class GuiScreen extends Screen implements GenericScreen {
 		 * A textured background will always be rendered
 		 */
 		BackgroundType Textured = (context, mouseX, mouseY, delta, parent) -> {
-			if (MinecraftClient.getInstance().world == null) {
-				parent.renderPanoramaBackground(context.getContext(), delta);
+			if (Minecraft.getInstance().level == null) {
+				parent.extractPanorama(context.getContext(), delta);
 			}
-			parent.applyBlur();
-			parent.renderDarkening(context.getContext());
+			parent.extractBlurredBackground(context.getContext());
+			parent.extractMenuBackground(context.getContext());
 		};
 
 		/**
@@ -219,7 +231,7 @@ public abstract class GuiScreen extends Screen implements GenericScreen {
 		 * but if a world is loaded, a transparent black
 		 * overlay will be drawn instead
 		 */
-		BackgroundType TexturedOrTransparent = (context, mouseX, mouseY, delta, parent) -> parent.renderBackground(context.getContext(), mouseX, mouseY, delta);
+		BackgroundType TexturedOrTransparent = (context, mouseX, mouseY, delta, parent) -> parent.extractBackground(context.getContext(), mouseX, mouseY, delta);
 
 		/**
 		 * Renders the background

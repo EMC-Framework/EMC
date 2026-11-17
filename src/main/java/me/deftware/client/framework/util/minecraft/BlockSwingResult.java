@@ -6,10 +6,10 @@ import me.deftware.client.framework.util.hitresult.CrosshairResult;
 import me.deftware.client.framework.world.ClientWorld;
 import me.deftware.client.framework.world.EnumFacing;
 import me.deftware.client.framework.world.block.Block;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * @author Deftware
@@ -18,7 +18,7 @@ public class BlockSwingResult extends CrosshairResult {
 
 	public BlockSwingResult(Vector3<Double> vector3d, EnumFacing facing, BlockPosition position, boolean inBlock) {
 		super(new BlockHitResult(
-				(Vec3d) vector3d,
+				(Vec3) vector3d,
 				facing.getFacing(),
 				(BlockPos) position,
 				inBlock
@@ -38,7 +38,7 @@ public class BlockSwingResult extends CrosshairResult {
 	}
 
 	public EnumFacing getFacing() {
-		return EnumFacing.fromMinecraft(getMinecraftHitResult().getSide());
+		return EnumFacing.fromMinecraft(getMinecraftHitResult().getDirection());
 	}
 
 	@Override

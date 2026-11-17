@@ -1,14 +1,19 @@
 package me.deftware.client.framework.entity.block;
 
-import net.minecraft.block.entity.*;
-import net.minecraft.world.chunk.BlockEntityTickInvoker;
+import net.minecraft.world.level.block.entity.BarrelBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.ChestBlockEntity;
+import net.minecraft.world.level.block.entity.EnderChestBlockEntity;
+import net.minecraft.world.level.block.entity.HopperBlockEntity;
+import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
+import net.minecraft.world.level.block.entity.TickingBlockEntity;
 
 /**
  * @author Deftware
  */
 public class StorageEntity extends TileEntity {
 
-	public static StorageEntity newInstance(BlockEntity entity, BlockEntityTickInvoker ticker) {
+	public static StorageEntity newInstance(BlockEntity entity, TickingBlockEntity ticker) {
 		if (entity instanceof ChestBlockEntity || entity instanceof EnderChestBlockEntity) {
 			return new ChestEntity(entity, ticker);
 		} else if (entity instanceof BarrelBlockEntity) {
@@ -21,7 +26,7 @@ public class StorageEntity extends TileEntity {
 		return new StorageEntity(entity, ticker);
 	}
 
-	protected StorageEntity(BlockEntity entity, BlockEntityTickInvoker ticker) {
+	protected StorageEntity(BlockEntity entity, TickingBlockEntity ticker) {
 		super(entity, ticker);
 	}
 

@@ -1,16 +1,15 @@
 package me.deftware.client.framework.message;
 
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.Style;
 
 public interface Appearance {
 
@@ -21,7 +20,7 @@ public interface Appearance {
     int ITALIC = 0b00010000;
 
     static Appearance empty() {
-        return (Appearance) Style.EMPTY;
+        return (Appearance) (Object) Style.EMPTY;
     }
 
     static Appearance of(FormattingColor color) {
@@ -33,7 +32,7 @@ public interface Appearance {
     }
 
     static Appearance of(int flags, FormattingColor color) {
-        var style = (Appearance) Style.EMPTY;
+        var style = (Appearance) (Object) Style.EMPTY;
         if (flags > 0) {
             style = style.format(flags);
         }
@@ -44,23 +43,23 @@ public interface Appearance {
     }
 
     default Appearance format(int flags) {
-        List<Formatting> options = new ArrayList<>();
-        if ((flags & ITALIC) != 0) options.add(Formatting.ITALIC);
-        if ((flags & BOLD) != 0) options.add(Formatting.BOLD);
-        if ((flags & UNDERLINED) != 0) options.add(Formatting.UNDERLINE);
-        if ((flags & STRIKETHROUGH) != 0) options.add(Formatting.STRIKETHROUGH);
-        if ((flags & OBFUSCATED) != 0) options.add(Formatting.OBFUSCATED);
-        return (Appearance) ((Style) this).withFormatting(options.toArray(new Formatting[0]));
+        List<ChatFormatting> options = new ArrayList<>();
+        if ((flags & ITALIC) != 0) options.add(ChatFormatting.ITALIC);
+        if ((flags & BOLD) != 0) options.add(ChatFormatting.BOLD);
+        if ((flags & UNDERLINED) != 0) options.add(ChatFormatting.UNDERLINE);
+        if ((flags & STRIKETHROUGH) != 0) options.add(ChatFormatting.STRIKETHROUGH);
+        if ((flags & OBFUSCATED) != 0) options.add(ChatFormatting.OBFUSCATED);
+        return (Appearance) (Object) ((Style) (Object) this).applyFormats(options.toArray(new ChatFormatting[0]));
     }
 
     default Appearance color(FormattingColor color) {
-        return (Appearance) ((Style) this).withColor(color.getColor());
+        return (Appearance) (Object) ((Style) (Object) this).withColor(color.getColor());
     }
 
     default Appearance withClickEvent(ClickAction action, String value) {
         try {
             var event = action.instantiate(value);
-            return (Appearance) ((Style) this).withClickEvent(event);
+            return (Appearance) (Object) ((Style) (Object) this).withClickEvent(event);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -68,8 +67,8 @@ public interface Appearance {
     }
 
     default Appearance withTextHoverEvent(Message text) {
-        var event = new HoverEvent.ShowText((Text) text);
-        return (Appearance) ((Style) this).withHoverEvent(event);
+        var event = new HoverEvent.ShowText((Component) text);
+        return (Appearance) (Object) ((Style) (Object) this).withHoverEvent(event);
     }
 
     boolean isItalic();

@@ -3,8 +3,8 @@ package me.deftware.client.framework.util.minecraft;
 import me.deftware.client.framework.entity.Entity;
 import me.deftware.client.framework.util.hitresult.CrosshairResult;
 import me.deftware.client.framework.world.ClientWorld;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.hit.HitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
 
 public class EntitySwingResult extends CrosshairResult {
 

@@ -2,16 +2,18 @@ package me.deftware.client.framework.network.packets;
 
 import me.deftware.client.framework.network.NetworkHandler;
 import me.deftware.client.framework.network.PacketWrapper;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.command.argument.SignedArgumentList;
-import net.minecraft.network.listener.ServerPlayPacketListener;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.encryption.NetworkEncryptionUtils;
-import net.minecraft.network.message.*;
-import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
-import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket;
-import net.minecraft.network.packet.c2s.play.ChatCommandSignedC2SPacket;
-
+import net.minecraft.client.Minecraft;
+import net.minecraft.commands.arguments.ArgumentSignatures;
+import net.minecraft.network.chat.LastSeenMessagesTracker;
+import net.minecraft.network.chat.MessageSignature;
+import net.minecraft.network.chat.SignableCommand;
+import net.minecraft.network.chat.SignedMessageBody;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ServerGamePacketListener;
+import net.minecraft.network.protocol.game.ServerboundChatCommandPacket;
+import net.minecraft.network.protocol.game.ServerboundChatCommandSignedPacket;
+import net.minecraft.network.protocol.game.ServerboundChatPacket;
+import net.minecraft.util.Crypt;
 import java.time.Instant;
 
 public class CPacketChatMessage extends PacketWrapper {
@@ -24,44 +26,44 @@ public class CPacketChatMessage extends PacketWrapper {
         super(of(text));
     }
 
-    private static Packet<ServerPlayPacketListener> of(String text) {
+    private static Packet<ServerGamePacketListener> of(String text) {
         if (text.startsWith("/")) {
             return command(text.substring(1));
         }
         return message(text);
     }
 
-    private static Packet<ServerPlayPacketListener> message(String text) {
+    private static Packet<ServerGamePacketListener> message(String text) {
         var networkHandler = NetworkHandler.getNetworkHandler();
 
         Instant instant = Instant.now();
-        long salt = NetworkEncryptionUtils.SecureRandomUtil.nextLong();
-        LastSeenMessagesCollector.LastSeenMessages lastSeenMessages = networkHandler.collect();
-        MessageSignatureData messageSignatureData = networkHandler.pack(new MessageBody(text, instant, salt, lastSeenMessages.lastSeen()));
+        long salt = Crypt.SaltSupplier.getLong();
+        LastSeenMessagesTracker.Update lastSeenMessages = networkHandler.collect();
+        MessageSignature messageSignatureData = networkHandler.pack(new SignedMessageBody(text, instant, salt, lastSeenMessages.lastSeen()));
 
-        return new ChatMessageC2SPacket(text, instant, salt, messageSignatureData, lastSeenMessages.update());
+        return new ServerboundChatPacket(text, instant, salt, java.util.Optional.ofNullable(messageSignatureData), lastSeenMessages.update());
     }
 
-    private static Packet<ServerPlayPacketListener> command(String text) {
+    private static Packet<ServerGamePacketListener> command(String text) {
         var networkHandler = NetworkHandler.getNetworkHandler();
-        var dispatcher = MinecraftClient.getInstance().getNetworkHandler().getCommandDispatcher();
-        var source = MinecraftClient.getInstance().getNetworkHandler().getCommandSource();
+        var dispatcher = Minecraft.getInstance().getConnection().getCommands();
+        var source = Minecraft.getInstance().getConnection().getSuggestionsProvider();
 
-        var signedArgumentList = SignedArgumentList.of(dispatcher.parse(text, source));
+        var signedArgumentList = SignableCommand.of(dispatcher.parse(text, source));
         if (signedArgumentList.arguments().isEmpty()) {
-            return new CommandExecutionC2SPacket(text);
+            return new ServerboundChatCommandPacket(text);
         }
 
         Instant instant = Instant.now();
-        long salt = NetworkEncryptionUtils.SecureRandomUtil.nextLong();
-        LastSeenMessagesCollector.LastSeenMessages lastSeenMessages = networkHandler.collect();
+        long salt = Crypt.SaltSupplier.getLong();
+        LastSeenMessagesTracker.Update lastSeenMessages = networkHandler.collect();
 
-        ArgumentSignatureDataMap argumentSignatureDataMap = ArgumentSignatureDataMap.sign(signedArgumentList, value -> {
-            MessageBody messageBody = new MessageBody(value, instant, salt, lastSeenMessages.lastSeen());
+        ArgumentSignatures argumentSignatureDataMap = ArgumentSignatures.signCommand(signedArgumentList, value -> {
+            SignedMessageBody messageBody = new SignedMessageBody(value, instant, salt, lastSeenMessages.lastSeen());
             return networkHandler.pack(messageBody);
         });
 
-        return new ChatCommandSignedC2SPacket(text, instant, salt, argumentSignatureDataMap, lastSeenMessages.update());
+        return new ServerboundChatCommandSignedPacket(text, instant, salt, argumentSignatureDataMap, lastSeenMessages.update());
     }
 
 }

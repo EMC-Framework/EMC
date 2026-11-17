@@ -1,10 +1,9 @@
 package me.deftware.client.framework.entity.block;
 
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.ShulkerBoxBlockEntity;
-import net.minecraft.world.chunk.BlockEntityTickInvoker;
-
 import java.awt.*;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
+import net.minecraft.world.level.block.entity.TickingBlockEntity;
 
 /**
  * @author Deftware
@@ -13,7 +12,7 @@ public class ShulkerEntity extends StorageEntity {
 
 	private Color color;
 
-	public ShulkerEntity(BlockEntity entity, BlockEntityTickInvoker ticker) {
+	public ShulkerEntity(BlockEntity entity, TickingBlockEntity ticker) {
 		super(entity, ticker);
 	}
 
@@ -27,7 +26,7 @@ public class ShulkerEntity extends StorageEntity {
 			if (getMinecraftEntity().getColor() == null) {
 				color = Color.pink;
 			} else {
-				// color = new Color(getMinecraftEntity().getColor().getMapColor().getRenderColor(0)); // TODO: Verify getMapColor
+				color = new Color(getMinecraftEntity().getColor().getTextureDiffuseColor());
 			}
 		}
 		return color;

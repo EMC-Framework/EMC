@@ -1,7 +1,7 @@
 package me.deftware.mixin.mixins.chat;
 
 import me.deftware.client.framework.message.Appearance;
-import net.minecraft.text.Style;
+import net.minecraft.network.chat.Style;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

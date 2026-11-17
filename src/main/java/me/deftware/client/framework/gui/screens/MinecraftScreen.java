@@ -5,13 +5,13 @@ import me.deftware.client.framework.event.events.EventScreen;
 import me.deftware.client.framework.gui.ScreenRegistry;
 import me.deftware.client.framework.gui.widgets.GenericComponent;
 import me.deftware.client.framework.render.gl.GLX;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
-import net.minecraft.text.OrderedText;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ServerboundContainerClosePacket;
+import net.minecraft.util.FormattedCharSequence;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Arrays;
@@ -39,16 +39,16 @@ public interface MinecraftScreen extends GenericScreen {
 	 * Closes the current screen
 	 */
 	default void close() {
-		MinecraftClient.getInstance().setScreen(null);
+		Minecraft.getInstance().gui.setScreen(null);
 	}
 
 	/**
 	 * Closes a screen handler
 	 */
 	static void closeHandledScreen(int syncId) {
-		ClientPlayerEntity entity = MinecraftClient.getInstance().player;
-		if (entity != null && entity.networkHandler != null) {
-			entity.networkHandler.sendPacket(new CloseHandledScreenC2SPacket(syncId));
+		LocalPlayer entity = Minecraft.getInstance().player;
+		if (entity != null && entity.connection != null) {
+			entity.connection.send(new ServerboundContainerClosePacket(syncId));
 		}
 	}
 
@@ -104,18 +104,18 @@ public interface MinecraftScreen extends GenericScreen {
 	}
 
 	@ApiStatus.Internal
-	static List<OrderedText> getTooltipList(Message... tooltip) {
+	static List<FormattedCharSequence> getTooltipList(Message... tooltip) {
 		return Arrays.stream(tooltip)
-				.map(Text.class::cast)
-				.map(Text::asOrderedText)
+				.map(Component.class::cast)
+				.map(Component::getVisualOrderText)
 				.collect(Collectors.toList());
 	}
 
 	@ApiStatus.Internal
-	default void renderTooltip(GLX context, int x, int y, List<OrderedText> tooltipComponents) {
-		context.getContext().drawTooltip(
-				MinecraftClient.getInstance().textRenderer,
-				tooltipComponents, HoveredTooltipPositioner.INSTANCE, x, y
+	default void renderTooltip(GLX context, int x, int y, List<FormattedCharSequence> tooltipComponents) {
+		context.getContext().setTooltipForNextFrame(
+				Minecraft.getInstance().font,
+				tooltipComponents, DefaultTooltipPositioner.INSTANCE, x, y, true
 		);
 	}
 

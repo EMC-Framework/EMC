@@ -2,8 +2,8 @@ package me.deftware.client.framework.network.packets;
 
 import me.deftware.client.framework.network.PacketWrapper;
 import me.deftware.mixin.imp.IMixinCPacketPlayer;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket;
 
 /**
  * @author Deftware
@@ -15,7 +15,7 @@ public class CPacketPlayer extends PacketWrapper {
     }
 
     public CPacketPlayer() {
-        super(new PlayerMoveC2SPacket.OnGroundOnly(false, false));
+        super(new ServerboundMovePlayerPacket.StatusOnly(false, false));
     }
 
     public void setOnGround(boolean state) {
@@ -27,7 +27,7 @@ public class CPacketPlayer extends PacketWrapper {
     }
 
     public double getY(double currentPosY) {
-        return ((PlayerMoveC2SPacket) getPacket()).getY(currentPosY);
+        return ((ServerboundMovePlayerPacket) getPacket()).getY(currentPosY);
     }
 
     public void setMoving(boolean state) {

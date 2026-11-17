@@ -1,7 +1,7 @@
 package me.deftware.mixin.mixins.biome;
 
-import net.minecraft.world.gen.HeightContext;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.levelgen.WorldGenerationContext;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
  * Allows passing a null ChunkGenerator, and only
  * using the HeightViewLimit (Which Chunk implements)
  */
-@Mixin(HeightContext.class)
+@Mixin(WorldGenerationContext.class)
 public class MixinHeightContext {
 
     @Shadow
@@ -26,20 +26,20 @@ public class MixinHeightContext {
     @Mutable
     private int height;
 
-    @Redirect(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/gen/chunk/ChunkGenerator;getMinimumY()I"))
+    @Redirect(method = "<init>(Lnet/minecraft/world/level/chunk/ChunkGenerator;Lnet/minecraft/world/level/LevelHeightAccessor;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/chunk/ChunkGenerator;getMinY()I"))
     private int onGetChunkY(ChunkGenerator instance) {
         if (instance == null) {
             return -9999;
         }
-        return instance.getMinimumY();
+        return instance.getMinY();
     }
 
-    @Redirect(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/gen/chunk/ChunkGenerator;getWorldHeight()I"))
+    @Redirect(method = "<init>(Lnet/minecraft/world/level/chunk/ChunkGenerator;Lnet/minecraft/world/level/LevelHeightAccessor;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/chunk/ChunkGenerator;getGenDepth()I"))
     private int onGetChunkHeight(ChunkGenerator instance) {
         if (instance == null) {
             return 9999;
         }
-        return instance.getWorldHeight();
+        return instance.getGenDepth();
     }
 
 }

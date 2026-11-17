@@ -1,28 +1,24 @@
 package me.deftware.mixin.mixins.render;
 
 import me.deftware.client.framework.math.Vector3;
+import net.minecraft.client.renderer.FirstPersonHandsAndItemsRenderer;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.state.level.FirstPersonHandsAndItemsRenderState;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.MapDecorations;
 import me.deftware.client.framework.event.events.EventStructureLocation;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
-import net.minecraft.client.render.item.HeldItemRenderer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.MapDecorationsComponent;
-import net.minecraft.item.ItemStack;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
+import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.Map;
 
-@Mixin(HeldItemRenderer.class)
+@Mixin(FirstPersonHandsAndItemsRenderer.class)
 public class MixinHeldItemRenderer {
 
-    @Shadow @Final private EntityRenderDispatcher entityRenderDispatcher;
     @Unique
     private static ItemStack copiedStack = null;
 
@@ -40,16 +36,16 @@ public class MixinHeldItemRenderer {
         return EventStructureLocation.StructureType.OtherMapIcon;
     }
     
-    @Inject(method = "renderFirstPersonMap", at = @At("HEAD"))
-    private void renderFirstPersonMap(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int swingProgress,
-        ItemStack stack, CallbackInfo info) {
-        if (copiedStack != null && ItemStack.areEqual(copiedStack, stack)) {
+    @Inject(method = "renderMap", at = @At("HEAD"))
+    private void renderFirstPersonMap(PoseStack matrices, SubmitNodeCollector submitNodeCollector, int swingProgress,
+        ItemStack stack, boolean bl, FirstPersonHandsAndItemsRenderState state, CallbackInfo info) {
+        if (copiedStack != null && ItemStack.matches(copiedStack, stack)) {
             return;
         }
         copiedStack = stack.copy();
-        var data = stack.get(DataComponentTypes.MAP_DECORATIONS);
+        var data = stack.get(DataComponents.MAP_DECORATIONS);
         if (data != null) {
-            for (Map.Entry<String, MapDecorationsComponent.Decoration> entry : data.decorations().entrySet()) {
+            for (Map.Entry<String, MapDecorations.Entry> entry : data.decorations().entrySet()) {
                 var structure = getStructure(entry.getKey());
                 var decoration = entry.getValue();
                 new EventStructureLocation(

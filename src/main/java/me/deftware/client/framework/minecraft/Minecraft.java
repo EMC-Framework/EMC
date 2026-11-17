@@ -12,9 +12,7 @@ import me.deftware.client.framework.util.minecraft.BlockSwingResult;
 import me.deftware.client.framework.world.ClientWorld;
 import me.deftware.client.framework.world.WorldTimer;
 import net.minecraft.SharedConstants;
-import net.minecraft.client.MinecraftClient;
-
-import net.minecraft.client.session.Session;
+import net.minecraft.client.User;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,7 +28,7 @@ import java.util.function.Function;
 public interface Minecraft {
 
 	static Minecraft getMinecraftGame() {
-		return (Minecraft) MinecraftClient.getInstance();
+		return (Minecraft) net.minecraft.client.Minecraft.getInstance();
 	}
 
 	/**
@@ -40,7 +38,7 @@ public interface Minecraft {
 	default MainEntityPlayer _getPlayer() {
 		if (this.getClientWorld() == null)
 			return null;
-		return this.getClientWorld().getEntityByReference(MinecraftClient.getInstance().player);
+		return this.getClientWorld().getEntityByReference(net.minecraft.client.Minecraft.getInstance().player);
 	}
 
 	/**
@@ -50,14 +48,14 @@ public interface Minecraft {
 	default Entity _getCameraEntity() {
 		if (this.getClientWorld() == null)
 			return null;
-		return this.getClientWorld().getEntityByReference(MinecraftClient.getInstance().cameraEntity);
+		return this.getClientWorld().getEntityByReference(net.minecraft.client.Minecraft.getInstance().getCameraEntity());
 	}
 
 	/**
 	 * @return The in-game chat
 	 */
 	default GameChat getGameChat() {
-		return (GameChat) MinecraftClient.getInstance().inGameHud.getChatHud();
+		return (GameChat) net.minecraft.client.Minecraft.getInstance().gui.hud.getChat();
 	}
 
 	WorldEntityRenderer getWorldEntityRenderer();
@@ -68,7 +66,7 @@ public interface Minecraft {
 	 * @return The current game directory
 	 */
 	default File _getGameDir() {
-		return MinecraftClient.getInstance().runDirectory;
+		return net.minecraft.client.Minecraft.getInstance().gameDirectory;
 	}
 
 	/**
@@ -160,14 +158,14 @@ public interface Minecraft {
 	 * @return The current Minecraft version
 	 */
 	static String getMinecraftVersion() {
-		return SharedConstants.getGameVersion().getName();
+		return SharedConstants.getCurrentVersion().name();
 	}
 
 	/**
 	 * @return The current protocol version
 	 */
 	static int getMinecraftProtocolVersion() {
-		return SharedConstants.getGameVersion().getProtocolVersion();
+		return SharedConstants.getCurrentVersion().protocolVersion();
 	}
 
 	/**
@@ -189,7 +187,7 @@ public interface Minecraft {
 	 * @return The current session
 	 */
 	@ApiStatus.Internal
-	Session getSession();
+	User getSession();
 
 	/**
 	 * Sets the current session

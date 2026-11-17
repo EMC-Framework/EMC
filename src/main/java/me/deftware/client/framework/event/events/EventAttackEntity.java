@@ -9,7 +9,7 @@ public class EventAttackEntity extends Event {
 
 	private final Entity player, target;
 
-	public EventAttackEntity(net.minecraft.entity.Entity player, net.minecraft.entity.Entity target) {
+	public EventAttackEntity(net.minecraft.world.entity.Entity player, net.minecraft.world.entity.Entity target) {
 		this.player = ClientWorld.getClientWorld().getEntityByReference(player);
 		this.target = ClientWorld.getClientWorld().getEntityByReference(target);
 	}

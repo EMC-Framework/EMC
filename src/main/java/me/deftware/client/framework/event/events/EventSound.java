@@ -1,8 +1,8 @@
 package me.deftware.client.framework.event.events;
 
 import me.deftware.client.framework.message.Message;
+import net.minecraft.client.resources.sounds.SoundInstance;
 import me.deftware.client.framework.event.Event;
-import net.minecraft.client.sound.SoundInstance;
 
 public class EventSound extends Event {
     private SoundInstance instance;
@@ -13,7 +13,7 @@ public class EventSound extends Event {
     }
 
     public String getSoundId() {
-        return instance.getId().toString();
+        return instance.getIdentifier().toString();
     }
 
     public Message getSoundName() {

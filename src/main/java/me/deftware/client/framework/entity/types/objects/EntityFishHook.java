@@ -1,9 +1,8 @@
 package me.deftware.client.framework.entity.types.objects;
 
 import me.deftware.client.framework.entity.Entity;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.projectile.FishingBobberEntity;
-
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.projectile.FishingHook;
 import java.util.Objects;
 
 /**
@@ -11,22 +10,22 @@ import java.util.Objects;
  */
 public class EntityFishHook extends Entity {
 
-	private static FishingBobberEntity fishHookPtr;
+	private static FishingHook fishHookPtr;
 	private static EntityFishHook fishHook;
 
 	public static boolean hasFish() {
-		return Objects.requireNonNull(MinecraftClient.getInstance().player).fishHook != null;
+		return Objects.requireNonNull(Minecraft.getInstance().player).fishing != null;
 	}
 
 	public static EntityFishHook getInstance() {
-		if (fishHook == null || Objects.requireNonNull(MinecraftClient.getInstance().player).fishHook != fishHookPtr) {
-			fishHookPtr = Objects.requireNonNull(MinecraftClient.getInstance().player).fishHook;
+		if (fishHook == null || Objects.requireNonNull(Minecraft.getInstance().player).fishing != fishHookPtr) {
+			fishHookPtr = Objects.requireNonNull(Minecraft.getInstance().player).fishing;
 			fishHook = new EntityFishHook(fishHookPtr);
 		}
 		return fishHook;
 	}
 
-	public EntityFishHook(net.minecraft.entity.Entity entity) {
+	public EntityFishHook(net.minecraft.world.entity.Entity entity) {
 		super(entity);
 	}
 

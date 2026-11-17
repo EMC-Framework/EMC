@@ -1,10 +1,10 @@
 package me.deftware.mixin.mixins.chat;
 
 import me.deftware.client.framework.message.Message;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Mixin;
 
-@Mixin(Text.class)
+@Mixin(Component.class)
 public interface MixinText extends Message {
 
 }

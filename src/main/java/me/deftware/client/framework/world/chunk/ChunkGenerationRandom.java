@@ -1,7 +1,7 @@
 package me.deftware.client.framework.world.chunk;
 
-import net.minecraft.util.math.random.ChunkRandom;
-import net.minecraft.util.math.random.Random;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.levelgen.WorldgenRandom;
 
 public interface ChunkGenerationRandom extends Randomizer {
 
@@ -10,8 +10,8 @@ public interface ChunkGenerationRandom extends Randomizer {
     void _setDecoratorSeed(long populationSeed, int index, int step);
 
     static ChunkGenerationRandom create(long seed) {
-        Random random = ChunkRandom.RandomProvider.XOROSHIRO.create(seed);
-        ChunkRandom chunkRandom = new ChunkRandom(random);
+        RandomSource random = WorldgenRandom.Algorithm.XOROSHIRO.newInstance(seed);
+        WorldgenRandom chunkRandom = new WorldgenRandom(random);
         return (ChunkGenerationRandom) chunkRandom;
     }
 

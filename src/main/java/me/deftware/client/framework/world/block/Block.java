@@ -8,11 +8,10 @@ import me.deftware.client.framework.item.items.BlockItem;
 import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.render.ItemRendering;
 import me.deftware.client.framework.render.gl.GLX;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.registry.Registries;
-import net.minecraft.resource.Resource;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.resources.Resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
@@ -27,10 +26,10 @@ public interface Block extends Itemizable, SelectableList.ListItem {
     Message getName();
 
     default InputStream getAsset() throws IOException {
-        Identifier blockResource = Registries.BLOCK.getId((net.minecraft.block.Block) this);
-        Identifier blockTexture = Identifier.of(blockResource.getNamespace(), "textures/block/" + blockResource.getPath() + ".png");
-        Optional<Resource> resource = MinecraftClient.getInstance().getResourceManager().getResource(blockTexture);
-        return resource.orElseThrow(() -> new IOException("Unable to find resource")).getInputStream();
+        Identifier blockResource = BuiltInRegistries.BLOCK.getKey((net.minecraft.world.level.block.Block) this);
+        Identifier blockTexture = Identifier.fromNamespaceAndPath(blockResource.getNamespace(), "textures/block/" + blockResource.getPath() + ".png");
+        Optional<Resource> resource = Minecraft.getInstance().getResourceManager().getResource(blockTexture);
+        return resource.orElseThrow(() -> new IOException("Unable to find resource")).open();
     }
 
     @Override
@@ -40,15 +39,15 @@ public interface Block extends Itemizable, SelectableList.ListItem {
     }
 
     static Block of(Item item) {
-        if (!(item instanceof BlockItem)) {
+        if (!(item.asMinecraftItem() instanceof BlockItem)) {
             throw new IllegalArgumentException("Supplied item must be a block item");
         }
-        return (Block) net.minecraft.block.Block.getBlockFromItem((net.minecraft.item.Item) item);
+        return (Block) net.minecraft.world.level.block.Block.byItem(item.asMinecraftItem());
     }
 
     @Override
     default String getTranslationKey() {
-        return ((net.minecraft.block.Block) this).asItem().getTranslationKey();
+        return ((net.minecraft.world.level.block.Block) this).asItem().getDescriptionId();
     }
 
 }

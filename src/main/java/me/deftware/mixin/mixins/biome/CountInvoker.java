@@ -1,15 +1,15 @@
 package me.deftware.mixin.mixins.biome;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.gen.placementmodifier.AbstractCountPlacementModifier;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.levelgen.placement.RepeatingPlacement;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
-@Mixin(AbstractCountPlacementModifier.class)
+@Mixin(RepeatingPlacement.class)
 public interface CountInvoker {
 
-    @Invoker("getCount")
-    int getInvokedCount(Random random, BlockPos pos);
+    @Invoker("count")
+    int getInvokedCount(RandomSource random, BlockPos pos);
 
 }

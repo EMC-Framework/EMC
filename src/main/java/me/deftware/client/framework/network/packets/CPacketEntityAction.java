@@ -1,8 +1,8 @@
 package me.deftware.client.framework.network.packets;
 
 import me.deftware.client.framework.network.PacketWrapper;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket;
 
 public class CPacketEntityAction extends PacketWrapper {
     
@@ -11,7 +11,7 @@ public class CPacketEntityAction extends PacketWrapper {
     }
     
     public Action getAction() {
-        return Action.values()[((ClientCommandC2SPacket)packet).getMode().ordinal()];
+        return Action.values()[((ServerboundPlayerCommandPacket)packet).getAction().ordinal()];
     }
     
     public enum Action {

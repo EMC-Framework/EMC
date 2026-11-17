@@ -1,9 +1,8 @@
 package me.deftware.client.framework.render.texture;
 
-import com.mojang.blaze3d.systems.RenderPass;
+import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.GpuTexture;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.renderpearl.api.textures.GpuTexture;
 import lombok.Getter;
 import me.deftware.client.framework.gui.GuiScreen;
 import me.deftware.client.framework.main.EMCMod;
@@ -11,20 +10,12 @@ import me.deftware.client.framework.render.batching.RenderStack;
 import me.deftware.client.framework.render.gl.GLX;
 import me.deftware.client.framework.util.ResourceUtils;
 import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.Framebuffer;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gl.ShaderProgram;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.*;
-import net.minecraft.client.texture.AbstractTexture;
-import net.minecraft.client.util.ScreenshotRecorder;
-import org.joml.Matrix4f;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.minecraft.client.renderer.texture.DynamicTexture;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL30;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -32,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.util.OptionalInt;
 
 /**
  * @author Deftware
@@ -41,6 +31,8 @@ public class GlTexture implements GuiScreen.BackgroundType {
 
     @Getter
     protected GpuTexture glId;
+
+    protected DynamicTexture dynamicTexture;
 
     @Getter
     protected int textureWidth, textureHeight, scaling;
@@ -75,11 +67,9 @@ public class GlTexture implements GuiScreen.BackgroundType {
         this.scaling = scaling;
         this.textureWidth = image.getWidth();
         this.textureHeight = image.getHeight();
-        /*this.glId = GL11.glGenTextures();
-        GL13.glActiveTexture(GL13.GL_TEXTURE0);
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.glId);
-        this.upload(getImageBuffer(image), false);
-        GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);*/
+        if (RenderSystem.tryGetDevice() != null) {
+            this.upload(getImageBuffer(image), false);
+        }
     }
 
     public GlTexture draw(GLX context, int x, int y, int width, int height) {
@@ -96,6 +86,8 @@ public class GlTexture implements GuiScreen.BackgroundType {
     }
 
     public GlTexture bind() {
+        boundGlTexture = this;
+        boundMcTexture = dynamicTexture;
         bindTexture(glId);
         return this;
     }
@@ -106,38 +98,57 @@ public class GlTexture implements GuiScreen.BackgroundType {
 
     public void unbind() {
         boundTexture = null;
+        boundGlTexture = null;
+        boundMcTexture = null;
     }
 
     public void upload(BufferedImage image) {
-        upload(getImageBuffer(image), true);
+        this.textureWidth = image.getWidth();
+        this.textureHeight = image.getHeight();
+        upload(getImageBuffer(image), dynamicTexture != null);
     }
 
     /**
      * If the texture is to be replaced, the size MUST match the previous size
      */
     public void upload(ByteBuffer buffer, boolean replace) {
-        // Minecraft modifies these
-        GL11.glPixelStorei(GL11.GL_UNPACK_ROW_LENGTH, 0);
-        GL11.glPixelStorei(GL11.GL_UNPACK_SKIP_PIXELS, 0);
-        GL11.glPixelStorei(GL11.GL_UNPACK_SKIP_ROWS, 0);
-        GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 4);
-        // Clamping mode
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
-        // Scaling
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, scaling);
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, scaling);
-        // Upload
-        if (replace)
-            // Replace texture, without reallocating
-            GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, textureWidth, textureHeight, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
-        else
-            GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, textureWidth, textureHeight, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
+        if (textureWidth <= 0 || textureHeight <= 0 || RenderSystem.tryGetDevice() == null) {
+            return;
+        }
+        NativeImage img = new NativeImage(textureWidth, textureHeight, false);
+        ByteBuffer view = buffer.duplicate();
+        view.rewind();
+        for (int y = 0; y < textureHeight; y++) {
+            for (int x = 0; x < textureWidth; x++) {
+                int r = view.get() & 0xFF;
+                int g = view.get() & 0xFF;
+                int b = view.get() & 0xFF;
+                int a = view.get() & 0xFF;
+                img.setPixel(x, y, (a << 24) | (r << 16) | (g << 8) | b);
+            }
+        }
+        if (dynamicTexture == null || !replace) {
+            if (dynamicTexture != null) {
+                dynamicTexture.close();
+            }
+            dynamicTexture = new DynamicTexture(() -> "emc_tex", img);
+        } else {
+            dynamicTexture.setPixels(img);
+            dynamicTexture.upload();
+        }
+        this.glId = dynamicTexture.getTexture();
+        if (boundGlTexture == this) {
+            boundMcTexture = dynamicTexture;
+            boundTexture = this.glId;
+        }
     }
 
     public void destroy() {
-        bind();
-        glId.close();
+        unbind();
+        if (dynamicTexture != null) {
+            dynamicTexture.close();
+            dynamicTexture = null;
+        }
         glId = null;
     }
 
@@ -171,15 +182,23 @@ public class GlTexture implements GuiScreen.BackgroundType {
     }
 
     private static GpuTexture boundTexture;
+    private static GlTexture boundGlTexture;
+    private static AbstractTexture boundMcTexture;
 
     public static void bindTexture(GpuTexture texture) {
-        // RenderSystem.bindTexture(id); TODO
-        RenderSystem.setShaderTexture(0, texture);
+        boundTexture = texture;
     }
 
     public static void bindTexture(MinecraftIdentifier id) {
-        AbstractTexture texture = MinecraftClient.getInstance().getTextureManager().getTexture(id);
-        bindTexture(texture.getGlTexture());
+        AbstractTexture texture = Minecraft.getInstance().getTextureManager().getTexture(id);
+        boundMcTexture = texture;
+        if (texture != null) {
+            bindTexture(texture.getTexture());
+        }
+    }
+
+    public static AbstractTexture getBoundAbstractTexture() {
+        return boundMcTexture;
     }
 
     private static void drawTexture(GLX context, int x0, int x1, int y0, int y1, int z, int regionWidth, int regionHeight, float u, float v, int textureWidth, int textureHeight) {
@@ -187,17 +206,31 @@ public class GlTexture implements GuiScreen.BackgroundType {
     }
 
     private static void drawTexturedQuad(GLX context, int x0, int x1, int y0, int y1, int z, float u0, float u1, float v0, float v1) {
-        assert boundTexture != null;
-
-        /*RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
-        Matrix4f matrix4f = context.getContext().getMatrices().peek().getPositionMatrix();
-        BufferBuilder bufferBuilder = Tessellator.getInstance()
-                .begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-        bufferBuilder.vertex(matrix4f, x0, y1, z).texture(u0, v1); // .next();
-        bufferBuilder.vertex(matrix4f, x1, y1, z).texture(u1, v1); // .next();
-        bufferBuilder.vertex(matrix4f, x1, y0, z).texture(u1, v0); // .next();
-        bufferBuilder.vertex(matrix4f, x0, y0, z).texture(u0, v0); // .next();
-        BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());*/
+        if (context != null && context.getContext() != null && boundMcTexture != null && boundMcTexture.getTextureView() != null) {
+            var gfx = context.getContext();
+            ScreenRectangle clip = RenderStack.getActiveScissor(gfx);
+            if (clip != null && (clip.width() <= 0 || clip.height() <= 0)) {
+                return;
+            }
+            boolean pushedScissor = false;
+            if (clip != null) {
+                gfx.enableScissor(clip.left(), clip.top(), clip.right(), clip.bottom());
+                pushedScissor = true;
+            }
+            boolean custom = RenderStack.isInCustomMatrix();
+            if (custom) {
+                float inv = 1f / (float) Minecraft.getInstance().getWindow().getGuiScale();
+                gfx.pose().pushMatrix();
+                gfx.pose().scale(inv, inv);
+            }
+            gfx.blit(boundMcTexture.getTextureView(), boundMcTexture.getSampler(), x0, y0, x1, y1, u0, u1, v0, v1);
+            if (custom) {
+                gfx.pose().popMatrix();
+            }
+            if (pushedScissor) {
+                gfx.disableScissor();
+            }
+        }
     }
 
 }

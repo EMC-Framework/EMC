@@ -1,9 +1,8 @@
 package me.deftware.client.framework.resource;
 
-import net.minecraft.resource.Resource;
-import net.minecraft.util.Identifier;
-
 import java.io.InputStream;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.resources.Resource;
 
 /**
  * @author Deftware
@@ -20,12 +19,12 @@ public class ModResource extends Resource {
     }
 
     @Override
-    public InputStream getInputStream() {
+    public InputStream open() {
         return stream;
     }
 
     @Override
-    public String getPackId() {
+    public String sourcePackId() {
         return id.toString();
     }
 

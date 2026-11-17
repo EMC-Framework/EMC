@@ -1,6 +1,5 @@
 package me.deftware.mixin.mixins.game;
 
-import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.minecraft.UserApiService;
 import com.mojang.blaze3d.systems.RenderSystem;
 import lombok.Getter;
@@ -20,30 +19,24 @@ import me.deftware.client.framework.util.minecraft.BlockSwingResult;
 import me.deftware.client.framework.world.ClientWorld;
 import me.deftware.client.framework.world.WorldTimer;
 import net.minecraft.SharedConstants;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.hud.DebugHud;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.network.ServerInfo;
-import net.minecraft.client.option.GameOptions;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.client.session.ProfileKeys;
-import net.minecraft.client.session.Session;
-import net.minecraft.client.texture.AbstractTexture;
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.util.ScreenshotRecorder;
-import net.minecraft.client.util.Window;
-import net.minecraft.resource.ResourcePackManager;
-import net.minecraft.server.SaveLoader;
-import net.minecraft.util.ModStatus;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.world.level.storage.LevelStorage;
+import net.minecraft.client.Screenshot;
+import net.minecraft.client.User;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.multiplayer.ProfileKeyPairManager;
+import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.server.Services;
+import net.minecraft.server.WorldStem;
+import net.minecraft.server.packs.repository.PackRepository;
+import net.minecraft.util.ModCheck;
+import net.minecraft.world.level.gamerules.GameRules;
+import net.minecraft.world.level.storage.LevelStorageSource;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -51,9 +44,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
-@Mixin(MinecraftClient.class)
+@Mixin(net.minecraft.client.Minecraft.class)
 public abstract class MixinMinecraft implements Minecraft {
 
     @Getter
@@ -70,12 +64,12 @@ public abstract class MixinMinecraft implements Minecraft {
     @Mutable
     @Shadow
     @Final
-    private Session session;
+    private User user;
 
     @Mutable
     @Shadow
     @Final
-    private MinecraftSessionService sessionService;
+    private Services services;
 
     @Mutable
     @Shadow
@@ -83,19 +77,19 @@ public abstract class MixinMinecraft implements Minecraft {
     private UserApiService userApiService;
 
     @Shadow
-    private static int currentFps;
+    private static int fps;
 
     @Shadow
-    private int itemUseCooldown;
+    private int rightClickDelay;
 
     @Shadow
-    protected abstract boolean doAttack();
+    protected abstract boolean startAttack();
 
     @Shadow
-    protected abstract void doItemUse();
+    protected abstract void startUseItem();
 
     @Shadow
-    protected abstract void doItemPick();
+    protected abstract void pickBlockOrEntity();
 
     @Shadow
     @Final
@@ -104,18 +98,18 @@ public abstract class MixinMinecraft implements Minecraft {
     @Shadow
     @Mutable
     @Final
-    private ProfileKeys profileKeys;
+    private ProfileKeyPairManager profileKeyPairManager;
 
     @Shadow
     @Final
-    public File runDirectory;
+    public File gameDirectory;
 
     @Unique
     private String worldName;
 
-    @Inject(method = "startIntegratedServer", at = @At("HEAD"))
-    private void onIntegratedServer(LevelStorage.Session session, ResourcePackManager resourcePackManager, SaveLoader saveLoader, boolean bl, CallbackInfo ci) {
-        this.worldName = saveLoader.saveProperties().getLevelName();
+    @Inject(method = "doWorldLoad", at = @At("HEAD"))
+    private void onIntegratedServer(LevelStorageSource.LevelStorageAccess session, PackRepository resourcePackManager, WorldStem saveLoader, Optional<GameRules> gameRules, boolean bl, CallbackInfo ci) {
+        this.worldName = saveLoader.worldDataAndGenSettings().data().getLevelName();
     }
 
     @Override
@@ -125,13 +119,13 @@ public abstract class MixinMinecraft implements Minecraft {
 
     @Override
     public GameCamera getCamera() {
-        return (GameCamera) ((MinecraftClient) (Object) this).getEntityRenderDispatcher().camera;
+        return (GameCamera) ((net.minecraft.client.Minecraft) (Object) this).getEntityRenderDispatcher().camera;
     }
 
     @Nullable
     @Override
     public ClientWorld getClientWorld() {
-        return (ClientWorld) ((MinecraftClient) (Object) this).world;
+        return (ClientWorld) ((net.minecraft.client.Minecraft) (Object) this).level;
     }
 
     @Override
@@ -142,63 +136,71 @@ public abstract class MixinMinecraft implements Minecraft {
     @Nullable
     @Override
     public ServerDetails getConnectedServer() {
-        return (ServerDetails) ((MinecraftClient) (Object) this).getCurrentServerEntry();
+        return (ServerDetails) ((net.minecraft.client.Minecraft) (Object) this).getCurrentServer();
     }
 
     @Override
     public void openScreen(GenericScreen screen) {
-        ((MinecraftClient) (Object) this).setScreen((Screen) screen);
+        ((net.minecraft.client.Minecraft) (Object) this).gui.setScreen((Screen) screen);
     }
 
     @Nullable
     @Override
     public MinecraftScreen getScreen() {
-        return (MinecraftScreen) ((MinecraftClient) (Object) this).currentScreen;
+        return (MinecraftScreen) ((net.minecraft.client.Minecraft) (Object) this).gui.screen();
     }
 
     @Override
     public boolean _isOnRealms() {
-        ServerInfo serverInfo = ((MinecraftClient) (Object) this).getCurrentServerEntry();
+        ServerData serverInfo = ((net.minecraft.client.Minecraft) (Object) this).getCurrentServer();
         return serverInfo != null && serverInfo.isRealm();
     }
 
     @Override
     public boolean _isSinglePlayer() {
-        return ((MinecraftClient) (Object) this).isInSingleplayer();
+        return ((net.minecraft.client.Minecraft) (Object) this).isLocalServer();
     }
 
     @Override
     public boolean isMouseOver() {
-        return ((MinecraftClient) (Object) this).crosshairTarget != null;
+        return ((net.minecraft.client.Minecraft) (Object) this).hitResult != null;
     }
 
     @Override
     public void runOnRenderThread(Runnable runnable) {
-        // RenderSystem.recordRenderCall(runnable::run);
+        if (runnable != null) {
+            ((net.minecraft.client.Minecraft) (Object) this).execute(runnable);
+        }
     }
 
     @Override
     public int getFPS() {
-        return currentFps;
+        return fps;
     }
 
     @Override
     public void shutdown() {
-        ((MinecraftClient) (Object) this).stop();
+        ((net.minecraft.client.Minecraft) (Object) this).stop();
     }
 
     @Override
-    public Session getSession() {
-        return this.session;
+    public User getSession() {
+        return this.user;
     }
 
     @Override
     public void setSession(AccountSession session) {
-        this.session = session.getSession();
+        this.user = session.getSession();
         try {
-            this.sessionService = session.getSessionService();
-            this.userApiService = session.getAuthenticationService().createUserApiService(this.session.getAccessToken());
-            this.profileKeys = ProfileKeys.create(this.userApiService, this.session, this.runDirectory.toPath()); // TODO: Verify this
+            this.services = new Services(
+                    session.getSessionService(),
+                    this.services.servicesKeySet(),
+                    this.services.profileRepository(),
+                    this.services.nameToIdCache(),
+                    this.services.profileResolver()
+            );
+            this.userApiService = session.getDiscoveryService().createUserApiService(this.user.getAccessToken());
+            this.profileKeyPairManager = ProfileKeyPairManager.create(this.userApiService, this.user, this.gameDirectory.toPath());
         } catch (Exception ex) {
             this.userApiService = UserApiService.OFFLINE;
             LOGGER.error("Failed to authenticate session", ex);
@@ -207,7 +209,7 @@ public abstract class MixinMinecraft implements Minecraft {
 
     @Override
     public BlockSwingResult getHitBlock() {
-        if (MinecraftClient.getInstance().crosshairTarget instanceof BlockHitResult blockHitResult) {
+        if (net.minecraft.client.Minecraft.getInstance().hitResult instanceof BlockHitResult blockHitResult) {
             if (swingResult == null)
                 swingResult = new BlockSwingResult(blockHitResult);
             else
@@ -219,7 +221,7 @@ public abstract class MixinMinecraft implements Minecraft {
 
     @Override
     public Entity getHitEntity() {
-        if (MinecraftClient.getInstance().crosshairTarget instanceof EntityHitResult entityHitResult) {
+        if (net.minecraft.client.Minecraft.getInstance().hitResult instanceof EntityHitResult entityHitResult) {
             return ClientWorld.getClientWorld().getEntityByReference(
                     entityHitResult.getEntity()
             );
@@ -229,62 +231,56 @@ public abstract class MixinMinecraft implements Minecraft {
 
     @Override
     public void setRightClickDelayTimer(int delay) {
-        this.itemUseCooldown = delay;
+        this.rightClickDelay = delay;
     }
 
     @Override
     public void doClickMouse() {
-        doAttack();
+        startAttack();
     }
 
     @Override
     public void doRightClickMouse() {
-        doItemUse();
+        startUseItem();
     }
 
     @Override
     public void doMiddleClickMouse() {
-        doItemPick();
+        pickBlockOrEntity();
     }
 
-    @Inject(method = "getModStatus", at = @At(value = "TAIL"), cancellable = true)
-    private static void isModdedCheck(CallbackInfoReturnable<ModStatus> cir) {
+    @Inject(method = "checkModStatus", at = @At(value = "TAIL"), cancellable = true)
+    private static void isModdedCheck(CallbackInfoReturnable<ModCheck> cir) {
         cir.setReturnValue(
-                new ModStatus(ModStatus.Confidence.PROBABLY_NOT, "Client jar signature and brand is untouched")
+                new ModCheck(ModCheck.Confidence.PROBABLY_NOT, "Client jar signature and brand is untouched")
         );
     }
 
-    @Inject(method = "getVersionType", at = @At("HEAD"), cancellable = true)
-    private void onGetVersionType(CallbackInfoReturnable<String> cir) {
-        cir.setReturnValue("release");
-    }
-
-    @Inject(method = "getGameVersion", at = @At("TAIL"), cancellable = true)
+    @Inject(method = "getLaunchedVersion", at = @At("TAIL"), cancellable = true)
     private void onGetGameVersion(CallbackInfoReturnable<String> cir) {
-        cir.setReturnValue(SharedConstants.getGameVersion().getName());
+        cir.setReturnValue(SharedConstants.getCurrentVersion().name());
     }
 
-    @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/DebugHud;shouldShowDebugHud()Z"))
-    private boolean onScreenTick(DebugHud instance) {
-        if (((MinecraftClient) (Object) this).currentScreen instanceof MinecraftScreen screen) {
+    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;tick()V"))
+    private void onScreenTick(CallbackInfo ci) {
+        if (((net.minecraft.client.Minecraft) (Object) this).gui.screen() instanceof MinecraftScreen screen) {
             screen.getEventScreen().setType(EventScreen.Type.Tick).broadcast();
         }
-        return instance.shouldShowDebugHud();
     }
 
     @Override
     public WorldEntityRenderer getWorldEntityRenderer() {
-        return (WorldEntityRenderer) ((MinecraftClient) (Object) this).worldRenderer;
+        return (WorldEntityRenderer) ((net.minecraft.client.Minecraft) (Object) this).levelRenderer;
     }
 
-    @Inject(method = "setWorld", at = @At("TAIL"))
-    private void onSetWorld(net.minecraft.client.world.ClientWorld world, CallbackInfo ci) {
+    @Inject(method = "updateLevelInEngines(Lnet/minecraft/client/multiplayer/ClientLevel;)V", at = @At("TAIL"))
+    private void onSetWorld(net.minecraft.client.multiplayer.ClientLevel world, CallbackInfo ci) {
         new EventWorldLoad((ClientWorld) world).broadcast();
     }
 
     @Override
     public Chat getChatSender() {
-        return (Chat) ((MinecraftClient) (Object) this).player;
+        return (Chat) ((net.minecraft.client.Minecraft) (Object) this).player;
     }
 
     @Unique
@@ -296,13 +292,27 @@ public abstract class MixinMinecraft implements Minecraft {
     @Unique
     @Override
     public void screenshot(File file) throws IOException {
-        ScreenshotRecorder.takeScreenshot(((MinecraftClient) (Object) this).getFramebuffer(), image -> {
+        Screenshot.takeScreenshot(((net.minecraft.client.Minecraft) (Object) this).gameRenderer.mainRenderTarget(), image -> {
             try {
-                image.writeTo(file);
+                image.writeToFile(file);
             } catch (Exception ex) {
                 LOGGER.error("Failed to write screenshot to {}", file.getName(), ex);
             }
         });
+    }
+
+    @Inject(method = "shouldEntityAppearGlowing", at = @At("HEAD"), cancellable = true)
+    private void onShouldEntityAppearGlowing(net.minecraft.world.entity.Entity entity, CallbackInfoReturnable<Boolean> cir) {
+        if (me.deftware.client.framework.render.shader.EntityShader.getMatchingOutlineColor(entity) != 0) {
+            cir.setReturnValue(true);
+        }
+    }
+
+    @Inject(method = "close", at = @At("RETURN"))
+    private void onClose(CallbackInfo ci) {
+        // Aristois spawns non-daemon BlockESP Mesher worker threads that keep DestroyJavaVM
+        // waiting until ClientShutdownWatchdog triggers; exit cleanly after close() finishes.
+        System.exit(0);
     }
 
 }

@@ -5,22 +5,19 @@ import me.deftware.client.framework.entity.effect.AppliedEffect;
 import me.deftware.client.framework.event.events.EventGetItemToolTip;
 import me.deftware.client.framework.item.Enchantment;
 import me.deftware.client.framework.item.Item;
+import me.deftware.client.framework.item.ItemAdapter;
 import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.registry.EnchantmentRegistry;
 import me.deftware.client.framework.world.block.BlockState;
-import net.minecraft.client.gui.screen.ingame.AnvilScreen;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.ItemEnchantmentsComponent;
-import net.minecraft.component.type.PotionContentsComponent;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.thrown.PotionEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.screen.AnvilScreenHandler;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -45,7 +42,7 @@ public class MixinItemStack implements me.deftware.client.framework.item.ItemSta
     @Unique
     @Override
     public int getMaxCount() {
-        return ((ItemStack) (Object) this).getMaxCount();
+        return ((ItemStack) (Object) this).getMaxStackSize();
     }
 
     @Unique
@@ -57,26 +54,26 @@ public class MixinItemStack implements me.deftware.client.framework.item.ItemSta
     @Unique
     @Override
     public Item getItem() {
-        return (Item) ((ItemStack) (Object) this).getItem();
+        return ItemAdapter.wrap(((ItemStack) (Object) this).getItem());
     }
 
     @Unique
     @Override
     public void effects(Consumer<AppliedEffect> consumer) {
         ((ItemStack) (Object) this)
-                .getOrDefault(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT)
-                .getEffects()
+                .getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY)
+                .getAllEffects()
                 .forEach(effect -> consumer.accept((AppliedEffect) effect));
     }
 
     @Unique
     @Override
     public void enchantments(BiConsumer<Integer, Enchantment> consumer) {
-        var enchantments = EnchantmentHelper.getEnchantments((ItemStack) (Object) this);
-        for (Object2IntMap.Entry<RegistryEntry<net.minecraft.enchantment.Enchantment>>
-                entry : enchantments.getEnchantmentEntries()) {
+        var enchantments = EnchantmentHelper.getEnchantmentsForCrafting((ItemStack) (Object) this);
+        for (Object2IntMap.Entry<Holder<net.minecraft.world.item.enchantment.Enchantment>>
+                entry : enchantments.entrySet()) {
             try {
-                var key = entry.getKey().getKey();
+                var key = entry.getKey().unwrapKey();
                 if (key.isPresent()) {
                     consumer.accept(entry.getIntValue(), EnchantmentRegistry.INSTANCE.lookup(key.get(), true));
                 }
@@ -89,19 +86,19 @@ public class MixinItemStack implements me.deftware.client.framework.item.ItemSta
     @Unique
     @Override
     public void enchant(Enchantment enchantment, int level) {
-        ((ItemStack) (Object) this).addEnchantment(enchantment.getEntry(), level);
+        ((ItemStack) (Object) this).enchant(enchantment.getEntry(), level);
     }
 
     @Unique
     @Override
     public Message getName() {
-        return (Message) ((ItemStack) (Object) this).getName();
+        return (Message) ((ItemStack) (Object) this).getHoverName();
     }
 
     @Unique
     @Override
     public void setName(Message name) {
-        ((ItemStack) (Object) this).set(DataComponentTypes.CUSTOM_NAME, (net.minecraft.text.Text) name);
+        ((ItemStack) (Object) this).set(DataComponents.CUSTOM_NAME, (net.minecraft.network.chat.Component) name);
     }
 
     @Unique
@@ -113,7 +110,7 @@ public class MixinItemStack implements me.deftware.client.framework.item.ItemSta
     @Unique
     @Override
     public int getDamage() {
-        return ((ItemStack) (Object) this).getDamage();
+        return ((ItemStack) (Object) this).getDamageValue();
     }
 
     @Unique
@@ -131,13 +128,13 @@ public class MixinItemStack implements me.deftware.client.framework.item.ItemSta
     @Unique
     @Override
     public boolean isDamageable() {
-        return ((ItemStack) (Object) this).isDamageable();
+        return ((ItemStack) (Object) this).isDamageableItem();
     }
 
     @Unique
     @Override
     public float getMiningSpeed(BlockState state) {
-        return ((ItemStack) (Object) this).getMiningSpeedMultiplier((net.minecraft.block.BlockState) state);
+        return ((ItemStack) (Object) this).getDestroySpeed((net.minecraft.world.level.block.state.BlockState) state);
     }
 
     @Unique
@@ -149,17 +146,17 @@ public class MixinItemStack implements me.deftware.client.framework.item.ItemSta
     @Unique
     @Override
     public boolean isItemEqual(me.deftware.client.framework.item.ItemStack stack) {
-        return ItemStack.areItemsEqual((ItemStack) (Object) this, (ItemStack) stack);
+        return ItemStack.isSameItem((ItemStack) (Object) this, (ItemStack) stack);
     }
 
     @Unique
     private int enchant$level;
 
     @Unique
-    private RegistryEntry<net.minecraft.enchantment.Enchantment> enchant$type;
+    private Holder<net.minecraft.world.item.enchantment.Enchantment> enchant$type;
 
-    @Inject(method = "addEnchantment", at = @At("HEAD"))
-    private void onEnchant(RegistryEntry<net.minecraft.enchantment.Enchantment> registryEntry, int level, CallbackInfo ci) {
+    @Inject(method = "enchant", at = @At("HEAD"))
+    private void onEnchant(Holder<net.minecraft.world.item.enchantment.Enchantment> registryEntry, int level, CallbackInfo ci) {
         enchant$level = level;
         enchant$type = registryEntry;
     }
@@ -167,15 +164,15 @@ public class MixinItemStack implements me.deftware.client.framework.item.ItemSta
     /**
      * Removes (byte) cast from the level, allowing higher enchantment levels
      */
-    @Redirect(method = "addEnchantment", at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/enchantment/EnchantmentHelper;apply(Lnet/minecraft/item/ItemStack;Ljava/util/function/Consumer;)Lnet/minecraft/component/type/ItemEnchantmentsComponent;"))
-    private ItemEnchantmentsComponent onEnchant$CreateNbt(ItemStack stack, Consumer<ItemEnchantmentsComponent.Builder> applier) {
-        return EnchantmentHelper.apply((ItemStack) (Object) this, builder -> builder.add(enchant$type, enchant$level));
+    @Redirect(method = "enchant", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/world/item/enchantment/EnchantmentHelper;updateEnchantments(Lnet/minecraft/world/item/ItemStack;Ljava/util/function/Consumer;)Lnet/minecraft/world/item/enchantment/ItemEnchantments;"))
+    private ItemEnchantments onEnchant$CreateNbt(ItemStack stack, Consumer<ItemEnchantments.Mutable> applier) {
+        return EnchantmentHelper.updateEnchantments((ItemStack) (Object) this, builder -> builder.upgrade(enchant$type, enchant$level));
     }
 
-    @Inject(method = "getTooltip", at = @At(value = "TAIL"))
-    private void onGetTooltipFromItem(net.minecraft.item.Item.TooltipContext context, PlayerEntity player,
-                                      TooltipType type, CallbackInfoReturnable<List<Text>> cir) {
+    @Inject(method = "getTooltipLines", at = @At(value = "TAIL"))
+    private void onGetTooltipFromItem(net.minecraft.world.item.Item.TooltipContext context, Player player,
+                                      TooltipFlag type, CallbackInfoReturnable<List<Component>> cir) {
         var list = cir.getReturnValue();
         new EventGetItemToolTip(list, (Item) ((ItemStack) (Object) this).getItem(),
                 type.isAdvanced()).broadcast();

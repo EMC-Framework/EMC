@@ -1,24 +1,17 @@
 package me.deftware.mixin.mixins.shader;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.moulberry.mixinconstraints.annotations.IfModAbsent;
 import me.deftware.client.framework.entity.block.TileEntity;
 import me.deftware.client.framework.render.shader.EntityShader;
 import me.deftware.client.framework.render.shader.Shader;
 import me.deftware.client.framework.world.ClientWorld;
 import me.deftware.client.framework.world.block.Block;
+import com.google.common.base.Suppliers;
+import java.util.function.Supplier;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.Framebuffer;
-import net.minecraft.client.render.*;
-import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
-import net.minecraft.client.util.Handle;
-import net.minecraft.client.util.ObjectAllocator;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.Lazy;
-import net.minecraft.util.profiler.Profiler;
+import net.minecraft.client.renderer.LevelRenderer;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.*;
 import org.spongepowered.asm.mixin.Final;
@@ -31,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(WorldRenderer.class)
+@Mixin(LevelRenderer.class)
 public abstract class MixinWorldRenderer {
 
     /**
@@ -41,29 +34,12 @@ public abstract class MixinWorldRenderer {
     private static final String MAIN_RENDERER = "method_62214";
 
     @Unique
-    private final Lazy<Boolean> isIrisLoaded = new Lazy<>(() -> {
-        return FabricLoader.getInstance().isModLoaded("iris");
-    });
+    private static final Supplier<Boolean> isIrisLoaded = Suppliers.memoize(() -> FabricLoader.getInstance().isModLoaded("iris"));
 
     @Unique
     private boolean isShaderSupported() {
         return !isIrisLoaded.get();
     }
-
-    @Shadow
-    @Final
-    private BufferBuilderStorage bufferBuilders;
-
-    @Shadow
-    protected abstract void renderEntity(Entity entity, double cameraX, double cameraY, double cameraZ, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers);
-
-    @Shadow
-    @Final
-    private MinecraftClient client;
-
-    @Shadow
-    @Final
-    private DefaultFramebufferSet framebufferSet;
 
     /*
     @Unique

@@ -1,7 +1,7 @@
 package me.deftware.client.framework.math;
 
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.core.Vec3i;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * @author Deftware
@@ -56,7 +56,7 @@ public interface Vector3<T extends Number> {
     }
 
     static Vector3<Double> ofDouble(double x, double y, double z) {
-        return (Vector3<Double>) new Vec3d(x, y, z);
+        return (Vector3<Double>) new Vec3(x, y, z);
     }
 
 }

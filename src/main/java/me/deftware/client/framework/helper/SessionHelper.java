@@ -1,6 +1,6 @@
 package me.deftware.client.framework.helper;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
 /**
  * @author Deftware
@@ -8,11 +8,11 @@ import net.minecraft.client.MinecraftClient;
 public class SessionHelper {
 
 	public static String getSessionId() {
-		return MinecraftClient.getInstance().getSession().getSessionId();
+		return Minecraft.getInstance().getUser().getSessionId();
 	}
 
 	public static String getPlayerUUID() {
-		var uuid = MinecraftClient.getInstance().getSession().getUuidOrNull();
+		var uuid = Minecraft.getInstance().getUser().getProfileId();
 		if (uuid != null) {
 			return uuid.toString();
 		}
@@ -20,11 +20,11 @@ public class SessionHelper {
 	}
 
 	public static String getPlayerUsername() {
-		return MinecraftClient.getInstance().getSession().getUsername();
+		return Minecraft.getInstance().getUser().getName();
 	}
 
 	public static String getAccessToken() {
-		return MinecraftClient.getInstance().getSession().getAccessToken();
+		return Minecraft.getInstance().getUser().getAccessToken();
 	}
 
 }

@@ -5,15 +5,19 @@ import me.deftware.client.framework.network.NetworkHandler;
 import me.deftware.client.framework.registry.BlockRegistry;
 import me.deftware.client.framework.world.block.Block;
 import me.deftware.client.framework.world.player.PlayerEntry;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.network.message.LastSeenMessagesCollector;
-import net.minecraft.network.message.MessageBody;
-import net.minecraft.network.message.MessageChain;
-import net.minecraft.network.message.MessageSignatureData;
-import net.minecraft.network.packet.s2c.play.*;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
+import net.minecraft.network.chat.LastSeenMessagesTracker;
+import net.minecraft.network.chat.MessageSignature;
+import net.minecraft.network.chat.SignedMessageBody;
+import net.minecraft.network.chat.SignedMessageChain;
+import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
+import net.minecraft.network.protocol.game.ClientboundEntityEventPacket;
+import net.minecraft.network.protocol.game.ClientboundExplodePacket;
+import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
+import net.minecraft.network.protocol.game.ClientboundSectionBlocksUpdatePacket;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -29,25 +33,25 @@ import java.util.stream.Collectors;
 /**
  * @author Deftware
  */
-@Mixin(ClientPlayNetworkHandler.class)
+@Mixin(ClientPacketListener.class)
 public abstract class MixinNetHandlerPlayClient implements NetworkHandler {
 
-    @Shadow private LastSeenMessagesCollector lastSeenMessagesCollector;
+    @Shadow private LastSeenMessagesTracker lastSeenMessages;
 
-    @Shadow private MessageChain.Packer messagePacker;
+    @Shadow private SignedMessageChain.Encoder signedMessageEncoder;
 
     @Override
     public List<PlayerEntry> _getPlayerList() {
-        return ((ClientPlayNetworkHandler) (Object) this).getPlayerList()
+        return ((ClientPacketListener) (Object) this).getOnlinePlayers()
                 .stream().map(PlayerEntry.class::cast).collect(Collectors.toList());
     }
 
     @Unique
     private final EventAnimation eventAnimation = new EventAnimation();
 
-    @Inject(method = "onEntityStatus", at = @At("HEAD"), cancellable = true)
-    public void onEntityStatus(EntityStatusS2CPacket packet, CallbackInfo ci) {
-        if (packet.getStatus() == 35) {
+    @Inject(method = "handleEntityEvent", at = @At("HEAD"), cancellable = true)
+    public void onEntityStatus(ClientboundEntityEventPacket packet, CallbackInfo ci) {
+        if (packet.getEventId() == 35) {
             eventAnimation.create(EventAnimation.AnimationType.Totem);
             eventAnimation.broadcast();
             if (eventAnimation.isCanceled()) {
@@ -56,38 +60,38 @@ public abstract class MixinNetHandlerPlayClient implements NetworkHandler {
         }
     }
 
-    @Inject(method = "onExplosion", at = @At(value = "INVOKE", target = "Ljava/util/Optional;ifPresent(Ljava/util/function/Consumer;)V"), cancellable = true)
-    private void onExplosion(ExplosionS2CPacket packet, CallbackInfo ci) {
+    @Inject(method = "handleExplosion", at = @At(value = "INVOKE", target = "Ljava/util/Optional;ifPresent(Ljava/util/function/Consumer;)V"), cancellable = true)
+    private void onExplosion(ClientboundExplodePacket packet, CallbackInfo ci) {
         var knockback = packet.playerKnockback();
         if (knockback.isPresent()) {
             var velocity = knockback.get();
             EventKnockback event = new EventKnockback(velocity.x, velocity.y, velocity.z).broadcast();
             if (!event.isCanceled()) {
-                var player = MinecraftClient.getInstance().player;
-                player.setVelocity(
-                        player.getVelocity().add(event.getX(), event.getY(), event.getZ())
+                var player = Minecraft.getInstance().player;
+                player.setDeltaMovement(
+                        player.getDeltaMovement().add(event.getX(), event.getY(), event.getZ())
                 );
             }
             ci.cancel();
         }
     }
 
-    @Inject(method = "onChunkData", at = @At("HEAD"), cancellable = true)
-    public void onReceiveChunkData(ChunkDataS2CPacket packet, CallbackInfo ci) {
+    @Inject(method = "handleLevelChunkWithLight", at = @At("HEAD"), cancellable = true)
+    public void onReceiveChunkData(ClientboundLevelChunkWithLightPacket packet, CallbackInfo ci) {
         EventChunkDataReceive event = new EventChunkDataReceive(packet).broadcast();
         if (event.isCanceled()) {
             ci.cancel();
         }
     }
 
-    @Inject(method = "onBlockUpdate", at = @At("HEAD"))
-    private void onBlockUpdate(BlockUpdateS2CPacket packet, CallbackInfo ci) {
+    @Inject(method = "handleBlockUpdate", at = @At("HEAD"))
+    private void onBlockUpdate(ClientboundBlockUpdatePacket packet, CallbackInfo ci) {
         BlockPos pos = packet.getPos();
         int chunkX = pos.getX() >> 4, chunkZ = pos.getZ() >> 4, chunkY = pos.getY() >> 4;
         int x = pos.getX() - (chunkX << 4), z = pos.getZ() - (chunkZ << 4), y = pos.getY() & 0xF;
 
         short[] positions = { (short) ((x << 8) | (z << 4) | y) };
-        Block[] blocks = { (Block) packet.getState().getBlock() };
+        Block[] blocks = { (Block) packet.getBlockState().getBlock() };
 
         new EventChunk.EventDeltaChunk(
                 chunkX, chunkY, chunkZ,
@@ -95,13 +99,13 @@ public abstract class MixinNetHandlerPlayClient implements NetworkHandler {
         ).broadcast();
     }
 
-    @Inject(method = "onChunkDeltaUpdate", at = @At("HEAD"))
-    private void onChunkDeltaPacket(ChunkDeltaUpdateS2CPacket packet, CallbackInfo ci) {
+    @Inject(method = "handleChunkBlocksUpdate", at = @At("HEAD"))
+    private void onChunkDeltaPacket(ClientboundSectionBlocksUpdatePacket packet, CallbackInfo ci) {
         ChunkDeltaAccessor accessor = (ChunkDeltaAccessor) packet;
         Block[] blocks = Arrays.stream(accessor.getBlockStates())
                 .map(s -> (Block) s.getBlock())
                 .toArray(Block[]::new);
-        ChunkSectionPos pos = accessor.getSectionPos();
+        SectionPos pos = accessor.getSectionPos();
         new EventChunk.EventDeltaChunk(
                 pos.getX(), pos.getY(), pos.getZ(),
                 accessor.getPositions(), blocks
@@ -116,14 +120,14 @@ public abstract class MixinNetHandlerPlayClient implements NetworkHandler {
 
     @Unique
     @Override
-    public LastSeenMessagesCollector.LastSeenMessages collect() {
-        return lastSeenMessagesCollector.collect();
+    public LastSeenMessagesTracker.Update collect() {
+        return lastSeenMessages.generateAndApplyUpdate();
     }
 
     @Unique
     @Override
-    public MessageSignatureData pack(MessageBody body) {
-        return messagePacker.pack(body);
+    public MessageSignature pack(SignedMessageBody body) {
+        return signedMessageEncoder.pack(body);
     }
 
 }

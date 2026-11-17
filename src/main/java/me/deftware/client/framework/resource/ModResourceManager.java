@@ -3,13 +3,14 @@ package me.deftware.client.framework.resource;
 import com.mojang.blaze3d.systems.RenderSystem;
 import lombok.Getter;
 import me.deftware.client.framework.main.EMCMod;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.ShaderLoader;
-import net.minecraft.client.texture.TextureManager;
-import net.minecraft.resource.*;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ShaderManager;
+import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -34,7 +35,7 @@ public class ModResourceManager implements ResourceManager {
     private final TextureManager textureManager;
 
     @Getter
-    private final ShaderLoader shaderLoader;
+    private final ShaderManager shaderLoader;
 
     private final String namespace;
 
@@ -43,19 +44,21 @@ public class ModResourceManager implements ResourceManager {
         namespace = mod.getMeta().getName().toLowerCase();
         this.type = type;
         textureManager = new TextureManager(this);
-        shaderLoader = new ShaderLoader(textureManager, ex -> {
+        shaderLoader = new ShaderManager(textureManager, ex -> {
             ex.printStackTrace();
         });
         //RenderSystem.recordRenderCall(this::reload);
     }
 
     private void reload() {
+        /*
         shaderLoader.reload(
                 CompletableFuture::completedFuture,
                 this,
-                Util.getMainWorkerExecutor(),
-                MinecraftClient.getInstance()
+                Util.backgroundExecutor(),
+                Minecraft.getInstance()
         );
+        */
     }
 
     public void setTransformer(BiFunction<String, InputStream, InputStream> transformer) {
@@ -77,12 +80,12 @@ public class ModResourceManager implements ResourceManager {
     /* Superclass methods */
 
     @Override
-    public Set<String> getAllNamespaces() {
+    public Set<String> getNamespaces() {
         return Set.of(namespace);
     }
 
     @Override
-    public List<Resource> getAllResources(Identifier id) {
+    public List<Resource> getResourceStack(Identifier id) {
         return Collections.emptyList();
     }
 
@@ -90,7 +93,7 @@ public class ModResourceManager implements ResourceManager {
     public Optional<Resource> getResource(Identifier id) {
         ZipEntry entry = getEntry(id.getPath());
         if (entry == null) {
-            return MinecraftClient.getInstance().getResourceManager().getResource(id);
+            return Minecraft.getInstance().getResourceManager().getResource(id);
         }
         try {
             return Optional.of(new ModResource(transformer.apply(id.getPath(), getResourceStream(entry)), id));
@@ -100,7 +103,7 @@ public class ModResourceManager implements ResourceManager {
     }
 
     @Override
-    public Map<Identifier, Resource> findResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
+    public Map<Identifier, Resource> listResources(String startingPath, ResourceManager.Selector selector) {
         var map = new HashMap<Identifier, Resource>();
         var root = type + "/" + startingPath;
         var entries = zipFile.entries();
@@ -110,8 +113,8 @@ public class ModResourceManager implements ResourceManager {
             if (!name.startsWith(root)) {
                 continue;
             }
-            var identifier = Identifier.of(namespace, name.substring(type.length() + 1));
-            if (!allowedPathPredicate.test(identifier)) {
+            var identifier = Identifier.fromNamespaceAndPath(namespace, name.substring(type.length() + 1));
+            if (!selector.isIncluded(identifier)) {
                 continue;
             }
             try {
@@ -123,19 +126,19 @@ public class ModResourceManager implements ResourceManager {
             }
         }
         // Also make Minecraft resources available
-        var manager = MinecraftClient.getInstance().getResourceManager();
-        var result = manager.findResources(startingPath, allowedPathPredicate);
+        var manager = Minecraft.getInstance().getResourceManager();
+        var result = manager.listResources(startingPath, selector);
         map.putAll(result);
         return map;
     }
 
     @Override
-    public Map<Identifier, List<Resource>> findAllResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
+    public Map<Identifier, List<Resource>> listResourceStacks(String startingPath, ResourceManager.Selector selector) {
         return null;
     }
 
     @Override
-    public Stream<ResourcePack> streamResourcePacks() {
+    public Stream<PackResources> listPacks() {
         return null;
     }
 

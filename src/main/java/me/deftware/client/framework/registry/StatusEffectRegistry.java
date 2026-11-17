@@ -1,8 +1,7 @@
 package me.deftware.client.framework.registry;
 
 import me.deftware.client.framework.entity.effect.Effect;
-import net.minecraft.registry.Registries;
-
+import net.minecraft.core.registries.BuiltInRegistries;
 import java.util.stream.Stream;
 
 /**
@@ -15,7 +14,7 @@ public enum StatusEffectRegistry implements IRegistry.IdentifiableRegistry<Effec
 
 	@Override
 	public Stream<Effect> stream() {
-		return Registries.STATUS_EFFECT
+		return BuiltInRegistries.MOB_EFFECT
 				.stream()
 				.map(Effect.class::cast);
 	}

@@ -1,6 +1,6 @@
 package me.deftware.client.framework.math;
 
-import net.minecraft.util.math.Box;
+import net.minecraft.world.phys.AABB;
 
 /**
  * @author Deftware
@@ -26,7 +26,7 @@ public interface BoundingBox {
     Vector3<Double> rayTrace(Vector3<Double> origin, Vector3<Double> direction);
 
     static BoundingBox of(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
-        return (BoundingBox) new Box(minX, minY, minZ, maxX, maxY, maxZ);
+        return (BoundingBox) new AABB(minX, minY, minZ, maxX, maxY, maxZ);
     }
 
 }
