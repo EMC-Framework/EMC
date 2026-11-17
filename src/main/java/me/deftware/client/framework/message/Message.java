@@ -1,7 +1,11 @@
 package me.deftware.client.framework.message;
 
 import me.deftware.client.framework.minecraft.Minecraft;
-import net.minecraft.text.*;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.contents.PlainTextContents;
+import net.minecraft.network.chat.contents.TranslatableContents;
 
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -11,9 +15,9 @@ import java.util.function.BiFunction;
  */
 public interface Message extends com.mojang.brigadier.Message {
 
-    Message SPACE = (Message) Text.literal(" ");
+    Message SPACE = (Message) (Object) Component.literal(" ");
 
-    Message EMPTY = (Message) Text.literal("");
+    Message EMPTY = (Message) (Object) Component.literal("");
 
     String CHEVRON = String.valueOf((char) 187);
 
@@ -21,7 +25,7 @@ public interface Message extends com.mojang.brigadier.Message {
      * Visits each component of this message, and their respective style.
      */
     default Optional<Message> visit(BiFunction<Appearance, String, Optional<Message>> visitor) {
-        return visit(((Text) this), Style.EMPTY, visitor);
+        return visit(((Component) this), Style.EMPTY, visitor);
     }
 
     /**
@@ -30,8 +34,8 @@ public interface Message extends com.mojang.brigadier.Message {
      * @param text The message to append
      */
     default Message append(Message text) {
-        if (this instanceof MutableText message) {
-            message.append((Text) text);
+        if (((Object) this) instanceof MutableComponent message) {
+            message.append((Component) text);
             return this;
         }
         throw new UnsupportedOperationException("Cannot append to immutable message");
@@ -43,8 +47,8 @@ public interface Message extends com.mojang.brigadier.Message {
      * @param style The style to set
      */
     default Message style(Appearance style) {
-        if (this instanceof MutableText message) {
-            message.setStyle((Style) style);
+        if (((Object) this) instanceof MutableComponent message) {
+            message.setStyle((Style) (Object) style);
             return this;
         }
         throw new UnsupportedOperationException("Cannot style immutable message");
@@ -71,7 +75,7 @@ public interface Message extends com.mojang.brigadier.Message {
      * @return A copy of the message
      */
     default Message copy() {
-        return (Message) ((Text) this).copy();
+        return (Message) (Object) ((Component) this).copy();
     }
 
     /**
@@ -85,7 +89,7 @@ public interface Message extends com.mojang.brigadier.Message {
      * @return Whether this message is mutable
      */
     default boolean isMutable() {
-        return this instanceof MutableText;
+        return ((Object) this) instanceof MutableComponent;
     }
 
     /**
@@ -95,7 +99,7 @@ public interface Message extends com.mojang.brigadier.Message {
      * @return The message
      */
     static Message of(String text) {
-        return (Message) Text.literal(text);
+        return (Message) (Object) Component.literal(text);
     }
 
     /**
@@ -105,7 +109,7 @@ public interface Message extends com.mojang.brigadier.Message {
      * @return The translated message
      */
     static Message translated(String key, Object... args) {
-        return (Message) Text.translatable(key, args);
+        return (Message) (Object) Component.translatable(key, args);
     }
 
     /**
@@ -116,14 +120,14 @@ public interface Message extends com.mojang.brigadier.Message {
     }
 
     default boolean isTranslatable() {
-        return ((Text) this).getContent() instanceof TranslatableTextContent;
+        return ((Component) this).getContents() instanceof TranslatableContents;
     }
 
     default String getTranslationKey() {
         if (!isTranslatable()) {
             throw new IllegalStateException("Message is not translatable");
         }
-        return ((TranslatableTextContent) ((Text) this).getContent()).getKey();
+        return ((TranslatableContents) ((Component) this).getContents()).getKey();
     }
 
     /**
@@ -140,7 +144,7 @@ public interface Message extends com.mojang.brigadier.Message {
         public Builder() {
             // Style is inherited from the first message, so we need to add a dummy message
             // to inherit the style from later on.
-            this(Message.of(PlainTextContent.EMPTY.string()).style(Appearance.of(DefaultColors.WHITE)));
+            this(Message.of(PlainTextContents.EMPTY.text()).style(Appearance.of(DefaultColors.WHITE)));
         }
 
         public Builder append(Message message) {
@@ -176,14 +180,14 @@ public interface Message extends com.mojang.brigadier.Message {
 
     }
 
-    private static Optional<Message> visit(Text ref, Style superStyle, BiFunction<Appearance, String, Optional<Message>> visitor) {
-        var style = ref.getStyle().withParent(superStyle);
+    private static Optional<Message> visit(Component ref, Style superStyle, BiFunction<Appearance, String, Optional<Message>> visitor) {
+        var style = ref.getStyle().applyTo(superStyle);
         Optional<Message> optional;
-        if (ref.getContent() instanceof PlainTextContent content) {
+        if (ref.getContents() instanceof PlainTextContents content) {
             // Ensure we visit empty strings to stay consistent with older versions
-            optional = visitor.apply((Appearance) style, content.string());
+            optional = visitor.apply((Appearance) (Object) style, content.text());
         } else {
-            optional = ref.getContent().visit((s, text) -> visitor.apply((Appearance) s, text), style);
+            optional = ref.getContents().visit((s, text) -> visitor.apply((Appearance) (Object) s, text), style);
         }
         if (optional.isPresent()) {
             return optional;

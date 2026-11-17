@@ -1,43 +1,42 @@
 package me.deftware.client.framework.entity.types.objects;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.OtherClientPlayerEntity;
-import net.minecraft.entity.player.PlayerEntity;
-
 import java.util.Objects;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.RemotePlayer;
+import net.minecraft.world.entity.player.Player;
 
 /**
  * @author Deftware
  */
-public class ClonedPlayerMP extends OtherClientPlayerEntity {
+public class ClonedPlayerMP extends RemotePlayer {
 
-	public ClonedPlayerMP(PlayerEntity entity) {
-		super(Objects.requireNonNull(MinecraftClient.getInstance().world), entity.getGameProfile());
+	public ClonedPlayerMP(Player entity) {
+		super(Objects.requireNonNull(Minecraft.getInstance().level), entity.getGameProfile());
 		clonePlayer(entity, true);
-		refreshPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), entity.getYaw(), entity.getPitch());
-		headYaw = entity.headYaw;
+		snapTo(entity.getX(), entity.getY(), entity.getZ(), entity.getYRot(), entity.getXRot());
+		yHeadRot = entity.yHeadRot;
 	}
 
-	public void clonePlayer(PlayerEntity oldPlayer, boolean respawnFromEnd) {
+	public void clonePlayer(Player oldPlayer, boolean respawnFromEnd) {
 		if (respawnFromEnd) {
-			getInventory().clone(oldPlayer.getInventory());
+			getInventory().replaceWith(oldPlayer.getInventory());
 			setHealth(oldPlayer.getHealth());
-			hungerManager = oldPlayer.getHungerManager();
+			foodData = oldPlayer.getFoodData();
 			experienceLevel = oldPlayer.experienceLevel;
 			experienceProgress = oldPlayer.experienceProgress;
 			totalExperience = oldPlayer.totalExperience;
 			setScore(oldPlayer.getScore());
-			copyFrom(oldPlayer);
+			restoreFrom(oldPlayer);
 		} else if (oldPlayer.isSpectator()) { // getWorld().getGameRules().getBoolean(GameRules.KEEP_INVENTORY)
-			getInventory().clone(oldPlayer.getInventory());
+			getInventory().replaceWith(oldPlayer.getInventory());
 			experienceLevel = oldPlayer.experienceLevel;
 			experienceProgress = oldPlayer.experienceProgress;
 			totalExperience = oldPlayer.totalExperience;
 			setScore(oldPlayer.getScore());
 		}
-		enchantingTableSeed = oldPlayer.getEnchantingTableSeed();
-		if (getDataTracker() != null) {
-			getDataTracker().set(PlayerEntity.PLAYER_MODEL_PARTS, oldPlayer.getDataTracker().get(PlayerEntity.PLAYER_MODEL_PARTS));
+		enchantmentSeed = oldPlayer.getEnchantmentSeed();
+		if (getEntityData() != null) {
+			getEntityData().set(Player.DATA_PLAYER_MODE_CUSTOMISATION, oldPlayer.getEntityData().get(Player.DATA_PLAYER_MODE_CUSTOMISATION));
 		}
 	}
 

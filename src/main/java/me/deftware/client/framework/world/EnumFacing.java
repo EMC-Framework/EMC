@@ -1,7 +1,7 @@
 package me.deftware.client.framework.world;
 
 import me.deftware.client.framework.math.Vector3;
-import net.minecraft.util.math.Direction;
+import net.minecraft.core.Direction;
 
 /**
  * @author Deftware
@@ -17,7 +17,7 @@ public enum EnumFacing {
 	}
 
 	public Vector3<Integer> getVector() {
-		return (Vector3<Integer>) direction.getVector();
+		return (Vector3<Integer>) direction.getUnitVec3i();
 	}
 
 	public Direction getFacing() {

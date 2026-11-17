@@ -5,18 +5,18 @@ import me.deftware.client.framework.math.Vector3;
 import me.deftware.client.framework.entity.block.TileEntity;
 import me.deftware.client.framework.world.Biome;
 import me.deftware.client.framework.world.chunk.ChunkAccessor;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.MessageScreen;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.text.Text;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.RaycastContext;
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.BlockEntityTickInvoker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.GenericMessageScreen;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.TickingBlockEntity;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -31,87 +31,109 @@ import java.util.stream.Stream;
 /**
  * @author Deftware
  */
-@Mixin(World.class)
+@Mixin(Level.class)
 public class MixinWorld implements me.deftware.client.framework.world.World {
 
 	@Unique
-	public final HashMap<BlockEntity, TileEntity> emcTileEntities = new HashMap<>();
+	private static final Biome _biome = new Biome();
 
 	@Unique
-	public final HashMap<Long, BlockEntity> longTileEntities = new HashMap<>();
+	public HashMap<BlockEntity, TileEntity> emcTileEntities = new HashMap<>();
+
+	@Unique
+	public HashMap<Long, BlockEntity> longTileEntities = new HashMap<>();
+
+	@Unique
+	private HashMap<BlockEntity, TileEntity> emcTileEntitiesMap() {
+		if (this.emcTileEntities == null) {
+			this.emcTileEntities = new HashMap<>();
+		}
+		return this.emcTileEntities;
+	}
+
+	@Unique
+	private HashMap<Long, BlockEntity> longTileEntitiesMap() {
+		if (this.longTileEntities == null) {
+			this.longTileEntities = new HashMap<>();
+		}
+		return this.longTileEntities;
+	}
 
 	@Inject(method = "addBlockEntityTicker", at = @At("HEAD"))
-	public void addBlockEntityTicker(BlockEntityTickInvoker blockEntityTickInvoker, CallbackInfo ci) {
-		if (longTileEntities.containsKey(blockEntityTickInvoker.getPos().asLong())) {
-			BlockEntity entity = longTileEntities.remove(blockEntityTickInvoker.getPos().asLong());
-			emcTileEntities.put(entity, TileEntity.newInstance(entity, blockEntityTickInvoker));
+	public void addBlockEntityTicker(TickingBlockEntity blockEntityTickInvoker, CallbackInfo ci) {
+		HashMap<Long, BlockEntity> pending = longTileEntitiesMap();
+		if (pending.containsKey(blockEntityTickInvoker.getPos().asLong())) {
+			BlockEntity entity = pending.remove(blockEntityTickInvoker.getPos().asLong());
+			emcTileEntitiesMap().put(entity, TileEntity.newInstance(entity, blockEntityTickInvoker));
 		}
 	}
 
 	@Redirect(method = "tickBlockEntities", at = @At(value = "INVOKE", target = "Ljava/util/Iterator;next()Ljava/lang/Object;", opcode = 180))
-	protected Object tickBlockEntities(Iterator<BlockEntityTickInvoker> iterator) {
-		BlockEntityTickInvoker ticker = iterator.next();
+	protected Object tickBlockEntities(Iterator<TickingBlockEntity> iterator) {
+		TickingBlockEntity ticker = iterator.next();
 		if (ticker.isRemoved()) {
-			emcTileEntities.values().removeIf(e -> e.getTicker().equals(ticker));
+			emcTileEntitiesMap().values().removeIf(e -> e.getTicker().equals(ticker));
 		}
 		return ticker;
 	}
 
 	@Override
 	public Stream<TileEntity> getLoadedTileEntities() {
-		return emcTileEntities.values().stream();
+		return emcTileEntitiesMap().values().stream();
 	}
 
 	@Override
 	public int _getDifficulty() {
-		return ((World) (Object) this).getDifficulty().getId();
+		return ((Level) (Object) this).getDifficulty().getId();
 	}
 
 	@Override
 	public long _getWorldTime() {
-		return ((World) (Object) this).getTimeOfDay();
+		return ((Level) (Object) this).getDefaultClockTime();
 	}
 
 	@Override
 	public int _getWorldHeight() {
-		return ((World) (Object) this).getHeight();
+		return ((Level) (Object) this).getHeight();
 	}
 
 	@Override
 	public int _getBlockLightLevel(BlockPosition position) {
-		return ((World) (Object) this).getLightLevel((BlockPos) position);
+		return ((Level) (Object) this).getMaxLocalRawBrightness((BlockPos) position);
 	}
 
 	@Override
 	public void _disconnect() {
-		MinecraftClient mc = MinecraftClient.getInstance();
-		boolean sp = mc.isInSingleplayer();
-		((World) (Object) this).disconnect();
+		Minecraft mc = Minecraft.getInstance();
+		boolean sp = mc.isLocalServer();
+		if (((Object) this) instanceof net.minecraft.client.multiplayer.ClientLevel clientLevel) {
+			clientLevel.disconnect(Component.translatable("disconnect.closed"));
+		}
 		if (sp) {
-			mc.disconnect(new MessageScreen(Text.translatable("menu.savingLevel")));
+			mc.disconnect(new GenericMessageScreen(Component.translatable("menu.savingLevel")), false);
 		} else {
-			mc.disconnect(null);
+			mc.disconnect(null, false);
 		}
 	}
 
 	@Override
 	public ChunkAccessor getChunk(int x, int z) {
-		return (ChunkAccessor) ((World) (Object) this).getChunk(x, z);
+		return (ChunkAccessor) ((Level) (Object) this).getChunk(x, z);
 	}
 
 	@Override
 	public boolean _hasChunk(int x, int z) {
-		return ((World) (Object) this).isChunkLoaded(x, z);
+		return ((Level) (Object) this).hasChunk(x, z);
 	}
 
 	@Override
 	public int _getDimension() {
-		RegistryKey<World> key = ((World) (Object) this).getRegistryKey();
-		if (World.END.equals(key)) {
+		ResourceKey<Level> key = ((Level) (Object) this).dimension();
+		if (Level.END.equals(key)) {
 			return 1;
-		} else if (World.OVERWORLD.equals(key)) {
+		} else if (Level.OVERWORLD.equals(key)) {
 			return 0;
-		} else if (World.NETHER.equals(key)) {
+		} else if (Level.NETHER.equals(key)) {
 			return -1;
 		}
 		return -2;
@@ -119,31 +141,28 @@ public class MixinWorld implements me.deftware.client.framework.world.World {
 
 	@Override
 	public me.deftware.client.framework.world.block.BlockState _getBlockState(BlockPosition position) {
-		return (me.deftware.client.framework.world.block.BlockState) ((World) (Object) this).getBlockState((BlockPos) position);
+		return (me.deftware.client.framework.world.block.BlockState) ((Level) (Object) this).getBlockState((BlockPos) position);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T extends TileEntity> T getTileEntityByReference(BlockEntity reference) {
 		if (reference != null) {
-			return (T) emcTileEntities.get(reference);
+			return (T) emcTileEntitiesMap().get(reference);
 		}
 		return null;
 	}
 
 	@Override
 	public HashMap<Long, BlockEntity> getInternalLongToBlockEntity() {
-		return longTileEntities;
+		return longTileEntitiesMap();
 	}
-
-	@Unique
-	private static final Biome _biome = new Biome();
 
 	@Override
 	public Biome _getBiome() {
 		return _biome.setReference(
-				((ClientWorld) (Object) this).getBiome(
-						MinecraftClient.getInstance().player.getBlockPos()
+				((ClientLevel) (Object) this).getBiome(
+						Minecraft.getInstance().player.blockPosition()
 				)
 		);
 	}
@@ -151,11 +170,11 @@ public class MixinWorld implements me.deftware.client.framework.world.World {
 	@Unique
 	@Override
 	public boolean rayTraceBlocks(Vector3<Double> start, Vector3<Double> end) {
-		RaycastContext context = new RaycastContext(
-				(Vec3d) start, (Vec3d) end,
-				RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE,
-				MinecraftClient.getInstance().getCameraEntity());
-		return ((World) (Object) this).raycast(context).getType() != HitResult.Type.MISS;
+		ClipContext context = new ClipContext(
+				(Vec3) start, (Vec3) end,
+				ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE,
+				Minecraft.getInstance().getCameraEntity());
+		return ((Level) (Object) this).clip(context).getType() != HitResult.Type.MISS;
 	}
 
 }

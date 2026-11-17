@@ -3,16 +3,19 @@ package me.deftware.client.framework.gui;
 import lombok.Getter;
 import me.deftware.client.framework.gui.screens.MinecraftScreen;
 import me.deftware.client.framework.minecraft.Minecraft;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.*;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
-import net.minecraft.client.gui.screen.option.OptionsScreen;
-import net.minecraft.client.gui.screen.world.CreateWorldScreen;
-import net.minecraft.client.gui.screen.world.SelectWorldScreen;
-import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
-import net.minecraft.text.Text;
-
+import net.minecraft.client.gui.screens.ChatScreen;
+import net.minecraft.client.gui.screens.DeathScreen;
+import net.minecraft.client.gui.screens.DisconnectedScreen;
+import net.minecraft.client.gui.screens.PauseScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
+import net.minecraft.client.gui.screens.options.OptionsScreen;
+import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
+import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
+import net.minecraft.network.chat.Component;
+import com.mojang.realmsclient.RealmsMainScreen;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -21,17 +24,17 @@ import java.util.Optional;
  */
 public enum ScreenRegistry {
 
-	Multiplayer(MultiplayerScreen.class),
+	Multiplayer(JoinMultiplayerScreen.class),
 	WorldSelection(SelectWorldScreen.class),
 	CreateWorld(CreateWorldScreen.class),
-	Options(OptionsScreen.class, args -> new OptionsScreen((Screen) args[0], MinecraftClient.getInstance().options)),
+	Options(OptionsScreen.class, args -> new OptionsScreen((Screen) args[0], net.minecraft.client.Minecraft.getInstance().options)),
 	MainMenu(TitleScreen.class, parent -> new TitleScreen()),
 
-	IngameMenu(GameMenuScreen.class),
+	IngameMenu(PauseScreen.class),
 	Disconnected(DisconnectedScreen.class, args -> new DisconnectedScreen(
-			(Screen) args[0], (Text) args[1], (Text) args[2]
+			(Screen) args[0], (Component) args[1], (Component) args[2]
 	)),
-	Container(HandledScreen.class),
+	Container(AbstractContainerScreen.class),
 	Chat(ChatScreen.class),
 	Death(DeathScreen.class),
 
@@ -80,7 +83,7 @@ public enum ScreenRegistry {
 	}
 
 	public boolean isOpen() {
-		Screen current = MinecraftClient.getInstance().currentScreen;
+		Screen current = net.minecraft.client.Minecraft.getInstance().gui.screen();
 		return current != null && this.clazz.isAssignableFrom(current.getClass());
 	}
 

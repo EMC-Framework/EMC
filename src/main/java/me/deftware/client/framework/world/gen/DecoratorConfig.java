@@ -5,10 +5,9 @@ import lombok.Setter;
 import me.deftware.client.framework.world.block.Block;
 import me.deftware.client.framework.world.chunk.Randomizer;
 import me.deftware.mixin.mixins.biome.CountInvoker;
-import net.minecraft.world.gen.GenerationStep;
-import net.minecraft.world.gen.heightprovider.HeightProvider;
-import net.minecraft.world.gen.placementmodifier.CountPlacementModifier;
-
+import net.minecraft.world.level.levelgen.GenerationStep;
+import net.minecraft.world.level.levelgen.heightproviders.HeightProvider;
+import net.minecraft.world.level.levelgen.placement.CountPlacement;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringJoiner;
@@ -41,7 +40,7 @@ public class DecoratorConfig {
     /**
      * How many times the block generation should be repeated
      */
-    private CountInvoker repeat = (CountInvoker) CountPlacementModifier.of(1);
+    private CountInvoker repeat = (CountInvoker) (Object) CountPlacement.of(1);
 
     /**
      * The size of a generation
@@ -76,15 +75,15 @@ public class DecoratorConfig {
     /**
      * The generation type
      */
-    private final GenerationStep.Feature feature;
+    private final GenerationStep.Decoration feature;
 
-    public DecoratorConfig(int index, GenerationStep.Feature feature) {
+    public DecoratorConfig(int index, GenerationStep.Decoration feature) {
         this.index = index;
         this.feature = feature;
     }
 
     public int getY(Randomizer random, DecoratorContext context) {
-        return this.heightProvider.get(random, context.getHeightContext());
+        return this.heightProvider.sample(random, context.getHeightContext());
     }
 
     public int getFeature() {

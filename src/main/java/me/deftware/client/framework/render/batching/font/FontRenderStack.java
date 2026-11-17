@@ -1,16 +1,14 @@
 package me.deftware.client.framework.render.batching.font;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.renderpearl.api.vertex.VertexFormat;
 import lombok.Setter;
 import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.fonts.AtlasTextureFont;
 import me.deftware.client.framework.registry.font.IFontProvider;
 import me.deftware.client.framework.render.batching.RenderStack;
-import me.deftware.client.framework.render.batching.VertexConstructor;
 import me.deftware.client.framework.render.gl.GLX;
-import net.minecraft.client.render.*;
-import net.minecraft.text.Style;
+import net.minecraft.network.chat.Style;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -54,18 +52,12 @@ public class FontRenderStack extends RenderStack<FontRenderStack> {
 
 	@Override
 	protected VertexFormat getFormat() {
-		return VertexFormats.POSITION_TEXTURE_COLOR;
+		return DefaultVertexFormat.POSITION_TEX_COLOR;
 	}
 
 	@Override
 	protected void setShader() {
 		// RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
-	}
-
-	@Override
-	public VertexConstructor vertex(double x, double y, double z) {
-		builder.vertex(getModel(), (float) x,  (float) y,  (float) z);
-		return this;
 	}
 
 	public FontRenderStack drawString(double x, double y, String message) {
@@ -84,10 +76,10 @@ public class FontRenderStack extends RenderStack<FontRenderStack> {
 
 	public FontRenderStack drawString(int x, int y, Message message) {
 		message.visit((style, text) -> {
-			var textColor = ((Style) style).getColor();
+			var textColor = ((Style) (Object) style).getColor();
 			var color = Color.WHITE.getRGB();
 			if (textColor != null) {
-				color = textColor.getRgb();
+				color = textColor.getValue();
 			}
 			renderCharBuffer(text.split(""), x, y, color);
 			return Optional.empty();

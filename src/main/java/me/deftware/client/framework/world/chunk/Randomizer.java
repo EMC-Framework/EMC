@@ -1,8 +1,8 @@
 package me.deftware.client.framework.world.chunk;
 
-import net.minecraft.util.math.random.Random;
+import net.minecraft.util.RandomSource;
 
-public interface Randomizer extends Random {
+public interface Randomizer extends RandomSource {
 
     int _nextInt(int bound);
 

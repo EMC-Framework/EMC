@@ -2,11 +2,11 @@ package me.deftware.mixin.mixins.chat;
 
 import me.deftware.client.framework.message.GameChat;
 import me.deftware.client.framework.message.Message;
-import net.minecraft.client.gui.hud.ChatHud;
-import net.minecraft.client.gui.hud.ChatHudLine;
-import net.minecraft.client.gui.hud.MessageIndicator;
-import net.minecraft.network.message.MessageSignatureData;
-import net.minecraft.text.Text;
+import net.minecraft.client.multiplayer.chat.GuiMessage;
+import net.minecraft.client.multiplayer.chat.GuiMessageTag;
+import net.minecraft.client.gui.components.ChatComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MessageSignature;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -15,20 +15,20 @@ import org.spongepowered.asm.mixin.Unique;
 import java.util.List;
 import java.util.function.Function;
 
-@Mixin(ChatHud.class)
+@Mixin(ChatComponent.class)
 public abstract class MixinChatHud implements GameChat {
 
     @Shadow
     @Final
-    private List<ChatHudLine.Visible> visibleMessages;
+    private List<GuiMessage.Line> trimmedMessages;
 
     @Shadow
-    public abstract void addMessage(Text message, MessageSignatureData messageSignatureData, MessageIndicator messageIndicator);
+    public abstract void addClientSystemMessage(Component message);
 
     @Unique
     @Override
     public void remove(Function<String, Boolean> visitor) {
-        visibleMessages.removeIf(line -> {
+        trimmedMessages.removeIf(line -> {
             var text = new StringBuilder();
             line.content().accept((index, style, point) -> {
                 text.appendCodePoint(point);
@@ -41,13 +41,13 @@ public abstract class MixinChatHud implements GameChat {
     @Unique
     @Override
     public void append(Message message) {
-        addMessage((Text) message, null, null);
+        addClientSystemMessage((Component) message);
     }
 
     @Unique
     @Override
     public void remove(int index) {
-        visibleMessages.remove(index);
+        trimmedMessages.remove(index);
     }
 
 }

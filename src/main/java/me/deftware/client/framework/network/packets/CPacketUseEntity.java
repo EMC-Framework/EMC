@@ -3,9 +3,9 @@ package me.deftware.client.framework.network.packets;
 import me.deftware.client.framework.entity.Entity;
 import me.deftware.client.framework.network.PacketWrapper;
 import me.deftware.mixin.imp.IMixinPlayerInteractEntityC2SPacket;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
-import net.minecraft.util.Hand;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ServerboundInteractPacket;
+import net.minecraft.world.InteractionHand;
 
 /**
  * @author Deftware
@@ -17,14 +17,17 @@ public class CPacketUseEntity extends PacketWrapper {
     }
 
     public static CPacketUseEntity attack(Entity entity) {
-        return new CPacketUseEntity(PlayerInteractEntityC2SPacket.attack(entity.getMinecraftEntity(), entity.getMinecraftEntity().isSneaking()));
+        return new CPacketUseEntity(new net.minecraft.network.protocol.game.ServerboundAttackPacket(entity.getMinecraftEntity().getId()));
     }
 
     public static CPacketUseEntity interact(Entity entity) {
-        return new CPacketUseEntity(PlayerInteractEntityC2SPacket.interact(entity.getMinecraftEntity(), entity.getMinecraftEntity().isSneaking(), Hand.MAIN_HAND));
+        return new CPacketUseEntity(new ServerboundInteractPacket(entity.getMinecraftEntity().getId(), InteractionHand.MAIN_HAND, net.minecraft.world.phys.Vec3.ZERO, entity.getMinecraftEntity().isShiftKeyDown()));
     }
 
     public Type getType() {
+        if (packet instanceof net.minecraft.network.protocol.game.ServerboundAttackPacket) {
+            return Type.ATTACK;
+        }
         Type type = ((IMixinPlayerInteractEntityC2SPacket) packet).getActionType();
         if (type == null)
             return Type.UNKNOWN;

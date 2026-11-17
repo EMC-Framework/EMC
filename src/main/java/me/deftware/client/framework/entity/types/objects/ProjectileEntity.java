@@ -7,13 +7,13 @@ public class ProjectileEntity extends Entity {
 
     private Vector3<Double> lastPos;
 
-    public ProjectileEntity(net.minecraft.entity.Entity entity) {
+    public ProjectileEntity(net.minecraft.world.entity.Entity entity) {
         super(entity);
     }
 
     @Override
-    public net.minecraft.entity.projectile.ProjectileEntity getMinecraftEntity() {
-        return (net.minecraft.entity.projectile.ProjectileEntity) this.entity;
+    public net.minecraft.world.entity.projectile.Projectile getMinecraftEntity() {
+        return (net.minecraft.world.entity.projectile.Projectile) this.entity;
     }
 
     public boolean isMoving() {

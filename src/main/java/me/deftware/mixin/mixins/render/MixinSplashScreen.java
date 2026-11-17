@@ -2,10 +2,10 @@ package me.deftware.mixin.mixins.render;
 
 import me.deftware.client.framework.main.EMCMod;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.SplashOverlay;
-import net.minecraft.client.texture.TextureManager;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.LoadingOverlay;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.texture.TextureManager;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -14,24 +14,24 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(SplashOverlay.class)
+@Mixin(LoadingOverlay.class)
 public class MixinSplashScreen {
 
     @Shadow
     @Final
-    private boolean reloading;
+    private boolean fadeIn;
 
-    @Inject(method = "init", at = @At("HEAD"))
+    @Inject(method = "registerTextures", at = @At("HEAD"))
     private static void init(TextureManager textureManager, CallbackInfo ci) {
         Bootstrap.init();
     }
 
-    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/Screen;init(Lnet/minecraft/client/MinecraftClient;II)V"))
-    private void onInit(Screen instance, MinecraftClient client, int width, int height) {
-        if (!reloading) {
+    @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;init(II)V"))
+    private void onInit(Screen instance, int width, int height) {
+        if (!fadeIn) {
             Bootstrap.getMods().values().forEach(EMCMod::postInit);
-            client.currentScreen.init(client, width, height);
         }
+        instance.init(width, height);
     }
 
 }

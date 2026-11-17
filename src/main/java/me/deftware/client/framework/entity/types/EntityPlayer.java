@@ -6,11 +6,9 @@ import me.deftware.client.framework.inventory.EntityInventory;
 import me.deftware.client.framework.minecraft.Minecraft;
 import me.deftware.client.framework.render.gl.GLX;
 import me.deftware.mixin.imp.IMixinEntityLivingBase;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.shape.VoxelShape;
-
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import java.util.*;
 
 /**
@@ -18,7 +16,7 @@ import java.util.*;
  */
 public class EntityPlayer extends LivingEntity {
 
-	public EntityPlayer(PlayerEntity entity) {
+	public EntityPlayer(Player entity) {
 		super(entity);
 	}
 
@@ -47,45 +45,47 @@ public class EntityPlayer extends LivingEntity {
 	}
 
 	public float getSaturationLevel() {
-		return getMinecraftEntity().getHungerManager().getSaturationLevel();
+		return getMinecraftEntity().getFoodData().getSaturationLevel();
 	}
 
 	public UUID getUUID() {
-		return ((PlayerEntity) entity).getGameProfile().getId();
+		return ((Player) entity).getGameProfile().id();
 	}
 
 	public float getRotationHeadYaw() {
-		return getMinecraftEntity().headYaw;
+		return getMinecraftEntity().yHeadRot;
 	}
 
 	public String getUsername() {
-		return ((PlayerEntity) entity).getGameProfile().getName();
+		return ((Player) entity).getGameProfile().name();
 	}
 
 	@Override
-	public PlayerEntity getMinecraftEntity() {
-		return (PlayerEntity) entity;
+	public Player getMinecraftEntity() {
+		return (Player) entity;
 	}
 
 	public float getCooldown() {
-		return getMinecraftEntity().getAttackCooldownProgress(0);
+		return getMinecraftEntity().getAttackStrengthScale(0);
 	}
 
 	public boolean isAtEdge() {
-		Iterable<VoxelShape> iterable = Objects.requireNonNull(MinecraftClient.getInstance().world).getCollisions(getMinecraftEntity(), getMinecraftEntity().getBoundingBox().offset(0, -0.5, 0).expand(-0.001, 0, -0.001));
+		Iterable<VoxelShape> iterable = Objects.requireNonNull(net.minecraft.client.Minecraft.getInstance().level).getCollisions(getMinecraftEntity(), getMinecraftEntity().getBoundingBox().move(0, -0.5, 0).inflate(-0.001, 0, -0.001));
 		return !iterable.iterator().hasNext();
 	}
 
 	public void openInventory() {
-		Minecraft.getMinecraftGame().runOnRenderThread(() -> MinecraftClient.getInstance().setScreen(new InventoryScreen(getMinecraftEntity())));
+		Minecraft.getMinecraftGame().runOnRenderThread(() -> net.minecraft.client.Minecraft.getInstance().gui.setScreen(new InventoryScreen(getMinecraftEntity())));
 	}
 
 	public int getFoodLevel() {
-		return getMinecraftEntity().getHungerManager().getFoodLevel();
+		return getMinecraftEntity().getFoodData().getFoodLevel();
 	}
 
 	public void respawn() {
-		getMinecraftEntity().requestRespawn();
+		if (entity instanceof net.minecraft.client.player.LocalPlayer localPlayer) {
+			localPlayer.respawn();
+		}
 	}
 
 	public int getItemInUseCount() {
@@ -93,11 +93,11 @@ public class EntityPlayer extends LivingEntity {
 	}
 
 	public void doJump() {
-		getMinecraftEntity().jump();
+		getMinecraftEntity().jumpFromGround();
 	}
 
 	public int getItemInUseMaxCount() {
-		return getMinecraftEntity().getItemUseTimeLeft();
+		return getMinecraftEntity().getUseItemRemainingTicks();
 	}
 
 	public static final double PLAYER_WIDTH = 49, PLAYER_HEIGHT = 70, DEFAULT_SIZE = 30;
@@ -108,7 +108,7 @@ public class EntityPlayer extends LivingEntity {
 		int width = (int) (size * PLAYER_WIDTH_MP);
 		int height = (int) (size * PLAYER_HEIGHT_MP);
 
-		InventoryScreen.drawEntity(context.getContext(), posX, posY,
+		InventoryScreen.extractEntityInInventoryFollowsMouse(context.getContext(), posX, posY,
 				posX + width, posY + height,
 				size, 0.0625F, posX + width / 2f,
 				posY + height / 2f, getMinecraftEntity());
@@ -119,19 +119,19 @@ public class EntityPlayer extends LivingEntity {
 	}
 
 	public float getFlySpeed() {
-		return getMinecraftEntity().getAbilities().getFlySpeed();
+		return getMinecraftEntity().getAbilities().getFlyingSpeed();
 	}
 
 	public void setFlySpeed(float speed) {
-		getMinecraftEntity().getAbilities().setFlySpeed(speed);
+		getMinecraftEntity().getAbilities().setFlyingSpeed(speed);
 	}
 
 	public float getWalkSpeed() {
-		return getMinecraftEntity().getAbilities().getWalkSpeed();
+		return getMinecraftEntity().getAbilities().getWalkingSpeed();
 	}
 
 	public void setWalkSpeed(float speed) {
-		getMinecraftEntity().getAbilities().setWalkSpeed(speed);
+		getMinecraftEntity().getAbilities().setWalkingSpeed(speed);
 	}
 
 }

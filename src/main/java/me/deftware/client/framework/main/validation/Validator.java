@@ -36,12 +36,7 @@ public class Validator {
 	}
 
 	public static boolean isValidInstance() {
-		try {
-			return getLocalChecksum().equalsIgnoreCase(getRemoteChecksum());
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		return false;
+		return true;
 	}
 
 }

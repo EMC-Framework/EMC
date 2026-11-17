@@ -3,8 +3,12 @@ package me.deftware.mixin.mixins.block;
 import me.deftware.client.framework.event.events.EventSlowdown;
 import me.deftware.client.framework.item.Item;
 import me.deftware.client.framework.message.Message;
-import net.minecraft.block.*;
-import net.minecraft.registry.Registries;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.HoneyBlock;
+import net.minecraft.world.level.block.IceBlock;
+import net.minecraft.world.level.block.SoulSandBlock;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -12,49 +16,59 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Block.class)
-public abstract class MixinBlock extends AbstractBlock implements me.deftware.client.framework.world.block.Block {
+public abstract class MixinBlock extends BlockBehaviour implements me.deftware.client.framework.world.block.Block {
 
-    public MixinBlock(Settings settings) {
+    public MixinBlock(Properties settings) {
         super(settings);
     }
 
     @Unique
-    private final EventSlowdown eventSlowdown = new EventSlowdown();
+    private EventSlowdown eventSlowdown;
 
-    @Inject(method = "getSlipperiness", at = @At("TAIL"), cancellable = true)
+    @Unique
+    private EventSlowdown slowdownEvent() {
+        if (this.eventSlowdown == null) {
+            this.eventSlowdown = new EventSlowdown();
+        }
+        return this.eventSlowdown;
+    }
+
+    @Inject(method = "getFriction", at = @At("TAIL"), cancellable = true)
     public void getSlipperiness(CallbackInfoReturnable<Float> cir) {
-        if (slipperiness != 0.6f) {
-            Block block = Block.getBlockFromItem(this.asItem());
+        if (friction != 0.6f) {
+            Block block = Block.byItem(this.asItem());
             boolean flag = false;
-            if (block instanceof IceBlock || block.getTranslationKey().contains("blue_ice") || block.getTranslationKey().contains("packed_ice")) {
+            EventSlowdown slowdown = slowdownEvent();
+            if (block instanceof IceBlock || block.getDescriptionId().contains("blue_ice") || block.getDescriptionId().contains("packed_ice")) {
                 flag = true;
-                eventSlowdown.create(EventSlowdown.SlowdownType.Slipperiness, 0.6f);
+                slowdown.create(EventSlowdown.SlowdownType.Slipperiness, 0.6f);
             }
             if (flag) {
-                eventSlowdown.broadcast();
-                if (eventSlowdown.isCanceled()) {
-                    cir.setReturnValue(eventSlowdown.getMultiplier());
+                slowdown.broadcast();
+                if (slowdown.isCanceled()) {
+                    cir.setReturnValue(slowdown.getMultiplier());
                 }
             }
         }
     }
 
-    @Inject(method = "getVelocityMultiplier", at = @At(value = "TAIL"), cancellable = true)
+    @Inject(method = "getSpeedFactor", at = @At(value = "TAIL"), cancellable = true)
     private void onGetVelocityMultiplier(CallbackInfoReturnable<Float> cir) {
-        if (velocityMultiplier != 1.0f) {
-            Block block = Block.getBlockFromItem(this.asItem());
+        if (speedFactor != 1.0f) {
+            Block block = Block.byItem(this.asItem());
             boolean flag = false;
+            EventSlowdown slowdown = slowdownEvent();
             if (block instanceof HoneyBlock) {
                 flag = true;
-                eventSlowdown.create(EventSlowdown.SlowdownType.Honey, 1);
+                slowdown.create(EventSlowdown.SlowdownType.Honey, 1);
             } else if (block instanceof SoulSandBlock) {
                 flag = true;
-                eventSlowdown.create(EventSlowdown.SlowdownType.Soulsand, 1);
+                slowdown.create(EventSlowdown.SlowdownType.Soulsand, 1);
             }
             if (flag) {
-                eventSlowdown.broadcast();
-                if (eventSlowdown.isCanceled()) {
-                    cir.setReturnValue(eventSlowdown.getMultiplier());
+                slowdown.broadcast();
+                if (slowdown.isCanceled()) {
+                    cir.setReturnValue(slowdown.getMultiplier());
                 }
             }
         }
@@ -63,7 +77,7 @@ public abstract class MixinBlock extends AbstractBlock implements me.deftware.cl
     @Unique
     @Override
     public String getIdentifierKey() {
-        return Registries.BLOCK.getId((Block) (Object) this).getPath();
+        return BuiltInRegistries.BLOCK.getKey((Block) (Object) this).getPath();
     }
 
     @Unique
@@ -75,13 +89,13 @@ public abstract class MixinBlock extends AbstractBlock implements me.deftware.cl
     @Unique
     @Override
     public int getID() {
-        return Registries.BLOCK.getRawId((Block) (Object) this);
+        return BuiltInRegistries.BLOCK.getId((Block) (Object) this);
     }
 
     @Unique
     @Override
     public Message getName() {
-        return (Message) ((Block) (Object) this).getName();
+        return (Message) (Object) ((Block) (Object) this).getName();
     }
 
 }

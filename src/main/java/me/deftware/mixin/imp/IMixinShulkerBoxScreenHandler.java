@@ -1,9 +1,9 @@
 package me.deftware.mixin.imp;
 
-import net.minecraft.inventory.Inventory;
+import net.minecraft.world.Container;
 
 public interface IMixinShulkerBoxScreenHandler {
 
-	Inventory getInventory();
+	Container getInventory();
 
 }

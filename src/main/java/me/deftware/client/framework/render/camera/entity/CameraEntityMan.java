@@ -1,11 +1,12 @@
 package me.deftware.client.framework.render.camera.entity;
 
+import com.mojang.authlib.GameProfile;
 import me.deftware.client.framework.entity.Entity;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.input.KeyboardInput;
-import net.minecraft.client.option.Perspective;
-
+import net.minecraft.client.CameraType;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.KeyboardInput;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Based on https://github.com/wagyourtail/Freecam
@@ -16,24 +17,25 @@ public class CameraEntityMan {
 
 	public static float speed = 0.25f;
 	public static CameraEntity fakePlayer;
-	private static Perspective savedPerspective;
+	private static CameraType savedPerspective;
 
 	public static boolean isActive() {
 		return fakePlayer != null;
 	}
 
 	public static void enable() {
-		fakePlayer = new CameraEntity(Objects.requireNonNull(MinecraftClient.getInstance().world),
-				Objects.requireNonNull(MinecraftClient.getInstance().player).getGameProfile(),
-				Objects.requireNonNull(MinecraftClient.getInstance().player).getHungerManager());
-		fakePlayer.copyPositionAndRotation(Objects.requireNonNull(MinecraftClient.getInstance().player));
-		fakePlayer.setHeadYaw(Objects.requireNonNull(MinecraftClient.getInstance().player).headYaw);
+		var mc = Minecraft.getInstance();
+		var player = Objects.requireNonNull(mc.player);
+		var profile = new GameProfile(UUID.randomUUID(), player.getGameProfile().name());
+		fakePlayer = new CameraEntity(Objects.requireNonNull(mc.level), profile, player.getFoodData());
+		fakePlayer.copyPosition(player);
+		fakePlayer.setYHeadRot(player.yHeadRot);
 		fakePlayer.spawn();
-		savedPerspective = Objects.requireNonNull(MinecraftClient.getInstance().options).getPerspective();
-		Objects.requireNonNull(MinecraftClient.getInstance().options).setPerspective(Perspective.FIRST_PERSON);
-		MinecraftClient.getInstance().setCameraEntity(fakePlayer);
-		if (MinecraftClient.getInstance().player.input instanceof KeyboardInput)
-			MinecraftClient.getInstance().player.input = new DummyInput();
+		savedPerspective = Objects.requireNonNull(mc.options).getCameraType();
+		mc.options.setCameraType(CameraType.FIRST_PERSON);
+		mc.setCameraEntity(fakePlayer);
+		if (player.input instanceof KeyboardInput)
+			player.input = new DummyInput();
 	}
 
 	public static boolean isCameraEntity(Entity entity) {
@@ -41,12 +43,21 @@ public class CameraEntityMan {
 	}
 
 	public static void disable() {
-		MinecraftClient.getInstance().options.setPerspective(savedPerspective);
-		MinecraftClient.getInstance().setCameraEntity(Objects.requireNonNull(MinecraftClient.getInstance().player));
-		if (fakePlayer != null) fakePlayer.despawn();
-		fakePlayer = null;
-		if (MinecraftClient.getInstance().player.input instanceof DummyInput)
-			MinecraftClient.getInstance().player.input = new KeyboardInput(MinecraftClient.getInstance().options);
+		Minecraft mc = Minecraft.getInstance();
+		if (savedPerspective != null) {
+			mc.options.setCameraType(savedPerspective);
+			savedPerspective = null;
+		}
+		if (mc.player != null) {
+			mc.setCameraEntity(mc.player);
+			if (mc.player.input instanceof DummyInput) {
+				mc.player.input = new KeyboardInput(mc.options);
+			}
+		}
+		if (fakePlayer != null) {
+			fakePlayer.despawn();
+			fakePlayer = null;
+		}
 	}
 
 }

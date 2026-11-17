@@ -96,6 +96,15 @@ public class Bootstrap {
             EMCSettings = new Settings("EMC");
             EMCSettings.setupShutdownHook();
             RenderStack.setScale(EMCSettings.getPrimitive("RENDER_SCALE", 1.0f));
+            try {
+                if (!net.minecraft.world.item.Items.APPLE.builtInRegistryHolder().areComponentsBound()) {
+                    net.minecraft.core.registries.BuiltInRegistries.DATA_COMPONENT_INITIALIZERS
+                            .build(net.minecraft.data.registries.VanillaRegistries.createWorldLookup())
+                            .forEach(net.minecraft.core.component.DataComponentInitializers.PendingComponents::apply);
+                }
+            } catch (Throwable t) {
+                logger.warn("Failed to pre-bind vanilla data components", t);
+            }
             modDiscoveries.forEach(discovery -> {
                 discovery.discover();
                 if (discovery.size() != 0) {

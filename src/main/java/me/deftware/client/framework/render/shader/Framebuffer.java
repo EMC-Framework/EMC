@@ -1,6 +1,6 @@
 package me.deftware.client.framework.render.shader;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
 /**
  * @author Deftware
@@ -10,11 +10,11 @@ public class Framebuffer {
     /**
      * The main Minecraft framebuffer
      */
-    public static final Framebuffer Main = new Framebuffer(MinecraftClient.getInstance().getFramebuffer());
+    public static final Framebuffer Main = new Framebuffer(Minecraft.getInstance().gameRenderer != null ? Minecraft.getInstance().gameRenderer.mainRenderTarget() : null);
 
-    private final net.minecraft.client.gl.Framebuffer buffer;
+    private final com.mojang.blaze3d.pipeline.RenderTarget buffer;
 
-    public Framebuffer(net.minecraft.client.gl.Framebuffer buffer) {
+    public Framebuffer(com.mojang.blaze3d.pipeline.RenderTarget buffer) {
         this.buffer = buffer;
     }
 
@@ -35,14 +35,14 @@ public class Framebuffer {
     }
 
     public void close() {
-        buffer.delete();
+        buffer.destroyBuffers();
     }
 
     public void copyDepth(Framebuffer buffer) {
         this.buffer.copyDepthFrom(buffer.getMinecraftBuffer());
     }
 
-    public net.minecraft.client.gl.Framebuffer getMinecraftBuffer() {
+    public com.mojang.blaze3d.pipeline.RenderTarget getMinecraftBuffer() {
         return buffer;
     }
 

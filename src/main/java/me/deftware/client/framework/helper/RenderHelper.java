@@ -1,34 +1,37 @@
 package me.deftware.client.framework.helper;
 
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.option.SimpleOption;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.OptionInstance;
 
 /**
  * @author Deftware
  */
 public class RenderHelper {
 
-	private static SimpleOption<Boolean> aoMode = null;
+	private static OptionInstance<Boolean> aoMode = null;
 
 	private static boolean getAoMode() {
-		return MinecraftClient.getInstance().options.getAo().getValue();
+		return Minecraft.getInstance().options.ambientOcclusion().get();
 	}
 
 	private static void setAoMode(boolean mode) {
-		MinecraftClient.getInstance().options.getAo().setValue(mode);
+		Minecraft.getInstance().options.ambientOcclusion().set(mode);
 	}
 
 	public static void reloadRenderers() {
 		if (aoMode == null)
-			aoMode = SimpleOption.ofBoolean("dummyAoMode", getAoMode());
+			aoMode = OptionInstance.createBoolean("dummyAoMode", getAoMode());
 		if (Bootstrap.blockProperties.isActive()) {
-			aoMode.setValue(getAoMode());
+			aoMode.set(getAoMode());
 			setAoMode(false);
 		} else {
-			setAoMode(aoMode.getValue());
+			setAoMode(aoMode.get());
 		}
-		MinecraftClient.getInstance().worldRenderer.reload();
+		var mc = Minecraft.getInstance();
+		if (mc.level != null) {
+			mc.levelRenderer.invalidateCompiledGeometry(mc.level, mc.options, mc.gameRenderer.mainCamera(), mc.getBlockColors());
+		}
 	}
 
 }

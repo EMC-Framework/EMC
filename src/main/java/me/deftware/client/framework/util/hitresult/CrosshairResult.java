@@ -1,7 +1,7 @@
 package me.deftware.client.framework.util.hitresult;
 
 import me.deftware.client.framework.math.Vector3;
-import net.minecraft.util.hit.HitResult;
+import net.minecraft.world.phys.HitResult;
 
 /**
  * @author Deftware
@@ -15,7 +15,7 @@ public class CrosshairResult {
 	}
 
 	public Vector3<Double> getVector() {
-		return (Vector3<Double>) hitResult.getPos();
+		return (Vector3<Double>) hitResult.getLocation();
 	}
 
 	public HitResult getMinecraftHitResult() {

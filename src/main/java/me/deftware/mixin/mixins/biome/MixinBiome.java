@@ -4,16 +4,7 @@ import me.deftware.client.framework.registry.BlockRegistry;
 import me.deftware.client.framework.world.gen.BiomeDecorator;
 import me.deftware.client.framework.world.gen.DecoratorConfig;
 import me.deftware.client.framework.world.block.Block;
-import net.minecraft.util.Identifier;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BuiltinBiomes;
-import net.minecraft.world.biome.GenerationSettings;
-import net.minecraft.world.gen.GenerationStep;
-import net.minecraft.world.gen.feature.*;
-import net.minecraft.world.gen.placementmodifier.AbstractCountPlacementModifier;
-import net.minecraft.world.gen.placementmodifier.HeightRangePlacementModifier;
-import net.minecraft.world.gen.placementmodifier.PlacementModifier;
-import net.minecraft.world.gen.placementmodifier.RarityFilterPlacementModifier;
+import net.minecraft.data.worldgen.biome.BiomeData;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -27,7 +18,7 @@ import java.util.stream.Collectors;
 /**
  * Extracts all biome generation data
  */
-@Mixin(BuiltinBiomes.class)
+@Mixin(BiomeData.class)
 public class MixinBiome {
 
     /* TODO: FIXME

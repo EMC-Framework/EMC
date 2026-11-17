@@ -1,14 +1,13 @@
 package me.deftware.client.framework.render.batching;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.renderpearl.api.vertex.VertexFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import me.deftware.client.framework.render.gl.GLX;
 import me.deftware.client.framework.render.texture.GlTexture;
-import net.minecraft.client.render.VertexFormats;
 import org.lwjgl.opengl.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,18 +110,12 @@ public class GifRenderStack extends RenderStack<GifRenderStack> {
 
     @Override
     protected VertexFormat getFormat() {
-        return VertexFormats.POSITION_TEXTURE_COLOR;
+        return DefaultVertexFormat.POSITION_TEX_COLOR;
     }
 
     @Override
     protected void setShader() {
         // RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
-    }
-
-    @Override
-    public VertexConstructor vertex(double x, double y, double z) {
-        builder.vertex(getModel(), (float) x, (float) y, (float) z);
-        return this;
     }
 
     public GifRenderStack draw(int x0, int y0, int x1, int y1) {

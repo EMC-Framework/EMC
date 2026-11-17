@@ -1,7 +1,5 @@
 package me.deftware.client.framework.util;
 
-import net.minecraft.client.MinecraftClient;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -9,6 +7,7 @@ import java.io.InputStream;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import net.minecraft.client.Minecraft;
 
 /**
  * @author Deftware
@@ -58,7 +57,7 @@ public class HashUtils {
 
     public static String getClientHash() {
         try {
-            File f = new File(MinecraftClient.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+            File f = new File(Minecraft.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
             return HashUtils.calcSHA(f);
         } catch (Exception ex) {
             return "";

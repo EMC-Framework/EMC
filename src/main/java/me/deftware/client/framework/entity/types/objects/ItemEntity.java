@@ -10,16 +10,16 @@ public class ItemEntity extends Entity {
 
 	private final ItemStack stack = ItemStack.EMPTY;
 
-	public ItemEntity(net.minecraft.entity.Entity entity) {
+	public ItemEntity(net.minecraft.world.entity.Entity entity) {
 		super(entity);
 	}
 
 	public ItemStack getStack() {
-		return (ItemStack) getMinecraftEntity().getStack();
+		return (ItemStack) getMinecraftEntity().getItem();
 	}
 
-	public net.minecraft.entity.ItemEntity getMinecraftEntity() {
-		return (net.minecraft.entity.ItemEntity) entity;
+	public net.minecraft.world.entity.item.ItemEntity getMinecraftEntity() {
+		return (net.minecraft.world.entity.item.ItemEntity) entity;
 	}
 
 }

@@ -1,7 +1,7 @@
 package me.deftware.client.framework.math;
 
 import me.deftware.client.framework.world.EnumFacing;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 
 /**
  * @author Deftware

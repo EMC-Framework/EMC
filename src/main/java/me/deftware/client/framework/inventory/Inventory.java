@@ -2,7 +2,7 @@ package me.deftware.client.framework.inventory;
 
 import me.deftware.client.framework.item.Item;
 import me.deftware.client.framework.item.ItemStack;
-import net.minecraft.inventory.DoubleInventory;
+import net.minecraft.world.CompoundContainer;
 
 /**
  * @author Deftware
@@ -33,7 +33,7 @@ public interface Inventory {
 	}
 
 	default boolean isDouble() {
-		return this instanceof DoubleInventory;
+		return this instanceof CompoundContainer;
 	}
 
 }

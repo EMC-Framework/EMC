@@ -1,28 +1,28 @@
 package me.deftware.mixin.mixins.input;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import me.deftware.mixin.imp.IMixinKeyBinding;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.KeyMapping;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(KeyBinding.class)
+@Mixin(KeyMapping.class)
 public class MixinKeyBinding implements IMixinKeyBinding {
 
     @Shadow
-    private boolean pressed;
+    private boolean isDown;
 
     @Shadow
-    private InputUtil.Key boundKey;
+    private InputConstants.Key key;
 
     @Override
     public void emcSetPressed(boolean state) {
-        pressed = state;
+        isDown = state;
     }
 
     @Override
-    public InputUtil.Key getInput() {
-        return boundKey;
+    public InputConstants.Key getInput() {
+        return key;
     }
 
 

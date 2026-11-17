@@ -2,35 +2,35 @@ package me.deftware.mixin.mixins.world;
 
 import me.deftware.client.framework.world.chunk.ChunkAccessor;
 import me.deftware.client.framework.world.chunk.SectionAccessor;
-import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.world.level.chunk.LevelChunk;
 import org.spongepowered.asm.mixin.Mixin;
 
-@Mixin(WorldChunk.class)
+@Mixin(LevelChunk.class)
 public class MixinChunk implements ChunkAccessor {
 
     @Override
     public SectionAccessor getSection(int index) {
-        return (SectionAccessor) ((WorldChunk) (Object) this).getSection(index);
+        return (SectionAccessor) ((LevelChunk) (Object) this).getSection(index);
     }
 
     @Override
     public int getChunkPosX() {
-        return ((WorldChunk) (Object) this).getPos().x;
+        return ((LevelChunk) (Object) this).getPos().x();
     }
 
     @Override
     public int getChunkPosZ() {
-        return ((WorldChunk) (Object) this).getPos().z;
+        return ((LevelChunk) (Object) this).getPos().z();
     }
 
     @Override
     public int getChunkHeight() {
-        return ((WorldChunk) (Object) this).getHeight();
+        return ((LevelChunk) (Object) this).getHeight();
     }
 
     @Override
     public int getChunkMinY() {
-        return ((WorldChunk) (Object) this).getBottomY();
+        return ((LevelChunk) (Object) this).getMinY();
     }
 
 }

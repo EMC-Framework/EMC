@@ -24,16 +24,16 @@ import me.deftware.mixin.imp.IMixinAbstractClientPlayer;
 import me.deftware.mixin.imp.IMixinEntity;
 import me.deftware.mixin.imp.IMixinEntityLivingBase;
 import me.deftware.mixin.imp.IMixinNetworkPlayerInfo;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.Monster;
-import net.minecraft.entity.passive.ChickenEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.Vec3d;
-
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.animal.chicken.Chicken;
+import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -48,31 +48,31 @@ public class Entity {
 
 	private Entity vehicle;
 
-	protected final net.minecraft.entity.Entity entity;
+	protected final net.minecraft.world.entity.Entity entity;
 
-	public static Entity newInstance(net.minecraft.entity.Entity entity) {
-		if (entity == MinecraftClient.getInstance().player) {
-			return new MainEntityPlayer((PlayerEntity) entity);
-		} else if (entity instanceof PlayerEntity) {
-			return new EntityPlayer((PlayerEntity) entity);
-		} else if (entity instanceof net.minecraft.entity.projectile.ProjectileEntity) {
+	public static Entity newInstance(net.minecraft.world.entity.Entity entity) {
+		if (entity == Minecraft.getInstance().player) {
+			return new MainEntityPlayer((Player) entity);
+		} else if (entity instanceof Player) {
+			return new EntityPlayer((Player) entity);
+		} else if (entity instanceof net.minecraft.world.entity.projectile.Projectile) {
 			return new ProjectileEntity(entity);
-		} else if (entity instanceof net.minecraft.entity.decoration.EndCrystalEntity) {
+		} else if (entity instanceof net.minecraft.world.entity.boss.enderdragon.EndCrystal) {
 			return new EndCrystalEntity(entity);
-		} else if (entity instanceof net.minecraft.entity.passive.HorseEntity) {
+		} else if (entity instanceof net.minecraft.world.entity.animal.equine.Horse) {
 			return new HorseEntity(entity);
-		} else if (entity instanceof net.minecraft.entity.vehicle.BoatEntity) {
+		} else if (entity instanceof net.minecraft.world.entity.vehicle.boat.AbstractBoat) {
 			return new BoatEntity(entity);
-		} else if (entity instanceof net.minecraft.entity.passive.WolfEntity) {
+		} else if (entity instanceof net.minecraft.world.entity.animal.wolf.Wolf) {
 			return new WolfEntity(entity);
-		} else if (entity instanceof net.minecraft.entity.mob.WaterCreatureEntity) {
+		} else if (entity instanceof net.minecraft.world.entity.animal.fish.WaterAnimal) {
 			return new WaterEntity(entity);
-		} else if (entity instanceof net.minecraft.entity.mob.MobEntity) {
+		} else if (entity instanceof net.minecraft.world.entity.Mob) {
 			return new MobEntity(entity);
-		} else if (entity instanceof net.minecraft.entity.ItemEntity) {
+		} else if (entity instanceof net.minecraft.world.entity.item.ItemEntity) {
 			return new ItemEntity(entity);
-		} else if (entity instanceof net.minecraft.entity.LivingEntity) {
-			if (entity.writeNbt(new net.minecraft.nbt.NbtCompound()).contains("Owner")) {
+		} else if (entity instanceof net.minecraft.world.entity.LivingEntity) {
+			if (saveEntityNbt(entity).contains("Owner")) {
 				return new OwnedEntity(entity);
 			}
 			return new me.deftware.client.framework.entity.types.LivingEntity(entity);
@@ -80,21 +80,30 @@ public class Entity {
 		return new Entity(entity);
 	}
 
-	protected Entity(net.minecraft.entity.Entity entity) {
+	private static net.minecraft.nbt.CompoundTag saveEntityNbt(net.minecraft.world.entity.Entity target) {
+		var output = net.minecraft.world.level.storage.TagValueOutput.createWithContext(
+				net.minecraft.util.ProblemReporter.DISCARDING,
+				target.registryAccess()
+		);
+		target.saveWithoutId(output);
+		return output.buildResult();
+	}
+
+	protected Entity(net.minecraft.world.entity.Entity entity) {
 		this.entity = entity;
 		if (entity.getVehicle() != null)
 			this.vehicle = ClientWorld.getClientWorld().getEntityByReference(entity.getVehicle());
 	}
 
 	public EnumFacing getHorizontalFacing() {
-		return EnumFacing.fromMinecraft(getMinecraftEntity().getHorizontalFacing());
+		return EnumFacing.fromMinecraft(getMinecraftEntity().getDirection());
 	}
 
 	public BlockPosition getBlockPosition() {
-		return (BlockPosition) getMinecraftEntity().getBlockPos();
+		return (BlockPosition) getMinecraftEntity().blockPosition();
 	}
 
-	public net.minecraft.entity.Entity getMinecraftEntity() {
+	public net.minecraft.world.entity.Entity getMinecraftEntity() {
 		return entity;
 	}
 
@@ -107,11 +116,11 @@ public class Entity {
 	}
 
 	public boolean isRiding() {
-		return entity.hasVehicle();
+		return entity.isPassenger();
 	}
 
 	public boolean isAirBorne() {
-		return entity.velocityDirty; // TODO
+		return entity.needsSync;
 	}
 
 	public float getFallDistance() {
@@ -127,17 +136,22 @@ public class Entity {
 	}
 
 	public boolean isTouchingWater() {
-		return entity.isTouchingWater();
+		return entity.isInWater();
 	}
 
 	public ItemStack getEntityHeldItem(boolean offhand) {
+		if (entity instanceof LivingEntity e) {
+			return (ItemStack) (Object) (offhand ? e.getOffhandItem() : e.getMainHandItem());
+		}
 		return ItemStack.EMPTY;
 	}
 
 	public void armorInventory(Consumer<ItemStack> consumer) {
 		if (entity instanceof LivingEntity e) {
-			// TODO
-			// e.getArmorItems().forEach(itemStack -> consumer.accept((ItemStack) itemStack));
+			consumer.accept((ItemStack) (Object) e.getItemBySlot(EquipmentSlot.FEET));
+			consumer.accept((ItemStack) (Object) e.getItemBySlot(EquipmentSlot.LEGS));
+			consumer.accept((ItemStack) (Object) e.getItemBySlot(EquipmentSlot.CHEST));
+			consumer.accept((ItemStack) (Object) e.getItemBySlot(EquipmentSlot.HEAD));
 		}
 	}
 
@@ -146,9 +160,9 @@ public class Entity {
 	}
 
 	public void reloadSkin() {
-		if (entity instanceof AbstractClientPlayerEntity abstractEntity) {
-			var texture = abstractEntity.getSkinTextures();
-			if (texture.elytraTexture() != null) {
+		if (entity instanceof AbstractClientPlayer abstractEntity) {
+			var texture = abstractEntity.getSkin();
+			if (texture.elytra() != null) {
 				((IMixinNetworkPlayerInfo) ((IMixinAbstractClientPlayer) abstractEntity).getPlayerNetworkInfo()).reloadTextures();
 			}
 		}
@@ -163,37 +177,38 @@ public class Entity {
 	}
 
 	public int getResponseTime() {
-		if (MinecraftClient.getInstance().getNetworkHandler() != null) {
-			ClientPlayNetworkHandler networkHandler = MinecraftClient.getInstance().getNetworkHandler();
-			if (networkHandler.getPlayerListEntry(entity.getUuid()) != null) {
-				return Objects.requireNonNull(networkHandler.getPlayerListEntry(entity.getUuid())).getLatency();
+		if (Minecraft.getInstance().getConnection() != null) {
+			ClientPacketListener networkHandler = Minecraft.getInstance().getConnection();
+			if (networkHandler.getPlayerInfo(entity.getUUID()) != null) {
+				return Objects.requireNonNull(networkHandler.getPlayerInfo(entity.getUUID())).getLatency();
 			}
 		}
 		return -1;
 	}
 
 	public boolean hasNbt() {
-		return entity.writeNbt(new net.minecraft.nbt.NbtCompound()) != null && entity.writeNbt(new net.minecraft.nbt.NbtCompound()).getSize() != 0;
+		var nbt = saveEntityNbt(entity);
+		return nbt != null && !nbt.isEmpty();
 	}
 
 	public NbtCompound getNbt() {
-		return (NbtCompound) entity.writeNbt(new net.minecraft.nbt.NbtCompound());
+		return (NbtCompound) saveEntityNbt(entity);
 	}
 
 	public int getTicksExisted() {
-		return entity.age;
+		return entity.tickCount;
 	}
 
 	public boolean isSneaking() {
-		return entity.isSneaking();
+		return entity.isShiftKeyDown();
 	}
 
 	public boolean isInLiquid() {
-		return entity.isTouchingWater() || entity.isInLava();
+		return entity.isInWater() || entity.isInLava();
 	}
 
 	public boolean isSelf() {
-		return entity == MinecraftClient.getInstance().player;
+		return entity == Minecraft.getInstance().player;
 	}
 
 	public int getEntityId() {
@@ -201,15 +216,15 @@ public class Entity {
 	}
 
 	public float getHeight() {
-		return entity.getHeight();
+		return entity.getBbHeight();
 	}
 
 	public void setGlowing(boolean state) {
-		entity.setGlowing(state);
+		entity.setGlowingTag(state);
 	}
 
 	public boolean isOnGround() {
-		return entity.isOnGround();
+		return entity.onGround();
 	}
 
 	public void setOnGround(boolean flag) {
@@ -221,11 +236,11 @@ public class Entity {
 	}
 
 	public void setOnFire(int seconds) {
-		entity.setOnFireFor(seconds);
+		entity.igniteForSeconds(seconds);
 	}
 
 	public float getStepHeight() {
-		return entity.getStepHeight();
+		return entity.maxUpStep();
 	}
 
 	public void setStepHeight(float height) {
@@ -239,10 +254,10 @@ public class Entity {
 	}
 
 	public boolean isHostile() {
-		if (entity instanceof ChickenEntity) {
-			return ((ChickenEntity) entity).hasJockey;
+		if (entity instanceof Chicken) {
+			return ((Chicken) entity).isChickenJockey;
 		}
-		return entity instanceof Monster;
+		return entity instanceof Enemy;
 	}
 
 	public boolean isAlive() {
@@ -262,7 +277,7 @@ public class Entity {
 	}
 
 	public double getStandingEyeHeight() {
-		return entity.getEyeHeight(EntityPose.STANDING);
+		return entity.getEyeHeight(Pose.STANDING);
 	}
 
 	public boolean canBeSeenBy(EntityPlayer entity) {
@@ -278,11 +293,11 @@ public class Entity {
 	}
 
 	public String getEntityTypeName() {
-		return entity.getType().getName().getString();
+		return entity.getType().getDescription().getString();
 	}
 
 	public void setNoClip(boolean state) {
-		entity.noClip = state;
+		entity.noPhysics = state;
 	}
 
 	public void setFallDistance(float distance) {
@@ -290,31 +305,31 @@ public class Entity {
 	}
 
 	public String getEntityName() {
-		return entity.getUuidAsString();
+		return entity.getStringUUID();
 	}
 
 	public double getLastTickPosX() {
-		return entity.lastRenderX;
+		return entity.xOld;
 	}
 
 	public double getLastTickPosY() {
-		return entity.lastRenderY;
+		return entity.yOld;
 	}
 
 	public double getLastTickPosZ() {
-		return entity.lastRenderZ;
+		return entity.zOld;
 	}
 
 	public Vector3<Double> getRotationVector() {
-		return (Vector3<Double>) getMinecraftEntity().getRotationVector();
+		return (Vector3<Double>) getMinecraftEntity().getLookAngle();
 	}
 
 	public Vector3<Double> getPosition() {
-		return (Vector3<Double>) getMinecraftEntity().getPos();
+		return (Vector3<Double>) getMinecraftEntity().position();
 	}
 
 	public int getChunkX() {
-		return entity.getChunkPos().x;
+		return entity.chunkPosition().x();
 	}
 
 	public int getChunkY() {
@@ -322,7 +337,7 @@ public class Entity {
 	}
 
 	public int getChunkZ() {
-		return entity.getChunkPos().z;
+		return entity.chunkPosition().z();
 	}
 
 	public double getPosX() {
@@ -338,39 +353,39 @@ public class Entity {
 	}
 
 	public double getPrevPosX() {
-		return entity.lastX;
+		return entity.xo;
 	}
 
 	public double getPrevPosY() {
-		return entity.lastY;
+		return entity.yo;
 	}
 
 	public double getPrevPosZ() {
-		return entity.lastZ;
+		return entity.zo;
 	}
 
 	public float getRotationYaw() {
-		return entity.getYaw();
+		return entity.getYRot();
 	}
 
 	public float getRotationPitch() {
-		return entity.getPitch();
+		return entity.getXRot();
 	}
 
 	public void setRotationYaw(float yaw) {
-		entity.setYaw(yaw);
+		entity.setYRot(yaw);
 	}
 
 	public void setRotationPitch(float pitch) {
-		entity.setPitch(pitch);
+		entity.setXRot(pitch);
 	}
 
 	public void setPosition(double x, double y, double z) {
-		entity.updatePosition(x, y, z);
+		entity.absSnapTo(x, y, z);
 	}
 
 	public void setPositionAndRotation(double x, double y, double z, float yaw, float pitch) {
-		entity.refreshPositionAndAngles(x, y, z, yaw, pitch);
+		entity.snapTo(x, y, z, yaw, pitch);
 	}
 
 	public Vector3<Double> getEyesPos() {
@@ -382,21 +397,21 @@ public class Entity {
 	}
 
 	public void setVelocity(double x, double y, double z) {
-		entity.setVelocity(x, y, z);
+		entity.setDeltaMovement(x, y, z);
 	}
 
 	public void setVelocity(Vector3<Double> vector3d) {
-		entity.setVelocity((Vec3d) vector3d);
+		entity.setDeltaMovement((Vec3) vector3d);
 	}
 
 	public Vector3<Double> getVelocity() {
-		return (Vector3<Double>) entity.getVelocity();
+		return (Vector3<Double>) entity.getDeltaMovement();
 	}
 
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof EntityCapsule) {
-			return ((EntityCapsule) o).getTranslationKey().equalsIgnoreCase(entity.getType().getTranslationKey());
+			return ((EntityCapsule) o).getTranslationKey().equalsIgnoreCase(entity.getType().getDescriptionId());
 		}
 		return super.equals(o);
 	}

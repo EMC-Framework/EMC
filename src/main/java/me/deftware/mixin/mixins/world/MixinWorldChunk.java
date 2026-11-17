@@ -1,9 +1,5 @@
 package me.deftware.mixin.mixins.world;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.WorldChunk;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -12,21 +8,27 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.HashMap;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
 
-@Mixin(WorldChunk.class)
+@Mixin(LevelChunk.class)
 public class MixinWorldChunk {
 
 	@Shadow
 	@Final
-	World world;
+	Level level;
 
-	@Inject(method = "updateTicker", at = @At("HEAD"))
+	@Inject(method = "updateBlockEntityTicker", at = @At("HEAD"))
 	private <T extends BlockEntity> void test(T blockEntity, CallbackInfo ci) {
-		BlockState blockState = blockEntity.getCachedState();
-		if (blockState.getBlockEntityTicker(this.world, blockEntity.getType()) != null) {
-			long pos = blockEntity.getPos().asLong();
-			HashMap<Long, BlockEntity> entities = ((me.deftware.client.framework.world.World) world).getInternalLongToBlockEntity();
-			entities.put(pos, blockEntity);
+		BlockState blockState = blockEntity.getBlockState();
+		if (this.level != null && blockState.getTicker(this.level, blockEntity.getType()) != null) {
+			long pos = blockEntity.getBlockPos().asLong();
+			HashMap<Long, BlockEntity> entities = ((me.deftware.client.framework.world.World) level).getInternalLongToBlockEntity();
+			if (entities != null) {
+				entities.put(pos, blockEntity);
+			}
 		}
 	}
 

@@ -1,11 +1,15 @@
 plugins {
-	id 'fabric-loom' version '1.9.2'
-	id "io.freefair.lombok" version "8.11"
+	id 'net.fabricmc.fabric-loom' version '1.19.4'
 	id 'maven-publish'
 }
 
 tasks.withType(JavaCompile).configureEach {
-	it.sourceCompatibility = it.targetCompatibility = JavaVersion.VERSION_21
+	it.options.release = 25
+}
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_25
+	targetCompatibility = JavaVersion.VERSION_25
 }
 
 def getVersionFromJava() {
@@ -31,16 +35,16 @@ repositories {
 
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraftVersion}"
-	mappings "net.fabricmc:yarn:${project.minecraftVersion}${project.mappingsVer}:v2"
-	modImplementation "net.fabricmc:fabric-loader:0.16.10"
+	implementation "net.fabricmc:fabric-loader:0.20.1"
+	compileOnly 'org.projectlombok:lombok:1.18.48'
+	annotationProcessor 'org.projectlombok:lombok:1.18.48'
 
 	// No longer included in Minecraft
-	implementation 'io.netty:netty-handler-proxy:4.1.76.Final'
+	implementation 'io.netty:netty-handler-proxy:4.2.16.Final'
 	implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
 	// Extra dependencies
 	include(implementation("com.moulberry:mixinconstraints:1.0.1"))
-	include "me.deftware:integrations:1.21.4+build.1"
 }
 
 loom {
@@ -50,7 +54,7 @@ loom {
 sourceSets {
 	main {
 		java {
-			srcDir 'src'
+			srcDirs = ['src/main/java']
 			exclude '**/deftware/client/framework/main/ForgeMod**'
 			exclude '**/deftware/launch/MixinConnector**'
 		}
@@ -89,3 +93,5 @@ task generateApiDocumentation(type: Javadoc) {
 	destinationDir = file("docs")
 	failOnError false
 }
+
+

@@ -1,13 +1,12 @@
 package me.deftware.client.framework.input;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.util.Util;
 import org.lwjgl.glfw.GLFW;
-
+import com.mojang.blaze3d.platform.InputConstants;
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import net.minecraft.util.Util;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 
 /**
  * @author Deftware
@@ -55,28 +54,32 @@ public class Keyboard {
 	}
 
 	public static String getClipboardString() {
-		return MinecraftClient.getInstance().keyboard.getClipboard();
+		return Minecraft.getInstance().keyboardHandler.getClipboard();
 	}
 
 	public static void setClipboardString(String copyText) {
-		MinecraftClient.getInstance().keyboard.setClipboard(copyText);
+		Minecraft.getInstance().keyboardHandler.setClipboard(copyText);
 	}
 
 	public static boolean isKeyDown(int key) {
 		if (key <= 2) return false;
-		return InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), key);
+		return GLFW.glfwGetKey(Minecraft.getInstance().getWindow().handle(), key) == GLFW.GLFW_PRESS;
 	}
 
 	public static void openLink(String url) {
-		Util.getOperatingSystem().open(url);
+		try {
+			com.mojang.blaze3d.Blaze3D.openUri(new java.net.URI(url));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	public static boolean isCtrlPressed() {
-		return Screen.hasControlDown();
+		return Minecraft.getInstance().hasControlDown();
 	}
 
 	public static boolean isShiftPressed() {
-		return Screen.hasShiftDown();
+		return Minecraft.getInstance().hasShiftDown();
 	}
 
 }

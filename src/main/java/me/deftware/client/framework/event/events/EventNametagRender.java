@@ -2,7 +2,7 @@ package me.deftware.client.framework.event.events;
 
 import me.deftware.client.framework.event.Event;
 import me.deftware.client.framework.world.ClientWorld;
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 
 /**
  * Triggered when entity (including player) nametag is being rendered

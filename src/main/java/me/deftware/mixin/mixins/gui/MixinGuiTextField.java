@@ -1,28 +1,25 @@
 package me.deftware.mixin.mixins.gui;
 
 import me.deftware.client.framework.gui.widgets.TextField;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.OrderedText;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.EditBox;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.awt.*;
-import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 /**
  * @author Deftware
  */
-@Mixin(TextFieldWidget.class)
+@Mixin(EditBox.class)
 public class MixinGuiTextField extends MixinClickableWidget implements TextField {
 
     @Unique
@@ -31,43 +28,43 @@ public class MixinGuiTextField extends MixinClickableWidget implements TextField
     @Unique
     private boolean passwordField = false;
 
-    @Shadow
-    private BiFunction<String, Integer, OrderedText> renderTextProvider;
+    @Unique
+    private Predicate<String> filter = java.util.Objects::nonNull;
 
     @Shadow
     @Final
-    private TextRenderer textRenderer;
+    private Font font;
 
-    @Inject(method = "renderWidget", at = @At("RETURN"))
-    public void drawTextFieldReturn(DrawContext matrixStack, int mouseX, int mouseY, float tickDelta, CallbackInfo ci) {
-        TextFieldWidget self = (TextFieldWidget) (Object) this;
+    @Inject(method = "extractWidgetRenderState", at = @At("RETURN"))
+    public void drawTextFieldReturn(GuiGraphicsExtractor matrixStack, int mouseX, int mouseY, float tickDelta, CallbackInfo ci) {
+        EditBox self = (EditBox) (Object) this;
         if (!overlay.isEmpty()) {
-            int currentWidth = textRenderer.getWidth(self.getText());
+            int currentWidth = font.width(self.getValue());
             int x = getPositionX(), y = getPositionY();
             if (self.isFocused()) {
                 x += 4;
                 y += (getComponentHeight() - 8) / 2;
             }
-            matrixStack.drawTextWithShadow(textRenderer, overlay, x + currentWidth - 3, y - 2, Color.GRAY.getRGB());
+            matrixStack.text(font, overlay, x + currentWidth - 3, y - 2, Color.GRAY.getRGB() | 0xFF000000);
         }
     }
 
-    @Redirect(method = "renderWidget", at = @At(value = "INVOKE", target = "Ljava/util/function/BiFunction;apply(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"))
-    public Object render(BiFunction<String, Integer, OrderedText> biFunction, Object text, Object index) {
-        String data = (String) text;
-        if (passwordField)
-            data = "*".repeat(data.length());
-        return renderTextProvider.apply(data, (int) index);
+    @ModifyVariable(method = "applyFormat", at = @At("HEAD"), argsOnly = true, ordinal = 0)
+    private String onApplyFormat(String string) {
+        if (this.passwordField && string != null) {
+            return "*".repeat(string.length());
+        }
+        return string;
     }
 
     @Override
     public void _setText(String text) {
-        ((TextFieldWidget) (Object) this).setText(text);
+        ((EditBox) (Object) this).setValue(text);
     }
 
     @Override
     public String _getText() {
-        return ((TextFieldWidget) (Object) this).getText();
+        return ((EditBox) (Object) this).getValue();
     }
 
     @Override
@@ -77,7 +74,7 @@ public class MixinGuiTextField extends MixinClickableWidget implements TextField
 
     @Override
     public void _setMaxLength(int length) {
-        ((TextFieldWidget) (Object) this).setMaxLength(length);
+        ((EditBox) (Object) this).setMaxLength(length);
     }
 
     @Override
@@ -87,7 +84,7 @@ public class MixinGuiTextField extends MixinClickableWidget implements TextField
 
     @Override
     public void _setPredicate(Predicate<String> predicate) {
-        ((TextFieldWidget) (Object) this).setTextPredicate(predicate);
+        this.filter = predicate;
     }
 
 }

@@ -1,6 +1,6 @@
 package me.deftware.client.framework.util.minecraft;
 
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.Identifier;
 
 /**
  * @author Deftware

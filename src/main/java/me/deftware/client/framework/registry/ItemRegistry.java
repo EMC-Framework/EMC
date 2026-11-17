@@ -1,8 +1,7 @@
 package me.deftware.client.framework.registry;
 
 import me.deftware.client.framework.item.Item;
-import net.minecraft.registry.Registries;
-
+import net.minecraft.core.registries.BuiltInRegistries;
 import java.util.stream.Stream;
 
 /**
@@ -14,7 +13,7 @@ public enum ItemRegistry implements IRegistry.IdentifiableRegistry<Item, Void> {
 
 	@Override
 	public Stream<Item> stream() {
-		return Registries.ITEM
+		return BuiltInRegistries.ITEM
 				.stream()
 				.map(Item.class::cast);
 	}

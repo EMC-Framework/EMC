@@ -2,12 +2,12 @@ package me.deftware.mixin.mixins.block;
 
 import me.deftware.client.framework.event.events.EventDamage;
 import me.deftware.client.framework.event.events.EventSlowdown;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SweetBerryBushBlock;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.SweetBerryBushBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,17 +21,17 @@ public class MixinSweetBerryBushBlock {
     @Unique
     private final EventSlowdown slowdown = new EventSlowdown();
 
-    @Redirect(method = "onEntityCollision", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;slowMovement(Lnet/minecraft/block/BlockState;Lnet/minecraft/util/math/Vec3d;)V"))
-    private void onSlowMovement(Entity entity, BlockState state, Vec3d multiplier) {
+    @Redirect(method = "entityInside", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;makeStuckInBlock(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/phys/Vec3;)V"))
+    private void onSlowMovement(Entity entity, BlockState state, Vec3 multiplier) {
         slowdown.create(EventSlowdown.SlowdownType.BerryBush, 1);
         slowdown.broadcast();
         if(!slowdown.isCanceled()) {
-            entity.slowMovement(state, multiplier);
+            entity.makeStuckInBlock(state, multiplier);
         }
     }
 
-    @Inject(method = "onEntityCollision", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"), cancellable = true)
-    private void onDamage(BlockState state, World world, BlockPos pos, Entity entity, CallbackInfo ci) {
+    @Inject(method = "entityInside", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;hurtServer(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/damagesource/DamageSource;F)Z"), cancellable = true)
+    private void onDamage(BlockState state, Level world, BlockPos pos, Entity entity, net.minecraft.world.entity.InsideBlockEffectApplier effectApplier, boolean b, CallbackInfo ci) {
         EventDamage eventDamage = new EventDamage(EventDamage.DamageSource.BerryBush);
         eventDamage.broadcast();
         if(eventDamage.isCanceled()) {

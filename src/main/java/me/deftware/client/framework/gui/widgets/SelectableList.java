@@ -4,14 +4,13 @@ import lombok.Setter;
 import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.gui.widgets.properties.Tooltipable;
 import me.deftware.client.framework.render.gl.GLX;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.gui.widget.EntryListWidget;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.OrderedText;
-
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.AbstractSelectionList;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.util.FormattedCharSequence;
+import org.lwjgl.glfw.GLFW;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +19,7 @@ import java.util.Map;
 /**
  * @author Deftware
  */
-public class SelectableList<T extends SelectableList.ListItem> extends EntryListWidget<SelectableList<T>.ItemEntry> implements Tooltipable, GenericComponent {
+public class SelectableList<T extends SelectableList.ListItem> extends AbstractSelectionList<SelectableList<T>.ItemEntry> implements Tooltipable, GenericComponent {
 
 	private final List<T> delegate;
 
@@ -28,7 +27,7 @@ public class SelectableList<T extends SelectableList.ListItem> extends EntryList
 	private boolean extended = false;
 
 	public SelectableList(List<T> delegate, int width, int height, int top, int bottom, int itemHeight) {
-		super(MinecraftClient.getInstance(), width, bottom - top, top, itemHeight);
+		super(Minecraft.getInstance(), width, bottom - top, top, itemHeight);
 		this.delegate = delegate;
 	}
 
@@ -65,8 +64,8 @@ public class SelectableList<T extends SelectableList.ListItem> extends EntryList
 	}
 
 	public T getSelectedItem() {
-		if (this.getSelectedOrNull() != null) {
-			return this.getSelectedOrNull().item;
+		if (this.getSelected() != null) {
+			return this.getSelected().item;
 		}
 		return null;
 	}
@@ -80,7 +79,7 @@ public class SelectableList<T extends SelectableList.ListItem> extends EntryList
 	}
 
 	public void setScrollbarPosition(int y) {
-		this.setScrollY(y);
+		this.setScrollAmount(y);
 	}
 
 	@Override
@@ -88,10 +87,10 @@ public class SelectableList<T extends SelectableList.ListItem> extends EntryList
 		return this.getHoveredItem(mouseX, mouseY) != null;
 	}
 
-	private final List<OrderedText> tooltipComponents = new ArrayList<>();
+	private final List<FormattedCharSequence> tooltipComponents = new ArrayList<>();
 
 	@Override
-	public List<OrderedText> getTooltipComponents(int mouseX, int mouseY) {
+	public List<FormattedCharSequence> getTooltipComponents(int mouseX, int mouseY) {
 		ItemEntry entry = this.getEntryAtPosition(mouseX, mouseY);
 		if (entry != null) {
 			Message[] tooltip = entry.item.getTooltip();
@@ -112,11 +111,11 @@ public class SelectableList<T extends SelectableList.ListItem> extends EntryList
 	}
 
 	@Override
-	public int getScrollbarX() {
+	public int scrollBarX() {
 		if (extended) {
 			return width - 6;
 		}
-		return super.getScrollbarX();
+		return super.scrollBarX();
 	}
 
 	protected void onSelectionUpdate(T item) { }
@@ -130,25 +129,25 @@ public class SelectableList<T extends SelectableList.ListItem> extends EntryList
 	private final Map<T, ItemEntry> map = new HashMap<>();
 
 	@Override
-	public void renderList(DrawContext matrixStack, int mouseX, int mouseY, float tickDelta) {
+	public void extractListItems(GuiGraphicsExtractor matrixStack, int mouseX, int mouseY, float tickDelta) {
 		if (this.delegate.size() != this.map.size()) {
 			this.rebuild();
 		}
-		super.renderList(matrixStack, mouseX, mouseY, tickDelta);
+		super.extractListItems(matrixStack, mouseX, mouseY, tickDelta);
 	}
 
 	private void rebuild() {
 		this.deselect();
 		this.map.clear();
-		children().clear();
+		this.clearEntries();
 		for (T item : this.delegate) {
 			ItemEntry entry = new ItemEntry(item);
 			this.map.put(item, entry);
-			children().add(entry);
+			this.addEntry(entry);
 		}
 	}
 
-	protected class ItemEntry extends EntryListWidget.Entry<ItemEntry> {
+	protected class ItemEntry extends AbstractSelectionList.Entry<ItemEntry> {
 
 		private final T item;
 
@@ -157,16 +156,20 @@ public class SelectableList<T extends SelectableList.ListItem> extends EntryList
 		}
 
 		@Override
-		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			x += 8;
+		public void extractContent(GuiGraphicsExtractor context, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+			int x = this.getX() + 8;
+			int y = this.getY();
+			int entryWidth = this.getWidth();
+			int entryHeight = this.getHeight();
+			int index = SelectableList.this.children().indexOf(this);
 			GLX glx = GLX.of(context);
 			this.item.render(glx, index, x, y, entryWidth, entryHeight, mouseX, mouseY, tickDelta);
 			SelectableList.this.onDrawItem(glx, item, index, x, y, entryWidth, entryHeight, mouseX, mouseY, tickDelta);
 		}
 
 		@Override
-		public boolean mouseClicked(double mouseX, double mouseY, int button) {
-			if (this.item.onMouseClicked(mouseX, mouseY, button)) {
+		public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+			if (this.item.onMouseClicked(event.x(), event.y(), GLFW.sdlButtonToGlfwButton(event.button()))) {
 				SelectableList.this.setSelected(this);
 				SelectableList.this.onSelectionUpdate(item);
 				return true;
@@ -177,6 +180,6 @@ public class SelectableList<T extends SelectableList.ListItem> extends EntryList
 	}
 
 	@Override
-	protected void appendClickableNarrations(NarrationMessageBuilder builder) { }
+	protected void updateWidgetNarration(NarrationElementOutput builder) { }
 
 }

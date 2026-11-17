@@ -2,12 +2,14 @@ package me.deftware.mixin.mixins.network;
 
 import com.mojang.authlib.GameProfile;
 import me.deftware.client.framework.event.events.EventChatReceive;
-import net.minecraft.client.gui.hud.ChatHud;
-import net.minecraft.client.gui.hud.MessageIndicator;
-import net.minecraft.client.network.message.MessageHandler;
-import net.minecraft.client.network.message.MessageTrustStatus;
-import net.minecraft.network.message.*;
-import net.minecraft.text.Text;
+import net.minecraft.client.multiplayer.chat.GuiMessageTag;
+import net.minecraft.client.gui.components.ChatComponent;
+import net.minecraft.client.multiplayer.chat.ChatListener;
+import net.minecraft.client.multiplayer.chat.ChatTrustLevel;
+import net.minecraft.network.chat.ChatType;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MessageSignature;
+import net.minecraft.network.chat.PlayerChatMessage;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -16,26 +18,26 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.time.Instant;
 
-@Mixin(MessageHandler.class)
+@Mixin(ChatListener.class)
 public abstract class MixinMessageHandler {
 
     @Shadow
-    protected abstract MessageTrustStatus getStatus(SignedMessage message, Text decorated, Instant instant);
+    protected abstract ChatTrustLevel evaluateTrustLevel(PlayerChatMessage message, Component decorated, Instant instant);
 
     @Unique
     private EventChatReceive event;
 
-    @Inject(method = "onChatMessage", at = @At("HEAD"), cancellable = true)
-    private void onMessage(SignedMessage signedMessage, GameProfile sender, MessageType.Parameters params, CallbackInfo ci) {
-        Text text = params.applyChatDecoration(signedMessage.getContent());
+    @Inject(method = "handlePlayerChatMessage", at = @At("HEAD"), cancellable = true)
+    private void onMessage(PlayerChatMessage signedMessage, GameProfile sender, ChatType.Bound params, CallbackInfo ci) {
+        Component text = params.decorate(signedMessage.decoratedContent());
         Instant instant = Instant.now();
 
         boolean signed = false;
-        boolean expired = signedMessage.isExpiredOnClient(instant);
+        boolean expired = signedMessage.hasExpiredClient(instant);
 
-        if (!signedMessage.isSenderMissing()) {
-            var messageTrustStatus = this.getStatus(signedMessage, text, instant);
-            signed = !messageTrustStatus.isInsecure();
+        if (!signedMessage.isSystem()) {
+            var messageTrustStatus = this.evaluateTrustLevel(signedMessage, text, instant);
+            signed = !messageTrustStatus.isNotSecure();
         }
 
         this.event = new EventChatReceive(params, signedMessage, expired, signed).broadcast();
@@ -44,12 +46,12 @@ public abstract class MixinMessageHandler {
         }
     }
 
-    @Redirect(method = "processChatMessageInternal", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/ChatHud;addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignatureData;Lnet/minecraft/client/gui/hud/MessageIndicator;)V"))
-    private void onAddMessage(ChatHud instance, Text original, MessageSignatureData signature, MessageIndicator indicator) {
+    @Redirect(method = "showMessageToPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/ChatComponent;addPlayerMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/MessageSignature;Lnet/minecraft/client/multiplayer/chat/GuiMessageTag;)V"))
+    private void onAddMessage(ChatComponent instance, Component original, MessageSignature signature, GuiMessageTag indicator) {
         var arg = this.event.getArg();
-        Text message = (Text) this.event.getMessage();
-        Text text = arg.applyChatDecoration(message);
-        instance.addMessage(text, signature, indicator);
+        Component message = (Component) this.event.getMessage();
+        Component text = arg.decorate(message);
+        instance.addPlayerMessage(text, signature, indicator);
     }
 
 }

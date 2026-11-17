@@ -1,7 +1,7 @@
 package me.deftware.client.framework.helper;
 
+import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.render.DiffuseLighting;
 import org.joml.Matrix4f;
 
 /**
@@ -66,7 +66,7 @@ public class GlStateHelper {
 	}
 
 	public static void enableGUIStandardItemLighting() {
-		DiffuseLighting.enableForLevel();
+		// Lighting removed/managed automatically by GuiRenderer in 26.3
 	}
 
 	public static void disablePolygonOffset() {

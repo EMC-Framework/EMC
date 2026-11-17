@@ -4,12 +4,11 @@ import me.deftware.client.framework.event.events.EventIsPotionActive;
 import me.deftware.client.framework.global.GameKeys;
 import me.deftware.client.framework.global.GameMap;
 import me.deftware.mixin.imp.IMixinEntityLivingBase;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.core.Holder;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -21,46 +20,49 @@ import java.util.Map;
 
 @SuppressWarnings("ConstantConditions")
 @Mixin(LivingEntity.class)
-public class MixinEntityLivingBase implements IMixinEntityLivingBase {
+public abstract class MixinEntityLivingBase implements IMixinEntityLivingBase {
 
     @Shadow
     @Final
-    private Map<StatusEffect, StatusEffectInstance> activeStatusEffects;
+    private Map<MobEffect, MobEffectInstance> activeEffects;
 
     @Shadow
-    protected int itemUseTimeLeft;
+    protected int useItemRemaining;
 
-    @Inject(method = "hasStatusEffect", at = @At(value = "TAIL"), cancellable = true)
-    private void onHasStatusEffect(RegistryEntry<StatusEffect> effect, CallbackInfoReturnable<Boolean> cir) {
-        if (((LivingEntity) (Object) this).isPlayer()) {
-            EventIsPotionActive event = new EventIsPotionActive(effect.value().getTranslationKey(), activeStatusEffects.containsKey(effect)).broadcast();
+    @Shadow
+    protected abstract double getEffectiveGravity();
+
+    @Inject(method = "hasEffect", at = @At(value = "TAIL"), cancellable = true)
+    private void onHasStatusEffect(Holder<MobEffect> effect, CallbackInfoReturnable<Boolean> cir) {
+        if (((LivingEntity) (Object) this).isAlwaysTicking()) {
+            EventIsPotionActive event = new EventIsPotionActive(effect.value().getDescriptionId(), activeEffects.containsKey(effect)).broadcast();
             cir.setReturnValue(event.isActive());
         }
     }
 
-    @Inject(method = "getJumpVelocity", at = @At(value = "TAIL"), cancellable = true)
+    @Inject(method = "getJumpPower()F", at = @At(value = "TAIL"), cancellable = true)
     private void onGetJumpVelocity(CallbackInfoReturnable<Float> cir) {
-        if (((LivingEntity) (Object) this).isPlayer())
+        if (((LivingEntity) (Object) this).isAlwaysTicking())
             cir.setReturnValue(GameMap.INSTANCE.get(GameKeys.JUMP_HEIGHT, cir.getReturnValue()));
     }
 
     @Override
     public int getActiveItemStackUseCount() {
-        return itemUseTimeLeft;
+        return useItemRemaining;
     }
 
-    @Redirect(method = "travel", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;hasStatusEffect(Lnet/minecraft/registry/entry/RegistryEntry;)Z"))
-    private boolean travelHasStatusEffectProxy(LivingEntity self, RegistryEntry<StatusEffect> statusEffect) {
-        if (statusEffect == StatusEffects.LEVITATION && !GameMap.INSTANCE.get(GameKeys.LEVITATION, true) && ((LivingEntity) (Object) this).isPlayer())
-            return false;
-        return self.hasStatusEffect(statusEffect);
+    @Redirect(method = "travelInAir", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;getEffect(Lnet/minecraft/core/Holder;)Lnet/minecraft/world/effect/MobEffectInstance;"))
+    private MobEffectInstance travelHasStatusEffectProxy(LivingEntity self, Holder<MobEffect> statusEffect) {
+        if (statusEffect == MobEffects.LEVITATION && !GameMap.INSTANCE.get(GameKeys.LEVITATION, true) && ((LivingEntity) (Object) this).isAlwaysTicking())
+            return null;
+        return self.getEffect(statusEffect);
     }
 
-    @Redirect(method = "travel", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;getFinalGravity()D"))
+    @Redirect(method = "travelInAir", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;getEffectiveGravity()D"))
     private double travelHasNoGravityProxy(LivingEntity self) {
-        if (self.hasStatusEffect(StatusEffects.LEVITATION) && !GameMap.INSTANCE.get(GameKeys.LEVITATION, true) && ((LivingEntity) (Object) this).isPlayer())
+        if (self.hasEffect(MobEffects.LEVITATION) && !GameMap.INSTANCE.get(GameKeys.LEVITATION, true) && ((LivingEntity) (Object) this).isAlwaysTicking())
             return 0;
-        return self.getFinalGravity();
+        return this.getEffectiveGravity();
     }
 
     @Unique
@@ -72,7 +74,7 @@ public class MixinEntityLivingBase implements IMixinEntityLivingBase {
         this.height = height;
     }
 
-    @Inject(method = "getStepHeight", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "maxUpStep", at = @At("HEAD"), cancellable = true)
     private void onStepHeightRedirect(CallbackInfoReturnable<Float> cir) {
         if (height > 0) {
             cir.setReturnValue(height);
@@ -81,7 +83,7 @@ public class MixinEntityLivingBase implements IMixinEntityLivingBase {
 
     private float airStrafingSpeed = 0.02f;
 
-    @ModifyConstant(method = "getOffGroundSpeed", constant = @Constant(floatValue = 0.02f))
+    @ModifyConstant(method = "getFlyingSpeed", constant = @Constant(floatValue = 0.02f))
     private float getAirStrafeSpeed(float constant) {
         return airStrafingSpeed;
     }

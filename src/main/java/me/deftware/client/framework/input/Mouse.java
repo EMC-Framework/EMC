@@ -3,7 +3,6 @@ package me.deftware.client.framework.input;
 import me.deftware.client.framework.helper.WindowHelper;
 import me.deftware.client.framework.minecraft.Minecraft;
 import me.deftware.client.framework.render.batching.RenderStack;
-import net.minecraft.client.MinecraftClient;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 
@@ -40,7 +39,7 @@ public class Mouse {
 	}
 
 	public static boolean isButtonDown(int button) {
-		return GLFW.glfwGetMouseButton(MinecraftClient.getInstance().getWindow().getHandle(), button) == 1;
+		return GLFW.glfwGetMouseButton(net.minecraft.client.Minecraft.getInstance().getWindow().handle(), button) == 1;
 	}
 
 	public static double getMouseX() {

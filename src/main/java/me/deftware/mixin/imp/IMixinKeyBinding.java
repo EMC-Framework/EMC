@@ -1,11 +1,11 @@
 package me.deftware.mixin.imp;
 
-import net.minecraft.client.util.InputUtil;
+import com.mojang.blaze3d.platform.InputConstants;
 
 public interface IMixinKeyBinding {
 
     void emcSetPressed(boolean state);
 
-    InputUtil.Key getInput();
+    InputConstants.Key getInput();
 
 }

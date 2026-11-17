@@ -1,32 +1,32 @@
 package me.deftware.client.framework.world.ray;
 
-import net.minecraft.world.RaycastContext;
+import net.minecraft.world.level.ClipContext;
 
 public enum RayProfile {
 
     Block(
-            RaycastContext.ShapeType.OUTLINE,
-            RaycastContext.FluidHandling.NONE
+            ClipContext.Block.OUTLINE,
+            ClipContext.Fluid.NONE
     ),
 
     IncludeFluid(
-            RaycastContext.ShapeType.OUTLINE,
-            RaycastContext.FluidHandling.ANY
+            ClipContext.Block.OUTLINE,
+            ClipContext.Fluid.ANY
     );
 
-    private final RaycastContext.ShapeType shape;
-    private final RaycastContext.FluidHandling fluidHandling;
+    private final ClipContext.Block shape;
+    private final ClipContext.Fluid fluidHandling;
 
-    RayProfile(RaycastContext.ShapeType shape, RaycastContext.FluidHandling fluidHandling) {
+    RayProfile(ClipContext.Block shape, ClipContext.Fluid fluidHandling) {
         this.shape = shape;
         this.fluidHandling = fluidHandling;
     }
 
-    public RaycastContext.ShapeType getShape() {
+    public ClipContext.Block getShape() {
         return shape;
     }
 
-    public RaycastContext.FluidHandling getFluidHandling() {
+    public ClipContext.Fluid getFluidHandling() {
         return fluidHandling;
     }
 

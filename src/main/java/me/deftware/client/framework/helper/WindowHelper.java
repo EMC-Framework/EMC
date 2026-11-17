@@ -5,7 +5,6 @@ import me.deftware.client.framework.minecraft.Minecraft;
 import me.deftware.client.framework.render.shader.Shader;
 import me.deftware.client.framework.util.minecraft.MinecraftIdentifier;
 import me.deftware.mixin.imp.IMixinEntityRenderer;
-import net.minecraft.client.MinecraftClient;
 
 /**
  * @author Deftware
@@ -13,11 +12,11 @@ import net.minecraft.client.MinecraftClient;
 public class WindowHelper {
 
 	public static long getWindowHandle() {
-		return MinecraftClient.getInstance().getWindow().getHandle();
+		return net.minecraft.client.Minecraft.getInstance().getWindow().handle();
 	}
 
 	public static boolean isFocused() {
-		return MinecraftClient.getInstance().isWindowFocused();
+		return net.minecraft.client.Minecraft.getInstance().isWindowActive();
 	}
 
 	public static boolean isMinimized() {
@@ -29,11 +28,11 @@ public class WindowHelper {
 	}
 
 	public static void loadShader(Shader shader) {
-		((IMixinEntityRenderer) MinecraftClient.getInstance().gameRenderer).loadShader(shader);
+		((IMixinEntityRenderer) net.minecraft.client.Minecraft.getInstance().gameRenderer).loadShader(shader);
 	}
 
 	public static void disableShader() {
-		((IMixinEntityRenderer) MinecraftClient.getInstance().gameRenderer).loadShader(null);
+		((IMixinEntityRenderer) net.minecraft.client.Minecraft.getInstance().gameRenderer).loadShader(null);
 	}
 
 }

@@ -1,12 +1,12 @@
 package me.deftware.mixin.imp;
 
-import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.util.SkinTextures;
+import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.world.entity.player.PlayerSkin;
 
 public interface IMixinAbstractClientPlayer {
 
-    PlayerListEntry getPlayerNetworkInfo();
+    PlayerInfo getPlayerNetworkInfo();
 
-    SkinTextures getCustomSkinTexture();
+    PlayerSkin getCustomSkinTexture();
 
 }

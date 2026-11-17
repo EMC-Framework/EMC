@@ -1,7 +1,13 @@
-accessWidener	v1	named
-extendable class net/minecraft/nbt/NbtCompound
-extendable class net/minecraft/nbt/NbtList
-extendable class net/minecraft/item/ItemStack
-extendable class net/minecraft/util/Identifier
-accessible class net/minecraft/client/world/ClientChunkManager$ClientChunkMap
-accessible method net/minecraft/util/Identifier <init> (Ljava/lang/String;Ljava/lang/String;)V
+accessWidener	v1	official
+extendable	class	net/minecraft/nbt/CompoundTag
+extendable	class	net/minecraft/nbt/ListTag
+extendable	class	net/minecraft/world/item/ItemStack
+extendable	class	net/minecraft/resources/Identifier
+accessible	class	net/minecraft/client/multiplayer/ClientChunkCache$Storage
+accessible	method	net/minecraft/resources/Identifier	<init>	(Ljava/lang/String;Ljava/lang/String;)V
+accessible	field	net/minecraft/client/gui/GuiGraphicsExtractor	guiRenderState	Lnet/minecraft/client/renderer/state/gui/GuiRenderState;
+accessible	class	net/minecraft/client/gui/GuiGraphicsExtractor$ScissorStack
+accessible	field	net/minecraft/client/gui/GuiGraphicsExtractor	scissorStack	Lnet/minecraft/client/gui/GuiGraphicsExtractor$ScissorStack;
+accessible	method	net/minecraft/client/gui/GuiGraphicsExtractor$ScissorStack	peek	()Lnet/minecraft/client/gui/navigation/ScreenRectangle;
+accessible	field	net/minecraft/client/Camera	fovModifier	F
+accessible	field	net/minecraft/client/Camera	oldFovModifier	F

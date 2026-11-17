@@ -7,10 +7,8 @@ import me.deftware.client.framework.entity.effect.Effect;
 import me.deftware.client.framework.item.ItemStack;
 import me.deftware.mixin.imp.IMixinEntity;
 import me.deftware.mixin.imp.IMixinEntityLivingBase;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.util.Hand;
-
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.effect.MobEffectInstance;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -19,13 +17,13 @@ import java.util.stream.Stream;
  */
 public class LivingEntity extends Entity {
 
-	public LivingEntity(net.minecraft.entity.Entity entity) {
+	public LivingEntity(net.minecraft.world.entity.Entity entity) {
 		super(entity);
 	}
 
 	@Override
-	public net.minecraft.entity.LivingEntity getMinecraftEntity() {
-		return (net.minecraft.entity.LivingEntity) entity;
+	public net.minecraft.world.entity.LivingEntity getMinecraftEntity() {
+		return (net.minecraft.world.entity.LivingEntity) entity;
 	}
 
 	public float getHealth() {
@@ -53,27 +51,27 @@ public class LivingEntity extends Entity {
 	}
 
 	public boolean isClimbing() {
-		return getMinecraftEntity().isClimbing();
+		return getMinecraftEntity().onClimbable();
 	}
 
 	public float getMoveStrafing() {
-		return getMinecraftEntity().sidewaysSpeed;
+		return getMinecraftEntity().xxa;
 	}
 
 	public float getMoveForward() {
-		return getMinecraftEntity().upwardSpeed;
+		return getMinecraftEntity().yya;
 	}
 
 	public void setAlive(boolean flag) {
 		((IMixinEntity) getMinecraftEntity()).removeRemovedReason(); // TODO: Verify this
 		getMinecraftEntity().setHealth(20f);
-		getMinecraftEntity().updatePosition(getPosX(), getPosY(), getPosZ());
+		getMinecraftEntity().absSnapTo(getPosX(), getPosY(), getPosZ());
 	}
 
 	public ItemStack getEntityHeldItem(EntityHand hand) {
 		if (hand == EntityHand.OffHand)
-			return (ItemStack) getMinecraftEntity().getStackInHand(Hand.OFF_HAND);
-		return (ItemStack) getMinecraftEntity().getStackInHand(Hand.MAIN_HAND);
+			return (ItemStack) getMinecraftEntity().getItemInHand(InteractionHand.OFF_HAND);
+		return (ItemStack) getMinecraftEntity().getItemInHand(InteractionHand.MAIN_HAND);
 	}
 
 	@Deprecated
@@ -83,30 +81,30 @@ public class LivingEntity extends Entity {
 	}
 
 	public AppliedEffect getStatusEffect(Effect effect) {
-		return (AppliedEffect) getMinecraftEntity().getStatusEffect(effect.getStatusEffect());
+		return (AppliedEffect) getMinecraftEntity().getEffect(effect.getStatusEffect());
 	}
 
 	public void removeStatusEffect(Effect effect) {
-		getMinecraftEntity().removeStatusEffect(effect.getStatusEffect());
+		getMinecraftEntity().removeEffect(effect.getStatusEffect());
 	}
 
 	public boolean hasStatusEffect(Effect effect) {
-		return getMinecraftEntity().hasStatusEffect(effect.getStatusEffect());
+		return getMinecraftEntity().hasEffect(effect.getStatusEffect());
 	}
 
 	public void addStatusEffect(AppliedEffect effect) {
-		getMinecraftEntity().addStatusEffect((StatusEffectInstance) effect);
+		getMinecraftEntity().addEffect((MobEffectInstance) effect);
 	}
 
 	public Stream<AppliedEffect> getStatusEffects() {
 		return getMinecraftEntity()
-				.getStatusEffects()
+				.getActiveEffects()
 				.stream()
 				.map(AppliedEffect.class::cast);
 	}
 
 	public int getActiveStatusEffects() {
-		return getMinecraftEntity().getStatusEffects().size();
+		return getMinecraftEntity().getActiveEffects().size();
 	}
 
 }

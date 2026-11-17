@@ -1,21 +1,21 @@
 package me.deftware.client.framework.entity.types.main;
 
-import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.world.inventory.ContainerInput;
 
 /**
  * @author Deftware
  */
 public enum WindowClickAction {
 
-	THROW(SlotActionType.THROW), QUICK_MOVE(SlotActionType.QUICK_MOVE), PICKUP(SlotActionType.PICKUP);
+	THROW(ContainerInput.THROW), QUICK_MOVE(ContainerInput.QUICK_MOVE), PICKUP(ContainerInput.PICKUP);
 
-	private final SlotActionType actionType;
+	private final ContainerInput actionType;
 
-	WindowClickAction(SlotActionType actionType) {
+	WindowClickAction(ContainerInput actionType) {
 		this.actionType = actionType;
 	}
 
-	public SlotActionType getMinecraftActionType() {
+	public ContainerInput getMinecraftActionType() {
 		return actionType;
 	}
 

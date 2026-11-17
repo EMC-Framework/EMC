@@ -3,14 +3,16 @@ package me.deftware.client.framework.registry;
 import me.deftware.client.framework.item.Enchantment;
 
 import me.deftware.client.framework.message.Message;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.component.ComponentType;
-import net.minecraft.component.EnchantmentEffectComponentTypes;
-import net.minecraft.enchantment.effect.EnchantmentEffectEntry;
-import net.minecraft.enchantment.effect.EnchantmentValueEffect;
-import net.minecraft.registry.*;
-import net.minecraft.registry.entry.RegistryEntry;
-
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderGetter;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.enchantment.ConditionalEffect;
+import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
+import net.minecraft.world.item.enchantment.effects.EnchantmentValueEffect;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,16 +25,16 @@ public enum EnchantmentRegistry implements IRegistry.IdentifiableRegistry<Enchan
 
 	INSTANCE;
 
-	private RegistryWrapper.Impl<net.minecraft.enchantment.Enchantment> registry;
-	private final Map<RegistryKey<net.minecraft.enchantment.Enchantment>, Enchantment> enchantmentMap = new HashMap<>();
+	private HolderLookup.RegistryLookup<net.minecraft.world.item.enchantment.Enchantment> registry;
+	private final Map<ResourceKey<net.minecraft.world.item.enchantment.Enchantment>, Enchantment> enchantmentMap = new HashMap<>();
 
 	private void sync() {
-		var world = MinecraftClient.getInstance().world;
+		var world = Minecraft.getInstance().level;
 		if (world == null) {
 			throw new IllegalStateException("Enchantments cannot be used when not in a world");
 		}
-		var registry = world.getRegistryManager();
-		var enchantments = registry.getOrThrow(RegistryKeys.ENCHANTMENT);
+		var registry = world.registryAccess();
+		var enchantments = registry.lookupOrThrow(Registries.ENCHANTMENT);
 		if (this.registry != enchantments) {
 			this.registry = enchantments;
 			enchantmentMap.clear();
@@ -42,10 +44,10 @@ public enum EnchantmentRegistry implements IRegistry.IdentifiableRegistry<Enchan
 	@Override
 	public Stream<Enchantment> stream() {
 		sync();
-		return registry.streamKeys().map(key -> lookup(key, false));
+		return registry.listElementIds().map(key -> lookup(key, false));
 	}
 
-	public synchronized Enchantment lookup(RegistryKey<net.minecraft.enchantment.Enchantment> entry, boolean sync) {
+	public synchronized Enchantment lookup(ResourceKey<net.minecraft.world.item.enchantment.Enchantment> entry, boolean sync) {
 		if (sync) {
 			sync();
 		}
@@ -54,22 +56,22 @@ public enum EnchantmentRegistry implements IRegistry.IdentifiableRegistry<Enchan
 
 	private static class EnchantmentImpl implements Enchantment {
 
-		private final RegistryEntry<net.minecraft.enchantment.Enchantment> entry;
-		private final RegistryKey<net.minecraft.enchantment.Enchantment> key;
-		private final net.minecraft.enchantment.Enchantment enchantment;
+		private final Holder<net.minecraft.world.item.enchantment.Enchantment> entry;
+		private final ResourceKey<net.minecraft.world.item.enchantment.Enchantment> key;
+		private final net.minecraft.world.item.enchantment.Enchantment enchantment;
 
-		public EnchantmentImpl(RegistryKey<net.minecraft.enchantment.Enchantment> key,
-							   RegistryEntryLookup<net.minecraft.enchantment.Enchantment> lookup) {
+		public EnchantmentImpl(ResourceKey<net.minecraft.world.item.enchantment.Enchantment> key,
+							   HolderGetter<net.minecraft.world.item.enchantment.Enchantment> lookup) {
 			this.key = key;
 			this.entry = lookup.getOrThrow(key);
 			this.enchantment = entry.value();
 		}
 
-		public RegistryKey<net.minecraft.enchantment.Enchantment> getKey() {
+		public ResourceKey<net.minecraft.world.item.enchantment.Enchantment> getKey() {
 			return key;
 		}
 
-		public RegistryEntry<net.minecraft.enchantment.Enchantment> getEntry() {
+		public Holder<net.minecraft.world.item.enchantment.Enchantment> getEntry() {
 			return entry;
 		}
 
@@ -83,38 +85,38 @@ public enum EnchantmentRegistry implements IRegistry.IdentifiableRegistry<Enchan
 			return enchantment.getMaxLevel();
 		}
 
-		private float sumValue(int level, ComponentType<List<EnchantmentEffectEntry<EnchantmentValueEffect>>> type) {
+		private float sumValue(int level, DataComponentType<List<ConditionalEffect<EnchantmentValueEffect>>> type) {
 			float sum = 0;
-			var list = enchantment.getEffect(type);
+			var list = enchantment.getEffects(type);
 			for (var value : list) {
-				sum += value.effect().apply(level, null, 0);
+				sum += value.effect().process(level, null, 0);
 			}
 			return sum;
 		}
 
 		@Override
 		public int getProtection(int level) {
-			return (int) sumValue(level, EnchantmentEffectComponentTypes.DAMAGE_PROTECTION);
+			return (int) sumValue(level, EnchantmentEffectComponents.DAMAGE_PROTECTION);
 		}
 
 		@Override
 		public float getDamage(int level) {
-			return sumValue(level, EnchantmentEffectComponentTypes.DAMAGE);
+			return sumValue(level, EnchantmentEffectComponents.DAMAGE);
 		}
 
 		@Override
 		public Message getName(int level) {
-			return (Message) net.minecraft.enchantment.Enchantment.getName(entry, level);
+			return (Message) net.minecraft.world.item.enchantment.Enchantment.getFullname(entry, level);
 		}
 
 		@Override
 		public String getTranslationKey() {
-			return key.getValue().toTranslationKey();
+			return key.identifier().toLanguageKey();
 		}
 
 		@Override
 		public String getIdentifierKey() {
-			return key.getValue().getPath();
+			return key.identifier().getPath();
 		}
 	}
 

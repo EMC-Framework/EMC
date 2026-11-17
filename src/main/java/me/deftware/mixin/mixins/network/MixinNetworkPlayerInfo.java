@@ -3,16 +3,14 @@ package me.deftware.mixin.mixins.network;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import me.deftware.mixin.imp.IMixinNetworkPlayerInfo;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.multiplayer.PlayerInfo;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.Map;
 
-@Mixin(PlayerListEntry.class)
+@Mixin(PlayerInfo.class)
 public class MixinNetworkPlayerInfo implements IMixinNetworkPlayerInfo {
 
     @Override

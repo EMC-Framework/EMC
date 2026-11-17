@@ -4,8 +4,8 @@ import me.deftware.client.framework.command.CommandRegister;
 import me.deftware.client.framework.message.Appearance;
 import me.deftware.client.framework.message.DefaultColors;
 import me.deftware.client.framework.message.Message;
+import net.minecraft.client.Minecraft;
 import me.deftware.client.framework.event.events.EventChatSend;
-import net.minecraft.client.MinecraftClient;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.function.Consumer;
@@ -33,9 +33,9 @@ public interface Chat {
             if (text.startsWith(trigger)) {
                 text = text.substring(trigger.length());
                 try {
-                    var networkHandler = MinecraftClient.getInstance().getNetworkHandler();
+                    var networkHandler = Minecraft.getInstance().getConnection();
                     if (networkHandler != null) {
-                        CommandRegister.getDispatcher().execute(text, networkHandler.getCommandSource());
+                        CommandRegister.getDispatcher().execute(text, networkHandler.getSuggestionsProvider());
                     }
                 } catch (Exception ex) {
                     Message.of(ex.getMessage()).style(Appearance.of(DefaultColors.RED)).print();

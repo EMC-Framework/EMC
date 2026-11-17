@@ -1,17 +1,13 @@
 package me.deftware.client.framework.render;
 
-import com.google.common.base.Suppliers;
 import me.deftware.client.framework.item.Item;
 import me.deftware.client.framework.item.ItemStack;
 import me.deftware.client.framework.render.gl.GLX;
 import me.deftware.client.framework.world.block.Block;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.util.math.MatrixStack;
-
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import java.util.HashMap;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public class ItemRendering {
 
@@ -49,7 +45,7 @@ public class ItemRendering {
 	}
 
 	public void drawItemStack(GLX context, ItemStack stack, int x, int y, int z) {
-		render(context, z, ctx -> ctx.drawItemWithoutEntity((net.minecraft.item.ItemStack) stack, x, y));
+		render(context, z, ctx -> ctx.fakeItem((net.minecraft.world.item.ItemStack) stack, x, y));
 	}
 
 	public void drawStackLabel(GLX context, ItemStack stack, int x, int y, String count) {
@@ -58,25 +54,13 @@ public class ItemRendering {
 
 	public void drawStackLabel(GLX context, ItemStack stack, int x, int y, int z, String count) {
 		render(context, z, ctx ->
-				ctx.drawStackOverlay(MinecraftClient.getInstance().textRenderer,
-						(net.minecraft.item.ItemStack) stack, x, y, count));
+				ctx.itemDecorations(Minecraft.getInstance().font,
+						(net.minecraft.world.item.ItemStack) stack, x, y, count));
 	}
 
-	private final Supplier<DrawContext> context = Suppliers.memoize(() -> {
-		var mc = MinecraftClient.getInstance();
-		var consumers = mc.getBufferBuilders().getEntityVertexConsumers();
-		return new DrawContext(mc, consumers);
-	});
-
-	private void render(GLX ctx, int zOffset, Consumer<DrawContext> runnable) {
-		ctx.modelViewStack(s -> {
-			DrawContext drawContext = context.get();
-			MatrixStack stack = drawContext.getMatrices();
-			stack.push();
-			stack.translate(0, 0, zOffset);
-			runnable.accept(drawContext);
-			stack.pop();
-		});
+	private void render(GLX ctx, int zOffset, Consumer<GuiGraphicsExtractor> runnable) {
+		if (ctx == null || ctx.getContext() == null) return;
+		runnable.accept(ctx.getContext());
 	}
 
 }

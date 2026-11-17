@@ -1,9 +1,7 @@
 package me.deftware.client.framework.render.gl;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.RotationAxis;
+import com.mojang.math.Axis;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 import org.lwjgl.opengl.GL11;
@@ -11,6 +9,8 @@ import org.lwjgl.opengl.GL11;
 import java.awt.*;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import org.joml.Matrix3x2fStack;
 
 /**
  * Manages matrix transformations
@@ -23,23 +23,79 @@ public class GLX {
 
     private static final GLX instance = new GLX();
 
-    private DrawContext context;
+    private GuiGraphicsExtractor context;
+    private Matrix4f viewProjection3d;
+    private final Matrix4fStack pose3d = new Matrix4fStack(16);
+    private float colorR = 1f, colorG = 1f, colorB = 1f, colorA = 1f;
 
     /*
         Internal functions
      */
 
-    public DrawContext getContext() {
+    public GuiGraphicsExtractor getContext() {
         return context;
     }
 
-    public static GLX of(DrawContext context) {
+    public static GLX of(GuiGraphicsExtractor context) {
         instance.context = context;
+        instance.viewProjection3d = null;
+        instance.colorR = 1f;
+        instance.colorG = 1f;
+        instance.colorB = 1f;
+        instance.colorA = 1f;
         return instance;
     }
 
+    public static GLX of3D(GuiGraphicsExtractor context, Matrix4f viewProjection3d) {
+        instance.context = context;
+        instance.viewProjection3d = viewProjection3d != null ? new Matrix4f(viewProjection3d) : null;
+        instance.pose3d.clear();
+        instance.pose3d.identity();
+        instance.colorR = 1f;
+        instance.colorG = 1f;
+        instance.colorB = 1f;
+        instance.colorA = 1f;
+        return instance;
+    }
+
+    public boolean isIn3D() {
+        return viewProjection3d != null;
+    }
+
+    public Matrix4f getViewProjection3d() {
+        return viewProjection3d;
+    }
+
+    public float getColorR() {
+        return colorR;
+    }
+
+    public float getColorG() {
+        return colorG;
+    }
+
+    public float getColorB() {
+        return colorB;
+    }
+
+    public float getColorA() {
+        return colorA;
+    }
+
     public Matrix4f getModel() {
-        return context.getMatrices().peek().getPositionMatrix();
+        if (viewProjection3d != null) {
+            return pose3d;
+        }
+        if (context == null) {
+            return new Matrix4f();
+        }
+        Matrix3x2fStack m = context.pose();
+        return new Matrix4f(
+                m.m00(), m.m01(), 0f, 0f,
+                m.m10(), m.m11(), 0f, 0f,
+                0f, 0f, 1f, 0f,
+                m.m20(), m.m21(), 0f, 1f
+        );
     }
 
     public void modelViewStack(Consumer<Matrix4fStack> action) {
@@ -110,38 +166,60 @@ public class GLX {
 
         @Override
         public void translate(float x, float y, float z) {
-            context.getMatrices().translate(x, y, z);
+            if (isIn3D()) {
+                pose3d.translate(x, y, z);
+            } else if (context != null) {
+                context.pose().translate(x, y);
+            }
         }
 
         @Override
         public void scale(float x, float y, float z) {
-            context.getMatrices().scale(x, y, z);
+            if (isIn3D()) {
+                pose3d.scale(x, y, z);
+            } else if (context != null) {
+                context.pose().scale(x, y);
+            }
         }
 
         @Override
         public void color(float red, float green, float blue, float alpha) {
-            RenderSystem.setShaderColor(red, green, blue, alpha);
+            colorR = red;
+            colorG = green;
+            colorB = blue;
+            colorA = alpha;
         }
 
         @Override
         public void rotate(float angle, float x, float y, float z) {
-            var matrices = context.getMatrices();
-            if (x > 0)
-                matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(angle));
-            if (y > 0)
-                matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(angle));
-            if (z > 0)
-                matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(angle));
+            if (isIn3D()) {
+                if (x != 0)
+                    pose3d.rotate(Axis.XP.rotationDegrees(x > 0 ? angle : -angle));
+                if (y != 0)
+                    pose3d.rotate(Axis.YP.rotationDegrees(y > 0 ? angle : -angle));
+                if (z != 0)
+                    pose3d.rotate(Axis.ZP.rotationDegrees(z > 0 ? angle : -angle));
+            } else if (context != null && z != 0) {
+                context.pose().rotate((float) Math.toRadians(z > 0 ? angle : -angle));
+            }
         }
 
         @Override
         public void push() {
-            context.getMatrices().push();
+            if (isIn3D()) {
+                pose3d.pushMatrix();
+            } else if (context != null) {
+                context.pose().pushMatrix();
+            }
         }
 
         @Override
         public void pop() {
-            context.getMatrices().pop();
+            if (isIn3D()) {
+                pose3d.popMatrix();
+            } else if (context != null) {
+                context.pose().popMatrix();
+            }
         }
 
         @Override

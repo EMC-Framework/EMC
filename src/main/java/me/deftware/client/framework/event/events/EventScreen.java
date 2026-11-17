@@ -3,7 +3,7 @@ package me.deftware.client.framework.event.events;
 import lombok.Getter;
 import lombok.Setter;
 import me.deftware.client.framework.gui.screens.MinecraftScreen;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screens.Screen;
 
 /**
  * @author Deftware

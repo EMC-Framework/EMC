@@ -5,8 +5,7 @@ import me.deftware.client.framework.message.Message;
 import me.deftware.client.framework.nbt.NbtCompound;
 import me.deftware.client.framework.world.block.Block;
 import me.deftware.client.framework.world.block.BlockState;
-import net.minecraft.client.MinecraftClient;
-
+import net.minecraft.client.Minecraft;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -15,7 +14,7 @@ import java.util.function.Consumer;
  */
 public interface ItemStack {
 
-    ItemStack EMPTY = (ItemStack) net.minecraft.item.ItemStack.EMPTY;
+    ItemStack EMPTY = (ItemStack) net.minecraft.world.item.ItemStack.EMPTY;
 
     int getCount();
 
@@ -56,12 +55,15 @@ public interface ItemStack {
     }
 
     static ItemStack of(Item item, int count) {
-        return (ItemStack) new net.minecraft.item.ItemStack((net.minecraft.item.Item) item, count);
+        return (ItemStack) new net.minecraft.world.item.ItemStack(item.asMinecraftItem(), count);
     }
 
     static ItemStack of(NbtCompound compound) {
-        var registry = MinecraftClient.getInstance().player.getRegistryManager();
-        return (ItemStack) net.minecraft.item.ItemStack.fromNbt(registry, (net.minecraft.nbt.NbtCompound) compound).orElseThrow();
+        var registry = Minecraft.getInstance().player.registryAccess();
+        return (ItemStack) net.minecraft.world.item.ItemStack.CODEC.parse(
+                registry.createSerializationContext(net.minecraft.nbt.NbtOps.INSTANCE),
+                (net.minecraft.nbt.CompoundTag) compound
+        ).result().orElseThrow();
     }
 
     enum Rarity {

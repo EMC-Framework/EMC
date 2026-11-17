@@ -1,31 +1,30 @@
 package me.deftware.client.framework.minecraft;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.option.SimpleOption;
-
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.OptionInstance;
 
 public abstract class GameSetting<T> {
 
-    public static GameSetting<Integer> VIEW_DISTANCE = getSimpleOption(MinecraftClient.getInstance().options.getViewDistance());
-    public static GameSetting<Double> GAMMA = getSimpleOption(MinecraftClient.getInstance().options.getGamma());
-    public static GameSetting<Integer> MAX_FPS = getSimpleOption(MinecraftClient.getInstance().options.getMaxFps());
+    public static GameSetting<Integer> VIEW_DISTANCE = getSimpleOption(Minecraft.getInstance().options.renderDistance());
+    public static GameSetting<Double> GAMMA = getSimpleOption(Minecraft.getInstance().options.gamma());
+    public static GameSetting<Integer> MAX_FPS = getSimpleOption(Minecraft.getInstance().options.framerateLimit());
 
     // TODO: Add real setter, not just a toggle
-    public static GameSetting<Boolean> DEBUG_INFO = getSimpleOption(() -> MinecraftClient.getInstance().getDebugHud().shouldShowDebugHud(),
-            state -> MinecraftClient.getInstance().getDebugHud().toggleDebugHud());
+    public static GameSetting<Boolean> DEBUG_INFO = getSimpleOption(() -> Minecraft.getInstance().getDebugOverlay().showDebugScreen(),
+            state -> Minecraft.getInstance().debugEntries.toggleDebugOverlay());
 
-    private static <E> GameSetting<E> getSimpleOption(SimpleOption<E> option) {
+    private static <E> GameSetting<E> getSimpleOption(OptionInstance<E> option) {
         return new GameSetting<>() {
             @Override
             public E get() {
-                return option.getValue();
+                return option.get();
             }
 
             @Override
             public void set(E value) {
-                option.setValue(value);
+                option.set(value);
             }
         };
     }
@@ -51,22 +50,22 @@ public abstract class GameSetting<T> {
     public static class GuiScaleSetting extends GameSetting<Integer> {
         public static GuiScaleSetting INSTANCE = new GuiScaleSetting();
 
-        private SimpleOption<Integer> getSetting() {
-            return MinecraftClient.getInstance().options.getGuiScale();
+        private OptionInstance<Integer> getSetting() {
+            return Minecraft.getInstance().options.guiScale();
         }
 
         @Override
         public Integer get() {
-            return this.getSetting().getValue();
+            return this.getSetting().get();
         }
 
         @Override
         public void set(Integer value) {
-            this.getSetting().setValue(value);
+            this.getSetting().set(value);
         }
 
         public double getScaleFactor() {
-            return MinecraftClient.getInstance().getWindow().getScaleFactor();
+            return Minecraft.getInstance().getWindow().getGuiScale();
         }
     }
 

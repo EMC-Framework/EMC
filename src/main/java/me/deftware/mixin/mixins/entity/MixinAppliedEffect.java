@@ -3,43 +3,43 @@ package me.deftware.mixin.mixins.entity;
 import me.deftware.client.framework.entity.effect.AppliedEffect;
 import me.deftware.client.framework.entity.effect.Effect;
 import me.deftware.client.framework.message.Message;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffectUtil;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffectUtil;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
-@Mixin(StatusEffectInstance.class)
+@Mixin(MobEffectInstance.class)
 public class MixinAppliedEffect implements AppliedEffect {
 
     @Unique
     @Override
     public Effect getEffect() {
-        return (Effect) ((StatusEffectInstance) (Object) this).getEffectType().value();
+        return (Effect) ((MobEffectInstance) (Object) this).getEffect().value();
     }
 
     @Unique
     @Override
     public int getDuration() {
-        return ((StatusEffectInstance) (Object) this).getDuration();
+        return ((MobEffectInstance) (Object) this).getDuration();
     }
 
     @Unique
     @Override
     public int getAmplifier() {
-        return ((StatusEffectInstance) (Object) this).getDuration();
+        return ((MobEffectInstance) (Object) this).getAmplifier();
     }
 
     @Unique
     @Override
     public boolean isAmbient() {
-        return ((StatusEffectInstance) (Object) this).isAmbient();
+        return ((MobEffectInstance) (Object) this).isAmbient();
     }
 
     @Unique
     @Override
     public boolean isPermanent() {
-        return ((StatusEffectInstance) (Object) this).isInfinite();
+        return ((MobEffectInstance) (Object) this).isInfiniteDuration();
     }
 
     @Unique
@@ -60,12 +60,12 @@ public class MixinAppliedEffect implements AppliedEffect {
         if (isPermanent()) {
             return Message.of("Infinite");
         }
-        MinecraftClient mc = MinecraftClient.getInstance();
+        Minecraft mc = Minecraft.getInstance();
         float tickRate = 20f;
-        if (mc.world != null) {
-            tickRate = mc.world.getTickManager().getTickRate();;
+        if (mc.level != null) {
+            tickRate = mc.level.tickRateManager().tickrate();;
         }
-        return (Message) StatusEffectUtil.getDurationText((StatusEffectInstance) (Object) this, 1.0F, tickRate);
+        return (Message) MobEffectUtil.formatDuration((MobEffectInstance) (Object) this, 1.0F, tickRate);
     }
 
 }

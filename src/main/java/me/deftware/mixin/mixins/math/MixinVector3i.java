@@ -1,7 +1,7 @@
 package me.deftware.mixin.mixins.math;
 
 import me.deftware.client.framework.math.Vector3;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.core.Vec3i;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
@@ -29,13 +29,13 @@ public class MixinVector3i implements Vector3<Integer> {
     @Unique
     @Override
     public Vector3<Integer> add(Integer x, Integer y, Integer z) {
-        return (Vector3<Integer>) ((Vec3i) (Object) this).add(x, y, z);
+        return (Vector3<Integer>) ((Vec3i) (Object) this).offset(x, y, z);
     }
 
     @Unique
     @Override
     public Vector3<Integer> subtract(Integer x, Integer y, Integer z) {
-        return (Vector3<Integer>) ((Vec3i) (Object) this).add(-x, -y, -z);
+        return (Vector3<Integer>) ((Vec3i) (Object) this).offset(-x, -y, -z);
     }
 
     @Unique
@@ -47,7 +47,7 @@ public class MixinVector3i implements Vector3<Integer> {
     @Unique
     @Override
     public double distanceTo(Integer x, Integer y, Integer z) {
-        return Math.sqrt(((Vec3i) (Object) this).getSquaredDistance(x, y, z));
+        return Math.sqrt(((Vec3i) (Object) this).distToLowCornerSqr(x, y, z));
     }
 
 }

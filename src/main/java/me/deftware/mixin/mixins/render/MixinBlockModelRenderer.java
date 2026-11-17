@@ -3,55 +3,57 @@ package me.deftware.mixin.mixins.render;
 import me.deftware.client.framework.global.types.BlockPropertyManager;
 import me.deftware.client.framework.main.bootstrap.Bootstrap;
 import me.deftware.mixin.shared.BlockManagement;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.block.BlockModelRenderer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.registry.Registries;
-import net.minecraft.world.BlockRenderView;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
+import net.minecraft.client.renderer.block.BlockQuadOutput;
+import net.minecraft.client.renderer.block.ModelBlockRenderer;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(BlockModelRenderer.class)
+@Mixin(ModelBlockRenderer.class)
 public abstract class MixinBlockModelRenderer {
-
-    @Unique
-    private BlockRenderView world;
 
     @Unique
     private BlockPos pos;
 
-    /*
-    @Inject(method = "render(Lnet/minecraft/world/BlockRenderView;Lnet/minecraft/client/render/model/BakedModel;Lnet/minecraft/block/BlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;ZLnet/minecraft/util/math/random/Random;JI)V",
-            at = @At("HEAD"), cancellable = true)
-    public void render(BlockRenderView world, BakedModel model, BlockState state, BlockPos pos, MatrixStack matrices, VertexConsumer vertexConsumer, boolean cull, Random random, long seed, int overlay, CallbackInfo cir) {
-        this.world = world;
+    @Inject(method = "tesselateBlock", at = @At("HEAD"), cancellable = true)
+    private void onTesselateBlockHead(BlockQuadOutput output, float x, float y, float z, BlockAndTintGetter level, BlockPos pos, BlockState state, BlockStateModel model, long seed, CallbackInfo ci) {
         this.pos = pos;
         BlockPropertyManager blockProperties = Bootstrap.blockProperties;
-        if (blockProperties.isActive() && !blockProperties.isOpacityMode()) {
-            int id = Registries.BLOCK.getRawId(state.getBlock());
-            if (!(blockProperties.contains(id) && blockProperties.get(id).isRender()))
-                cir.cancel();
+        if (!blockProperties.isActive()) {
+            BlockManagement.isRenderingOpacityBlock.set(false);
+            return;
         }
+        int id = BuiltInRegistries.BLOCK.getId(state.getBlock());
+        boolean isTarget = blockProperties.contains(id) && blockProperties.get(id).isRender();
+        if (!isTarget && !blockProperties.isOpacityMode()) {
+            BlockManagement.isRenderingOpacityBlock.set(false);
+            ci.cancel();
+            return;
+        }
+        BlockManagement.isRenderingOpacityBlock.set(blockProperties.isOpacityMode() && !isTarget);
     }
 
-    @Redirect(method = { "renderSmooth", "renderFlat" },
-            at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/block/Block;shouldDrawSide(Lnet/minecraft/block/BlockState;Lnet/minecraft/block/BlockState;Lnet/minecraft/util/math/Direction;)Z"))
-    private boolean onShouldDrawSide(BlockState state, BlockState otherState, Direction side) {
-        var result = BlockManagement.shouldDrawSide(state, world, pos, side);
+    @Inject(method = "tesselateBlock", at = @At("RETURN"))
+    private void onTesselateBlockReturn(BlockQuadOutput output, float x, float y, float z, BlockAndTintGetter level, BlockPos pos, BlockState state, BlockStateModel model, long seed, CallbackInfo ci) {
+        BlockManagement.isRenderingOpacityBlock.set(false);
+    }
+
+    @Inject(method = "shouldRenderFace", at = @At("HEAD"), cancellable = true)
+    private void onShouldRenderFace(BlockAndTintGetter level, BlockState state, Direction direction, BlockPos neighborPos, CallbackInfoReturnable<Boolean> cir) {
+        BlockPos blockPos = this.pos != null ? this.pos : neighborPos.relative(direction.getOpposite());
+        var result = BlockManagement.shouldDrawSide(state, level, blockPos, direction);
         if (result.isPresent()) {
-            return result.get();
+            cir.setReturnValue(result.get());
         }
-        return Block.shouldDrawSide(state, otherState, side);
-    }*/
+    }
 
 }

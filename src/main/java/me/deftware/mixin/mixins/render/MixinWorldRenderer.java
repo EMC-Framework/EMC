@@ -1,79 +1,54 @@
 package me.deftware.mixin.mixins.render;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import lombok.Getter;
-import me.deftware.client.framework.event.events.EventWeather;
 import me.deftware.client.framework.render.WorldEntityRenderer;
-import me.deftware.client.framework.render.camera.entity.CameraEntityMan;
-import net.minecraft.client.render.*;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
-import net.minecraft.client.util.Handle;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.profiler.Profiler;
-import org.joml.Matrix4f;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.state.level.LevelRenderState;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Mixin(WorldRenderer.class)
+@Mixin(LevelRenderer.class)
 public abstract class MixinWorldRenderer implements WorldEntityRenderer {
 
     @Shadow
     @Final
     private EntityRenderDispatcher entityRenderDispatcher;
 
-    @Shadow
-    @Final
-    private BufferBuilderStorage bufferBuilders;
-
     @Unique
     @Getter
     private final List<Statue> statues = new ArrayList<>();
 
-    @Inject(method = "addWeatherParticlesAndSound", at = @At("HEAD"), cancellable = true)
-    private void renderRain(Camera camera, CallbackInfo ci) {
-        EventWeather event = new EventWeather(EventWeather.WeatherType.Rain);
-        event.broadcast();
-        if (event.isCanceled()) {
-            ci.cancel();
+    @Inject(method = "submitEntities", at = @At("RETURN"))
+    private void onRenderStatues(PoseStack matrices, LevelRenderState renderState, SubmitNodeCollector collector, CallbackInfo ci) {
+        if (this.statues.isEmpty()) {
+            return;
         }
-    }
-
-    @Inject(method = "renderWeather", at = @At("HEAD"), cancellable = true)
-    private void renderWeather(FrameGraphBuilder frameGraphBuilder, Vec3d vec3d, float f, Fog fog, CallbackInfo ci) {
-        EventWeather event = new EventWeather(EventWeather.WeatherType.Rain);
-        event.broadcast();
-
-        if (event.isCanceled()) {
-            ci.cancel();
-        }
-    }
-
-    @ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/WorldRenderer;setupTerrain(Lnet/minecraft/client/render/Camera;Lnet/minecraft/client/render/Frustum;ZZ)V"), index = 3)
-    public boolean isSpectator(boolean spectator) {
-        return spectator || CameraEntityMan.isActive();
-    }
-
-    // Lambda method in renderMain
-    @Inject(method = "method_62214", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/VertexConsumerProvider$Immediate;drawCurrentLayer()V", ordinal = 0))
-    private void onRenderStatues(Fog fog, RenderTickCounter renderTickCounter, Camera camera, Profiler profiler, Matrix4f matrix4f, Matrix4f matrix4f2, Handle handle, Handle handle2, boolean bl, Frustum frustum, Handle handle3, Handle handle4, CallbackInfo ci) {
-        MatrixStack matrices = new MatrixStack();
+        double camX = renderState.cameraRenderState.pos.x;
+        double camY = renderState.cameraRenderState.pos.y;
+        double camZ = renderState.cameraRenderState.pos.z;
+        float tickDelta = renderState.cameraRenderState.cameraEntityPartialTicks;
         for (Statue statue : this.statues) {
-            float tickDelta = renderTickCounter.getTickProgress(true);
-            this.entityRenderDispatcher.render(statue.getEntity().getMinecraftEntity(),
-                    statue.getPosition().getX() - camera.getPos().getX(),
-                    statue.getPosition().getY() - camera.getPos().getY(),
-                    statue.getPosition().getZ() - camera.getPos().getZ(),
-                    tickDelta, matrices, this.bufferBuilders.getEntityVertexConsumers(),
-                    this.entityRenderDispatcher.getLight(statue.getEntity().getMinecraftEntity(), tickDelta)
+            EntityRenderState entityState = this.entityRenderDispatcher.extractEntity(statue.getEntity().getMinecraftEntity(), tickDelta);
+            this.entityRenderDispatcher.submit(
+                    entityState,
+                    renderState.cameraRenderState,
+                    statue.getPosition().getX() - camX,
+                    statue.getPosition().getY() - camY,
+                    statue.getPosition().getZ() - camZ,
+                    matrices,
+                    collector
             );
         }
     }

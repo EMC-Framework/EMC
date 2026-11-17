@@ -1,21 +1,21 @@
 package me.deftware.client.framework.world;
 
 import me.deftware.client.framework.world.gen.BiomeDecorator;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Holder;
+import net.minecraft.resources.Identifier;
 
 public class Biome {
 
-	private RegistryEntry<net.minecraft.world.biome.Biome> biome;
+	private Holder<net.minecraft.world.level.biome.Biome> biome;
 
-	public Biome setReference(RegistryEntry<net.minecraft.world.biome.Biome> biome) {
+	public Biome setReference(Holder<net.minecraft.world.level.biome.Biome> biome) {
 		this.biome = biome;
 		return this;
 	}
 
 	private Identifier getId() {
-		var key = biome.getKey().get();
-		return key.getValue();
+		var key = biome.unwrapKey().get();
+		return key.identifier();
 	}
 
 	public String getKey() {
@@ -26,7 +26,7 @@ public class Biome {
 	}
 
 	public String getCatergory() {
-		return this.biome.getKeyOrValue().map(b -> b.getValue().getPath(), b -> "[unregistered]");
+		return this.biome.unwrap().map(b -> b.identifier().getPath(), b -> "[unregistered]");
 	}
 
 	public BiomeDecorator getDecorator() {

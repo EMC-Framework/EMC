@@ -3,7 +3,7 @@ package me.deftware.client.framework.item;
 import me.deftware.client.framework.entity.effect.Effect;
 import me.deftware.client.framework.item.items.ArmorItem;
 import me.deftware.client.framework.item.items.AttackItem;
-import net.minecraft.item.*;
+import net.minecraft.world.item.CrossbowItem;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.apache.commons.lang3.mutable.MutableInt;
@@ -50,7 +50,7 @@ public class ItemUtils {
 
         public static boolean isCharged(ItemStack stack) {
             if (stack.getItem() instanceof CrossbowItem) {
-                return CrossbowItem.isCharged((net.minecraft.item.ItemStack) stack);
+                return CrossbowItem.isCharged((net.minecraft.world.item.ItemStack) stack);
             }
             return false;
         }

@@ -2,8 +2,8 @@ package me.deftware.client.framework.network.packets;
 
 import me.deftware.client.framework.entity.Entity;
 import me.deftware.client.framework.network.PacketWrapper;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket;
 
 public class CPacketCommand extends PacketWrapper {
 
@@ -12,7 +12,7 @@ public class CPacketCommand extends PacketWrapper {
     }
 
     public CPacketCommand(Entity entity, Modes mode) {
-        super(new ClientCommandC2SPacket(entity.getMinecraftEntity(), mode.getMinecraftMode()));
+        super(new ServerboundPlayerCommandPacket(entity.getMinecraftEntity(), mode.getMinecraftMode()));
     }
 
     public enum Modes {
@@ -26,8 +26,8 @@ public class CPacketCommand extends PacketWrapper {
         OPEN_INVENTORY,
         START_FALL_FLYING;
 
-        ClientCommandC2SPacket.Mode getMinecraftMode() {
-            return ClientCommandC2SPacket.Mode.valueOf(name());
+        ServerboundPlayerCommandPacket.Action getMinecraftMode() {
+            return ServerboundPlayerCommandPacket.Action.valueOf(name());
         }
     }
 

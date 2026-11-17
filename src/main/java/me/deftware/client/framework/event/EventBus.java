@@ -3,8 +3,6 @@ package me.deftware.client.framework.event;
 import me.deftware.client.framework.event.events.EventMatrixRender;
 import me.deftware.client.framework.event.events.EventRender2D;
 import me.deftware.client.framework.event.events.EventRender3D;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Tessellator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

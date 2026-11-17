@@ -1,9 +1,8 @@
 package me.deftware.client.framework.registry;
 
 import me.deftware.client.framework.entity.EntityCapsule;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.stream.Stream;

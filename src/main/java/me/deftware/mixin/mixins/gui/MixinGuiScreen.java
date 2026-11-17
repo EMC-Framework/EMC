@@ -10,17 +10,16 @@ import me.deftware.client.framework.gui.widgets.GenericComponent;
 import me.deftware.client.framework.item.Item;
 import me.deftware.client.framework.render.gl.GLX;
 import net.minecraft.SharedConstants;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.OrderedText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.util.FormattedCharSequence;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -45,17 +44,17 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
 
     @Shadow
     @Final
-    private List<Drawable> drawables;
+    private List<Renderable> renderables;
 
     @Shadow
     @Final
-    private List<Element> children;
+    private List<GuiEventListener> children;
 
     @Shadow
-    protected MinecraftClient client;
+    protected Minecraft minecraft;
 
     @Shadow
-    protected abstract void clearChildren();
+    protected abstract void clearWidgets();
 
     @Override
     public <T extends GenericComponent> List<T> getChildren(Class<T> clazz) {
@@ -67,7 +66,7 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
 
     @Override
     public void _clearChildren() {
-        this.clearChildren();
+        this.clearWidgets();
     }
 
     @Override
@@ -75,10 +74,10 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
         if (component instanceof NativeComponent<?> nativeComponent) {
             component = nativeComponent.getComponent();
         }
-        if (component instanceof Drawable drawable) {
-            appendArray(drawables, drawable, index);
+        if (component instanceof Renderable drawable) {
+            appendArray(renderables, drawable, index);
         }
-        if (component instanceof Element element) {
+        if (component instanceof GuiEventListener element) {
             appendArray(children, element, index);
         }
     }
@@ -95,39 +94,39 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
         return event;
     }
 
-    @Inject(method = "render", at = @At("HEAD"))
-    private void onDraw(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+    @Inject(method = "extractRenderState", at = @At("HEAD"))
+    private void onDraw(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         event.setMouseX(mouseX);
         event.setMouseY(mouseY);
         event.setType(EventScreen.Type.Draw).setContext(GLX.of(context)).broadcast();
     }
 
     @SuppressWarnings("ConstantConditions")
-    @Inject(method = "renderWithTooltip", at = @At("RETURN"))
-    private void onPostDraw(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        if (!((Object) this instanceof HandledScreen)) {
+    @Inject(method = "extractRenderStateWithTooltipAndSubtitles", at = @At("RETURN"))
+    private void onPostDraw(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+        if (!((Object) this instanceof AbstractContainerScreen)) {
             this.onPostDrawEvent(context, mouseX, mouseY, delta);
         }
     }
 
-    @Inject(method = "<init>", at = @At("RETURN"))
-    private void init(Text title, CallbackInfo ci) {
+    @Inject(method = "<init>(Lnet/minecraft/network/chat/Component;)V", at = @At("RETURN"))
+    private void init(Component title, CallbackInfo ci) {
         event.setType(EventScreen.Type.Init).broadcast();
     }
 
-    @Inject(method = "init(Lnet/minecraft/client/MinecraftClient;II)V", at = @At("RETURN"))
-    private void init(CallbackInfo ci) {
+    @Inject(method = "init(II)V", at = @At("RETURN"))
+    private void init(int width, int height, CallbackInfo ci) {
         event.setType(EventScreen.Type.Setup).broadcast();
     }
 
     @Unique
-    protected void onPostDrawEvent(DrawContext context, int mouseX, int mouseY, float delta) {
+    protected void onPostDrawEvent(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
         event.setType(EventScreen.Type.PostDraw).setContext(GLX.of(context)).broadcast();
         // Render tooltip
-        for (Element element : children) {
+        for (GuiEventListener element : children) {
             if (element instanceof Tooltipable tooltipable) {
                 if (tooltipable.isMouseOverComponent(mouseX, mouseY)) {
-                    List<OrderedText> list = tooltipable.getTooltipComponents(mouseX, mouseY);
+                    List<FormattedCharSequence> list = tooltipable.getTooltipComponents(mouseX, mouseY);
                     if (list != null && !list.isEmpty()) {
                         this.renderTooltip(GLX.of(context), mouseX, mouseY, list);
                         break;
@@ -137,25 +136,21 @@ public abstract class MixinGuiScreen implements MinecraftScreen {
         }
     }
 
-    @Inject(method = "handleTextClick", at = @At("HEAD"), cancellable = true)
-    private void onTextClick(Style style, CallbackInfoReturnable<Boolean> cir) {
-        var event = style.getClickEvent();
-        if (event != null) {
-            if (event instanceof ClickEvent.RunCommand(String command)) {
-                // SharedConstants.stripInvalidChars(event.getValue());
-                String trigger = CommandRegister.getCommandTrigger();
-                if (command.startsWith(trigger)) {
-                    try {
-                        var networkHandler = MinecraftClient.getInstance().getNetworkHandler();
-                        if (networkHandler != null) {
-                            var source = networkHandler.getCommandSource();
-                            CommandRegister.getDispatcher().execute(command.substring(trigger.length()), source);
-                        }
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
+    @Inject(method = "defaultHandleGameClickEvent", at = @At("HEAD"), cancellable = true)
+    private static void onTextClick(ClickEvent event, Minecraft minecraft, Screen screen, CallbackInfo ci) {
+        if (event instanceof ClickEvent.RunCommand(String command)) {
+            String trigger = CommandRegister.getCommandTrigger();
+            if (command.startsWith(trigger)) {
+                try {
+                    var networkHandler = minecraft.getConnection();
+                    if (networkHandler != null) {
+                        var source = networkHandler.getSuggestionsProvider();
+                        CommandRegister.getDispatcher().execute(command.substring(trigger.length()), source);
                     }
-                    cir.setReturnValue(true);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
+                ci.cancel();
             }
         }
     }

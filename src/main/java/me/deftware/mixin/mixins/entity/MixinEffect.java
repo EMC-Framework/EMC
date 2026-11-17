@@ -2,36 +2,36 @@ package me.deftware.mixin.mixins.entity;
 
 import me.deftware.client.framework.entity.effect.Effect;
 import me.deftware.client.framework.message.Message;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.registry.Registries;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.effect.MobEffect;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
-@Mixin(StatusEffect.class)
+@Mixin(MobEffect.class)
 public class MixinEffect implements Effect {
 
     @Unique
     @Override
     public Type getType() {
-        return Effect.Type.values()[((StatusEffect) (Object) this).getCategory().ordinal()];
+        return Effect.Type.values()[((MobEffect) (Object) this).getCategory().ordinal()];
     }
 
     @Unique
     @Override
     public Message getName() {
-        return (Message) ((StatusEffect) (Object) this).getName();
+        return (Message) ((MobEffect) (Object) this).getDisplayName();
     }
 
     @Unique
     @Override
     public String getTranslationKey() {
-        return ((StatusEffect) (Object) this).getTranslationKey();
+        return ((MobEffect) (Object) this).getDescriptionId();
     }
 
     @Unique
     @Override
     public String getIdentifierKey() {
-        return Registries.STATUS_EFFECT.getId((StatusEffect) (Object) this).getPath();
+        return BuiltInRegistries.MOB_EFFECT.getKey((MobEffect) (Object) this).getPath();
     }
 
 }
